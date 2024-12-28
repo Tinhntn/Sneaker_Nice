@@ -20,4 +20,29 @@ public class NhanVienImplement implements NhanVienService {
 
         return nhanVienRepository.findAll(PageRequest.of(page,size)).getContent();
     }
+
+    @Override
+    public Page<NhanVien> findAllNhanVien(Pageable pageable) {
+        return nhanVienRepository.findAll(pageable);
+    }
+
+    @Override
+    public NhanVien findNhanVienById(int id) {
+        return nhanVienRepository.findById(id).get();
+    }
+
+    @Override
+    public void saveNhanVien(NhanVien nhanVien) {
+        nhanVienRepository.save(nhanVien);
+    }
+
+    @Override
+    public void updateNhanVien(NhanVien nhanVien) {
+        nhanVienRepository.save(nhanVien);
+    }
+
+    @Override
+    public void deleteNhanVien(int id) {
+        nhanVienRepository.deleteById(id);
+    }
 }

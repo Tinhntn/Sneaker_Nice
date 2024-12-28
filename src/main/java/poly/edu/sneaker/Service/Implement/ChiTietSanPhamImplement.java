@@ -1,0 +1,40 @@
+package poly.edu.sneaker.Service.Implement;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Service;
+import poly.edu.sneaker.Model.ChiTietSanPham;
+import poly.edu.sneaker.Repository.ChiTietSanPhamRepository;
+import poly.edu.sneaker.Service.ChiTietSanPhamService;
+@Service
+
+public class ChiTietSanPhamImplement implements ChiTietSanPhamService {
+    @Autowired
+    private ChiTietSanPhamRepository chiTietSanPhamRepository;
+    @Override
+    public Page<ChiTietSanPham> findAll(Pageable pageable) {
+
+        return chiTietSanPhamRepository.findAll(pageable);
+    }
+
+    @Override
+    public void saveChiTietSanPham(ChiTietSanPham chiTietSanPham) {
+        chiTietSanPhamRepository.save(chiTietSanPham);
+    }
+
+    @Override
+    public ChiTietSanPham findById(int id) {
+        return chiTietSanPhamRepository.findById(id).get();
+    }
+
+    @Override
+    public void deleteChiTietSanPham(int id) {
+        chiTietSanPhamRepository.deleteById(id);
+    }
+
+    @Override
+    public void update(ChiTietSanPham chiTietSanPham) {
+        chiTietSanPhamRepository.save(chiTietSanPham);
+    }
+}
