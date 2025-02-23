@@ -18,6 +18,18 @@ public class SanPham {
     private  int id;
     private String ma_san_pham;
     private String ten_san_pham;
+    @ManyToOne
+    @JoinColumn(name = "id_hang")
+    private Hang id_hang;
+
+    @ManyToOne
+    @JoinColumn(name = "id_danh_muc")
+    private DanhMuc id_danh_muc;
+
+    @ManyToOne
+    @JoinColumn(name = "id_chat_lieu")
+    private ChatLieu id_chat_lieu;
+
     private Date ngay_tao;
     private  Date ngay_sua;
     private Boolean trang_thai;

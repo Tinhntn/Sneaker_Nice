@@ -12,20 +12,16 @@ import poly.edu.sneaker.Model.ChiTietSanPham;
 import poly.edu.sneaker.Service.ChiTietSanPhamService;
 
 @Controller
-@RequestMapping("")
+@RequestMapping("/Sneakers_Nice")
 public class Home {
     @Autowired
     private ChiTietSanPhamService chiTietSanPhamService;
 
-    @GetMapping("")
+    @GetMapping("/hienthi")
     public String hienThi(Model model){
         Pageable pageable = PageRequest.of(0,10);
         Page<ChiTietSanPham> lstChiTietSanPham = chiTietSanPhamService.findAll(pageable);
-        for (ChiTietSanPham ctsp : lstChiTietSanPham
-             ) {
-            System.out.println(ctsp.getId_san_pham());
-
-        } model.addAttribute("lstChiTietSanPham",lstChiTietSanPham);
+        model.addAttribute("lstChiTietSanPham",lstChiTietSanPham);
         return "user/sanpham/trangchu";
     }
 }

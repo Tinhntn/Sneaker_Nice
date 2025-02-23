@@ -1,7 +1,6 @@
-<!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-    layout:decorate="~{layout/mainUser.html}">
 
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{/layout/mainUser}">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport"
@@ -74,10 +73,10 @@
             </div>
             <div class="container">
                 <div class="row">
-                    <div class="col-sm-12 col-md-6 col-lg-3 ftco-animate d-flex" th:each="sanPham : ${listSanPham}">
+                    <div class="col-sm-12 col-md-6 col-lg-3 ftco-animate d-flex" th:each="sanPham : ${lstChiTietSanPham}">
                         <div class="product d-flex flex-column">
                             <a href="#" class="img-prod">
-                                <img class="img-fluid" th:src="${sanPham.hinhAnh}" alt="Colorlib Template">
+                                <img class="img-fluid" th:src="${sanPham.hinh_anh}" alt="Colorlib Template">
                                 <div class="overlay"></div>
                             </a>
                             <div class="text py-3 pb-4 px-3">
@@ -97,10 +96,10 @@
 
                                     </div>
                                 </div>
-                                <h3><a th:href="@{/trangchuuser/detailsanpham/{id}(id=${sanPham.chiTietSanPhamId})}"
-                                        th:text="${sanPham.tenSanPham}"></a></h3>
+                                <h3><a th:href="@{/trangchuuser/detailsanpham/{id}(id=${sanPham.id})}"
+                                        th:text="${sanPham.id_san_pham.ten_san_pham}"></a></h3>
                                 <div class="pricing">
-                                    <p class="price"><span th:text="'Giá bán: ' + ${sanPham.giaBan} + ' VND'"></span>
+                                    <p class="price"><span th:text="'Giá bán: ' + ${sanPham.gia_ban} + ' VND'"></span>
                                     </p>
                                 </div>
                                 <p class="bottom-area d-flex px-3">

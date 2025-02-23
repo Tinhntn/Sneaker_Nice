@@ -17,9 +17,17 @@ public class ChiTietSanPham {
     @Id
     @GeneratedValue (strategy = GenerationType.IDENTITY)
     private int id;
-    private int id_san_pham;
-    private int id_size;
-    private int id_mau_sac;
+    @ManyToOne
+    @JoinColumn(name="id_san_pham")
+    private SanPham id_san_pham;
+
+    @ManyToOne
+    @JoinColumn(name = "id_size")
+    private Size id_size;
+
+    @ManyToOne
+    @JoinColumn(name = "id_mau_sac")
+    private MauSac id_mau_sac;
     private float trong_luong;
     private float gia_nhap;
     private float gia_ban;
