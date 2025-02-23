@@ -1,0 +1,554 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+    layout:decorate="~{layout/main}">
+
+<body>
+    <div layout:fragment="content">
+        <style>
+            .nav-tabs {
+                border-bottom: 1px solid #dee2e6;
+                border-radius: .5rem;
+            }
+
+            .nav-tabs .nav-link {
+                border: 1px solid transparent;
+                border-top-left-radius: .5rem;
+                border-top-right-radius: .5rem;
+            }
+
+            .nav-tabs .nav-link.active {
+                border-color: #dee2e6 #dee2e6 #fff;
+            }
+
+            .tab-content {
+                border: 1px solid #dee2e6;
+                border-top: none;
+                border-radius: 0 0 .5rem .5rem;
+                padding: 1rem;
+            }
+
+            /* Đảm bảo các card có cùng kích thước */
+
+
+            .card-body {
+                display: flex;
+                flex-direction: column;
+                justify-content: space-between;
+            }
+
+            .lich-su-container {
+                display: flex;
+                align-items: center;
+                justify-content: space-around;
+                /* You can adjust the spacing as needed */
+            }
+
+            .lich-su-item {
+                text-align: center;
+                padding: 10px;
+                position: relative;
+                /* This allows the arrow to be positioned absolutely */
+
+            }
+
+            .timeline-icon {
+                font-size: 24px;
+                margin-bottom: 5px;
+            }
+
+            .text-secondary {
+                display: block;
+                margin-top: 5px;
+            }
+
+            .arrow {
+                font-size: 24px;
+                position: absolute;
+                right: -20px;
+                /* Adjust this value as needed */
+                top: 50%;
+                transform: translateY(-50%);
+            }
+        </style>
+        <input type="hidden" id="idhoadon" th:value="${lstHD.getId()}">
+        <input type="hidden" id="hoadon" th:ng-value="${hoaDon}">
+        <div class="card shadow container">
+            <div class="card-header">
+                <h6 class="m-0 font-weight-bold text-primary">Xác nhận hóa đơn</h6>
+            </div>
+            <div class="card-body row">
+                <!-- Nội dung của phần tử này -->
+                <div class="lich-su-container">
+                    <div class="lich-su-item" th:each="ls , stat: ${lichSuTrangThai}">
+                        <div class="timeline-icon">
+                            <!-- Icon for each status -->
+                            <span th:if="${ls.trangthai == 1}" class="fa fa-check"></span>
+                            <span th:if="${ls.trangthai == 2}" class="fa fa-pencil"></span>
+                            <span th:if="${ls.trangthai == 3}" class="fa fa-truck"></span>
+                            <span th:if="${ls.trangthai == 0}" class="fa fa-times"></span>
+                            <span th:if="${ls.trangthai == 4}" class="fa fa-box"></span>
+                            <span th:if="${ls.trangthai == 5}" class="fa fa-check-square"></span>
+                        </div>
+                        <span class="text-secondary" th:text="${ls.trangthai == 1 ? 'Đã Thanh Toán' :
+                                                                (ls.trangthai == 2 ? 'Chờ xác nhận' :
+                                                                (ls.trangthai == 3 ? 'Chờ lấy hàng' :
+                                                                (ls.trangthai == 0 ? 'Chưa thanh toán' :
+                                                                (ls.trangthai == 4 ? 'Đang giao' :
+                                                                (ls.trangthai == 5 ? 'Đã giao' :
+                                                                'Đã hủy')))))}"></span>
+                        <br>
+                        <span th:text="${#dates.format(ls.thoigian,'dd/MM/yyyy hh:mm:ss')}"></span>
+                        <div th:if="${!stat.last}" class="arrow">→</div>
+
+                    </div>
+                </div>
+
+
+                <div class="col-4">
+                    <button type="button" class="btn btn-danger" id="huydon" data-bs-toggle="modal"
+                        data-bs-target="#modalhuyhoadon" th:attr="disabled=${lstHD.getTrangThai()==6}"
+                        th:if="${lstHD.getTrangThai() != 5}">
+                        Hủy đơn
+                    </button>
+                    <button class="btn btn-success" id="xacnhan" data-bs-toggle="modal" data-bs-target="#exampleModal"
+                        th:attr="disabled=${lstHD.getTrangThai()==6}" th:if="${lstHD.getTrangThai() != 5}">Xác
+                        Nhận</button>
+                    <button class="btn btn-warning" id="inhoadon" th:attr="disabled=${lstHD.getTrangThai() == 2}">In hóa
+                        đơn</button>    
+
+                    <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel"
+                        aria-hidden="true">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h1 class="modal-title fs-5" id="exampleModalLabel">Ghi chú</h1>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                        aria-label="Close"></button>
+                                </div>
+                                <div class="modal-body">
+                                    <form id="cancelForm">
+                                        <div class="form-group">
+                                            <textarea class="form-control large-textarea" id="note" required></textarea>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="status">Trạng thái:</label>
+                                            <select class="form-control" id="status">
+                                                <option value="" disabled selected>Vui lòng chọn trạng thái</option>
+                                                <option th:each="ls : ${lichSu}" th:if="${ls.getTrangThai() == 2}"
+                                                    th:value="2">Xác nhận</option>
+                                                <option th:each="ls : ${lichSu}" th:if="${ls.getTrangThai() == 3}"
+                                                    th:value="3">Đã lấy hàng</option>
+                                                <option th:each="ls : ${lichSu}" th:if="${ls.getTrangThai() == 4}"
+                                                    th:value="4">Đã giao</option>
+                                            </select>
+                                        </div>
+                                    </form>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary"
+                                        data-bs-dismiss="modal">Đóng</button>
+                                    <button type="button" class="btn btn-primary" id="confirmCancel">Thay đổi</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal fade" id="modalhuyhoadon" tabindex="-1" aria-labelledby="exampleModalLabel"
+                        aria-hidden="true">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h1 class="modal-title fs-5" id="exampleModalLabel">Ghi chú</h1>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                        aria-label="Close"></button>
+                                </div>
+                                <div class="modal-body">
+                                    <form id="cancelForm">
+                                        <div class="form-group">
+                                            <textarea class="form-control large-textarea" id="notehuyhoadon"
+                                                required></textarea>
+                                        </div>
+                                    </form>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary"
+                                        data-bs-dismiss="modal">Đóng</button>
+                                    <button type="button" class="btn btn-primary" id="huyhoadon">Thay đổi</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class=" card shadow container">
+            <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold text-primary">Quản lý hóa đơn</h6>
+            </div>
+            <br>
+            <div class="card-body row">
+                <br>
+
+                <div class="table-responsive">
+                    <p style="display: block; font-size: medium; margin: 5px;"><strong>Lịch sử thanh toán</strong>
+                    </p>
+                    <table class="table table-bordered mt-3 text-center " id="dataTable" width="100%" cellspacing="0" s>
+                        <thead style="background-color: rgb(240, 117, 69);">
+                            <tr>
+                                <th>Mã hóa đơn</th>
+                                <th>Tổng tiền</th>
+                                <th>Thời gian</th>
+                                <th>Hình thức thanh toán</th>
+                                <th>Trạng thái</th>
+                                <th>Ghi chú</th>
+                                <th>Người xác nhận</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Sử dụng vòng lặp Thymeleaf để duyệt danh sách khách hàng -->
+                            <tr th:each="hd : ${lstHD}">
+                                <td th:text="${hd.getMaHoaDon()}"></td>
+                                <td th:text="${hd.getThanhTien()}"></td>
+                                <td th:text="${hd.getNgayTao()}"></td>
+                                <td
+                                    th:text="${hd.getLoaiThanhToan() ==1 ? 'Chuyển khoản':(hd.getLoaiThanhToan()==2?'Tiền mặt':'Thanh toán khi nhận hàng')}">
+                                </td>
+                                <td>
+                                    <!-- Sử dụng biểu thức điều kiện Thymeleaf -->
+                                    <span
+                                        th:text="${hd.getTrangThai() == 1 ? 'Đã Thanh Toán' :
+                                                                                                            (hd.getTrangThai() == 2 ? 'Chưa Thanh Toán' :
+                                                                                                            (hd.getTrangThai() == 3 ? 'Đang Vận Chuyển' :
+                                                                                                            (hd.getTrangThai() == 0 ? 'Hóa Đơn Hủy' :
+                                                                                                            (hd.getTrangThai() == 4 ? 'Đã Nhận' :
+                                                                                                            'Đang Xử Lí'))))}"></span>
+                                </td>
+                                <td th:text="${hd.getGhiChu()}"></td>
+                                <td th:text="${hd.getTenNhanVien()}"></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <br>
+        <div class="card shadow container">
+            <div class="row">
+                <div class="card shadow container">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h5 class="card-title mb-0">Thông tin đơn hàng</h5>
+
+                        <button th:if="${lstHD.getTrangThai()!=5}" class="btn btn-warning ml-auto"
+                            data-bs-toggle="modal" data-bs-target="#capnhatlichsu">Cập nhật</button>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-sm-6 mb-3">
+                                <strong>Mã hóa đơn:</strong>
+                                <span th:text="${lichSu.getMaHoaDon()}"></span>
+                            </div>
+                            <div class="col-sm-6 mb-3">
+                                <strong>Trạng thái:</strong>
+                                <span
+                                    th:text="${lichSu.getTrangThai() == 1 ? 'Đã Thanh Toán' :
+                                                                                                                    (lichSu.getTrangThai() == 2 ? 'Chờ xác nhận' :
+                                                                                                                    (lichSu.getTrangThai() == 3 ? 'Chờ lấy hàng' :
+                                                                                                                    (lichSu.getTrangThai() == 0 ? 'Chưa thanh toán' :
+                                                                                                                    (lichSu.getTrangThai() == 4 ? 'Đang giao hàng' :
+                                                                                                                    (lichSu.getTrangThai() == 5 ? 'Đã gia hàng' :
+                                                                                                                    'Trả hàng')))))}"></span>
+                            </div>
+                            <div class="col-sm-6 mb-3">
+                                <strong>Loại hóa đơn:</strong>
+                                <span th:text="${lichSu.getLoaiHoaDon() == 1 ? 'Online' : 'Offline'}"></span>
+                            </div>
+                            <div class="col-sm-6 mb-3">
+                                <strong>Tên khách hàng:</strong>
+                                <span th:text="${lichSu.getTenKhachHang()}"></span>
+                            </div>
+                            <div class="col-sm-6 mb-3">
+                                <strong>Số điện thoại:</strong>
+                                <span th:text="${lichSu.getSdtKhachHang()}"></span>
+                            </div>
+                            <div class="col-sm-6 mb-3">
+                                <strong>Địa chỉ:</strong>
+                                <span th:text="${lichSu.getDiaChi()}"></span>
+                            </div>
+                            <div class="col-sm-6 mb-3">
+                                <strong>Email:</strong>
+                                <span th:text="${lichSu.getEmail()}"></span>
+                            </div>
+                            <div class="col-sm-6 mb-3">
+                                <strong>Tên người giao:</strong>
+                                <span th:text="${lichSu.getTenNguoiGiao()}"></span>
+                            </div>
+                            <div class="col-sm-6 mb-3">
+                                <strong>Số điện thoại người giao:</strong>
+                                <span th:text="${lichSu.getSdtNguoiGiao()}"></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <br>
+        <div class="card shadow container">
+            <div class="row">
+                <div class="card shadow container">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h5 class="card-title mb-0">Thông tin chi tiết đơn hàng</h5>
+
+                        <!-- <button th:if="${lstHD.getTrangThai()!=5}" class="btn btn-warning ml-auto"
+                            data-bs-toggle="modal" data-bs-target="#capnhatlichsu">Cập nhật</button> -->
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <table class="table table-bordered mt-3 text-center " id="dataTable" width="100%"
+                                cellspacing="0" s>
+                                <thead style="background-color: rgb(240, 117, 69);">
+                                    <tr>
+                                        <th>Tên sản phẩm</th>
+                                        <th>Số lượng</th>
+                                        <th>Đơn giá</th>
+                                        <th>Ảnh</th>
+                                        <th>Size</th>
+                                        <th>Hãng</th>
+                                        <th>Chất liệu</th>
+                                        <th>Màu sắc</th>
+                                        <th>Danh mục</th>
+                                        <th>Thành tiền</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <!-- Sử dụng vòng lặp Thymeleaf để duyệt danh sách khách hàng -->
+                                    <tr th:each="ctsphd : ${lstSpcthdReponses}">
+                                        <td th:text="${ctsphd.tensanpham}"></td>
+                                        <td th:text="${ctsphd.soluong}"></td>
+                                        <td
+                                            th:text="${#numbers.formatDecimal(ctsphd.giaban, 0, 'COMMA', 0, 'POINT')} + ' VNĐ'">
+                                        </td>
+                                        <td>
+                                            <img th:src="@{${ctsphd.hinhanh[0]}}" alt="Ảnh sản phẩm"
+                                                style="width: 50px; height: 50px;">
+                                        </td>
+                                        <td th:text="${ctsphd.size}"></td>
+                                        <td th:text="${ctsphd.hang}"></td>
+                                        <td th:text="${ctsphd.chatlieu}"></td>
+                                        <td th:text="${ctsphd.mausac}"></td>
+                                        <td th:text="${ctsphd.danhmuc}"></td>
+                                        <td
+                                            th:text="${#numbers.formatDecimal(ctsphd.thanhtien, 0, 'COMMA', 0, 'POINT')} + ' VNĐ'">
+                                        </td>
+
+
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="modal fade" id="capnhatlichsu" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h1 class="modal-title fs-5" id="exampleModalLabel">Cập nhật thông tin</h1>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <form th:action="@{'/hoadon/updatehoadon/' + ${lichSu.id}}" th:object="${lichSu}" method="post">
+                            <div th:attr="disabled=${lichSu.trangThai==2}">
+                                <div class="form-group">
+                                    <label for="tenKhachHang">Tên khách hàng:</label>
+                                    <input type="text" class="form-control" id="tenKhachHang"
+                                        th:field="*{tenKhachHang}" />
+                                </div>
+                                <div class="form-group">
+                                    <label for="sdtKhachHang">Số điện thoại:</label>
+                                    <input type="text" class="form-control" id="sdtKhachHang"
+                                        th:field="*{sdtKhachHang}" />
+                                </div>
+                                <div class="form-group">
+                                    <label for="diaChi">Địa chỉ:</label>
+                                    <input type="text" class="form-control" id="diaChi" th:field="*{diaChi}" />
+                                </div>
+                                <div class="form-group">
+                                    <label for="email">Email:</label>
+                                    <input type="email" class="form-control" id="email" th:field="*{email}" />
+                                </div>
+                            </div>
+                            <div th:if="${lichSu.trangThai==3}">
+                                <div class="form-group">
+                                    <label for="tenNguoiGiao">Tên người giao:</label>
+                                    <input type="text" class="form-control" id="tenNguoiGiao"
+                                        th:field="*{tenNguoiGiao}" />
+                                </div>
+                                <div class="form-group">
+                                    <label for="sdtNguoiGiao">Sdt người giao:</label>
+                                    <input type="text" class="form-control" id="sdtNguoiGiao"
+                                        th:field="*{sdtNguoiGiao}" />
+                                </div>
+                            </div>
+
+                            <div th:if="false">
+                                <input type="number" class="form-control" id="trangThai" th:field="*{trangThai}" />
+                            </div>
+                            <br>
+                            <button type="submit" class="btn btn-primary">Lưu thay đổi</button>
+                        </form>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div layout:fragment="js">
+        <script type="text/javascript">
+            const idHD = $('#idhoadon').val();
+
+            document.getElementById('inhoadon').addEventListener('click', function () {
+                if (confirm('Bạn có muốn in hóa đơn không?')) {
+                    $.ajax({
+                        type: 'POST',
+                        contentType: 'application/json',
+                        url: '/hoadon/inhoadon',
+                        data: JSON.stringify({ idhoadon: idHD }),
+                        success: function (response) {
+                            alert(response.message);
+                        },
+                        error: function (error) {
+                            if (error.responseJSON && error.responseJSON.message) {
+                                alert(error.responseJSON.message);
+                            } else if (error.responseText) {
+                                alert(error.responseText);
+                            } else {
+                                alert("Đã xảy ra lỗi, vui lòng thử lại.");
+                            }
+                        }
+                    });
+                }
+            });
+            document.getElementById('huyhoadon').addEventListener('click', function () {
+
+                var note = document.getElementById('notehuyhoadon').value;
+                if (note.trim() === '') {
+                    alert('Không được để trống ghi chú');
+                    return;
+                }
+                if (confirm('Bạn có chắc muốn hủy hóa đơn không?')) {
+                    $.ajax({
+                        type: 'POST',
+                        contentType: 'application/json',
+                        url: '/hoadon/doi-trang-thai', // Đường dẫn đến endpoint của controller Spring
+                        data: JSON.stringify({ idhoadon: idHD, ghichu: note, trangthai: 6 }), // Chuyển đổi đối tượng thành JSON
+                        success: function (response) {
+                            console.log(response.message)
+                            alert(response.message);
+                            $('#cancelModal').modal('hide');
+                            // Đăng ký sự kiện chỉ 1 lần ngoài Ajax
+                            document.getElementById("confirmCancel").addEventListener("click", function () {
+                                document.getElementById("note").value = "";
+                            });
+                            // Chuyển hướng trang
+                            window.location.href = '/hoadon/' + idHD;
+                            // Thực hiện các thao tác khác nếu cần
+                        },
+                        error: function (error) {
+                            if (error.responseJSON && error.responseJSON.message) {
+                                alert(error.responseJSON.message);
+                            } else if (error.responseText) {
+                                alert(error.responseText)
+                            } else {
+                                alert("Đã xảy ra lỗi, vui lòng thử lại");
+                            }; document.getElementById("confirmCancel").addEventListener("click", function () {
+                                document.getElementById("note").value = "";
+                            });
+                            window.location.href = '/hoadon/' + idHD;
+                            // Đăng ký sự kiện chỉ 1 lần ngoài Ajax
+                        }
+                    });
+                }
+
+            }
+            );
+
+            document.getElementById('confirmCancel').addEventListener('click', function () {
+                var note = document.getElementById('note').value;
+                var status = parseInt(document.getElementById('status').value);
+
+
+                if (note.trim() === '') {
+                    alert('Ghi chú không được để trống.');
+                    return;
+                }
+                if (!status) {
+                    alert('Vui lòng chọn trạng thái.');
+                    return;
+                }
+
+                var ttdoi;
+                if (status === 2) {
+                    ttdoi = 3;
+                } else if (status === 3) {
+                    ttdoi = 4;
+                } else if (status === 4) {
+                    ttdoi = 5;
+                } else {
+                    // Trường hợp mặc định nếu không khớp với bất kỳ giá trị nào
+                    console.log(status)
+                    alert('Trạng thái không hợp lệ.');
+                    return;
+                }
+                var lichSuTrangThaiRequest = {
+                    idhoadon: idHD,
+                    ghichu: note,
+                    trangthai: ttdoi
+                };
+
+                if (confirm('Bạn có muốn đổi trạng thái không ?')) {
+                    // Thực hiện AJAX hoặc hành động để thay đổi trạng thái hóa đơn
+                    // Ví dụ sử dụng AJAX
+                    $.ajax({
+                        type: 'POST',
+                        contentType: 'application/json',
+                        url: '/hoadon/doi-trang-thai', // Đường dẫn đến endpoint của controller Spring
+                        data: JSON.stringify(lichSuTrangThaiRequest), // Chuyển đổi đối tượng thành JSON
+                        success: function (response) {
+                            alert(response.message);
+                            $('#cancelModal').modal('hide');
+                            // Đăng ký sự kiện chỉ 1 lần ngoài Ajax
+                            document.getElementById("confirmCancel").addEventListener("click", function () {
+                                document.getElementById("note").value = "";
+                            });
+                            // Chuyển hướng trang
+                            window.location.href = '/hoadon/' + idHD;
+                            // Thực hiện các thao tác khác nếu cần
+                        },
+                        error: function (xhr) {
+                            console.log(xhr);
+                            // Kiểm tra xem lỗi có phải là JSON không
+                            if (xhr.responseJSON && xhr.responseJSON.message) {
+                                alert(xhr.responseJSON.message);
+                            } else if (xhr.responseText) {
+                                // Trường hợp không phải JSON, lấy responseText
+                                alert(xhr.responseText);
+                            } else {
+                                alert("Đã xảy ra lỗi, vui lòng thử lại.");
+                            }
+                            document.getElementById("confirmCancel").addEventListener("click", function () {
+                                document.getElementById("note").value = "";
+                            });
+                            window.location.href = '/hoadon/' + idHD;
+                        }
+                    });
+                }
+            });
+
+
+
+        </script>
+
+    </div>
+</body>
+
+</html>

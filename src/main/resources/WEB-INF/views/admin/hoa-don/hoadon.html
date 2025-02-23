@@ -1,0 +1,864 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+    layout:decorate="~{layout/main}">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+
+</head>
+
+<body>
+    <div class=" card  my-4  shadow container" layout:fragment="content">
+        <style>
+            /* Đặt màu nền cho tiêu đề của bảng */
+            thead th {
+                background-color: #f4733c;
+                color: white;
+                text-align: center;
+                font-weight: bold;
+                padding: 12px;
+            }
+
+            /* Tạo đường viền cho các ô trong bảng */
+            table,
+            th,
+            td {
+                border: 1px solid #ddd;
+                border-collapse: collapse;
+            }
+
+            /* Tạo khoảng cách cho các ô trong bảng */
+            td {
+                padding: 10px;
+                text-align: center;
+            }
+
+            /* Thêm màu nền cho các hàng lẻ để dễ nhìn */
+            tbody tr:nth-child(odd) {
+                background-color: #f9f9f9;
+            }
+
+            /* Thêm hiệu ứng hover cho các hàng */
+            tbody tr:hover {
+                background-color: #f1f1f1;
+            }
+
+            /* Làm cho các góc bảng tròn hơn */
+            table {
+                border-radius: 8px;
+                overflow: hidden;
+                width: 100%;
+            }
+
+            /* Căn giữa nội dung trong bảng */
+            th,
+            td {
+                vertical-align: middle;
+            }
+
+            /* Thêm khoảng cách giữa các dòng */
+            tr {
+                line-height: 1.5;
+            }
+
+            /* Làm cho các nút bấm nổi bật hơn */
+            .btn-detail {
+                background-color: #f4733c;
+                color: white;
+                border: none;
+                border-radius: 4px;
+                padding: 5px 10px;
+                font-size: 14px;
+                cursor: pointer;
+                transition: background-color 0.3s ease;
+            }
+
+            .btn-detail:hover {
+                background-color: #ff7849;
+            }
+
+            /* Điều chỉnh các nút phân trang */
+            .pagination .page-link {
+                color: #f4733c;
+            }
+
+            .pagination .page-item.active .page-link {
+                background-color: #f4733c;
+                border-color: #f4733c;
+                color: white;
+            }
+        </style>
+
+        <div class="card-header text-center py-3">
+            <h6 class="m-0 font-weight-bold text-primary">Quản lý hóa đơn</h6>
+        </div>
+        <br>
+        <div class="card-body ">
+            <!-- Thêm thông báo thành công và lỗi nếu cần -->
+            <ul class="nav nav-tabs  mb-4" id="myTab" role="tablist">
+                <li class="nav-item" role="presentation">
+                    <a class="nav-link active" id="overview-tab" data-bs-toggle="tab" href="#overview" role="tab"
+                        aria-controls="overview" aria-selected="true">Hóa đơn online</a>
+                </li>
+
+            </ul>
+            <div class="tab-content" id="myTabContent">
+                <div class="tab-pane fade show active" id="overview" role="tabpanel" aria-labelledby="tabChoXacNhan">
+                    <div class="row g-3">
+                        <div class="col-md-2 col-sm-4" style="width: 220px;">
+                            <div class="card bg-warning text-white  text-center h-100">
+                                <div class="card-body">
+                                    <h5 class="card-title">Chưa Thanh Toán</h5>
+                                    <p class="card-text">Số lượng: <span id="unpaid-count"
+                                            th:text="${hoaDonChuaThanhToan}"></span></p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-2 col-sm-4" style="width: 220px;">
+                            <div class="card bg-dark text-white  text-center h-100">
+                                <div class="card-body">
+                                    <h5 class="card-title">Đã Thanh Toán</h5>
+                                    <p class="card-text">Số lượng: <span id="paid-count"
+                                            th:text="${hoaDonDaThanhToan}"></span></p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-2 col-sm-4" style="width: 220px;">
+                            <div class="card bg-info text-white  text-center h-100">
+                                <div class="card-body">
+                                    <h5 class="card-title">Đang Vận Chuyển</h5>
+                                    <p class="card-text">Số lượng: <span id="shipping-count"
+                                            th:text="${hoaDonDangGiao}"></span></p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-2 col-sm-4" style="width: 220px;">
+                            <div class="card bg-danger text-white  text-center h-100">
+                                <div class="card-body">
+                                    <h5 class="card-title">Hóa Đơn Hủy</h5>
+                                    <p class="card-text">Số lượng: <span id="cancelled-count"
+                                            th:text="${hoaDonDaHuy}"></span></p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-2 col-sm-4" style="width: 220px;">
+                            <div class="card bg-secondary text-white  text-center h-100">
+                                <div class="card-body">
+                                    <h5 class="card-title">Đã Nhận</h5>
+                                    <p class="card-text">Số lượng: <span id="received-count"
+                                            th:text="${hoaDonDaGiao}"></span></p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <br>
+                    <div class="table-responsive">
+                        <ul class="nav nav-tabs" id="myTab" role="tablist">
+                            <li class="nav-item" role="presentation">
+                                <a class="nav-link active" id="tabChoXacNhan" data-bs-toggle="tab" href="#choxacnhan"
+                                    role="tab" aria-controls="overview" aria-selected="true">Chờ xác nhận</a>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <a class="nav-link" id="tabChoGiaoHang" data-bs-toggle="tab" href="#chogiaohang"
+                                    role="tab" aria-controls="chogiaohang" aria-selected="false">Chờ giao hàng</a>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <a class="nav-link" id="tabDangVanChuyen" data-bs-toggle="tab" href="#dangvanchuyen"
+                                    role="tab" aria-controls="dangvanchuyen" aria-selected="false">Đang vận chuyển</a>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <a class="nav-link" id="tabHoanThanh" data-bs-toggle="tab" href="#hoanthanh" role="tab"
+                                    aria-controls="hoanthanh" aria-selected="false">Hoàn thành</a>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <a class="nav-link" id="tabDaHuy" data-bs-toggle="tab" href="#dahuy" role="tab"
+                                    aria-controls="dahuy" aria-selected="false">Đã hủy</a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="tab-pane fade" id="choxacnhan" role="tabpanel" aria-labelledby="tabChoXacNhan">
+
+                    <h4>Chờ xác nhận</h4>
+                    <p class="text-muted"><strong>Tất cả hóa đơn</strong></p>
+                    <table class="table table-bordered mt-3 text-center" id="dataTable" width="100%" cellspacing="0">
+                        <thead style="background-color: rgb(240, 117, 69); color: white; ">
+                            <tr>
+                                <th>Mã Hóa Đơn</th>
+                                <th>Tên Nhân Viên</th>
+                                <th>Tên Khách Hàng</th>
+                                <th>Tên Khuyến Mãi</th>
+                                <th>Tổng Tiền Giảm</th>
+                                <th>Tổng Tiền</th>
+                                <th>Ngày Tạo</th>
+                                <th>Loại hóa đơn</th>
+                                <th>Trạng Thái</th>
+                                <th>Thao Tác</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Sử dụng vòng lặp Thymeleaf để duyệt danh sách khách hàng -->
+                            <tr th:each="hd : ${lstHDChoXacNhan}">
+
+                                <!-- Thêm checkbox cho từng dòng -->
+                                <td th:text="${hd.getMaHoaDon()}"></td>
+                                <td
+                                    th:text="${hd.getTenNhanVien() != null ? hd.getTenNhanVien() : 'Khách hàng trực tuyến'}">
+                                </td>
+                                <td th:text="${hd.getTenKhachHang()}"></td>
+                                <td
+                                    th:text="${hd.getTenKhuyenMai() != null ? hd.getTenKhuyenMai() : 'không có khuyến mãi'}">
+                                </td>
+                                <td th:text="${hd.getTongTienGiam() != null ? hd.getTongTienGiam() : '0đ'}">
+                                </td>
+                                <td th:text="${hd.getTongTien() != null ? hd.getTongTien() : '0đ'}">
+                                </td>
+
+                                <td th:text="${#dates.format(hd.getNgayTao(), 'dd/MM/yyyy hh:mm:ss ')}"></td>
+                                <td th:text="${hd.getLoaiHoaDon() == 1 ? 'Online' : 'Offline'}"></td>
+                                <td>
+                                    <!-- Sử dụng biểu thức điều kiện Thymeleaf -->
+                                    <span
+                                        th:text="${hd.getTrangThai() == 1 ? 'Đã Thanh Toán' :
+                                                                                                                                    (hd.getTrangThai() == 2 ? 'Chờ xác nhận' :
+                                                                                                                                    (hd.getTrangThai() == 3 ? 'Chờ lấy hàng' :
+                                                                                                                                    (hd.getTrangThai() == 0 ? 'Chưa thanh toán' :
+                                                                                                                                    (hd.getTrangThai() == 4 ? 'Đang giao' :
+                                                                                                                                    (hd.getTrangThai() == 5 ? 'Đã giao' :
+                                                                                                                                    'Đã hủy')))))}"></span>
+                                </td>
+                                <td>
+                                    <button class="btn btn-warning btn-detail" th:data-id="${hd.getId()}">Chi
+                                        tiết</button>
+                                </td>
+                        </tbody>
+                    </table>
+
+                    <!-- Phân trang -->
+                    <nav aria-label="Page navigation">
+                        <ul class="pagination justify-content-center">
+                            <li class="page-item" th:classappend="${currentPageChoXacNhan == 0} ? 'disabled'">
+                                <a class="page-link" th:href="@{/hoadon(page=${currentPageChoXacNhan - 1})}"
+                                    aria-label="Previous">
+                                    <span aria-hidden="true">&laquo;</span>
+                                </a>
+                            </li>
+                            <li class="page-item" th:each="i : ${#numbers.sequence(0, totalPagesChoXacNhan - 1)}"
+                                th:classappend="${i == currentPageChoXacNhan} ? 'active'">
+                                <a class="page-link" th:href="@{/hoadon(page=${i})}" th:text="${i + 1}">1</a>
+                            </li>
+                            <li class="page-item"
+                                th:classappend="${currentPageChoXacNhan + 1 == totalPagesChoXacNhan} ? 'disabled'">
+                                <a class="page-link" th:href="@{/hoadon(page=${currentPageChoXacNhan + 1})}"
+                                    aria-label="Next">
+                                    <span aria-hidden="true">&raquo;</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </nav>
+
+                </div>
+                <div class="tab-pane fade" id="chogiaohang" role="tabpanel" aria-labelledby="tabChoGiaoHang">
+                    <h4>Chờ giao hàng</h4>
+                    <p class="text-muted"><strong>Tất cả hóa đơn</strong></p>
+                    <table class="table table-bordered mt-3 text-center" id="dataTable" width="100%" cellspacing="0">
+                        <thead style="background-color: rgb(240, 117, 69);">
+                            <tr>
+                                <th>Mã Hóa Đơn</th>
+                                <th>Tên Nhân Viên</th>
+                                <th>Tên Khách Hàng</th>
+                                <th>Tên Khuyến Mãi</th>
+                                <th>Tổng Tiền Giảm</th>
+                                <th>Tổng Tiền</th>
+                                <th>Ngày Tạo</th>
+                                <th>Loại hóa đơn</th>
+                                <th>Trạng Thái</th>
+                                <th>Thao Tác</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Sử dụng vòng lặp Thymeleaf để duyệt danh sách khách hàng -->
+                            <tr th:each="hd : ${lstHDChoLayHang}">
+
+                                <!-- Thêm checkbox cho từng dòng -->
+                                <td th:text="${hd.getMaHoaDon()}"></td>
+                                <td
+                                    th:text="${hd.getTenNhanVien() != null ? hd.getTenNhanVien() : 'Khách hàng trực tuyến'}">
+                                </td>
+                                <td th:text="${hd.getTenKhachHang()}"></td>
+                                <td
+                                    th:text="${hd.getTenKhuyenMai() != null ? hd.getTenKhuyenMai() : 'không có khuyến mãi'}">
+                                </td>
+                                <td th:text="${hd.getTongTienGiam() != null ? hd.getTongTienGiam() : '0đ'}">
+                                </td>
+                                <td th:text="${hd.getTongTien()}"></td>
+
+
+                                <td th:text="${#dates.format(hd.getNgayTao(), 'dd/MM/yyyy hh:mm:ss ')}"></td>
+                                <td th:text="${hd.getLoaiHoaDon() == 1 ? 'Online' : 'Offline'}"></td>
+                                <td>
+                                    <!-- Sử dụng biểu thức điều kiện Thymeleaf -->
+                                    <span
+                                        th:text="${hd.getTrangThai() == 1 ? 'Đã Thanh Toán' :
+                                                                                                                                                        (hd.getTrangThai() == 2 ? 'Chờ xác nhận' :
+                                                                                                                                                        (hd.getTrangThai() == 3 ? 'Chờ lấy hàng' :
+                                                                                                                                                        (hd.getTrangThai() == 0 ? 'Chưa thanh toán' :
+                                                                                                                                                        (hd.getTrangThai() == 4 ? 'Đang giao' :
+                                                                                                                                                        (hd.getTrangThai() == 5 ? 'Đã giao' :
+                                                                                                                                                        'Đã hủy')))))}"></span>
+                                </td>
+                                <td>
+                                    <button class="btn btn-warning btn-detail" th:data-id="${hd.getId()}">Chi
+                                        tiết</button>
+                                </td>
+                        </tbody>
+                    </table>
+                    <!-- Phân trang -->
+                    <nav aria-label="Page navigation">
+                        <ul class="pagination justify-content-center">
+                            <li class="page-item" th:classappend="${currentPageChoLayHang == 0} ? 'disabled'">
+                                <a class="page-link" th:href="@{/hoadon(page=${currentPageChoLayHang - 1})}"
+                                    aria-label="Previous">
+                                    <span aria-hidden="true">&laquo;</span>
+                                </a>
+                            </li>
+                            <li class="page-item" th:each="i : ${#numbers.sequence(0, totalPagesChoLayHang - 1)}"
+                                th:classappend="${i == currentPageChoLayHang} ? 'active'">
+                                <a class="page-link" th:href="@{/hoadon(page=${i})}" th:text="${i + 1}">1</a>
+                            </li>
+                            <li class="page-item"
+                                th:classappend="${currentPageChoLayHang + 1 == totalPagesChoLayHang} ? 'disabled'">
+                                <a class="page-link" th:href="@{/hoadon(page=${currentPageChoLayHang + 1})}"
+                                    aria-label="Next">
+                                    <span aria-hidden="true">&raquo;</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </nav>
+
+                </div>
+                <div class="tab-pane fade" id="dangvanchuyen" role="tabpanel" aria-labelledby="tabDangVanChuyen">
+                    <h4>Đang vận chuyển</h4>
+                    <p class="text-muted"><strong>Tất cả hóa đơn</strong></p>
+                    <table class="table table-bordered mt-3 text-center" id="dataTable" width="100%" cellspacing="0">
+                        <thead style="background-color: rgb(240, 117, 69);">
+                            <tr>
+                                <th>Mã Hóa Đơn</th>
+                                <th>Tên Nhân Viên</th>
+                                <th>Tên Khách Hàng</th>
+                                <th>Tên Khuyến Mãi</th>
+                                <th>Tổng Tiền Giảm</th>
+                                <th>Tổng Tiền</th>
+                                <th>Ngày Tạo</th>
+                                <th>Loại hóa đơn</th>
+                                <th>Trạng Thái</th>
+                                <th>Thao Tác</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Sử dụng vòng lặp Thymeleaf để duyệt danh sách khách hàng -->
+                            <tr th:each="hd : ${lstHDDangGiao}">
+
+                                <!-- Thêm checkbox cho từng dòng -->
+                                <td th:text="${hd.getMaHoaDon()}"></td>
+                                <td
+                                    th:text="${hd.getTenNhanVien() != null ? hd.getTenNhanVien() : 'Khách hàng trực tuyến'}">
+                                </td>
+                                <td th:text="${hd.getTenKhachHang()}"></td>
+                                <td
+                                    th:text="${hd.getTenKhuyenMai() != null ? hd.getTenKhuyenMai() : 'không có khuyến mãi'}">
+                                </td>
+                                <td th:text="${hd.getTongTienGiam() != null ? hd.getTongTienGiam() : '0đ'}">
+                                </td>
+                                <td th:text="${hd.getTongTien()}"></td>
+
+
+                                <td th:text="${#dates.format(hd.getNgayTao(), 'dd/MM/yyyy hh:mm:ss ')}"></td>
+                                <td th:text="${hd.getLoaiHoaDon() == 1 ? 'Online' : 'Offline'}"></td>
+                                <td>
+                                    <!-- Sử dụng biểu thức điều kiện Thymeleaf -->
+                                    <span
+                                        th:text="${hd.getTrangThai() == 1 ? 'Đã Thanh Toán' :
+                                                                                                                                                        (hd.getTrangThai() == 2 ? 'Chờ xác nhận' :
+                                                                                                                                                        (hd.getTrangThai() == 3 ? 'Chờ lấy hàng' :
+                                                                                                                                                        (hd.getTrangThai() == 0 ? 'Chưa thanh toán' :
+                                                                                                                                                        (hd.getTrangThai() == 4 ? 'Đang giao' :
+                                                                                                                                                        (hd.getTrangThai() == 5 ? 'Đã giao' :
+                                                                                                                                                        'Đã hủy')))))}"></span>
+                                </td>
+                                <td>
+                                    <button class="btn btn-warning btn-detail" th:data-id="${hd.getId()}">Chi
+                                        tiết</button>
+                                </td>
+                        </tbody>
+                    </table>
+                    <!-- Phân trang -->
+                    <nav aria-label="Page navigation">
+                        <ul class="pagination justify-content-center">
+                            <li class="page-item" th:classappend="${currentPageDangGiao == 0} ? 'disabled'">
+                                <a class="page-link" th:href="@{/hoadon(page=${currentPageDangGiao - 1})}"
+                                    aria-label="Previous">
+                                    <span aria-hidden="true">&laquo;</span>
+                                </a>
+                            </li>
+                            <li class="page-item" th:each="i : ${#numbers.sequence(0, totalPagesDangGiao - 1)}"
+                                th:classappend="${i == currentPageDangGiao} ? 'active'">
+                                <a class="page-link" th:href="@{/hoadon(page=${i})}" th:text="${i + 1}">1</a>
+                            </li>
+                            <li class="page-item"
+                                th:classappend="${currentPageDangGiao + 1 == totalPagesDangGiao} ? 'disabled'">
+                                <a class="page-link" th:href="@{/hoadon(page=${currentPageDangGiao + 1})}"
+                                    aria-label="Next">
+                                    <span aria-hidden="true">&raquo;</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </nav>
+
+                </div>
+                <div class="tab-pane fade" id="hoanthanh" role="tabpanel" aria-labelledby="tabHoanThanh">
+                    <h4>Hoàn thành</h4>
+                    <p class="text-muted"><strong>Tất cả hóa đơn</strong></p>
+                    <table class="table table-bordered mt-3 text-center" id="dataTable" width="100%" cellspacing="0">
+                        <thead style="background-color: rgb(240, 117, 69);">
+                            <tr>
+                                <th>Mã Hóa Đơn</th>
+                                <th>Tên Nhân Viên</th>
+                                <th>Tên Khách Hàng</th>
+                                <th>Tên Khuyến Mãi</th>
+                                <th>Tổng Tiền Giảm</th>
+                                <th>Tổng Tiền</th>
+                                <th>Ngày Tạo</th>
+                                <th>Loại hóa đơn</th>
+                                <th>Trạng Thái</th>
+                                <th>Thao Tác</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Sử dụng vòng lặp Thymeleaf để duyệt danh sách khách hàng -->
+                            <tr th:each="hd : ${lstHDDaGiao}">
+
+                                <!-- Thêm checkbox cho từng dòng -->
+                                <td th:text="${hd.getMaHoaDon()}"></td>
+                                <td
+                                    th:text="${hd.getTenNhanVien() != null ? hd.getTenNhanVien() : 'Khách hàng trực tuyến'}">
+                                </td>
+                                <td th:text="${hd.getTenKhachHang()}"></td>
+                                <td
+                                    th:text="${hd.getTenKhuyenMai() != null ? hd.getTenKhuyenMai() : 'không có khuyến mãi'}">
+                                </td>
+                                <td th:text="${hd.getTongTienGiam() != null ? hd.getTongTienGiam() : '0đ'}">
+                                </td>
+                                <td th:text="${hd.getTongTien()}"></td>
+
+
+                                <td th:text="${#dates.format(hd.getNgayTao(), 'dd/MM/yyyy hh:mm:ss ')}"></td>
+                                <td th:text="${hd.getLoaiHoaDon() == 1 ? 'Online' : 'Offline'}"></td>
+                                <td>
+                                    <!-- Sử dụng biểu thức điều kiện Thymeleaf -->
+                                    <span
+                                        th:text="${hd.getTrangThai() == 1 ? 'Đã Thanh Toán' :
+                                                                                                                                                        (hd.getTrangThai() == 2 ? 'Chờ xác nhận' :
+                                                                                                                                                        (hd.getTrangThai() == 3 ? 'Chờ lấy hàng' :
+                                                                                                                                                        (hd.getTrangThai() == 0 ? 'Chưa thanh toán' :
+                                                                                                                                                        (hd.getTrangThai() == 4 ? 'Đang giao' :
+                                                                                                                                                        (hd.getTrangThai() == 5 ? 'Đã giao' :
+                                                                                                                                                        'Đã hủy')))))}"></span>
+                                </td>
+                                <td>
+                                    <button class="btn btn-warning btn-detail" th:data-id="${hd.getId()}">Chi
+                                        tiết</button>
+                                </td>
+                        </tbody>
+                    </table>
+                    <!-- Phân trang -->
+                    <nav aria-label="Page navigation">
+                        <ul class="pagination justify-content-center">
+                            <li class="page-item" th:classappend="${currentPageDaGiao == 0} ? 'disabled'">
+                                <a class="page-link" th:href="@{/hoadon(page=${currentPageDaGiao - 1})}"
+                                    aria-label="Previous">
+                                    <span aria-hidden="true">&laquo;</span>
+                                </a>
+                            </li>
+                            <li class="page-item" th:each="i : ${#numbers.sequence(0, totalPagesDaGiao - 1)}"
+                                th:classappend="${i == currentPageDaGiao} ? 'active'">
+                                <a class="page-link" th:href="@{/hoadon(page=${i})}" th:text="${i + 1}">1</a>
+                            </li>
+                            <li class="page-item"
+                                th:classappend="${currentPageDaGiao + 1 == totalPagesDaGiao} ? 'disabled'">
+                                <a class="page-link" th:href="@{/hoadon(page=${currentPageDaGiao + 1})}"
+                                    aria-label="Next">
+                                    <span aria-hidden="true">&raquo;</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </nav>
+                </div>
+                <div class="tab-pane fade" id="dahuy" role="tabpanel" aria-labelledby="tabDaHuy">
+                    <h4>Đã hủy</h4>
+                    <p class="text-muted"><strong>Tất cả hóa đơn</strong></p>
+                    <table class="table table-bordered mt-3 text-center" id="dataTable" width="100%" cellspacing="0">
+                        <thead style="background-color: rgb(240, 117, 69);">
+                            <tr>
+                                <th>Mã Hóa Đơn</th>
+                                <th>Tên Nhân Viên</th>
+                                <th>Tên Khách Hàng</th>
+                                <th>Tên Khuyến Mãi</th>
+                                <th>Tổng Tiền Giảm</th>
+                                <th>Tổng Tiền</th>
+                                <th>Ngày Tạo</th>
+                                <th>Loại hóa đơn</th>
+                                <th>Trạng Thái</th>
+                                <th>Thao Tác</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Sử dụng vòng lặp Thymeleaf để duyệt danh sách khách hàng -->
+                            <tr th:each="hd : ${lstHoaDonDaHuy}">
+
+                                <!-- Thêm checkbox cho từng dòng -->
+                                <td th:text="${hd.getMaHoaDon()}"></td>
+                                <td
+                                    th:text="${hd.getTenNhanVien() != null ? hd.getTenNhanVien() : 'Khách hàng trực tuyến'}">
+                                </td>
+                                <td th:text="${hd.getTenKhachHang()}"></td>
+                                <td
+                                    th:text="${hd.getTenKhuyenMai() != null ? hd.getTenKhuyenMai() : 'không có khuyến mãi'}">
+                                </td>
+                                <td th:text="${hd.getTongTienGiam() != null ? hd.getTongTienGiam() : '0đ'}">
+                                </td>
+                                <td th:text="${hd.getTongTien()}"></td>
+
+
+                                <td th:text="${#dates.format(hd.getNgayTao(), 'dd/MM/yyyy hh:mm:ss ')}"></td>
+                                <td th:text="${hd.getLoaiHoaDon() == 1 ? 'Online' : 'Offline'}"></td>
+                                <td>
+                                    <!-- Sử dụng biểu thức điều kiện Thymeleaf -->
+                                    <span
+                                        th:text="${hd.getTrangThai() == 1 ? 'Đã Thanh Toán' :
+                                                                                                                                                        (hd.getTrangThai() == 2 ? 'Chờ xác nhận' :
+                                                                                                                                                        (hd.getTrangThai() == 3 ? 'Chờ lấy hàng' :
+                                                                                                                                                        (hd.getTrangThai() == 0 ? 'Chưa thanh toán' :
+                                                                                                                                                        (hd.getTrangThai() == 4 ? 'Đang giao' :
+                                                                                                                                                        (hd.getTrangThai() == 5 ? 'Đã giao' :
+                                                                                                                                                        'Đã hủy')))))}"></span>
+                                </td>
+                                <td>
+                                    <button class="btn btn-warning btn-detail" th:data-id="${hd.getId()}">Chi
+                                        tiết</button>
+                                </td>
+                        </tbody>
+                    </table>
+                    <!-- Phân trang -->
+                    <nav aria-label="Page navigation">
+                        <ul class="pagination justify-content-center">
+                            <li class="page-item" th:classappend="${currentPageDaHuy == 0} ? 'disabled'">
+                                <a class="page-link" th:href="@{/hoadon(page=${currentPageDaHuy - 1})}"
+                                    aria-label="Previous">
+                                    <span aria-hidden="true">&laquo;</span>
+                                </a>
+                            </li>
+                            <li class="page-item" th:each="i : ${#numbers.sequence(0, totalPagesDaHuy - 1)}"
+                                th:classappend="${i == currentPageDaHuy} ? 'active'">
+                                <a class="page-link" th:href="@{/hoadon(page=${i})}" th:text="${i + 1}">1</a>
+                            </li>
+                            <li class="page-item"
+                                th:classappend="${currentPageDaHuy + 1 == totalPagesDaHuy} ? 'disabled'">
+                                <a class="page-link" th:href="@{/hoadon(page=${currentPageDaHuy + 1})}"
+                                    aria-label="Next">
+                                    <span aria-hidden="true">&raquo;</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </nav>
+                </div>
+                <div class="tab-pane fade" id="chothanhtoan" role="tabpanel" aria-labelledby="tabChoThanhToan">
+                    <h4>Chờ thanh toán</h4>
+                    <p class="text-muted"><strong>Tất cả hóa đơn</strong></p>
+                    <table class="table table-bordered mt-3 text-center" id="dataTable" width="100%" cellspacing="0">
+                        <thead style="background-color: rgb(240, 117, 69);">
+                            <tr>
+                                <th>Mã Hóa Đơn</th>
+                                <th>Tên Nhân Viên</th>
+                                <th>Tên Khách Hàng</th>
+                                <th>Tên Khuyến Mãi</th>
+                                <th>Tổng Tiền Giảm</th>
+                                <th>Tổng Tiền</th>
+                                <th>Ngày Tạo</th>
+                                <th>Loại hóa đơn</th>
+                                <th>Trạng Thái</th>
+                                <th>Thao Tác</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Sử dụng vòng lặp Thymeleaf để duyệt danh sách khách hàng -->
+                            <tr th:each="hd : ${lstHDChoXacNhan}">
+
+                                <!-- Thêm checkbox cho từng dòng -->
+                                <td th:text="${hd.getMaHoaDon()}"></td>
+                                <td
+                                    th:text="${hd.getTenNhanVien() != null ? hd.getTenNhanVien() : 'Khách hàng trực tuyến'}">
+                                </td>
+                                <td th:text="${hd.getTenKhachHang()}"></td>
+                                <td
+                                    th:text="${hd.getTenKhuyenMai() != null ? hd.getTenKhuyenMai() : 'không có khuyến mãi'}">
+                                </td>
+                                <td th:text="${hd.getTongTienGiam() != null ? hd.getTongTienGiam() : '0đ'}">
+                                </td>
+                                <td th:text="${hd.getTongTien()}"></td>
+
+
+                                <td th:text="${#dates.format(hd.getNgayTao(), 'dd/MM/yyyy hh:mm:ss ')}"></td>
+                                <td th:text="${hd.getLoaiHoaDon() == 1 ? 'Online' : 'Offline'}"></td>
+                                <td>
+                                    <!-- Sử dụng biểu thức điều kiện Thymeleaf -->
+                                    <span
+                                        th:text="${hd.getTrangThai() == 1 ? 'Đã Thanh Toán' :
+                                                                                                                                                        (hd.getTrangThai() == 2 ? 'Chờ xác nhận' :
+                                                                                                                                                        (hd.getTrangThai() == 3 ? 'Chờ lấy hàng' :
+                                                                                                                                                        (hd.getTrangThai() == 0 ? 'Chưa thanh toán' :
+                                                                                                                                                        (hd.getTrangThai() == 4 ? 'Đang giao' :
+                                                                                                                                                        (hd.getTrangThai() == 5 ? 'Đã giao' :
+                                                                                                                                                        'Đã hủy')))))}"></span>
+                                </td>
+                                <td>
+                                    <button class="btn btn-warning btn-detail" th:data-id="${hd.getId()}">Chi
+                                        tiết</button>
+                                </td>
+                        </tbody>
+                    </table>
+                    <!-- Phân trang -->
+                    <nav aria-label="Page navigation">
+                        <ul class="pagination justify-content-center">
+                            <li class="page-item" th:classappend="${currentPageChuaThanhToan == 0} ? 'disabled'">
+                                <a class="page-link" th:href="@{/hoadon(page=${currentPageChuaThanhToan - 1})}"
+                                    aria-label="Previous">
+                                    <span aria-hidden="true">&laquo;</span>
+                                </a>
+                            </li>
+                            <li class="page-item" th:each="i : ${#numbers.sequence(0, totalPagesChuaThanhToan - 1)}"
+                                th:classappend="${i == currentPageChuaThanhToan} ? 'active'">
+                                <a class="page-link" th:href="@{/hoadon(page=${i})}" th:text="${i + 1}">1</a>
+                            </li>
+                            <li class="page-item"
+                                th:classappend="${currentPageChuaThanhToan + 1 == totalPagesChuaThanhToan} ? 'disabled'">
+                                <a class="page-link" th:href="@{/hoadon(page=${currentPageChuaThanhToan + 1})}"
+                                    aria-label="Next">
+                                    <span aria-hidden="true">&raquo;</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </nav>
+                </div>
+            </div>
+
+        </div>
+    </div>
+    <div layout:fragment="js">
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+        <script>
+
+            $(document).ready(function () {
+                // Bắt sự kiện khi nhấn vào nút "Chi tiết"
+                $('.btn-detail').click(function () {
+                    // Lấy ID của hóa đơn
+                    var idHoaDon = $(this).data('id');
+                    console.log(idHoaDon); // Kiểm tra xem id có được lấy đúng không
+
+                    // Chuyển hướng đến trang chi tiết hóa đơn
+                    var uuidPattern = /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/;
+
+                    if (uuidPattern.test(idHoaDon)) {
+                        // Chuyển hướng đến trang chi tiết hóa đơn
+                        window.location.href = '/hoadon/' + idHoaDon;
+                    } else {
+                        alert("ID hóa đơn không hợp lệ" + idHoaDon);
+                    }
+                });
+            });
+
+            //Đổi trạng thái hóa đơn
+            $(document).ready(function () {
+                var selectedIds = [];
+
+                // Lắng nghe sự kiện khi checkbox chọn tất cả thay đổi
+                $('#selectAll').on('change', function () {
+                    var isChecked = $(this).is(':checked');
+                    $('.select-item-choxacnhan').prop('checked', isChecked).trigger('change');
+                });
+                $('#selectAllChoGiaoHang').on('change', function () {
+                    var isChecked = $(this).is(':checked');
+                    $('.select-item-chogiaohang').prop('checked', isChecked).trigger('change');
+                });
+                $('#selectAllDangGiao').on('change', function () {
+                    var isChecked = $(this).is(':checked');
+                    $('.select-item-danggiao').prop('checked', isChecked).trigger('change');
+                });
+                $('#selectAllDaGiao').on('change', function () {
+                    var isChecked = $(this).is(':checked');
+                    $('.select-item-dagiao').prop('checked', isChecked).trigger('change');
+                });
+
+                // Lắng nghe sự kiện khi checkbox từng dòng thay đổi
+                $('.select-item-choxacnhan').on('change', function () {
+                    var id = $(this).data('id');
+                    if ($(this).is(':checked')) {
+                        selectedIds.push(id);
+                    } else {
+                        selectedIds = selectedIds.filter(function (item) {
+                            return item !== id;
+                        });
+                    }
+                    console.log(selectedIds); // In ra danh sách các ID đã chọn
+                });
+
+                $('.select-item-chogiaohang').on('change', function () {
+                    var id = $(this).data('id');
+                    if ($(this).is(':checked')) {
+                        selectedIds.push(id);
+                    } else {
+                        selectedIds = selectedIds.filter(function (item) {
+                            return item !== id;
+                        });
+                    }
+                    console.log(selectedIds); // In ra danh sách các ID đã chọn
+                });
+
+                $('.select-item-dagiao').on('change', function () {
+                    var id = $(this).data('id');
+                    if ($(this).is(':checked')) {
+                        selectedIds.push(id);
+                    } else {
+                        selectedIds = selectedIds.filter(function (item) {
+                            return item !== id;
+                        });
+                    }
+                    console.log(selectedIds); // In ra danh sách các ID đã chọn
+                });
+                $('.select-item-danggiao').on('change', function () {
+                    var id = $(this).data('id');
+                    if ($(this).is(':checked')) {
+                        selectedIds.push(id);
+                    } else {
+                        selectedIds = selectedIds.filter(function (item) {
+                            return item !== id;
+                        });
+                    }
+                    console.log(selectedIds); // In ra danh sách các ID đã chọn
+                });
+
+
+                // Lắng nghe sự kiện click vào button Hủy
+                $('#cancelButton').on('click', function () {
+                    if (selectedIds.length === 0) {
+                        alert("Vui lòng chọn ít nhất một hóa đơn để hủy.");
+                        return;
+                    }
+
+                    // Gửi yêu cầu hủy đến server
+                    if (confirm('Bạn có muốn hủy hóa đơn không')) {
+                        $.ajax({
+                            url: '/hoadon/updateStatusMultiple',
+                            type: 'PUT',
+                            contentType: 'application/json',
+                            data: JSON.stringify({ ids: selectedIds, trangThai: 6 }), // 4 là trạng thái "Đã hủy"
+                            success: function (response) {
+                                alert("Hủy thành công.");
+                                location.reload(); // Tải lại trang sau khi hủy thành công
+                            },
+                            error: function (error) {
+                                alert("Có lỗi xảy ra. Vui lòng thử lại.");
+                            }
+                        });
+                    }
+
+                });
+
+                // Lắng nghe sự kiện click vào button Xác nhận
+                $('#confirmButton').on('click', function () {
+                    if (selectedIds.length === 0) {
+                        alert("Vui lòng chọn ít nhất một hóa đơn để xác nhận.");
+                        return;
+                    }
+
+                    // Gửi yêu cầu xác nhận đến server
+                    if (confirm('Bạn có muốn chuyển trạng thái không?')) {
+                        $.ajax({
+                            url: '/hoadon/updateStatusMultiple',
+                            type: 'PUT',
+                            contentType: 'application/json',
+                            data: JSON.stringify({ ids: selectedIds, trangThai: 3 }), // 1 là trạng thái "Đã xác nhận"
+                            success: function (response) {
+                                alert("Xác nhận thành công.");
+                                location.reload(); // Tải lại trang sau khi xác nhận thành công
+                            },
+                            error: function (error) {
+                                alert("Có lỗi xảy ra. Vui lòng thử lại.");
+                            }
+                        });
+                    }
+
+                });
+                $('#confirmButtonGiaoHang').on('click', function () {
+                    if (selectedIds.length === 0) {
+                        alert("Vui lòng chọn ít nhất một hóa đơn để xác nhận.");
+                        return;
+                    }
+
+                    // Gửi yêu cầu xác nhận đến server
+                    if (confirm('Bạn có muốn chuyển trạng thái không?')) {
+                        $.ajax({
+                            url: '/hoadon/updateStatusMultiple',
+                            type: 'PUT',
+                            contentType: 'application/json',
+                            data: JSON.stringify({ ids: selectedIds, trangThai: 4 }), // 1 là trạng thái "Đã xác nhận"
+                            success: function (response) {
+                                alert("Xác nhận thành công.");
+                                location.reload(); // Tải lại trang sau khi xác nhận thành công
+                            },
+                            error: function (error) {
+                                alert("Có lỗi xảy ra. Vui lòng thử lại.");
+                            }
+                        });
+                    }
+
+                });
+                $('#confirmButtonHoanThanh').on('click', function () {
+                    if (selectedIds.length === 0) {
+                        alert("Vui lòng chọn ít nhất một hóa đơn để xác nhận.");
+                        return;
+                    }
+
+                    // Gửi yêu cầu xác nhận đến server
+                    if (confirm('Bạn có muốn chuyển trạng thái không?')) {
+                        $.ajax({
+                            url: '/hoadon/updateStatusMultiple',
+                            type: 'PUT',
+                            contentType: 'application/json',
+                            data: JSON.stringify({ ids: selectedIds, trangThai: 5 }), // 4 đã giao
+                            success: function (response) {
+                                alert("Xác nhận thành công.");
+                                location.reload(); // Tải lại trang sau khi xác nhận thành công
+                            },
+                            error: function (error) {
+                                alert("Có lỗi xảy ra. Vui lòng thử lại.");
+                            }
+                        });
+                    }
+
+                });
+            });
+
+
+
+        </script>
+    </div>
+</body>
+
+</html>

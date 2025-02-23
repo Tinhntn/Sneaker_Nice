@@ -15,8 +15,10 @@ import java.util.Date;
 public class Hang {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private   int id;
-    private   String ma_hang;
-    private   Date ngay_tao;
-    private    Boolean trang_thai;
+    private int id;
+    private String ma_hang;
+    private String ten_hang;
+    private Date ngay_tao;
+    private Date ngay_sua;
+    private Boolean trang_thai;
 }

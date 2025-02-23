@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/mainUser}">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trang chủ</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+</head>
+<body>
+
+<div layout:fragment="content" class="container" style="border: #343a40 1px solid ; padding: 30px" >
+    <h1>Chi tiết hóa đơn <span th:text="${hoaDon.mahoadon}"></span> </h1>
+    <a type="button" th:href="@{/banhangonline/donhang}" class="btn btn-warning">Back</a>
+    <a type="button" th:if="${hoaDon.idkhuyenmai}==null" th:href="@{/donhang/detailthemsanpham/{id}(id=${hoaDon.id})}" class="btn btn-warning">Thêm sản phẩm</a>
+    <br>
+    <hr>
+    <div class= "row">
+        <h2 style="color: #ff7e5f">Thông tin hóa đơn</h2>
+        <br>
+        <div class ="col-md-6 ">
+            <p><strong>Mã hóa đơn:</strong> <span th:text="${hoaDon.mahoadon}"></span></p>
+        </div>
+        <div class ="col-md-6 ">
+            <p><strong>Ngày tạo:</strong> <span th:text="${hoaDon.ngaytao}"></span></p>
+        </div>
+        <div class ="col-md-6 ">
+            <p><strong>Tổng tiền: </strong><span style="font-size: 1.5em; font-weight: bold; color: rgba(255,19,16,0.73);" th:text="${hoaDon.thanhtien}"></span> vnđ</p>
+        </div>
+        <div class ="col-md-6 ">
+            <p><strong>Trạng thái:</strong> <span th:text="${hoaDon.trangthai}"></span></p>
+        </div>
+    </div>
+    <hr>
+
+
+    <div class= "row">
+        <h2 style="color: #ff7e5f">Thông tin giao hàng</h2>
+        <br>
+        <div class ="col-md-6 ">
+            <p><strong>Tỉnh thành:</strong> <span th:text="${hoaDon.tinhthanh}"></span></p>
+        </div>
+        <div class ="col-md-6 ">
+            <p><strong>Quận huyện:</strong> <span th:text="${hoaDon.quanhuyen}"></span></p>
+        </div>
+        <div class ="col-md-6 ">
+            <p><strong>Phường xã: </strong><span th:text="${hoaDon.phuongxa}"></span></p>
+        </div>
+        <div class ="col-md-6 ">
+            <p><strong>đơn vị giao:</strong> <span th:text="${hoaDon.donvigiao}"></span></p>
+        </div>
+        <div class ="col-md-6 ">
+            <p><strong>Phí ship:</strong> <span style="font-size: 1.5em; font-weight: bold; color: rgba(255,19,16,0.73);" th:text="${hoaDon.phiship}"></span> vnđ</p>
+        </div>
+    </div>
+    <hr>
+
+    <h2 style="color: #ff7e5f">Danh sách sản phẩm</h2>
+    <table class="table table-header">
+        <thead>
+        <tr>
+            <th>Tên sản phẩm</th>
+            <th>Số lượng</th>
+            <th>Thành tiền</th>
+            <th>Hình ảnh</th>
+            <th>Size</th>
+            <th>Hãng</th>
+            <th>Chất liệu</th>
+            <th>Màu sắc</th>
+            <th>Danh mục</th>
+            <th>Chức năng</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="CTHoaDon : ${chiTietHoaDonList}">
+            <td th:text="${CTHoaDon.tenSanPham}"></td>
+            <td th:text="${CTHoaDon.soluong}"></td>
+            <td th:text="${CTHoaDon.dongia} + ' VNĐ'"></td>
+            <td>
+                <img th:src="${CTHoaDon.hinhAnh}" alt="Ảnh sản phẩm" style="width: 100px; height: 100px">
+            </td>
+            <td th:text="${CTHoaDon.size}"></td>
+            <td th:text="${CTHoaDon.chatLieu}"></td>
+            <td th:text="${CTHoaDon.hang}"></td>
+            <td th:text="${CTHoaDon.mauSac}"></td>
+            <td th:text="${CTHoaDon.danhMuc}"></td>
+            <td>
+                <form th:action="@{/donhang/xoact/{id}(id=${CTHoaDon.id})}" method="post" >
+                    <input type="hidden" name="soluong" th:value="${CTHoaDon.soluong}">
+                    <button th:if="${hoaDon.idkhuyenmai}==null" type="submit" class="btn btn-secondary">Hủy</button>
+                </form>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+
+</div>
+</body>
+</html>

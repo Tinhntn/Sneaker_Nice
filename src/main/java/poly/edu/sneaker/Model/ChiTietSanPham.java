@@ -18,13 +18,11 @@ public class ChiTietSanPham {
     @GeneratedValue (strategy = GenerationType.IDENTITY)
     private int id;
     private int id_san_pham;
-    private int id_hang;
     private int id_size;
-    private int id_danh_muc;
-    private int id_chat_lieu;
     private int id_mau_sac;
-    private BigDecimal gia_nhap;
-    private BigDecimal gia_ban;
+    private float trong_luong;
+    private float gia_nhap;
+    private float gia_ban;
     private String hinh_anh;
     private int so_luong;
     private String mo_ta;

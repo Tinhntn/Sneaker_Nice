@@ -15,10 +15,10 @@ import java.util.Date;
 public class DanhMuc {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private    int id;
-    private  String ma_danh_muc;
-    private   String ten_danh_muc;
-    private   Date ngay_tao;
-    private   Date ngay_sua;
-    private  Boolean trang_thai;
+    private int id;
+    private String ma_danh_muc;
+    private String ten_danh_muc;
+    private Date ngay_tao;
+    private Date ngay_sua;
+    private Boolean trang_thai;
 }

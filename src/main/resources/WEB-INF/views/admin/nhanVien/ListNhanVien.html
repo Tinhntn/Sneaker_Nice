@@ -1,0 +1,181 @@
+<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/main.html}">
+<head>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+<div layout:fragment="content">
+    <div class="container-fluid">
+        <h1>Danh Sách Nhân Viên</h1>
+
+        <div class="float-end">
+            <form th:action="@{/nhanvien/hienthi}" method="get">
+                <div class="input-group mb-3">
+                    <input type="text" name="keyword" class="form-control" style="width: 300px" placeholder="Tìm kiếm...">
+                    <div class="input-group-append">
+                        <button class="btn btn-outline-secondary" type="submit">Tìm kiếm</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        <table class="table table-header">
+            <thead>
+            <tr>
+                <th>Mã Nhân Viên</th>
+                <th>Tên Nhân Viên</th>
+                <th>Ngày sinh</th>
+                <th>Giới tính</th>
+                <th>Địa chỉ</th>
+                <th>Sdt</th>
+                <th>Email</th>
+                <th>Mật khẩu</th>
+                <th>Chức vụ</th>
+                <th>Trạng thái</th>
+                <th>Thao tác</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="nhanvien : ${nhanVienCustomList}">
+                <td th:text="${nhanvien.maNhanVien}"></td>
+                <td th:text="${nhanvien.hoVaTen}"></td>
+                <td th:text="${nhanvien.ngaySinh}"></td>
+                <td th:text="${nhanvien.gioiTinh}"></td>
+                <td th:text="${nhanvien.diaChi}"></td>
+                <td th:text="${nhanvien.sdt}"></td>
+                <td th:text="${nhanvien.email}"></td>
+                <td th:text="${nhanvien.matKhau}"></td>
+                <td th:text="${nhanvien.tenChucVu}"></td>
+<!--                <td th:text="${#dates.format(nhanvien.ngayTao, 'yyyy-MM-dd')}"></td>-->
+<!--                <td th:text="${#dates.format(nhanvien.ngaySua, 'yyyy-MM-dd')}"></td>-->
+                <td th:text="${nhanvien.trangThai == 1 ? 'Còn hoạt động' : 'Không hoạt động'}"></td>
+                <td>
+                    <a th:href="@{/nhanvien/detail/{id}(id=${nhanvien.id})}" class="btn btn-outline-warning">
+                        Chi tiết
+                    </a>
+
+                </td>
+            </tr>
+            </tbody>
+        </table>
+
+        <div>
+            <ul class="pagination justify-content-center">
+                <!-- Nút "Trang trước" -->
+                <li class="page-item" th:classappend="${currentPage == 0} ? 'disabled'">
+                    <a class="page-link" th:href="@{/nhanvien/hienthi(page=${currentPage - 1})}">Previous</a>
+                </li>
+
+                <!-- Các nút số trang -->
+                <li class="page-item" th:each="i : ${#numbers.sequence(0, totalPages - 1)}"
+                    th:classappend="${i == currentPage} ? 'active'">
+                    <a class="page-link" th:href="@{/nhanvien/hienthi(page=${i})}" th:text="${i + 1}">1</a>
+                </li>
+
+                <!-- Nút "Trang sau" -->
+                <li class="page-item" th:classappend="${currentPage + 1 == totalPages} ? 'disabled'">
+                    <a class="page-link" th:href="@{/nhanvien/hienthi(page=${currentPage + 1})}">Next</a>
+                </li>
+            </ul>
+        </div>
+
+
+        <h1 style="text-align: center">Thêm Nhân viên</h1>
+        <form th:action="@{/nhanvien/add}" method="post">
+            <div class="container">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label class="form-label">Mã nhân viên</label>
+                            <input type="text" class="form-control" name="manhanvien">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Tên nhân viên</label>
+                            <input type="text" class="form-control" name="hovaten">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Chức vụ</label>
+                            <select class="form-select" style="width: 100%" aria-label="Default select example" name="idcv">
+                                <option th:each="chucvu : ${comBoBoxChucVu}" th:value="${chucvu.id}" th:text="${chucvu.tenchucvu}"></option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Ngày sinh</label>
+                            <input type="date" class="form-control" name="ngaysinh">
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Giới tính</label>
+                        <div class="form-group">
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="gioitinh" value="Nam" checked>
+                                <label class="form-check-label">Nam</label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="gioitinh" value="Nữ">
+                                <label class="form-check-label">Nữ</label>
+                            </div>
+                        </div>
+                        <br>
+                        <div class="mb-3">
+                            <label class="form-label">Địa chỉ</label>
+                            <input type="text" class="form-control" name="diachi">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Số điện thoại</label>
+                            <input type="text" class="form-control" name="sdt">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Email</label>
+                            <input type="email" class="form-control" name="email">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Mật khẩu</label>
+                            <input type="password" class="form-control" name="matkhau">
+                        </div>
+                    </div>
+                    </div>
+                </div>
+                <div th:if="${errorMessage}" class="alert alert-danger" role="alert">
+                    <p th:text="${errorMessage}"></p>
+                </div>
+                <br>
+                <button type="submit" class="btn btn-primary">Lưu</button>
+            </div>
+        </form>
+
+
+
+        <!-- Hiển thị thông báo thành công -->
+        <div th:if="${successMessage}">
+            <script th:inline="javascript">
+                /*<![CDATA[*/
+                var successMessage = /*[[${successMessage}]]*/ 'null';
+                if (successMessage !== 'null') {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Thành công',
+                        text: successMessage,
+                        confirmButtonText: 'OK'
+                    }).then(() => {
+                        // Xóa successMessage sau khi hiển thị thông báo
+                        history.replaceState(null, '', location.pathname);
+                    });
+                }
+                /*]]>*/
+            </script>
+        </div>
+
+    </div>
+</div>
+</body>
+</html>

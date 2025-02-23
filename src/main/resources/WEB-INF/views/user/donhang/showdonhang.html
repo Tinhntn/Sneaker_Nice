@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/mainUser}">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trang chủ</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+</head>
+<body>
+<div layout:fragment="content" class="container">
+
+    <div th:if="${message}">
+        <script th:inline="javascript">
+            /*<![CDATA[*/
+            var errorMessage = /*[[${message}]]*/ 'null';
+            if (errorMessage !== 'null') {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Thất bại',
+                    text: errorMessage,
+                    confirmButtonText: 'OK'
+                });
+            }
+            /*]]>*/
+        </script>
+    </div>
+
+    <div th:if="${thanhcong}">
+        <script th:inline="javascript">
+            /*<![CDATA[*/
+            var successMessage = /*[[${thanhcong}]]*/ 'null';
+            if (successMessage !== 'null') {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Thành công',
+                    text: successMessage,
+                    confirmButtonText: 'OK'
+                });
+            }
+            /*]]>*/
+        </script>
+    </div>
+    <h1>Danh sách đơn hàng</h1>
+    <ul class="nav nav-tabs" id="myTab" role="tablist">
+        <li class="nav-item" th:classappend="${tabActive == 'tab1'} ? 'nav-item' : 'nav-item'">
+            <a class="nav-link active" id="tab1-tab" data-bs-toggle="tab" href="#tab1" role="tab" aria-controls="tab1" aria-selected="true">Tất cả</a>
+        </li>
+        <li class="nav-item" th:classappend="${tabActive == 'tab2'} ? 'nav-item' : 'nav-item'">
+            <a class="nav-link" id="tab2-tab" data-bs-toggle="tab" href="#tab2" role="tab" aria-controls="tab2" aria-selected="false">
+                Chờ xác nhận
+                <span class="badge bg-danger" th:text="${listhdchoxacnhan}"></span>
+            </a>
+        </li>
+        <li class="nav-item" th:classappend="${tabActive == 'tab3'} ? 'nav-item' : 'nav-item'">
+            <a class="nav-link" id="tab3-tab" data-bs-toggle="tab" href="#tab3" role="tab" aria-controls="tab3" aria-selected="false">Chờ lấy hàng
+                <span class="badge bg-danger" th:text="${listhdChoLayHang}"></span>
+            </a>
+        </li>
+        <li class="nav-item" th:classappend="${tabActive == 'tab4'} ? 'nav-item' : 'nav-item'">
+            <a class="nav-link" id="tab4-tab" data-bs-toggle="tab" href="#tab4" role="tab" aria-controls="tab4" aria-selected="false">
+                Đang giao
+                <span class="badge bg-danger" th:text="${listhdDangGiao}"></span>
+            </a>
+        </li>
+        <li class="nav-item" th:classappend="${tabActive == 'tab5'} ? 'nav-item' : 'nav-item'">
+            <a class="nav-link" id="tab5-tab" data-bs-toggle="tab" href="#tab5" role="tab" aria-controls="tab5" aria-selected="false">
+                Đã giao
+                <span class="badge bg-danger" th:text="${listhdDaGiao}"></span>
+            </a>
+        </li>
+        <li class="nav-item" th:classappend="${tabActive == 'tab6'} ? 'nav-item' : 'nav-item'">
+            <a class="nav-link" id="tab6-tab" data-bs-toggle="tab" href="#tab6" role="tab" aria-controls="tab6" aria-selected="false">Đã hủy
+                <span class="badge bg-danger" th:text="${listDaHuy}"></span>
+            </a>
+        </li>
+    </ul>
+
+    <!-- Nội dung của các tab -->
+    <div class="tab-content" id="myTabContent">
+        <div class="tab-pane fade show active" id="tab1" role="tabpanel" aria-labelledby="tab1-tab">
+            <div class="container">
+                <div class="row" style="margin-top: 15px">
+                    <div class="col-md-12">
+                        <!-- Sử dụng th:each để lặp qua danh sách hdcxn -->
+                        <div th:each="hdcxn : ${getall}" class="card mb-3">
+                            <div class="card-body" style="background-color: wheat; padding-top: 15px;">
+                                <h5 class="card-title">Mã hóa đơn: <span th:text="${hdcxn.mahoadon}"></span></h5>
+                                <p class="card-text text-muted">Trạng thái:
+                                    <span th:if="${hdcxn.trangthai == '2'}">Chờ xác nhận</span>
+                                    <span th:if="${hdcxn.trangthai == '3'}">Chờ lấy hàng</span>
+                                    <span th:if="${hdcxn.trangthai == '4'}">Đang giao</span>
+                                    <span th:if="${hdcxn.trangthai == '5'}">Đã giao</span>
+                                    <span th:if="${hdcxn.trangthai == '6'}">Đã hủy</span>
+                                    <span th:if="${hdcxn.trangthai == '0'}">Chưa thanh toán</span>
+                                </p>
+                                <hr>
+                                <div class="d-flex justify-content-between">
+
+                                    <a th:href="@{/banhangonline/detailhd/{id}(id=${hdcxn.idhoadon})}" class="btn btn-secondary">Chi tiết đơn hàng</a>
+                                </div>
+                                <p class="card-text text-muted mt-2">Thành tiền: <span th:text="${hdcxn.thanhtien}"></span></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Chờ xác nhận -->
+        <div class="tab-pane fade" id="tab2" role="tabpanel" aria-labelledby="tab2-tab">
+            <div class="container">
+                <div class="row" style="margin-top: 15px">
+                    <div class="col-md-12">
+                        <!-- Sử dụng th:each để lặp qua danh sách hdcxn -->
+                        <div th:each="hdcxn : ${hdchoxacnhan}" class="card mb-3">
+                            <div class="card-body" style="background-color: wheat; padding-top: 15px;">
+                                <h5 class="card-title">Mã hóa đơn: <span th:text="${hdcxn.mahoadon}"></span></h5>
+                                <p class="card-text text-muted">Trạng thái: Chờ xác nhận</p>
+                                <hr>
+                                <div class="d-flex justify-content-between">
+                                    <a th:href="@{/banhangonline/detailhd/{id}(id=${hdcxn.idhoadon})}" class="btn btn-secondary">Chi tiết đơn hàng</a>
+                                    <form id="huy" th:action="@{/banhangonline/huydh/{id}(id=${hdcxn.idhoadon})}" method="post">
+                                        <input type="hidden" id="ghichu" name="ghichu" value="">
+
+                                    <button id="cfhuy" type="button" class="btn btn-outline-secondary">Huỷ</button>
+                                    </form>
+                                    <script th:inline="javascript">
+                                        /*<![CDATA[*/
+                                        document.getElementById('cfhuy').addEventListener('click', function(event) {
+                                            event.preventDefault(); // Ngăn chặn hành vi mặc định của button
+
+                                            // Hiển thị hộp thoại nhập ghi chú
+                                            Swal.fire({
+                                                title: 'Xác nhận hủy',
+                                                text: 'Bạn có chắc chắn muốn hủy?',
+                                                icon: 'warning',
+                                                html: `
+                                        <form id="cancelForm">
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="radio" name="reason" id="reason1" value="Thay đổi địa chỉ" checked>
+                                                <label class="form-check-label" for="reason1">Thay đổi địa chỉ</label>
+                                            </div>
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="radio" name="reason" id="reason2" value="Không thấy phù hợp nữa">
+                                                <label class="form-check-label" for="reason2">Không thấy phù hợp nữa</label>
+                                            </div>
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="radio" name="reason" id="reason3" value="Tìm thấy giá rẻ hơn ở nơi khác">
+                                                <label class="form-check-label" for="reason3">Tìm thấy giá rẻ hơn ở nơi khác</label>
+                                            </div>
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="radio" name="reason" id="reason4" value="Đơn hàng bị đặt nhầm hoặc sai sản phẩm">
+                                                <label class="form-check-label" for="reason4">Đơn hàng bị đặt nhầm hoặc sai sản phẩm</label>
+                                            </div>
+                                        </form>`,
+                                                inputValidator: () => {
+                                                    const radios = document.querySelectorAll('input[name="reason"]');
+                                                    let selected = false;
+                                                    radios.forEach(radio => {
+                                                        if (radio.checked) {
+                                                            selected = true;
+                                                        }
+                                                    });
+                                                    if (!selected) {
+                                                        return 'Bạn cần chọn một lý do để xác nhận hủy đơn hàng!';
+                                                    }
+                                                },
+                                                showCancelButton: true,
+                                                confirmButtonText: 'Đồng ý',
+                                                cancelButtonText: 'Hủy bỏ',
+                                                preConfirm: () => {
+                                                    const radios = document.querySelectorAll('input[name="reason"]');
+                                                    let selectedReason = '';
+                                                    radios.forEach(radio => {
+                                                        if (radio.checked) {
+                                                            selectedReason = radio.value;
+                                                        }
+                                                    });
+                                                    document.getElementById('ghichu').value = selectedReason; // Lưu lý do vào input hidden
+                                                }
+                                            }).then((result) => {
+                                                if (result.isConfirmed) {
+                                                    document.getElementById('huy').submit(); // Submit form sau khi người dùng xác nhận
+                                                }
+                                            });
+                                        });
+                                        /*]]>*/
+                                    </script>
+
+                                </div>
+                                <p class="card-text text-muted mt-2">Thành tiền: <span th:text="${hdcxn.thanhtien}"></span></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Chờ lấy hàng -->
+        <div class="tab-pane fade" id="tab3" role="tabpanel" aria-labelledby="tab3-tab">
+            <div class="container">
+                <div class="row" style="margin-top: 15px">
+                    <div class="col-md-12">
+                        <div th:each="hdcxn : ${hdChoLayHang}" class="card mb-3">
+                            <div class="card-body" style="background-color: wheat; padding-top: 15px;">
+                                <h5 class="card-title">Mã hóa đơn: <span th:text="${hdcxn.mahoadon}"></span></h5>
+                                <p class="card-text text-muted">Trạng thái: Chờ lấy hàng</p>
+                                <hr>
+                                <div class="d-flex justify-content-between">
+                                    <a th:href="@{/banhangonline/detailhd/{id}(id=${hdcxn.idhoadon})}" class="btn btn-secondary">Chi tiết đơn hàng</a>
+                                </div>
+                                <p class="card-text text-muted mt-2">Thành tiền: <span th:text="${hdcxn.thanhtien}"></span></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- đang vận chuyển -->
+        <div class="tab-pane fade" id="tab4" role="tabpanel" aria-labelledby="tab4-tab">
+            <div class="container">
+                <div class="row" style="margin-top: 15px">
+                    <div class="col-md-12">
+                        <!-- Sử dụng th:each để lặp qua danh sách hdcxn -->
+                        <div th:each="hdcxn : ${hdDangGiao}" class="card mb-3">
+                            <div class="card-body" style="background-color: wheat; padding-top: 15px;">
+                                <h5 class="card-title">Mã hóa đơn: <span th:text="${hdcxn.mahoadon}"></span></h5>
+                                <p class="card-text text-muted">Trạng thái: đang giao</p>
+                                <hr>
+                                <div class="d-flex justify-content-between">
+                                    <a th:href="@{/banhangonline/detailhd/{id}(id=${hdcxn.idhoadon})}" class="btn btn-secondary">Chi tiết đơn hàng</a>
+                                </div>
+                                <p class="card-text text-muted mt-2">Thành tiền: <span th:text="${hdcxn.thanhtien}"></span></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Đã giao -->
+        <div class="tab-pane fade" id="tab5" role="tabpanel" aria-labelledby="tab5-tab">
+            <div class="container">
+                <div class="row" style="margin-top: 15px">
+                    <div class="col-md-12">
+                        <!-- Sử dụng th:each để lặp qua danh sách hdcxn -->
+                        <div th:each="hdcxn : ${hdDaGiao}" class="card mb-3">
+                            <div class="card-body" style="background-color: wheat; padding-top: 15px;">
+                                <h5 class="card-title">Mã hóa đơn: <span th:text="${hdcxn.mahoadon}"></span></h5>
+                                <p class="card-text text-muted">Trạng thái: đã giao </p>
+                                <hr>
+                                <div class="d-flex justify-content-between">
+                                    <a th:href="@{/banhangonline/detailhd/{id}(id=${hdcxn.idhoadon})}" class="btn btn-secondary">Chi tiết đơn hàng</a>
+                                    <button class="btn btn-outline-secondary" >
+                                        Trả hàng
+                                    </button>
+                                </div>
+                                <p class="card-text text-muted mt-2">Thành tiền: <span th:text="${hdcxn.thanhtien}"></span></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Đã hủy -->
+        <div class="tab-pane fade" id="tab6" role="tabpanel" aria-labelledby="tab6-tab">
+            <div class="container">
+                <div class="row" style="margin-top: 15px">
+                    <div class="col-md-12">
+                        <div th:each="hdcxn : ${listhDaHuy}" class="card mb-3">
+                            <div class="card-body" style="background-color: wheat; padding-top: 15px;">
+                                <h5 class="card-title">Mã hóa đơn: <span th:text="${hdcxn.mahoadon}"></span></h5>
+                                <p class="card-text text-muted">Trạng thái: đã hủy </p>
+                                <hr>
+                                <div class="d-flex justify-content-between">
+                                    <a th:href="@{/banhangonline/detailhd/{id}(id=${hdcxn.idhoadon})}" class="btn btn-secondary">Chi tiết đơn hàng</a>
+                                    <button class="btn btn-outline-secondary" >
+                                        mua lại
+                                    </button>
+                                </div>
+                                <p class="card-text text-muted mt-2">Thành tiền: <span th:text="${hdcxn.thanhtien}"></span></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+
+
+
+</div>
+</body>
+</html>

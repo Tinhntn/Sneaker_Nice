@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/main.html}">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <!-- Link to Bootstrap CSS from jsDelivr CDN -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Link to Bootstrap JavaScript bundle from jsDelivr CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+
+</head>
+<body>
+<div layout:fragment="content">
+    <div class="container">
+
+        <form id="shippingForm" th:action="@{/api/calculate-fee}" th:object="${calculateFeeRequest}" method="post">
+
+            <label for="province">Province:</label>
+            <select id="province" style="width: 200px" name="province" class="js-example-basic-single"></select>
+
+            <label for="district">District:</label>
+            <select id="district" style="width: 200px" name="to_district_id" class="js-example-basic-single"></select>
+
+            <label for="ward">Ward:</label>
+            <select id="ward" style="width: 200px" name="to_ward_code" class="js-example-basic-single"></select>
+
+        </form>
+
+        <div id="feeResult">
+            <h2>Total Fee: <input type="text" name="phiVanChuyen" id="totalFee"></h2>
+        </div>
+
+        <script>
+            $(document).ready(function() {
+                $('.js-example-basic-single').select2();
+
+                // Load provinces
+                $.get("/api/provinces", function(data) {
+                    $.each(data.data, function(index, province) {
+                        $('#province').append('<option value="' + province.ProvinceID + '">' + province.ProvinceName + '</option>');
+                    });
+                });
+
+                // Load districts when a province is selected
+                $('#province').change(function() {
+                    var ProvinceID = $(this).val();
+                    $.get("/api/districts?provinceID=" + ProvinceID, function(data) {
+                        $('#district').empty();
+                        $('#district').append('<option value="">Chọn huyện</option>');
+                        $.each(data.data, function(index, district) {
+                            $('#district').append('<option value="' + district.DistrictID + '">' + district.DistrictName + '</option>');
+                        });
+                    });
+                });
+
+                // Load wards when a district is selected
+                $('#district').change(function() {
+                    var DistrictID = $(this).val();
+                    $.get("/api/wards?districtID=" + DistrictID, function(data) {
+                        $('#ward').empty();
+                        $('#ward').append('<option value="">Chọn xã</option>');
+                        $.each(data.data, function(index, ward) {
+                            $('#ward').append('<option value="' + ward.WardCode + '">' + ward.WardName + '</option>');
+                        });
+                    });
+                });
+
+                // Calculate fee when a ward is selected
+                $('#ward').change(function() {
+                    var form = $('#shippingForm');
+                    var formData = form.serialize();
+
+                    $.post(form.attr('action'), formData, function(data) {
+                        $('#totalFee').val(data.data.total);
+                    }).fail(function(xhr, status, error) {
+                        console.error("Error: " + error);
+                    });
+                });
+            });
+        </script>
+
+    </div>
+</div>
+
+
+</body>
+</html>

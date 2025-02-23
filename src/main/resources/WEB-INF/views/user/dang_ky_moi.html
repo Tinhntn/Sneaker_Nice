@@ -1,0 +1,145 @@
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+    layout:decorate="~{layout/mainUser.html}">
+
+<body>
+    <div layout:fragment="content">
+        <div class="container">
+
+            <!-- Outer Row -->
+
+            <div class="container">
+
+                <div class="card o-hidden border-0 shadow-lg my-5">
+                    <div class="card-body p-0">
+                        <!-- Nested Row within Card Body -->
+                        <div class="row">
+                            <div class="col-lg-5 d-none d-lg-block bg-register-image"></div>
+                            <div class="col-lg-7">
+                                <div class="p-5">
+                                    <div class="text-center">
+                                        <h1 class="h4 text-gray-900 mb-4">Tạo tài khoản!</h1>
+                                    </div>
+                                    <form class="user">
+                                        <div class="form-group row">
+                                            <div class="col-sm-6 mb-3 mb-sm-0">
+                                                <input type="text" class="form-control form-control-user"
+                                                    id="registerFirstName" placeholder="Họ...">
+                                            </div>
+                                            <div class="col-sm-6">
+                                                <input type="text" class="form-control form-control-user"
+                                                    id="registerLastName" placeholder="Tên...">
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <input type="email" class="form-control form-control-user"
+                                                id="registerEmail" placeholder="Địa chỉ email...">
+                                        </div>
+                                        <div class="form-group row">
+                                            <div class="col-sm-6 mb-3 mb-sm-0">
+                                                <input type="password" class="form-control form-control-user"
+                                                    id="registerPassword" placeholder="Mật khẩu đăng nhập...">
+                                            </div>
+                                            <div class="col-sm-6">
+                                                <input type="password" class="form-control form-control-user"
+                                                    id="confirmPassword" placeholder="Nhập  lại mật khẩu...">
+                                            </div>
+                                        </div>
+                                        <div class="flex items-center mt-3">
+                                            <div class="flex items-center">
+                                                <label class="label-nho text-base">
+                                                    <input type="checkbox" id="accept" name="accept" value="ok"
+                                                        class="hidden-checkbox">
+                                                    <span class="checkmark rounded"></span>
+                                                    Tôi đồng ý với Chính sách bảo mật và Chính sách đổi trả của FIVEBEE
+                                                </label>
+                                            </div>
+                                        </div>
+                                        <a onclick="register()" class="btn btn-primary btn-user btn-block">
+                                            Tạo tài khoản
+                                        </a>
+                                        <hr>
+                                        <a href="index.html" class="btn btn-google btn-user btn-block">
+                                            <i class="fab fa-google fa-fw"></i> Tạo tài khoản bằng Google
+                                        </a>
+                                        <a href="index.html" class="btn btn-facebook btn-user btn-block">
+                                            <i class="fab fa-facebook-f fa-fw"></i> Tạo tài khoản bằng Facebook
+                                        </a>
+                                    </form>
+                                    <hr>
+                                    <div class="text-center">
+                                        <a class="small" href="/quen_mat_khau">Quên mật khẩu</a>
+                                    </div>
+                                    <div class="text-center">
+                                        <a class="small" href="/dang-nhap">Đã có tài khoản? Đăng nhập!</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+    <div layout:fragment="js">
+        <script>
+     
+            function register() {
+                var firstName = $('#registerFirstName').val();
+                var lastName = $('#registerLastName').val();
+                var hoTen = firstName + ' ' + lastName;
+                var email = $('#registerEmail').val();
+                var matKhau = $('#registerPassword').val();
+                var confirmPassword = $('#confirmPassword').val();
+                var accept = $('#accept').is(':checked');
+                var notyf = new Notyf({
+                    ripple: true
+                });
+                if (!accept) {
+                    notyf.error('Vui lòng đồng ý với các chính sách của cửa hàng.');
+                    return;
+                }
+
+                if (matKhau !== confirmPassword) {
+                    alert("Mật khẩu và xác nhận mật khẩu phải trùng nhau.");
+                    notyf.warning("Mật khẩu và xác nhận mật khẩu phải trùng nhau.");
+                    return;
+                }
+
+                $.ajax({
+                    url: '/dang-ky',
+                    type: 'POST',
+                    contentType: 'application/json',
+                    data: JSON.stringify({ hoTen: hoTen, emailDK: email, matKhauDK: matKhau }),
+                    success: function (response) {
+                        // Xử lý khi đăng ký thành công
+                        notyf.success('Đăng ký thành công!');
+                        setTimeout(function () {
+                            window.location.href = '/dang-nhap';
+                        }, 2000); // Đợi 2 giây trước khi chuyển hướng để hiển thị thông báo thành công
+                        $('#registerName').val('');
+                        $('#registerEmail').val('');
+                        $('#registerPassword').val('');
+                        $('#confirmPassword').val('');
+                        $('#accept').prop('checked', false);
+
+                    },
+                    error: function (xhr) {
+                        try {
+                            var error = JSON.parse(xhr.responseText);
+                            notyf.error(error.message); // Hiển thị thông báo lỗi từ server
+                        } catch (e) {
+                            notyf.error('Đã xảy ra lỗi không xác định.');
+                        }
+                    }
+                });
+            }
+            
+
+
+        </script>
+    </div>
+
+</body>
+
+</html>

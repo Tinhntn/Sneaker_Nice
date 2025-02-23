@@ -15,14 +15,14 @@ import java.util.Date;
 @AllArgsConstructor
 public class GioHangChiTiet {
     @Id
-    @GeneratedValue (strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
-
     private int id_gio_hang;
     private int id_chi_tiet_san_pham;
     private int so_luong;
-    private BigDecimal don_gia;
-    private BigDecimal tong_tien;
+    private int tong_trong_luong;
+    private float don_gia;
+    private float tong_tien;
     private Date ngay_tao;
     private Date ngay_sua;
     private Boolean trang_thai;

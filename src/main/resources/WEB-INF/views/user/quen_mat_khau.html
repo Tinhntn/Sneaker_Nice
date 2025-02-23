@@ -1,0 +1,101 @@
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+    layout:decorate="~{layout/mainUser.html}">
+
+<body>
+    <div layout:fragment="content">
+        <div class="container">
+
+            <!-- Outer Row -->
+            <div class="row justify-content-center">
+
+                <div class="col-xl-10 col-lg-12 col-md-9">
+
+                    <div class="card o-hidden border-0 shadow-lg my-5">
+                        <div class="card-body p-0">
+                            <!-- Nested Row within Card Body -->
+                            <div class="row">
+                                <div class="col-lg-6 d-none d-lg-block bg-password-image"></div>
+                                <div class="col-lg-6">
+                                    <div class="p-5">
+                                        <div class="text-center">
+                                            <h1 class="h4 text-gray-900 mb-2">Quên Mật Khẩu</h1>
+                                            <p class="mb-4">Hãy nhập vào email đã đăng ký tài khoản của bạn!</p>
+                                        </div>
+                                        <form class="user">
+                                            <div class="form-group">
+                                                <input type="email" class="form-control form-control-user"
+                                                    id="exampleInputEmail" aria-describedby="emailHelp"
+                                                    placeholder="Địa chỉ email...">
+                                            </div>
+                                            <a onclick="layLaiMatKhau()" class="btn btn-primary btn-user btn-block">
+                                                Lấy lại mật khẩu
+                                            </a>
+                                        </form>
+                                        <hr>
+                                        <div class="text-center">
+                                            <a class="small" href="/dang_ky_moi">Tạo tài khoản!</a>
+                                        </div>
+                                        <div class="text-center">
+                                            <a class="small" href="/dang-nhap">Đã có tài khoản FiveBee? Đăng nhập!</a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+
+    <div layout:fragment="js">
+        <script>
+            function layLaiMatKhau() {
+
+                var email = $('#exampleInputEmail').val();
+                var emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                var notyf = new Notyf({
+                    ripple: true
+                });
+
+                if (email === '') {
+                    notyf.error('Vui lòng nhập vào email');
+                    return;
+                };
+
+                if (emailPattern.test(email)) {
+                    notyf.success('Email đã được gửi vui lòng đợi ít phút!');
+
+                    $.ajax({
+                        url: '/quen_mat_khau',
+                        type: 'POST',
+                        contentType: 'application/x-www-form-urlencoded',
+                        data: { email: email },
+                        success: function (response) {
+                            notyf.success(response.message);
+                            setTimeout(function () {
+                                window.location.href = '/dang-nhap';
+                            }, 3000);
+                        },
+                        error: function (xhr) {
+                            try {
+                                var error = JSON.parse(xhr.responseText);
+                                notyf.error(error.message);
+                            } catch (e) {
+                                notyf.error('Đã xảy ra lỗi không mong muốn');
+                            }
+                        }
+                    });
+                } else {
+                    notyf.error('Email sai định dạng');
+                }
+            }
+
+        </script>
+    </div>
+</body>
+
+</html>
