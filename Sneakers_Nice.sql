@@ -66,14 +66,14 @@ CREATE TABLE SanPham (
 	id INT IDENTITY PRIMARY KEY,
 	id_hang INT FOREIGN KEY REFERENCES Hang(id),
 	id_chat_lieu INT FOREIGN KEY REFERENCES ChatLieu(id),
-	id_danh_mua INT FOREIGN KEY REFERENCES DanhMuc(id),
+	id_danh_muc INT FOREIGN KEY REFERENCES DanhMuc(id),
     ma_san_pham NVARCHAR(50) UNIQUE NOT NULL,
     ten_san_pham NVARCHAR(255) NOT NULL,
     ngay_tao DATETIME DEFAULT GETDATE(),
     ngay_sua DATETIME DEFAULT GETDATE(),
     trang_thai BIT DEFAULT 1
 );
-
+exec sp_rename 'SanPham.id_danh_mua','id_danh_muc','column' 
 -- Bảng Hang
 CREATE TABLE Hang (
     id INT PRIMARY KEY IDENTITY,

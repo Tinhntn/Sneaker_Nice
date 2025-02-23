@@ -21,7 +21,7 @@ public class Home {
     public String hienThi(Model model){
         Pageable pageable = PageRequest.of(0,10);
         Page<ChiTietSanPham> lstChiTietSanPham = chiTietSanPhamService.findAll(pageable);
-        model.addAttribute("lstChiTietSanPham",lstChiTietSanPham);
-        return "user/sanpham/trangchu";
+        model.addAttribute("lstChiTietSanPham", lstChiTietSanPham);
+        return "user/sanpham/trangchu"; // Không có dấu "/"
     }
 }

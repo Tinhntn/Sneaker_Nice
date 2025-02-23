@@ -1,6 +1,9 @@
 
-<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-      layout:decorate="~{/layout/mainUser}">
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/main}"> <!-- Kế thừa từ mainUser.html -->
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport"
@@ -16,7 +19,7 @@
 </head>
 
 <body>
-    <div layout:fragment="content">
+    <main  layout:fragment="content">
         <section class="ftco-section ftco-no-pt ftco-no-pb">
             <div class="container">
                 <div class="row no-gutters ftco-services">
@@ -651,7 +654,7 @@
             </div>
         </section>
 
-    </div>
+    </main>
 
 
 
