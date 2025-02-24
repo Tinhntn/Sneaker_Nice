@@ -37,4 +37,9 @@ public class ChiTietSanPhamImplement implements ChiTietSanPhamService {
     public void update(ChiTietSanPham chiTietSanPham) {
         chiTietSanPhamRepository.save(chiTietSanPham);
     }
+//
+//    @Override
+//    public ChiTietSanPham getCTSPByIdSP(Pageable pageable, int idSP) {
+//        return chiTietSanPhamRepository.findChiTietSanPhamByIdSanPham(idSP);
+//    }
 }

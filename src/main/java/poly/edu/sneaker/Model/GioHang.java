@@ -16,11 +16,15 @@ public class GioHang {
     @Id
     @GeneratedValue (strategy = GenerationType.IDENTITY)
     private int id;
-    private int id_khach_hang;
-    private int id_khuyen_mai;
-    private String ma_gio_hang;
-    private Date ngay_tao;
-    private Date ngay_sua;
-    private Boolean trang_thai;
-    private String ghi_chu;
+    @ManyToOne
+    @JoinColumn(name = "id_khach_hang")
+    private KhachHang idKhachHang;
+    @ManyToOne
+    @JoinColumn(name = "id_khuyen_mai")
+    private KhuyenMai idKhuyenMai;
+    private String maGioHang;
+    private Date ngayTao;
+    private Date ngaySua;
+    private Boolean trangThai;
+    private String ghiChu;
 }

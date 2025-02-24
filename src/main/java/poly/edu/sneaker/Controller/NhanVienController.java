@@ -23,11 +23,7 @@ public class NhanVienController {
             @RequestParam(value = "size",defaultValue = "3") int size
     ){
         List<NhanVien> lstNhanVien =  nhanVienService.getAllNhanVien(page,size);
-        for ( NhanVien ls: lstNhanVien
-             ) {
-            System.out.println(ls.getHo_va_ten());
 
-        }
         return nhanVienService.getAllNhanVien(page,size);
     }
 }

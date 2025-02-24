@@ -16,21 +16,21 @@ public class SanPham {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private  int id;
-    private String ma_san_pham;
-    private String ten_san_pham;
+    private String maSanPham;
+    private String tenSanPham;
     @ManyToOne
-    @JoinColumn(name = "id_hang")
-    private Hang id_hang;
+    @JoinColumn(name = "idHang")
+    private Hang idHang;
 
     @ManyToOne
-    @JoinColumn(name = "id_danh_muc")
-    private DanhMuc id_danh_muc;
+    @JoinColumn(name = "idDanhMuc")
+    private DanhMuc idDanhMuc;
 
     @ManyToOne
-    @JoinColumn(name = "id_chat_lieu")
-    private ChatLieu id_chat_lieu;
+    @JoinColumn(name = "idChatLieu")
+    private ChatLieu idChatLieu;
 
-    private Date ngay_tao;
-    private  Date ngay_sua;
-    private Boolean trang_thai;
+    private Date ngayTao;
+    private  Date ngaySua;
+    private Boolean trangThai;
 }

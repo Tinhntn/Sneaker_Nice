@@ -16,9 +16,9 @@ public class ChatLieu {
     @Id
     @GeneratedValue (strategy = GenerationType.IDENTITY)
     private  int id;
-    private  String ma_chat_lieu;
-    private  String ten_chat_lieu;
-    private  Date ngay_tao;
-    private  Date ngay_sua;
-    private  Boolean trang_thai;
+    private  String maChatLieu;
+    private  String tenChatLieu;
+    private  Date ngayTao;
+    private  Date ngaySua;
+    private  Boolean trangThai;
 }

@@ -36,4 +36,9 @@ public class SanPhamImplement implements SanPhamService {
     public void update(SanPham sanPham) {
         sanPhamRepository.save(sanPham);
     }
+
+    @Override
+    public Page<SanPham> findByMaSanPhamOrTenSanPham(String maSanPham, String tenSanPham, Pageable pageable) {
+        return sanPhamRepository.findByMaSanPhamContainingOrTenSanPhamContaining(maSanPham,tenSanPham,pageable);
+    }
 }

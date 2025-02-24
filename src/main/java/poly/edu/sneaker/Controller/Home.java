@@ -7,9 +7,12 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import poly.edu.sneaker.Model.ChiTietSanPham;
 import poly.edu.sneaker.Service.ChiTietSanPhamService;
+
+import java.util.List;
 
 @Controller
 @RequestMapping("/Sneakers_Nice")
@@ -18,10 +21,17 @@ public class Home {
     private ChiTietSanPhamService chiTietSanPhamService;
 
     @GetMapping("/hienthi")
-    public String hienThi(Model model){
-        Pageable pageable = PageRequest.of(0,10);
-        Page<ChiTietSanPham> lstChiTietSanPham = chiTietSanPhamService.findAll(pageable);
-        model.addAttribute("lstChiTietSanPham", lstChiTietSanPham);
-        return "user/sanpham/trangchu"; // Không có dấu "/"
+    public String hienthi(Model model){
+        Page<ChiTietSanPham> lstCTSP = chiTietSanPhamService.findAll(PageRequest.of(0,10));
+        model.addAttribute("listSanPham", lstCTSP);
+        return "user/sanpham/trangchu";
+    }
+
+    @GetMapping("/chitietsanpham/{id}")
+    public String chiTietSanPham(@PathVariable("id") int id, Model model){
+//        ChiTietSanPham chiTietSanPhams = chiTietSanPhamService.getCTSPByIdSP(PageRequest.of(0,10),id);
+//        model.addAttribute("chiTietSanPham",chiTietSanPhams);
+        System.out.println();
+        return "user/sanpham/detailSanPham";
     }
 }

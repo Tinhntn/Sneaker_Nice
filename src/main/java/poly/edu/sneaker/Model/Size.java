@@ -16,9 +16,9 @@ public class Size {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     int id;
-    private  String ma_size;
-    private  String ten_size;
-    private  Date ngay_tao;
-    private   Date ngay_sua;
-    private   Boolean trang_thai;
+    private  String maSize;
+    private  String tenSize;
+    private  Date ngayTao;
+    private   Date ngaySua;
+    private   Boolean trangThai;
 }

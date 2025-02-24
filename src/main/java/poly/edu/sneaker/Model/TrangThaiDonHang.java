@@ -17,8 +17,10 @@ public class TrangThaiDonHang {
     @Id
     @GeneratedValue (strategy = GenerationType.IDENTITY)
     private int id;
-    private int id_hoa_don;
-    private Date thoi_gian;
-    private Byte trang_thai;
-    private String ghi_chu;
+    @ManyToOne
+    @JoinColumn(name = "idHoaDon")
+    private HoaDon idHoaDon;
+    private Date thoiGian;
+    private Byte trangThai;
+    private String ghiChu;
 }

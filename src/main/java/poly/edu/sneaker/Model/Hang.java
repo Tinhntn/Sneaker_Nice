@@ -16,9 +16,9 @@ public class Hang {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
-    private String ma_hang;
-    private String ten_hang;
-    private Date ngay_tao;
-    private Date ngay_sua;
-    private Boolean trang_thai;
+    private String maHang;
+    private String tenHang;
+    private Date ngayTao;
+    private Date ngaySua;
+    private Boolean trangThai;
 }

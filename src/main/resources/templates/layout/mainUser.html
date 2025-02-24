@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" xmlns:th="http://www.thymeleaf.org">
+<html xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" xmlns:th="http://www.thymeleaf.org">
 
 <head>
     <meta charset="UTF-8">
@@ -30,7 +30,7 @@
     <link rel="stylesheet" th:href="@{/css/magnific-popup.css}">
     <link rel="stylesheet" th:href="@{/css/aos.css}">
     <link rel="stylesheet" th:href="@{/css/ionicons.min.css}">
-    <link rel="stylesheet" th:href="@{/css/bootstrap-datepicker.css}">
+    <link rel="stylesheet" th:href="@{/css/bootstrap-d  atepicker.css}">
     <link rel="stylesheet" th:href="@{/css/jquery.timepicker.css}">
     <link rel="stylesheet" th:href="@{/css/flaticon.css}">
     <link rel="stylesheet" th:href="@{/css/icomoon.css}">
@@ -44,12 +44,10 @@
 
 <body class="goto-here">
     <!-- Include header fragment -->
-    <header th:replace="~{layout/headeruser :: header}"></header>
+    <div th:replace="~{layout/headeruser :: header}"></div>
 
     <!-- Placeholder for dynamic content -->
-    <main>
-        <div layout:fragment="content"></div>
-    </main>
+    <div layout:fragment="content"></div>
 
     <!-- Include footer fragment -->
     <div th:replace="~{layout/footer :: footer}"></div>

@@ -14,7 +14,7 @@ public class ChucVu {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private  int id;
-    private String ma_chuc_vu;
-    private String ten_chuc_vu;
+    private String maChucVu;
+    private String tenChucVu;
 
 }

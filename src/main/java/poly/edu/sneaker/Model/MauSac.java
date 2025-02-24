@@ -17,9 +17,9 @@ public class MauSac {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private   int id;
-    private  String ma_mau_sac;
-    private  String ten_mau_sac;
-    private   Date ngay_tao;
-    private   Date ngay_sua;
-    private   Boolean trang_thai;
+    private  String maMauSac;
+    private  String tenMauSac;
+    private   Date ngayTao;
+    private   Date ngaySua;
+    private   Boolean trangThai;
 }

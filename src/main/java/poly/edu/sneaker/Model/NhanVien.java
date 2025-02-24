@@ -16,18 +16,20 @@ public class NhanVien {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
-    private  int id_chua_vu;
-    private String ma_nhan_vien;
-    private  String ho_va_ten;
-    private Boolean gioi_tinh;
-    private  Date ngay_sinh;
-    private  String dia_chi;
+    @ManyToOne
+    @JoinColumn(name = "idChucVu")
+    private  ChucVu idChucVu;
+    private String maNhanVien;
+    private  String hoVaTen;
+    private Boolean gioiTinh;
+    private  Date ngaySinh;
+    private  String diaChi;
     private  String sdt;
     private String email;
-    private String mat_khau;
-    private String hinh_anh;
-    private  Date ngay_tao;
-    private Date ngay_sua;
-    private Boolean trang_thai;
+    private String matKhau;
+    private String hinhAnh;
+    private  Date ngayTao;
+    private Date ngaySua;
+    private Boolean trangThai;
 
 }

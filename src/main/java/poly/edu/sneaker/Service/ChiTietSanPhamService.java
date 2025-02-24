@@ -10,4 +10,5 @@ public interface ChiTietSanPhamService {
     ChiTietSanPham findById(int id);
     void deleteChiTietSanPham(int id);
     void update(ChiTietSanPham chiTietSanPham);
+//    ChiTietSanPham getCTSPByIdSP(Pageable pageable, int idSP);
 }

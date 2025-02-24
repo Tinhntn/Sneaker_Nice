@@ -11,4 +11,5 @@ public interface SanPhamService {
     SanPham findById(int id);
     void update(SanPham sanPham);
 
+    Page<SanPham> findByMaSanPhamOrTenSanPham(String maSanPham,String tenSanPham, Pageable pageable);
 }

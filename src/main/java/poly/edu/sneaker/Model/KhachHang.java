@@ -16,19 +16,19 @@ public class KhachHang {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
-    private String ma_khach_hang;
-    private String ten_khach_hang;
-    private String tinh_thanh_pho;
-    private String quan_huyen;
-    private String phuong_xa;
-    private Boolean gioi_tinh;
+    private String maKhachHang;
+    private String tenKhachHang;
+    private String tinhThanhPho;
+    private String quanHuyen;
+    private String phuongXa;
+    private Boolean gioiTinh;
     private String email;
     private String sdt;
-    private Date ngay_sinh;
-    private Date ngay_tao;
-    private Date ngay_sua;
-    private String mat_khau;
-    private String hinh_anh;
-    private Boolean trang_thai;
+    private Date ngaySinh;
+    private Date ngayTao;
+    private Date ngaySua;
+    private String matKhau;
+    private String hinhAnh;
+    private Boolean trangThai;
 
 }
