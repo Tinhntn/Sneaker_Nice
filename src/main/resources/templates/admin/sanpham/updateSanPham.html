@@ -1,0 +1,57 @@
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+    layout:decorate="~{layout/main.html}">
+
+<body>
+    <div layout:fragment="content">
+
+        <div class="container-fluid">
+            <h1>Thêm Sản Phẩm</h1>
+            <form th:action="@{/sanpham/capnhatsanpham/{id}(id=${sanPham.id})}" method="post">
+                <div class="container p-4"
+                    style="background-color: #f8f9fa; border-radius: 10px; border: 1px solid #ddd;">
+                    <input type="hidden" name="id" th:value="${sanPham.id}" />
+                    <div class="mb-3">
+                        <label class="form-label">Tên sản phẩm:</label>
+                        <input type="text" name="tenSanPham" th:value="${sanPham.tenSanPham}" class="form-control"
+                            required />
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="hang" class="form-label">Hãng:</label>
+                        <select name="idHang" class="form-select">
+                            <option th:each="hang : ${lstHang}" th:value="${hang.id}" th:text="${hang.tenHang}"
+                                th:selected="${hang.id == sanPham.idHang.id}"></option>
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="danhMuc" class="form-label">Danh mục:</label>
+                        <select name="idDanhMuc" class="form-select">
+                            <option th:each="dm : ${lstDanhMuc}" th:value="${dm.id}" th:text="${dm.tenDanhMuc}"
+                                th:selected="${dm.id == sanPham.idDanhMuc.id}"></option>
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="chatLieu" class="form-label">Chất liệu:</label>
+                        <select name="idChatLieu" class="form-select">
+                            <option th:each="cl : ${lstChatlieu}" th:value="${cl.id}" th:text="${cl.tenChatLieu}"
+                                th:selected="${cl.id == sanPham.idChatLieu.id}"></option>
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label>Trạng thái:</label>
+                        <input type="hidden" name="trangThai" value="false" />
+                        <input type="checkbox" name="trangThai" th:checked="${sanPham.trangThai}" value="true"  />
+                    </div>
+
+                    <div class="text-center">
+                        <button type="submit" class="btn btn-primary">Cập nhật</button>
+                    </div>
+                </div>
+            </form>
+
+        </div>
+    </div>
+</body>

@@ -7,6 +7,9 @@ import org.springframework.stereotype.Service;
 import poly.edu.sneaker.Model.DanhMuc;
 import poly.edu.sneaker.Repository.DanhMucRepository;
 import poly.edu.sneaker.Service.DanhMucService;
+
+import java.util.List;
+
 @Service
 
 public class DanhMucImplement implements DanhMucService {
@@ -35,5 +38,10 @@ public class DanhMucImplement implements DanhMucService {
     @Override
     public void updateDanhMuc(DanhMuc danhMuc) {
         danhMucRepository.save(danhMuc);
+    }
+
+    @Override
+    public List<DanhMuc> getAllDanhMucs() {
+        return danhMucRepository.findAll();
     }
 }

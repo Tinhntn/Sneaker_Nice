@@ -15,21 +15,23 @@
 
 <body>
     <div layout:fragment="content">
-        <div class="container-fluid">
+        <a th:href="@{/sanpham/themsanpham}" class="btn btn-primary">Thêm +</a>
+        <div class="float-end">
+            <form th:action="@{/sanpham/hienthi}" method="get" style="width: 300px">
+                <div class="input-group mb-3">
+                    <input type="text" class="form-control" placeholder="Tìm kiếm sản phẩm" name="keyword"
+                        th:value="${keyword}">
+                    <button class="btn btn-primary" type="submit">Tìm kiếm</button>
+                </div>
+            </form>
+            <br>
+        </div>
+        <div class="container-fluid card">
             <h1>Danh Sách Sản Phẩm</h1>
-            <a th:href="@{/sanpham/showAddSanPham}" class="btn btn-primary">Thêm +</a>
-            <div class="float-end">
-                <form th:action="@{/sanpham/hienthi}" method="get" style="width: 300px">
-                    <div class="input-group mb-3">
-                        <input type="text" class="form-control" placeholder="Tìm kiếm sản phẩm" name="keyword"
-                            th:value="${keyword}">
-                        <button class="btn btn-primary" type="submit">Tìm kiếm</button>
-                    </div>
-                </form>
-                <br>
-            </div>
+
 
             <table class="table table-header">
+
                 <thead>
                     <tr>
                         <th scope="col">Mã sản phẩm</th>
@@ -54,12 +56,8 @@
                         <td th:text="${sanPham.ngaySua}"></td>
                         <td th:text="${sanPham.trangThai? 'Hoạt động' : 'Không hoạt động'}"></td>
                         <td>
-                            <a th:href="@{/sanpham/detailsanpham/{id}(id=${sanPham.id})}">
+                            <a th:href="@{/sanpham/chitietsanpham/{id}(id=${sanPham.id})}">
                                 <button type="button" class="btn btn-outline-warning">Sửa</button>
-                            </a>
-                            <a th:href="@{/sanpham/deletesanpham/{id}(id=${sanPham.id})}">
-                                <button type="button" class="btn btn-outline-danger"
-                                    onclick="return confirm('Bạn muốn xóa sản phẩm ?')">Xóa</button>
                             </a>
                         </td>
                     </tr>
@@ -82,6 +80,8 @@
                     </li>
                 </ul>
             </nav>
+
+
 
             <!-- Hiển thị thông báo thành công -->
             <div th:if="${successMessage}">

@@ -7,6 +7,9 @@ import org.springframework.stereotype.Service;
 import poly.edu.sneaker.Model.Hang;
 import poly.edu.sneaker.Repository.HangRepository;
 import poly.edu.sneaker.Service.HangService;
+
+import java.util.List;
+
 @Service
 
 public class HangImplement implements HangService {
@@ -35,5 +38,10 @@ public class HangImplement implements HangService {
     @Override
     public void updateHang(Hang hang) {
         hangRepository.save(hang);
+    }
+
+    @Override
+    public List<Hang> getAllHangs() {
+        return hangRepository.findAll();
     }
 }

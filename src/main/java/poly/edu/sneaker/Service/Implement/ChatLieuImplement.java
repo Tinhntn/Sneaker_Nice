@@ -8,6 +8,9 @@ import org.springframework.stereotype.Service;
 import poly.edu.sneaker.Model.ChatLieu;
 import poly.edu.sneaker.Repository.ChatLieuRepostory;
 import poly.edu.sneaker.Service.ChatLieuService;
+
+import java.util.List;
+
 @Service
 
 public class ChatLieuImplement implements ChatLieuService {
@@ -38,5 +41,10 @@ public class ChatLieuImplement implements ChatLieuService {
     @Override
     public void updateChatLieu(ChatLieu chatLieu) {
         chatLieuRepostory.save(chatLieu);
+    }
+
+    @Override
+    public List<ChatLieu> getAllChatLieus() {
+        return chatLieuRepostory.findAll();
     }
 }

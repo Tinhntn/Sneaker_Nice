@@ -7,6 +7,10 @@ import org.springframework.stereotype.Service;
 import poly.edu.sneaker.Model.SanPham;
 import poly.edu.sneaker.Repository.SanPhamRepository;
 import poly.edu.sneaker.Service.SanPhamService;
+
+import java.util.List;
+import java.util.Random;
+
 @Service
 
 public class SanPhamImplement implements SanPhamService {
@@ -23,8 +27,8 @@ public class SanPhamImplement implements SanPhamService {
     }
 
     @Override
-    public void delete(SanPham sanPham) {
-        sanPhamRepository.delete(sanPham);
+    public void delete(int id) {
+        sanPhamRepository.deleteById(id);
     }
 
     @Override
@@ -35,6 +39,18 @@ public class SanPhamImplement implements SanPhamService {
     @Override
     public void update(SanPham sanPham) {
         sanPhamRepository.save(sanPham);
+    }
+
+    @Override
+    public String taoMaSanPham() {
+        Random random = new Random();
+        int randomNumber = 1000+random.nextInt(9000);
+        return "SP"+randomNumber;
+    }
+
+    @Override
+    public List<SanPham> getAllSanPhams() {
+        return sanPhamRepository.findAll();
     }
 
     @Override
