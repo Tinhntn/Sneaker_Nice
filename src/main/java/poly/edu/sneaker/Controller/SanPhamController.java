@@ -1,5 +1,6 @@
 package poly.edu.sneaker.Controller;
 
+import org.hibernate.annotations.Array;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -7,16 +8,15 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-import poly.edu.sneaker.Model.ChatLieu;
-import poly.edu.sneaker.Model.DanhMuc;
-import poly.edu.sneaker.Model.Hang;
-import poly.edu.sneaker.Model.SanPham;
-import poly.edu.sneaker.Service.ChatLieuService;
-import poly.edu.sneaker.Service.DanhMucService;
-import poly.edu.sneaker.Service.HangService;
-import poly.edu.sneaker.Service.SanPhamService;
+import poly.edu.sneaker.Model.*;
+import poly.edu.sneaker.Service.*;
 
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.Date;
 import java.util.List;
 
@@ -31,7 +31,12 @@ public class SanPhamController {
     private DanhMucService danhMucService;
     @Autowired
     private ChatLieuService chatLieuService;
-
+    @Autowired
+    private ChiTietSanPhamService chiTietSanPhamService;
+    @Autowired
+    private SizeService sizeService;
+    @Autowired
+    private  MauSacService mauSacService;
     @GetMapping("/hienthi")
     public String hienThi(Model model,RedirectAttributes redirectAttributes, @RequestParam(defaultValue = "0") int page, @RequestParam(required = false) String keyword) {
         int size = 5;
@@ -96,22 +101,35 @@ public class SanPhamController {
         return "redirect:/sanpham/hienthi";
     }
     @GetMapping("/chitietsanpham/{id}")
-    public String chiTietSanPham(@PathVariable("id")int idSanPham,Model model){
+    public String chiTietSanPham(@PathVariable("id")int idSanPham,Model model, @RequestParam(defaultValue = "0")int page
+    ){
+        int size = 5;
+        Pageable pageable = PageRequest.of(page, size);
+        Page<ChiTietSanPham> lstCTSP = chiTietSanPhamService.findChiTietSanPhamByIDSanPham(idSanPham,pageable);
+        model.addAttribute("lstCTSP", lstCTSP.getContent());
+        model.addAttribute("currentPage", lstCTSP.getNumber());
+        model.addAttribute("totalPages", lstCTSP.getTotalPages());
         SanPham sanPham = sanPhamService.findById(idSanPham);
         model.addAttribute("sanPham",sanPham);
         List<Hang> lstHang = hangService.getAllHangs();
         List<DanhMuc> lstDanhMuc = danhMucService.getAllDanhMucs();
         List<ChatLieu> lstChatLieu = chatLieuService.getAllChatLieus();
-        List<SanPham> lstSanPham = sanPhamService.getAllSanPhams();
+        List<Size>  lstSize= sizeService.findAll();
+        List<MauSac> lstMauSac = mauSacService.findAll();
+        model.addAttribute("lstMauSac", lstMauSac);
+        model.addAttribute("lstSize", lstSize);
+        model.addAttribute("lst", lstDanhMuc);
         model.addAttribute("lstHang", lstHang);
         model.addAttribute("lstDanhMuc", lstDanhMuc);
         model.addAttribute("lstChatlieu", lstChatLieu);
         return "admin/sanpham/updateSanPham";
     }
     @PostMapping("/capnhatsanpham/{id}")
-    public String updateSanPham(@PathVariable("id") int id, @ModelAttribute("sanPham") SanPham sanPham, RedirectAttributes redirectAttributes) {
+    public String updateSanPham(@PathVariable("id") int id, @ModelAttribute("sanPham") SanPham sanPham, RedirectAttributes redirectAttributes
+                               ) {
         try {
             SanPham existingSanPham = sanPhamService.findById(id);
+
             if (existingSanPham != null) {
                 existingSanPham.setTenSanPham(sanPham.getTenSanPham());
                 existingSanPham.setIdHang(sanPham.getIdHang());
@@ -119,9 +137,8 @@ public class SanPhamController {
                 existingSanPham.setIdDanhMuc(sanPham.getIdDanhMuc());
                 existingSanPham.setNgaySua(new Date());
                 existingSanPham.setTrangThai(sanPham.getTrangThai());
-
                 sanPhamService.update(existingSanPham);
-                redirectAttributes.addFlashAttribute("successMessage", "Cập nhật sản phẩm thành công!");
+                redirectAttributes.addFlashAttribute("", "Cập nhật sản phẩm thành công!");
             } else {
                 redirectAttributes.addFlashAttribute("errorMessage", "Sản phẩm không tồn tại!");
             }
@@ -129,6 +146,46 @@ public class SanPhamController {
             redirectAttributes.addFlashAttribute("errorMessage", "Có lỗi xảy ra khi cập nhật sản phẩm!");
         }
         return "redirect:/sanpham/hienthi";
+    }
+    @PostMapping("/addctsanpham/{id}")
+    public String themChiTietSanPham(@PathVariable("id")int idSanPham,
+                                     @RequestParam("hinhAnh") MultipartFile file,
+                                     @ModelAttribute ChiTietSanPham chiTietSanPham,RedirectAttributes redirectAttributes){
+        try {
+            if(chiTietSanPham!=null){
+                if (!file.isEmpty()) {
+                    // Lưu file vào thư mục static/images
+                    String fileName = file.getOriginalFilename();
+                    String uploadDir = "src/main/resources/static/images/";
+                    Path path = Paths.get(uploadDir + fileName);
+                    Files.copy(file.getInputStream(), path, StandardCopyOption.REPLACE_EXISTING);
+
+                    // Lưu đường dẫn file vào database
+                    chiTietSanPham.setHinhAnh("/images/" + fileName);
+                }
+                ChiTietSanPham ctsp = new ChiTietSanPham();
+                ctsp.setId(idSanPham);
+                ctsp.setIdSize(chiTietSanPham.getIdSize());
+                ctsp.setIdMauSac(chiTietSanPham.getIdMauSac());
+                ctsp.setTrongLuong(chiTietSanPham.getTrongLuong());
+                ctsp.setGiaNhap(chiTietSanPham.getGiaNhap());
+                ctsp.setGiaBan(chiTietSanPham.getGiaBan());
+                ctsp.setSoLuong(chiTietSanPham.getSoLuong());
+                ctsp.setMoTa(chiTietSanPham.getMoTa());
+                ctsp.setNgayTao(new Date());
+                ctsp.setNgaySua(new Date());
+                ctsp.setTrangThai(true);
+                chiTietSanPhamService.saveChiTietSanPham(ctsp);
+                redirectAttributes.addFlashAttribute("successMessage","Thêm chi tiết sản phẩm thành công");
+
+            }else{
+                redirectAttributes.addFlashAttribute("errrorMasage","Có lỗi xảy ra khi thêm chi tiết sản phẩm");
+            }
+                   }catch (Exception e) {
+            redirectAttributes.addFlashAttribute("errrorMasage","Có lỗi xảy ra khi thêm chi tiết sản phẩm");
+        }
+
+        return "redirect:/sanpham/chitietsanpham"+idSanPham;
     }
 
 

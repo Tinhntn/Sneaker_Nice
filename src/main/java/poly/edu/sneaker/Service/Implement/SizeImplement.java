@@ -7,6 +7,9 @@ import org.springframework.stereotype.Service;
 import poly.edu.sneaker.Model.Size;
 import poly.edu.sneaker.Repository.SizeRepository;
 import poly.edu.sneaker.Service.SizeService;
+
+import java.util.List;
+
 @Service
 public class SizeImplement implements SizeService {
     @Autowired
@@ -39,5 +42,10 @@ public class SizeImplement implements SizeService {
     @Override
     public void update(Size size) {
         sizeRepository.save(size);
+    }
+
+    @Override
+    public List<Size> findAll() {
+        return sizeRepository.findAll();
     }
 }

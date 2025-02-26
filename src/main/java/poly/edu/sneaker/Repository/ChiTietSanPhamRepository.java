@@ -11,6 +11,8 @@ import poly.edu.sneaker.Model.ChiTietSanPham;
 @Repository
 public interface ChiTietSanPhamRepository extends JpaRepository<ChiTietSanPham, Integer> {
 
+    Page<ChiTietSanPham> findChiTietSanPhamByIdSanPham_Id(int idSanPham, Pageable pageable);
+
 //    ChiTietSanPham findChiTietSanPhamByIdSanPham(int idSanPham);
 
 }

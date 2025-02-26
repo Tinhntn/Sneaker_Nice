@@ -7,6 +7,9 @@ import org.springframework.stereotype.Service;
 import poly.edu.sneaker.Model.MauSac;
 import poly.edu.sneaker.Repository.MauSacRepository;
 import poly.edu.sneaker.Service.MauSacService;
+
+import java.util.List;
+
 @Service
 
 public class MauSacImplement implements MauSacService {
@@ -35,5 +38,10 @@ public class MauSacImplement implements MauSacService {
     @Override
     public void update(MauSac mauSac) {
         mauSacRepository.save(mauSac);
+    }
+
+    @Override
+    public List<MauSac> findAll() {
+        return mauSacRepository.findAll();
     }
 }

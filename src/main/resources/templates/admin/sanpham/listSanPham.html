@@ -28,8 +28,6 @@
         </div>
         <div class="container-fluid card">
             <h1>Danh Sách Sản Phẩm</h1>
-
-
             <table class="table table-header">
 
                 <thead>
@@ -57,7 +55,7 @@
                         <td th:text="${sanPham.trangThai? 'Hoạt động' : 'Không hoạt động'}"></td>
                         <td>
                             <a th:href="@{/sanpham/chitietsanpham/{id}(id=${sanPham.id})}">
-                                <button type="button" class="btn btn-outline-warning">Sửa</button>
+                                <button type="button" class="btn btn-outline-warning">Chi tiết</button>
                             </a>
                         </td>
                     </tr>
@@ -82,6 +80,8 @@
             </nav>
 
 
+       
+            <br>
 
             <!-- Hiển thị thông báo thành công -->
             <div th:if="${successMessage}">
