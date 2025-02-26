@@ -136,6 +136,7 @@ public class SanPhamController {
                 existingSanPham.setIdChatLieu(sanPham.getIdChatLieu());
                 existingSanPham.setIdDanhMuc(sanPham.getIdDanhMuc());
                 existingSanPham.setNgaySua(new Date());
+                System.out.println(sanPham.getTrangThai());
                 existingSanPham.setTrangThai(sanPham.getTrangThai());
                 sanPhamService.update(existingSanPham);
                 redirectAttributes.addFlashAttribute("", "Cập nhật sản phẩm thành công!");
@@ -149,7 +150,7 @@ public class SanPhamController {
     }
     @PostMapping("/addctsanpham/{id}")
     public String themChiTietSanPham(@PathVariable("id")int idSanPham,
-                                     @RequestParam("hinhAnh") MultipartFile file,
+                                     @RequestParam("img") MultipartFile file,
                                      @ModelAttribute ChiTietSanPham chiTietSanPham,RedirectAttributes redirectAttributes){
         try {
             if(chiTietSanPham!=null){
@@ -164,7 +165,7 @@ public class SanPhamController {
                     chiTietSanPham.setHinhAnh("/images/" + fileName);
                 }
                 ChiTietSanPham ctsp = new ChiTietSanPham();
-                ctsp.setId(idSanPham);
+                ctsp.setIdSanPham(sanPhamService.findById(idSanPham));
                 ctsp.setIdSize(chiTietSanPham.getIdSize());
                 ctsp.setIdMauSac(chiTietSanPham.getIdMauSac());
                 ctsp.setTrongLuong(chiTietSanPham.getTrongLuong());
@@ -185,7 +186,7 @@ public class SanPhamController {
             redirectAttributes.addFlashAttribute("errrorMasage","Có lỗi xảy ra khi thêm chi tiết sản phẩm");
         }
 
-        return "redirect:/sanpham/chitietsanpham"+idSanPham;
+        return "redirect:/sanpham/chitietsanpham/"+idSanPham;
     }
 
 
