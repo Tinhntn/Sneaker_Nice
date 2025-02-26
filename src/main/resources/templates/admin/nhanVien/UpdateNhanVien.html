@@ -6,6 +6,9 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+
     <meta charset="UTF-8">
     <meta name="viewport"
           content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
@@ -21,31 +24,32 @@
                 <div class="col-md-6">
                     <div class="mb-3">
                         <label  class="form-label">Mã nhân viên</label>
-                        <input type="text" class="form-control"  name="manhanvien" th:value="${detailNhanVien.manhanvien}">
+                        <input type="text" class="form-control"  name="manhanvien" th:value="${detailNhanVien.maNhanVien}">
                     </div>
                     <div class="mb-3">
                         <label class="form-label">Tên nhân viên</label>
-                        <input type="text" class="form-control" name="hovaten" th:value="${detailNhanVien.hovaten}">
+                        <input type="text" class="form-control" name="hovaten" th:value="${detailNhanVien.hoVaTen}">
                     </div>
                     <div class="mb-3">
                         <label class="form-label">Chức vụ</label>
                         <select class="form-select" style="width: 400px" aria-label="Default select example" name="idcv">
-                            <option th:each="chucvu : ${comBoBoxChucVu}" th:value="${chucvu.id}" th:text="${chucvu.tenchucvu}" th:selected="${detailNhanVien.idcv == chucvu.id}"></option>
+<!--                            <option th:each="chucvu : ${comBoBoxChucVu}" th:value="${chucvu.id}" th:text="${chucvu.tenchucvu}" th:selected="${detailNhanVien.idcv == chucvu.id}"></option>-->
+                            <option value="1"> Nhân Viên</option>
                         </select>
                     </div>
                     <div class="mb-3">
                         <label class="form-label">Ngày sinh</label>
-                        <input type="datetime-local" class="form-control" name="ngaysinh" th:value="${detailNhanVien.ngaysinh}">
+                        <input type="datetime-local" class="form-control" name="ngaysinh" th:value="${detailNhanVien.ngaySinh}">
                     </div>
                     <div class="form-group">
                         <label>Giới tính</label>
                         <div>
                             <div class="form-check">
-                                <input class="form-check-input" type="radio" name="gioitinh" value="Nam" th:checked="${detailNhanVien.gioitinh == 'Nam'}">
+                                <input class="form-check-input" type="radio" name="gioitinh" value="True" th:checked="${detailNhanVien.gioiTinh}">
                                 <label class="form-check-label">Nam</label>
                             </div>
                             <div class="form-check">
-                                <input class="form-check-input" type="radio" name="gioitinh" value="Nữ" th:checked="${detailNhanVien.gioitinh == 'Nữ'}">
+                                <input class="form-check-input" type="radio" name="gioitinh" value="False" th:checked="${!detailNhanVien.gioiTinh}">
                                 <label class="form-check-label">Nữ</label>
                             </div>
                         </div>
@@ -54,7 +58,7 @@
                 <div class="col-md-6">
                     <div class="mb-3">
                         <label class="form-label">Địa chỉ</label>
-                        <input type="text" class="form-control" name="diachi" th:value="${detailNhanVien.diachi}">
+                        <input type="text" class="form-control" name="diachi" th:value="${detailNhanVien.diaChi}">
                     </div>
                     <div class="mb-3">
                         <label class="form-label">Số điện thoại</label>
@@ -66,17 +70,20 @@
                     </div>
                     <div class="mb-3">
                         <label class="form-label">Mật khẩu</label>
-                        <input type="text" class="form-control" name="matkhau" th:value="${detailNhanVien.matkhau}">
+                        <input type="password" class="form-control" id="matkhau" name="matkhau" th:value="${detailNhanVien.matKhau}">
+                        <button class="btn btn-outline-secondary" type="button" id="togglePassword">
+                            <i class="fa fa-eye"></i> <!-- Icon mắt -->
+                        </button>
                     </div>
                     <div class="mb-3">
                         <label>Trạng Thái:</label>
                         <div>
                             <div class="form-check">
-                                <input class="form-check-input" type="radio" name="trangthai" value="1" checked required>
+                                <input class="form-check-input" type="radio" name="trangthai" value="True" th:checked="${detailNhanVien.trangThai}">
                                 <label class="form-check-label">Hoạt động</label>
                             </div>
                             <div class="form-check">
-                                <input class="form-check-input" type="radio" name="trangthai" value="0">
+                                <input class="form-check-input" type="radio" name="trangthai" value="False" th:checked="${!detailNhanVien.trangThai}">
                                 <label class="form-check-label">Không hoạt động</label>
                             </div>
                         </div>
@@ -110,6 +117,23 @@
                 /*]]>*/
             </script>
         </div>
+
+        <!--        Mật khẩu-->
+        <script>
+            document.getElementById("togglePassword").addEventListener("click", function () {
+                var passwordInput = document.getElementById("matkhau");
+                var icon = this.querySelector("i");
+                if (passwordInput.type === "password") {
+                    passwordInput.type = "text";
+                    icon.classList.remove("fa-eye");
+                    icon.classList.add("fa-eye-slash"); // Đổi icon
+                } else {
+                    passwordInput.type = "password";
+                    icon.classList.remove("fa-eye-slash");
+                    icon.classList.add("fa-eye");
+                }
+            });
+        </script>
 
     </div>
 </div>

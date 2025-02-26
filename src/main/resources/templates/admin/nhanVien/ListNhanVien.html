@@ -6,6 +6,9 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+
     <meta charset="UTF-8">
     <meta name="viewport"
           content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
@@ -49,7 +52,7 @@
                 <td th:text="${nhanvien.maNhanVien}"></td>
                 <td th:text="${nhanvien.hoVaTen}"></td>
                 <td th:text="${nhanvien.ngaySinh}"></td>
-                <td th:text="${nhanvien.gioiTinh}"></td>
+                <td th:text="${nhanvien.gioiTinh  == true ?'Nam':'Nữ'}"></td>
                 <td th:text="${nhanvien.diaChi}"></td>
                 <td th:text="${nhanvien.sdt}"></td>
                 <td th:text="${nhanvien.email}"></td>
@@ -57,7 +60,7 @@
                 <td th:text="${nhanvien.tenChucVu}"></td>
 <!--                <td th:text="${#dates.format(nhanvien.ngayTao, 'yyyy-MM-dd')}"></td>-->
 <!--                <td th:text="${#dates.format(nhanvien.ngaySua, 'yyyy-MM-dd')}"></td>-->
-                <td th:text="${nhanvien.trangThai == 1 ? 'Còn hoạt động' : 'Không hoạt động'}"></td>
+                <td th:text="${nhanvien.trangThai == true ?'Hoạt động':'Không hoạt động'}"></td>
                 <td>
                     <a th:href="@{/nhanvien/detail/{id}(id=${nhanvien.id})}" class="btn btn-outline-warning">
                         Chi tiết
@@ -105,7 +108,8 @@
                         <div class="mb-3">
                             <label class="form-label">Chức vụ</label>
                             <select class="form-select" style="width: 100%" aria-label="Default select example" name="idcv">
-                                <option th:each="chucvu : ${comBoBoxChucVu}" th:value="${chucvu.id}" th:text="${chucvu.tenchucvu}"></option>
+<!--                                <option th:each="chucvu : ${comBoBoxChucVu}" th:value="${chucvu.id}" th:text="${chucvu.tenchucvu}"></option>-->
+                                <option value="1"> Nhân Viên</option>
                             </select>
                         </div>
                         <div class="mb-3">
@@ -117,11 +121,11 @@
                         <label class="form-label">Giới tính</label>
                         <div class="form-group">
                             <div class="form-check form-check-inline">
-                                <input class="form-check-input" type="radio" name="gioitinh" value="Nam" checked>
+                                <input class="form-check-input" type="radio" name="gioitinh" value="True" checked>
                                 <label class="form-check-label">Nam</label>
                             </div>
                             <div class="form-check form-check-inline">
-                                <input class="form-check-input" type="radio" name="gioitinh" value="Nữ">
+                                <input class="form-check-input" type="radio" name="gioitinh" value="False">
                                 <label class="form-check-label">Nữ</label>
                             </div>
                         </div>
@@ -140,7 +144,12 @@
                         </div>
                         <div class="mb-3">
                             <label class="form-label">Mật khẩu</label>
-                            <input type="password" class="form-control" name="matkhau">
+                            <div class="input-group">
+                                <input type="password" class="form-control" id="matkhau" name="matkhau">
+                                <button class="btn btn-outline-secondary" type="button" id="togglePassword">
+                                    <i class="fa fa-eye"></i> <!-- Icon mắt -->
+                                </button>
+                            </div>
                         </div>
                     </div>
                     </div>
@@ -150,12 +159,12 @@
                 </div>
                 <br>
                 <button type="submit" class="btn btn-primary">Lưu</button>
-            </div>
+<!--            </div>-->
         </form>
 
 
 
-        <!-- Hiển thị thông báo thành công -->
+<!--         Hiển thị thông báo thành công -->
         <div th:if="${successMessage}">
             <script th:inline="javascript">
                 /*<![CDATA[*/
@@ -174,6 +183,23 @@
                 /*]]>*/
             </script>
         </div>
+
+<!--        Mật khẩu-->
+        <script>
+            document.getElementById("togglePassword").addEventListener("click", function () {
+                var passwordInput = document.getElementById("matkhau");
+                var icon = this.querySelector("i");
+                if (passwordInput.type === "password") {
+                    passwordInput.type = "text";
+                    icon.classList.remove("fa-eye");
+                    icon.classList.add("fa-eye-slash"); // Đổi icon
+                } else {
+                    passwordInput.type = "password";
+                    icon.classList.remove("fa-eye-slash");
+                    icon.classList.add("fa-eye");
+                }
+            });
+        </script>
 
     </div>
 </div>

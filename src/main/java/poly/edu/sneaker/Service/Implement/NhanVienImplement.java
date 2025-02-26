@@ -1,10 +1,12 @@
 package poly.edu.sneaker.Service.Implement;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.AutoConfigureOrder;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import poly.edu.sneaker.DAO.NhanVienCustom;
 import poly.edu.sneaker.Model.NhanVien;
 import poly.edu.sneaker.Repository.NhanVienRepository;
 import poly.edu.sneaker.Service.NhanVienService;
@@ -13,17 +15,31 @@ import java.util.List;
 
 @Service
 public class NhanVienImplement implements NhanVienService {
-    @AutoConfigureOrder
-    private NhanVienRepository nhanVienRepository;
-    @Override
-    public List<NhanVien> getAllNhanVien(int page, int size) {
 
-        return nhanVienRepository.findAll(PageRequest.of(page,size)).getContent();
+    @Autowired
+    NhanVienRepository nhanVienRepository;
+
+    @Override
+    public Page<NhanVienCustom> getAll(Pageable pageable) {
+        return nhanVienRepository.getAll(pageable);
     }
 
     @Override
-    public Page<NhanVien> findAllNhanVien(Pageable pageable) {
-        return nhanVienRepository.findAll(pageable);
+    public void saveNhanVien(NhanVien nhanVien) {
+        NhanVien existingNhanVien = nhanVienRepository.findByMaNhanVien(nhanVien.getMaNhanVien());
+        if (existingNhanVien != null) {
+            throw new IllegalArgumentException("Mã nhân viên đã tồn tại!");
+        }
+        nhanVienRepository.save(nhanVien);
+    }
+
+    @Override
+    public void updateNhanVien(NhanVien nhanVien, int id) {
+        NhanVien existingNhanVien = nhanVienRepository.findByMaNhanVien(nhanVien.getMaNhanVien());
+        if (existingNhanVien != null && existingNhanVien.getId() != (id)) {
+            throw new IllegalArgumentException("Mã nhân viên đã tồn tại!");
+        }
+        nhanVienRepository.save(nhanVien);
     }
 
     @Override
@@ -32,17 +48,8 @@ public class NhanVienImplement implements NhanVienService {
     }
 
     @Override
-    public void saveNhanVien(NhanVien nhanVien) {
-        nhanVienRepository.save(nhanVien);
+    public Page<NhanVienCustom> search(String keyword, Pageable pageable) {
+        return nhanVienRepository.searchNhanVien(keyword, pageable);
     }
 
-    @Override
-    public void updateNhanVien(NhanVien nhanVien) {
-        nhanVienRepository.save(nhanVien);
-    }
-
-    @Override
-    public void deleteNhanVien(int id) {
-        nhanVienRepository.deleteById(id);
-    }
 }

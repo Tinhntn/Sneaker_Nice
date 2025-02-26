@@ -5,6 +5,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import poly.edu.sneaker.Model.Hang;
+import poly.edu.sneaker.Model.NhanVien;
 import poly.edu.sneaker.Repository.HangRepository;
 import poly.edu.sneaker.Service.HangService;
 @Service
@@ -13,7 +14,7 @@ public class HangImplement implements HangService {
     @Autowired
     private HangRepository hangRepository;
     @Override
-    public Page<Hang> getAllHangs(Pageable pageable) {
+    public Page<Hang> getAll(Pageable pageable) {
         return hangRepository.findAll(pageable);
     }
 
@@ -23,8 +24,12 @@ public class HangImplement implements HangService {
     }
 
     @Override
-    public Hang saveHang(Hang hang) {
-        return hangRepository.save(hang);
+    public void saveHang(Hang hang) {
+        Hang existingHang = hangRepository.findByMaHang(hang.getMaHang());
+        if (existingHang != null) {
+            throw new IllegalArgumentException("Mã hãng đã tồn tại!");
+        }
+        hangRepository.save(hang);
     }
 
     @Override
@@ -33,7 +38,11 @@ public class HangImplement implements HangService {
     }
 
     @Override
-    public void updateHang(Hang hang) {
+    public void updateHang(Hang hang, int id) {
+        Hang existingHang = hangRepository.findByMaHang(hang.getMaHang());
+        if (existingHang != null && existingHang.getId() != (id)) {
+            throw new IllegalArgumentException("Mã hãng đã tồn tại!");
+        }
         hangRepository.save(hang);
     }
 }

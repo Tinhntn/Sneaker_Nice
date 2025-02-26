@@ -5,9 +5,9 @@ import org.springframework.data.domain.Pageable;
 import poly.edu.sneaker.Model.Hang;
 
 public interface HangService {
-    Page<Hang> getAllHangs(Pageable pageable);
+    Page<Hang> getAll(Pageable pageable);
     Hang getHangById(int id);
-    Hang saveHang(Hang hang);
+    void saveHang(Hang hang);
     void deleteHang(int id);
-    void updateHang(Hang hang);
+    void updateHang(Hang hang, int id);
 }
