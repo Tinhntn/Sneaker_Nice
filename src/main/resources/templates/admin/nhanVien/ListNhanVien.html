@@ -108,8 +108,7 @@
                         <div class="mb-3">
                             <label class="form-label">Chức vụ</label>
                             <select class="form-select" style="width: 100%" aria-label="Default select example" name="idcv">
-<!--                                <option th:each="chucvu : ${comBoBoxChucVu}" th:value="${chucvu.id}" th:text="${chucvu.tenchucvu}"></option>-->
-                                <option value="1"> Nhân Viên</option>
+                                <option th:each="chucvu : ${listChucVu}" th:value="${chucvu.id}" th:text="${chucvu.tenChucVu}"></option>
                             </select>
                         </div>
                         <div class="mb-3">

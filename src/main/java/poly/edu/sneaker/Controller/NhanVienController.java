@@ -12,6 +12,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import poly.edu.sneaker.DAO.NhanVienCustom;
 import poly.edu.sneaker.Model.ChucVu;
 import poly.edu.sneaker.Model.NhanVien;
+import poly.edu.sneaker.Service.ChucVuService;
 import poly.edu.sneaker.Service.NhanVienService;
 
 import java.util.Date;
@@ -23,6 +24,9 @@ import java.util.UUID;
 public class NhanVienController {
     @Autowired
     private NhanVienService nhanVienService;
+
+    @Autowired
+    ChucVuService chucVuService;
 
     private static final String EMAIL_PATTERN = "^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$";
     private static final String PASSWORD_PATTERN = "^(?=.*[a-zA-Z])(?=.*[0-9]).{6,}$";
@@ -41,8 +45,12 @@ public class NhanVienController {
             nhanVienCustomPageable = nhanVienService.getAll(pageable);
         }
 
+        List<ChucVu> listChucVu = chucVuService.getAll();
+
         System.out.println(nhanVienCustomPageable.getContent().size());
 
+
+        model.addAttribute("listChucVu", listChucVu);
         model.addAttribute("nhanVienCustomList", nhanVienCustomPageable.getContent());
         model.addAttribute("currentPage", nhanVienCustomPageable.getNumber());
         model.addAttribute("totalPages", nhanVienCustomPageable.getTotalPages());

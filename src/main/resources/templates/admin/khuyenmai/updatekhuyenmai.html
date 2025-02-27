@@ -23,36 +23,39 @@
                 <div class="col-md-6">
                     <div class="form-group">
                         <label for="makhuyenmai">Mã khuyến mại</label>
-                        <input type="text" class="form-control" id="makhuyenmai" th:field="*{makhuyenmai}">
+                        <input type="text" class="form-control" id="makhuyenmai" th:field="*{maKhuyenMai}">
                     </div>
                     <div class="form-group">
                         <label for="tenkhuyenmai">Tên khuyến mại</label>
-                        <input type="text" class="form-control" id="tenkhuyenmai" th:field="*{tenkhuyenmai}">
+                        <input type="text" class="form-control" id="tenkhuyenmai" th:field="*{tenKhuyenMai}">
                     </div>
                     <div class="form-group">
-                        <label for="giatri">Giá trị</label>
-                        <input type="number" class="form-control" id="giatri" th:field="*{giatri}">
+                        <label for="giatrigiam">Giá trị giảm</label>
+                        <input type="number" class="form-control" id="giatrigiam" th:field="*{giaTriGiam}">
                     </div>
                     <div class="form-group">
-                        <label for="dieukiengiam">Điều kiện giảm</label>
-                        <input type="text" class="form-control" id="dieukiengiam" th:field="*{dieukiengiam}">
+                        <label for="dieukienapdung">Điều kiện áp dụng</label>
+                        <input type="number" class="form-control" id="dieukienapdung" th:field="*{dieuKienApDung}">
+                    </div>
+                    <div class="form-group">
+                        <label for="mucgiamtoida">Mức giảm tối đa</label>
+                        <input type="number" class="form-control" id="mucgiamtoida" th:field="*{mucGiamToiDa}">
                     </div>
                 </div>
-
-
                 <div class="col-md-6">
                     <div class="form-group">
-                    <label for="ngaybatdau">Ngày bắt đầu</label>
-                    <input type="date" class="form-control" id="ngaybatdau" th:field="*{ngaybatdau}">
-                </div>
+                        <label for="ngaybatdau">Ngày bắt đầu</label>
+                        <input type="date" class="form-control" id="ngaybatdau" th:field="*{ngayBatDau}">
+                    </div>
                     <div class="form-group">
                         <label for="ngayketthuc">Ngày kết thúc</label>
-                        <input type="date" class="form-control" id="ngayketthuc" th:field="*{ngayketthuc}">
+                        <input type="date" class="form-control" id="ngayketthuc" th:field="*{ngayKetThuc}">
                     </div>
                     <div class="form-group">
                         <label for="soluong">Số lượng</label>
-                        <input type="number" class="form-control" id="soluong" th:field="*{soluong}">
+                        <input type="number" class="form-control" id="soluong" th:field="*{soLuong}">
                     </div>
+
                 </div>
             </div>
             <br>
