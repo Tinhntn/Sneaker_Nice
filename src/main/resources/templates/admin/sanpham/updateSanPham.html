@@ -42,11 +42,11 @@
 
                     <div class="mb-3">
                         <label>Trạng thái:</label>
-                        <input type="hidden" name="trangThai" value="false" />
                         <input type="checkbox" name="trangThai" th:checked="${sanPham.trangThai}" value="true" />
+                        <input type="hidden" name="trangThai" value="false" />
                     </div>
 
-                  
+
                     <div class="text-center">
                         <button type="submit" class="btn btn-primary">Cập nhật</button>
                     </div>
@@ -179,18 +179,48 @@
                             <td
                                 th:text="${sanPham.idSanPham.idDanhMuc!=null?sanPham.idSanPham.idDanhMuc.tenDanhMuc:'Không có'}">
                             </td>
-                            <td th:text="${sanPham.idSize!=null?sanPham.idSize.tenSize:'Không có'}"></td>
-                            <td th:text="${sanPham.idMauSac!=null?sanPham.idMauSac.tenMauSac:'Không có'}"></td>
-                            <td th:text="${sanPham.trongLuong!=null?sanPham.trongLuong:'Không có'}"></td>
-                            <td th:text="${sanPham.giaNhap!=null?sanPham.giaNhap:'Không có'}"></td>
-                            <td th:text="${sanPham.giaBan!=null?sanPham.giaBan:'Không có'}"></td>
                             <td>
-                                <img style="height: 100px; width: 100px;"
-                                    th:src="@{${sanPham.hinhAnh} != null ? ${sanPham.hinhAnh} : '/path/to/default-image.jpg'}"
+                                <select name="idSize" class="form-select">
+                                    <option th:each="size : ${lstSize}" th:value="${size.id}" th:text="${size.tenSize}"
+                                        th:selected="${size.id == sanPham.idSize.id}"></option>
+                                </select>
+                            </td>
+                            <td>
+                                <select name="idMauSac" class="form-select">
+                                    <option th:each="mauSac : ${lstMauSac}" th:value="${mauSac.id}"
+                                        th:text="${mauSac.tenMauSac}" th:selected="${mauSac.id == sanPham.idMauSac.id}">
+                                    </option>
+                                </select>
+                            </td>
+                            <td>
+                                <input type="text" name="trongLuong"
+                                    th:value="${sanPham.trongLuong!=null?sanPham.trongLuong:'Không có'}"
+                                    class="form-control" />
+                            </td>
+                            <td>
+                                <input type="text" name="giaNhap"
+                                    th:value="${sanPham.giaNhap!=null?sanPham.giaNhap:'Không có'}"
+                                    class="form-control" />
+                            </td>
+                            <td>
+                                <input type="text" name="giaBan"
+                                    th:value="${sanPham.giaBan!=null?sanPham.giaBan:'Không có'}"
+                                    class="form-control" />
+                            </td>
+                            <td>
+                                <img th:src="@{${sanPham.hinhAnh} != null ? ${sanPham.hinhAnh} : '/path/to/default-image.jpg'}"
                                     alt="Product Image" />
                             </td>
-                            <td th:text="${sanPham.soLuong!=null?sanPham.soLuong:'Không có'}"></td>
-                            <td th:text="${sanPham.moTa!=null?sanPham.moTa:'Không có'}"></td>
+                            <td>
+                                <input type="text" name="soLuong"
+                                    th:value="${sanPham.soLuong!=null?sanPham.soLuong:'Không có'}"
+                                    class="form-control" />
+                            </td>
+                            <td>
+                                <input type="text" name="moTa"
+                                    th:value="${sanPham.moTa!=null?sanPham.moTa:'Không có'}"
+                                    class="form-control" />
+                            </td>
                             <td th:text="${sanPham.ngayTao}"></td>
                             <td th:text="${sanPham.ngaySua}"></td>
                             <td th:text="${sanPham.trangThai? 'Hoạt động' : 'Không hoạt động'}"></td>

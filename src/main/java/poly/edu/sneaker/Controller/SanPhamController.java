@@ -129,15 +129,16 @@ public class SanPhamController {
                                ) {
         try {
             SanPham existingSanPham = sanPhamService.findById(id);
-
+            if(sanPham.getTrangThai()==null){
+                sanPham.setTrangThai(false);
+            }
             if (existingSanPham != null) {
                 existingSanPham.setTenSanPham(sanPham.getTenSanPham());
                 existingSanPham.setIdHang(sanPham.getIdHang());
                 existingSanPham.setIdChatLieu(sanPham.getIdChatLieu());
                 existingSanPham.setIdDanhMuc(sanPham.getIdDanhMuc());
                 existingSanPham.setNgaySua(new Date());
-                System.out.println(sanPham.getTrangThai());
-                existingSanPham.setTrangThai(sanPham.getTrangThai());
+                existingSanPham.setTrangThai(sanPham.getTrangThai()?true:false);
                 sanPhamService.update(existingSanPham);
                 redirectAttributes.addFlashAttribute("", "Cập nhật sản phẩm thành công!");
             } else {
@@ -160,10 +161,11 @@ public class SanPhamController {
                     String uploadDir = "src/main/resources/static/images/";
                     Path path = Paths.get(uploadDir + fileName);
                     Files.copy(file.getInputStream(), path, StandardCopyOption.REPLACE_EXISTING);
-
                     // Lưu đường dẫn file vào database
                     chiTietSanPham.setHinhAnh("/images/" + fileName);
+                    System.out.println(chiTietSanPham.getHinhAnh());
                 }
+
                 ChiTietSanPham ctsp = new ChiTietSanPham();
                 ctsp.setIdSanPham(sanPhamService.findById(idSanPham));
                 ctsp.setIdSize(chiTietSanPham.getIdSize());
@@ -172,6 +174,7 @@ public class SanPhamController {
                 ctsp.setGiaNhap(chiTietSanPham.getGiaNhap());
                 ctsp.setGiaBan(chiTietSanPham.getGiaBan());
                 ctsp.setSoLuong(chiTietSanPham.getSoLuong());
+                ctsp.setHinhAnh(chiTietSanPham.getHinhAnh());
                 ctsp.setMoTa(chiTietSanPham.getMoTa());
                 ctsp.setNgayTao(new Date());
                 ctsp.setNgaySua(new Date());
