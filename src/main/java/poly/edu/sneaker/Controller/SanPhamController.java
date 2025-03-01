@@ -197,40 +197,50 @@ public class SanPhamController {
         return "redirect:/sanpham/chitietsanpham/"+idSanPham;
     }
 
-
-    @PutMapping("/chitietsanpham/{id}")
-    public ResponseEntity<?> updateSanPham(@PathVariable("id") int id, @RequestBody Map<String, Object> chiTietSanPham) {
+    @PutMapping("/updateCTSP/{id}")
+    public ResponseEntity<?> updateSanPham(@PathVariable int id, @RequestBody Map<String, Object> chiTietSanPham) {
         try {
-            System.out.println("Dữ liệu nhận được: " + chiTietSanPham);
-
-            // Kiểm tra xem có "id" không
-            if (!chiTietSanPham.containsKey("id")) {
-                return ResponseEntity.badRequest().body(Collections.singletonMap("error", "Thiếu id sản phẩm"));
-            }
-
             // Tìm sản phẩm theo ID
-            ChiTietSanPham ctsp = chiTietSanPhamService.findById(Integer.parseInt(chiTietSanPham.get("id").toString()));
+            ChiTietSanPham ctsp = chiTietSanPhamService.findById(id);
             if (ctsp == null) {
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Collections.singletonMap("success", false));
+                return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                        .body(Collections.singletonMap("message", "Không tìm thấy sản phẩm!"));
             }
+            // Ép kiểu dữ liệu an toàn
+            Integer idSize = convertToInt(chiTietSanPham.get("idSize"));
+            Integer idMauSac = convertToInt(chiTietSanPham.get("idMauSac"));
+            Float trongLuong = convertToFloat(chiTietSanPham.get("trongLuong"));
+            Float giaNhap = convertToFloat(chiTietSanPham.get("giaNhap"));
+            Float giaBan = convertToFloat(chiTietSanPham.get("giaBan"));
+            Integer soLuong = convertToInt(chiTietSanPham.get("soLuong"));
+            String moTa = (chiTietSanPham.get("moTa") != null) ? chiTietSanPham.get("moTa").toString() : "";
+            Boolean trangThai = (chiTietSanPham.get("trangThai") != null) ?
+                    Boolean.parseBoolean(chiTietSanPham.get("trangThai").toString()) : false;
 
-            // Ép kiểu an toàn
-            ctsp.setIdSize(sizeService.findById(convertToInt(chiTietSanPham.get("idSize"))));
-            ctsp.setIdMauSac(mauSacService.findById(convertToInt(chiTietSanPham.get("idMauSac"))));
-            ctsp.setTrongLuong(convertToFloat(chiTietSanPham.get("trongLuong")));
-            ctsp.setGiaNhap(convertToFloat(chiTietSanPham.get("giaNhap")));
-            ctsp.setGiaBan(convertToFloat(chiTietSanPham.get("giaBan")));
-            ctsp.setSoLuong(convertToInt(chiTietSanPham.get("soLuong")));
-            ctsp.setMoTa(chiTietSanPham.get("moTa").toString());
-            ctsp.setTrangThai(Boolean.parseBoolean(chiTietSanPham.get("trangThai").toString()));
+            // Cập nhật thông tin
+            if (idSize != null) {
+                ctsp.setIdSize(sizeService.findById(idSize));
+            }
+            if (idMauSac != null) {
+                ctsp.setIdMauSac(mauSacService.findById(idMauSac));
+            }
+            ctsp.setTrongLuong((trongLuong != null) ? trongLuong : 0.0f);
+            ctsp.setGiaNhap((giaNhap != null) ? giaNhap : 0.0f);
+            ctsp.setGiaBan((giaBan != null) ? giaBan : 0.0f);
+            ctsp.setSoLuong((soLuong != null) ? soLuong : 0);
+            ctsp.setMoTa(moTa);
+            ctsp.setTrangThai(trangThai);
 
-            // Cập nhật dữ liệu
+            // Gọi service để cập nhật dữ liệu
             chiTietSanPhamService.update(ctsp);
+
             return ResponseEntity.ok(Collections.singletonMap("success", true));
 
-        } catch (Exception e) {
+
+        }  catch (Exception e) {
             e.printStackTrace();
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Collections.singletonMap("success", false));
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Collections.singletonMap("message", "Lỗi khi cập nhật sản phẩm!"));
         }
     }
 
