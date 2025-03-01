@@ -1,10 +1,13 @@
 package poly.edu.sneaker.Controller;
 
 import org.hibernate.annotations.Array;
+import org.hibernate.type.descriptor.java.ObjectJavaType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -17,8 +20,10 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 @Controller
 @RequestMapping("/sanpham")
@@ -192,5 +197,56 @@ public class SanPhamController {
         return "redirect:/sanpham/chitietsanpham/"+idSanPham;
     }
 
+
+    @PutMapping("/chitietsanpham/{id}")
+    public ResponseEntity<?> updateSanPham(@PathVariable("id") int id, @RequestBody Map<String, Object> chiTietSanPham) {
+        try {
+            System.out.println("Dữ liệu nhận được: " + chiTietSanPham);
+
+            // Kiểm tra xem có "id" không
+            if (!chiTietSanPham.containsKey("id")) {
+                return ResponseEntity.badRequest().body(Collections.singletonMap("error", "Thiếu id sản phẩm"));
+            }
+
+            // Tìm sản phẩm theo ID
+            ChiTietSanPham ctsp = chiTietSanPhamService.findById(Integer.parseInt(chiTietSanPham.get("id").toString()));
+            if (ctsp == null) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Collections.singletonMap("success", false));
+            }
+
+            // Ép kiểu an toàn
+            ctsp.setIdSize(sizeService.findById(convertToInt(chiTietSanPham.get("idSize"))));
+            ctsp.setIdMauSac(mauSacService.findById(convertToInt(chiTietSanPham.get("idMauSac"))));
+            ctsp.setTrongLuong(convertToFloat(chiTietSanPham.get("trongLuong")));
+            ctsp.setGiaNhap(convertToFloat(chiTietSanPham.get("giaNhap")));
+            ctsp.setGiaBan(convertToFloat(chiTietSanPham.get("giaBan")));
+            ctsp.setSoLuong(convertToInt(chiTietSanPham.get("soLuong")));
+            ctsp.setMoTa(chiTietSanPham.get("moTa").toString());
+            ctsp.setTrangThai(Boolean.parseBoolean(chiTietSanPham.get("trangThai").toString()));
+
+            // Cập nhật dữ liệu
+            chiTietSanPhamService.update(ctsp);
+            return ResponseEntity.ok(Collections.singletonMap("success", true));
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Collections.singletonMap("success", false));
+        }
+    }
+
+    // Hàm hỗ trợ chuyển đổi kiểu dữ liệu an toàn
+    private int convertToInt(Object value) {
+        if (value instanceof Number) {
+            return ((Number) value).intValue();
+        }
+        return Integer.parseInt(value.toString());
+    }
+
+    private float convertToFloat(Object value) {
+        if (value instanceof Number) {
+            return ((Number) value).floatValue();
+        }
+        return Float.parseFloat(value.toString());
+    }
 
 }

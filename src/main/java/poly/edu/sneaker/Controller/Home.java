@@ -9,6 +9,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import poly.edu.sneaker.Model.ChiTietSanPham;
 import poly.edu.sneaker.Service.ChiTietSanPhamService;
 
@@ -21,9 +22,12 @@ public class Home {
     private ChiTietSanPhamService chiTietSanPhamService;
 
     @GetMapping("/hienthi")
-    public String hienthi(Model model){
-        Page<ChiTietSanPham> lstCTSP = chiTietSanPhamService.findAll(PageRequest.of(0,10));
+    public String hienthi(Model model, @RequestParam(defaultValue = "0")int page){
+        int size = 12;
+        Page<ChiTietSanPham> lstCTSP = chiTietSanPhamService.findAll(PageRequest.of(page,size));
         model.addAttribute("listSanPham", lstCTSP);
+        model.addAttribute("currentPage",lstCTSP.getNumber());
+        model.addAttribute("totalPages",lstCTSP.getTotalPages());
         return "user/sanpham/trangchu";
     }
 
@@ -31,7 +35,7 @@ public class Home {
     public String chiTietSanPham(@PathVariable("id") int id, Model model){
 //        ChiTietSanPham chiTietSanPhams = chiTietSanPhamService.getCTSPByIdSP(PageRequest.of(0,10),id);
 //        model.addAttribute("chiTietSanPham",chiTietSanPhams);
-        System.out.println();
+
         return "user/sanpham/detailSanPham";
     }
 }

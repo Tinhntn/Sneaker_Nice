@@ -29,7 +29,7 @@
         <div class="container-fluid card">
             <h1>Danh Sách Sản Phẩm</h1>
             <table class="table table-header">
-
+            
                 <thead>
                     <tr>
                         <th scope="col">Mã sản phẩm</th>
@@ -48,19 +48,21 @@
                         <td th:text="${sanPham.maSanPham}"></td>
                         <td th:text="${sanPham.tenSanPham}"></td>
                         <td th:text="${sanPham.idHang != null ? sanPham.idHang.tenHang : 'Không có'}"></td>
-                        <td th:text="${sanPham.idChatLieu != null ? sanPham.idChatLieu.tenChatLieu : 'Không có'}"></td>
+                        <td th:text="${sanPham.idChatLieu != null ? sanPham.idChatLieu.tenChatLieu : 'Không có'}">
+                        </td>
                         <td th:text="${sanPham.idDanhMuc != null ? sanPham.idDanhMuc.tenDanhMuc : 'Không có'}"></td>
                         <td th:text="${sanPham.ngayTao}"></td>
                         <td th:text="${sanPham.ngaySua}"></td>
                         <td th:text="${sanPham.trangThai? 'Hoạt động' : 'Không hoạt động'}"></td>
                         <td>
                             <a th:href="@{/sanpham/chitietsanpham/{id}(id=${sanPham.id})}">
-                                <button type="button" class="btn btn-outline-warning">Chi tiết</button>
+                                <button type="button" class="btn btn-outline-warning">Cập nhật</button>
                             </a>
                         </td>
                     </tr>
                 </tbody>
             </table>
+
 
             <nav aria-label="Page navigation">
                 <ul class="pagination">
@@ -80,7 +82,7 @@
             </nav>
 
 
-       
+
             <br>
 
             <!-- Hiển thị thông báo thành công -->

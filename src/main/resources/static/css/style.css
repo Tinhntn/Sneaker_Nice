@@ -2966,27 +2966,27 @@ fieldset:disabled a.btn {
 
 .btn-primary {
   color: #fff;
-  background-color: #007bff;
-  border-color: #007bff;
+  background-color: #7f8388;
+  border-color: #a2a4a7;
 }
 
 .btn-primary:hover {
   color: #fff;
-  background-color: #0069d9;
-  border-color: #0062cc;
+  background-color: #66696c;
+  border-color: #696a6b;
 }
 
 .btn-primary:focus,
 .btn-primary.focus {
-  -webkit-box-shadow: 0 0 0 0.2rem rgba(38, 143, 255, 0.5);
-  box-shadow: 0 0 0 0.2rem rgba(38, 143, 255, 0.5);
+  -webkit-box-shadow: 0 0 0 0.2rem rgba(99, 102, 105, 0.5);
+  box-shadow: 0 0 0 0.2rem rgba(103, 104, 105, 0.5);
 }
 
 .btn-primary.disabled,
 .btn-primary:disabled {
   color: #fff;
-  background-color: #007bff;
-  border-color: #007bff;
+  background-color: #6d7073;
+  border-color: #6d7073;
 }
 
 .btn-primary:not(:disabled):not(.disabled):active,
@@ -13786,8 +13786,64 @@ textarea.form-control {
 .ftco-animate {
   opacity: 0;
   visibility: hidden;
+
+}
+/* Căn giữa thanh phân trang */
+.pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 20px;
 }
 
+/* Xóa mặc định của Bootstrap */
+.pagination .page-item {
+  margin: 0 5px;
+}
+
+/* Nút Previous & Next */
+.pagination .page-link {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 45px;
+  /* Tăng kích thước cho nút Previous & Next */
+  height: 45px;
+  border-radius: 50%;
+  /* Làm tròn */
+  font-size: 18px;
+  font-weight: bold;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  transition: background 0.3s ease;
+}
+
+.pagination .page-link:hover {
+  background-color: #d5c37c;
+}
+
+/* Các số trang ở giữa */
+.pagination .page-item a {
+  width: 35px;
+  /* Nhỏ hơn nút Previous & Next */
+  height: 35px;
+  font-size: 16px;
+  border-radius: 50%;
+  background-color: #f0f0f0;
+  color: black;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* Số trang đang active */
+.pagination .page-item.active .page-link {
+  background-color: #dbcc8f;
+  /* Màu cam cho trang hiện tại */
+  color: white;
+  font-weight: bold;
+}
 .bg-primary {
   background: #dbcc8f !important;
 }
