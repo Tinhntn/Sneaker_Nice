@@ -7,33 +7,44 @@ import org.springframework.stereotype.Service;
 import poly.edu.sneaker.Model.KhachHang;
 import poly.edu.sneaker.Repository.KhachHangRepository;
 import poly.edu.sneaker.Service.KhachHangService;
-@Service
 
+@Service
 public class KhachHangImplement implements KhachHangService {
+
+    private final KhachHangRepository khachHangRepository;
+
     @Autowired
-    private KhachHangRepository khachHangRepository;
+    public KhachHangImplement(KhachHangRepository khachHangRepository) {
+        this.khachHangRepository = khachHangRepository;
+    }
+
+    @Override
+    public Page<KhachHang> findByTenKhachHangContainingOrEmailContainingOrSdtContaining(String tenKhachHang, String email, String sdt, Pageable pageable) {
+        return khachHangRepository.findByTenKhachHangContainingOrEmailContainingOrSdtContaining(tenKhachHang, email, sdt, pageable);
+    }
+
     @Override
     public Page<KhachHang> findAll(Pageable pageable) {
         return khachHangRepository.findAll(pageable);
     }
 
     @Override
-    public KhachHang findById(int id) {
-        return khachHangRepository.findById(id).get();
+    public KhachHang findById(Integer id) {
+        return khachHangRepository.findById(id).orElse(null);
     }
 
     @Override
-    public KhachHang save(KhachHang khachHang) {
-        return khachHangRepository.save(khachHang);
-    }
-
-    @Override
-    public void deleteById(int id) {
-        khachHangRepository.deleteById(id);
+    public void save(KhachHang khachHang) {
+        khachHangRepository.save(khachHang);
     }
 
     @Override
     public void update(KhachHang khachHang) {
         khachHangRepository.save(khachHang);
+    }
+
+    @Override
+    public void deleteById(Integer id) {
+        khachHangRepository.deleteById(id);
     }
 }

@@ -5,9 +5,10 @@ import org.springframework.data.domain.Pageable;
 import poly.edu.sneaker.Model.MauSac;
 
 public interface MauSacService {
+    Page<MauSac> findByMaMauSacContainingOrTenMauSacContaining(String maMauSac, String tenMauSac, Pageable pageable);
     Page<MauSac> findAll(Pageable pageable);
-    MauSac save(MauSac mauSac);
-    void delete(MauSac mauSac);
-    MauSac findById(int id);
+    MauSac findById(Integer id);
+    void save(MauSac mauSac);
     void update(MauSac mauSac);
+    void deleteById(Integer id);
 }

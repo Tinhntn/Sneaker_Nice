@@ -20,7 +20,8 @@ public class SanPhamController {
     private SanPhamService sanPhamService;
 
     @GetMapping("/hienthi")
-    public String hienThi(Model model, @RequestParam(defaultValue = "0") int page,@RequestParam(required = false)String keyword){
+    public String hienThi(Model model, @RequestParam(defaultValue = "0") int page,
+                          @RequestParam(required = false)String keyword){
         int size = 10;
         Pageable pageable = PageRequest.of(page,size);
         Page<SanPham> lstSanPham;

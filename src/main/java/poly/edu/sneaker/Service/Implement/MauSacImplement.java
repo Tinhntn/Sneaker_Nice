@@ -7,33 +7,44 @@ import org.springframework.stereotype.Service;
 import poly.edu.sneaker.Model.MauSac;
 import poly.edu.sneaker.Repository.MauSacRepository;
 import poly.edu.sneaker.Service.MauSacService;
-@Service
 
+@Service
 public class MauSacImplement implements MauSacService {
+
+    private final MauSacRepository mauSacRepository;
+
     @Autowired
-    private MauSacRepository mauSacRepository;
+    public MauSacImplement(MauSacRepository mauSacRepository) {
+        this.mauSacRepository = mauSacRepository;
+    }
+
+    @Override
+    public Page<MauSac> findByMaMauSacContainingOrTenMauSacContaining(String maMauSac, String tenMauSac, Pageable pageable) {
+        return mauSacRepository.findByMaMauSacContainingOrTenMauSacContaining(maMauSac, tenMauSac, pageable);
+    }
+
     @Override
     public Page<MauSac> findAll(Pageable pageable) {
         return mauSacRepository.findAll(pageable);
     }
 
     @Override
-    public MauSac save(MauSac mauSac) {
-        return mauSacRepository.save(mauSac);
+    public MauSac findById(Integer id) {
+        return mauSacRepository.findById(id).orElse(null);
     }
 
     @Override
-    public void delete(MauSac mauSac) {
-        mauSacRepository.delete(mauSac);
-    }
-
-    @Override
-    public MauSac findById(int id) {
-        return mauSacRepository.findById(id).get();
+    public void save(MauSac mauSac) {
+        mauSacRepository.save(mauSac);
     }
 
     @Override
     public void update(MauSac mauSac) {
         mauSacRepository.save(mauSac);
+    }
+
+    @Override
+    public void deleteById(Integer id) {
+        mauSacRepository.deleteById(id);
     }
 }

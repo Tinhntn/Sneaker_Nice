@@ -1,10 +1,13 @@
 package poly.edu.sneaker.Model;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.*;
 import lombok.*;
 
-@Table(name = "chucvu")
+import java.util.Date;
+
 @Entity
+@Table(name = "chucvu")
 @Data
 @Getter
 @Setter
@@ -13,8 +16,16 @@ import lombok.*;
 public class ChucVu {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private  int id;
+    private int id;
+
+    @Column(name = "ma_chuc_vu", unique = true, nullable = false)
+    @NotBlank(message = "Mã chức vụ không được để trống")
     private String maChucVu;
+
+    @Column(name = "ten_chuc_vu", nullable = false)
+    @NotBlank(message = "Tên chức vụ không được để trống")
     private String tenChucVu;
 
+    @Column(name = "deleted_at", nullable = false)
+    private Boolean deletedAt = false;
 }
