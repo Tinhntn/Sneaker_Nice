@@ -54,7 +54,7 @@
             <div class="container mt-5">
                 <div class="row">
                     <div class="col-lg-6 mb-5 ftco-animate">
-                        <a class="image-popup prod-img-bg"><img th:src="${chiTietSanPham.hinhAnh}" class="img-fluid"
+                        <a class="image-popup prod-img-bg"><img th:src="@{${chiTietSanPham.hinhAnh}}" class="img-fluid"
                                 alt="Colorlib Template"></a>
                     </div>
                     <div class="col-lg-6 product-details pl-md-5 ftco-animate">
@@ -78,58 +78,44 @@
                             </p>
                         </div>
                         <h4 class="mb-3"
-                            th:text="'Tên sản phẩm: ' + ${chiTietSanPham.tenSanPham} + ' '+ ${chiTietSanPham.idSanpham.idHang.tenHang} + ' '+ ${chiTietSanPham.idSanpham.idChatLieu.tenChatLieu}">
+                            th:text="'Tên sản phẩm: ' + ${chiTietSanPham.idSanPham.tenSanPham} + ' '+ ${chiTietSanPham.idSanPham.idHang.tenHang} + ' '+ ${chiTietSanPham.idSanPham.idDanhMuc.tenDanhMuc}+ ' '+ ${chiTietSanPham.idSanPham.idChatLieu.tenChatLieu}">
                         </h4>
                         <h4 class="price mb-3" th:text="'Giá: ' + ${chiTietSanPham.giaBan} + ' VND'"></h4>
-                        <h4 class="mb-4" th:text="'Còn hàng: ' + ${chiTietSanPham.soLuong}"></h4>
+                        <h4 class="mb-4" th:text="${chiTietSanPham.soLuong}!=null?'Còn hàng: ' + ${chiTietSanPham.soLuong}:'Hết hàng'"></h4>
 
                         <!-- Các button chọn Size -->
-                        <!-- <div id="sizeButtons" class="mb-4">
-                            <form th:action="@{/trangchuuser/timkiemCTSP}" method="post">
-                                <input type="hidden" name="idSanPham" th:if="${chiTietSanPham != null}"
-                                    th:value="${chiTietSanPham.id_}" />
-                                <input type="hidden" name="idMauSac" th:if="${chiTietSanPham != null}"
-                                    th:value="${chiTietSanPham.mauSac}" />
-                                <input type="hidden" name="idChatLieu" th:if="${chiTietSanPham != null}"
-                                    th:value="${chiTietSanPham.chatLieu}" />
-                                <input type="hidden" name="idHang" th:if="${chiTietSanPham != null}"
-                                    th:value="${chiTietSanPham.hang}" />
-                                <input type="hidden" name="idDanhMuc" th:if="${chiTietSanPham != null}"
-                                    th:value="${chiTietSanPham.danhMuc}" />
-
-                                <span th:each="size : ${listSize}">
-                                    <button type="submit" name="idSize" th:value="${size.id}" th:text="${size.ten}"
-                                        th:class="${size.ten == chiTietSanPham.tenSize} ? 'btn btn-secondary size-btn' : 'btn btn-outline-secondary size-btn'"
-                                        th:disabled="${size.ten == chiTietSanPham.tenSize}">
-                                    </button>
-                                </span>
-                            </form>
-                        </div> -->
-
-                        <!-- Các button chọn Màu sắc -->
-                        <!-- <div id="mauSacButtons" class="mb-4">
-                            <span th:each="ms : ${listMauSac}">
-                                <form th:action="@{/trangchuuser/timkiemCTSP}" method="post">
-                                    <input type="hidden" name="idSanPham" th:if="${chiTietSanPham != null}"
-                                        th:value="${chiTietSanPham.idSanPham}" />
-                                    <input type="hidden" name="idMauSac" th:if="${chiTietSanPham != null}"
-                                        th:value="${ms.id}" />
-                                    <input type="hidden" name="idChatLieu" th:if="${chiTietSanPham != null}"
-                                        th:value="${chiTietSanPham.chatLieu}" />
-                                    <input type="hidden" name="idHang" th:if="${chiTietSanPham != null}"
-                                        th:value="${chiTietSanPham.hang}" />
-                                    <input type="hidden" name="idSize" th:if="${chiTietSanPham != null}"
-                                        th:value="${chiTietSanPham.size}" />
-                                    <input type="hidden" name="idDanhMuc" th:if="${chiTietSanPham != null}"
-                                        th:value="${chiTietSanPham.danhMuc}" />
-
-                                    <button type="submit" class="color-btn" th:text="${ms.ten}"
-                                        th:classappend="${ms.ten == chiTietSanPham.tenMauSac} ? 'btn btn-secondary color-btn' : 'btn btn-outline-secondary color-btn'"
-                                        th:disabled="${ms.ten == chiTietSanPham.tenMauSac}">
+                        <div id="sizeButtons" class="mb-4">
+                            <span th:each="size : ${lstSize}">
+                                <form th:action=""  method="post">
+                                    <input type="hidden" name="idSanPham" th:if="${chiTietSanPham != null}" th:value="${chiTietSanPham.idSanPham.id}" />
+                                    <input type="hidden" name="idMauSac" th:if="${chiTietSanPham != null}" th:value="${chiTietSanPham.idMauSac.id}" />
+                                    <input type="hidden" name="idSize" th:value="${size.id}" />                        
+                                    <button type="submit"
+                                        th:text="${size.tenSize}"
+                                        th:class="${(chiTietSanPham != null and size.id == chiTietSanPham.idSize.id) ? 'btn btn-secondary size-btn' : 'btn btn-outline-secondary size-btn'}"
+                                        th:disabled="${chiTietSanPham != null and size.id == chiTietSanPham.idSize.id}">
                                     </button>
                                 </form>
                             </span>
-                        </div> -->
+                        </div>
+                        
+
+                        <!-- Các button chọn Màu sắc -->
+                        <div id="mauSacButtons" class="mb-4">
+                            <span th:each="ms : ${lstMauSac}">
+                                <form th:action="" method="post">
+                                    <input type="hidden" name="idSanPham" th:if="${chiTietSanPham != null}" th:value="${chiTietSanPham.idSanPham.id}" />
+                                    <input type="hidden" name="idMauSac" th:value="${ms.id}" />
+                                    <input type="hidden" name="idSize" th:if="${chiTietSanPham != null}" th:value="${chiTietSanPham.idSize.id}" />
+                                    <button type="submit" class="color-btn"
+                                        th:text="${ms.tenMauSac}"
+                                        th:classappend="${(chiTietSanPham != null and ms.id == chiTietSanPham.idMauSac.id) ? 'btn btn-secondary' : 'btn btn-outline-secondary'}"
+                                        th:disabled="${chiTietSanPham != null and ms.id == chiTietSanPham.idMauSac.id}">
+                                    </button>
+                                </form>
+                            </span>
+                        </div>
+                        
                         <div class="input-group col-md-6 d-flex mb-3">
                             <span class="input-group-btn mr-2">
                                 <button type="button" class="quantity-left-minus btn" data-type="minus" data-field="">
@@ -165,7 +151,7 @@
 
                                 <!-- <input class="form-control mb-3" type="number" name="soluongmua" th:value="1" min="1"
                                     required /> -->
-                                <input type="hidden" name="idctsp" th:if="${detailsp != null}"
+                                <!-- <input type="hidden" name="idctsp" th:if="${detailsp != null}"
                                     th:value="${detailsp.id}" />
                                 <input type="hidden" name="soluongkho" th:if="${detailsp != null}"
                                     th:value="${detailsp.soLuong}" />
@@ -173,7 +159,7 @@
                                     th:value="${detailsp.giaBan}" />
                                 <p><a type="submit" class="btn btn-black py-3 px-5 mr-2">Thêm vào giỏ hàng </a>
                                     <a href="cart.html" class="btn btn-primary py-3 px-5">Mua ngay</a>
-                                </p>
+                                </p> -->
                             </form>
                         </div>
                     </div>

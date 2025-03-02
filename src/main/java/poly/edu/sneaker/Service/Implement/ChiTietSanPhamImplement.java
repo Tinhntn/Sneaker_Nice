@@ -42,6 +42,11 @@ public class ChiTietSanPhamImplement implements ChiTietSanPhamService {
     public Page<ChiTietSanPham> findChiTietSanPhamByIDSanPham(int idSanPham, Pageable pageable) {
         return chiTietSanPhamRepository.findChiTietSanPhamByIdSanPham_Id(idSanPham,pageable);
     }
+
+    @Override
+    public Page<ChiTietSanPham> findChiTietSanPhamJustOne(Pageable pageable) {
+        return chiTietSanPhamRepository.findFirstRecordForEachProduct(pageable);
+    }
 //
 //    @Override
 //    public ChiTietSanPham getCTSPByIdSP(Pageable pageable, int idSP) {

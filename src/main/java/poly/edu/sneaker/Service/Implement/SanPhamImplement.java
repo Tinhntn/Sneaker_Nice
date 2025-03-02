@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import poly.edu.sneaker.Model.Interface.SanPhamInterface;
 import poly.edu.sneaker.Model.SanPham;
 import poly.edu.sneaker.Repository.SanPhamRepository;
 import poly.edu.sneaker.Service.SanPhamService;
@@ -57,4 +58,6 @@ public class SanPhamImplement implements SanPhamService {
     public Page<SanPham> findByMaSanPhamOrTenSanPham(String maSanPham, String tenSanPham, Pageable pageable) {
         return sanPhamRepository.findByMaSanPhamContainingOrTenSanPhamContaining(maSanPham,tenSanPham,pageable);
     }
+
+
 }

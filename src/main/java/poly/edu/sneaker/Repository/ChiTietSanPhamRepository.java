@@ -13,6 +13,9 @@ public interface ChiTietSanPhamRepository extends JpaRepository<ChiTietSanPham, 
 
     Page<ChiTietSanPham> findChiTietSanPhamByIdSanPham_Id(int idSanPham, Pageable pageable);
 
-//    ChiTietSanPham findChiTietSanPhamByIdSanPham(int idSanPham);
+    @Query("SELECT ctp FROM ChiTietSanPham ctp " +
+            "WHERE ctp.id = (SELECT MIN(ctp2.id) FROM ChiTietSanPham ctp2 WHERE ctp2.idSanPham.id = ctp.idSanPham.id)")
+    Page<ChiTietSanPham> findFirstRecordForEachProduct(Pageable pageable);
+
 
 }
