@@ -7,6 +7,9 @@ import org.springframework.stereotype.Service;
 import poly.edu.sneaker.Model.ChucVu;
 import poly.edu.sneaker.Repository.ChucVuRepository;
 import poly.edu.sneaker.Service.ChucVuService;
+
+import java.util.List;
+
 @Service
 
 public class ChucVuImplement implements ChucVuService {
@@ -20,6 +23,11 @@ public class ChucVuImplement implements ChucVuService {
     @Override
     public ChucVu findById(int id) {
         return chucVuRepository.findById(id).get();
+    }
+
+    @Override
+    public List<ChucVu> getAll() {
+        return chucVuRepository.findAll();
     }
 
     @Override

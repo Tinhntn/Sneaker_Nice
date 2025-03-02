@@ -34,7 +34,9 @@
                 <th>Mã khuyến mại</th>
                 <th>Tên khuyến mại</th>
                 <th>Giá trị</th>
-                <th>Điều kiện giảm</th>
+                <th>Điều kiện áp dụng</th>
+                <th>Mức giảm tối đa</th>
+<!--                <th>Loại khuyến mại</th>-->
                 <th>Ngày bắt đầu</th>
                 <th>Ngày kết thúc</th>
                 <th>Số lượng</th>
@@ -46,16 +48,18 @@
             </thead>
             <tbody>
             <tr th:each="khuyenMai : ${listKhuyenMai}">
-                <td th:text="${khuyenMai.makhuyenmai}"></td>
-                <td th:text="${khuyenMai.tenkhuyenmai}"></td>
-                <td th:text="${khuyenMai.giatri}"></td>
-                <td th:text="${khuyenMai.dieukiengiam}"></td>
-                <td th:text="${#dates.format(khuyenMai.ngaybatdau, 'yyyy-MM-dd')}"></td>
-                <td th:text="${#dates.format(khuyenMai.ngayketthuc, 'yyyy-MM-dd')}"></td>
-                <td th:text="${khuyenMai.soluong}"></td>
-                <td th:text="${#dates.format(khuyenMai.ngaytao, 'yyyy-MM-dd')}"></td>
-                <td th:text="${#dates.format(khuyenMai.ngaysua, 'yyyy-MM-dd')}"></td>
-                <td th:text="${khuyenMai.trangthai == 1 ? 'Còn hoạt động' : 'Không hoạt động'}"></td>
+                <td th:text="${khuyenMai.maKhuyenMai}"></td>
+                <td th:text="${khuyenMai.tenKhuyenMai}"></td>
+                <td th:text="${khuyenMai.giaTriGiam}"></td>
+                <td th:text="${khuyenMai.dieuKienApDung}"></td>
+                <td th:text="${khuyenMai.mucGiamToiDa}"></td>
+<!--                <td th:text="${khuyenMai.loaiKhuyenMai}"></td>-->
+                <td th:text="${#dates.format(khuyenMai.ngayBatDau, 'yyyy-MM-dd')}"></td>
+                <td th:text="${#dates.format(khuyenMai.ngayKetThuc, 'yyyy-MM-dd')}"></td>
+                <td th:text="${khuyenMai.soLuong}"></td>
+                <td th:text="${#dates.format(khuyenMai.ngayTao, 'yyyy-MM-dd')}"></td>
+                <td th:text="${#dates.format(khuyenMai.ngaySua, 'yyyy-MM-dd')}"></td>
+                <td th:text="${khuyenMai.trangThai == true ? 'Còn hoạt động' : 'Không hoạt động'}"></td>
                 <td>
                     <a th:href="@{/khuyenmai/detail/{id}(id=${khuyenMai.id})}">
                         <button type="button" class="btn btn-outline-primary">Chi tiết</button>
@@ -93,33 +97,37 @@
                     <div class="col-md-6">
                         <div class="form-group">
                             <label for="makhuyenmai">Mã khuyến mại</label>
-                            <input type="text" class="form-control" id="makhuyenmai" th:field="*{makhuyenmai}">
+                            <input type="text" class="form-control" id="makhuyenmai" th:field="*{maKhuyenMai}">
                         </div>
                         <div class="form-group">
                             <label for="tenkhuyenmai">Tên khuyến mại</label>
-                            <input type="text" class="form-control" id="tenkhuyenmai" th:field="*{tenkhuyenmai}">
+                            <input type="text" class="form-control" id="tenkhuyenmai" th:field="*{tenKhuyenMai}">
                         </div>
                         <div class="form-group">
-                            <label for="giatri">Giá trị</label>
-                            <input type="number" class="form-control" id="giatri" th:field="*{giatri}">
+                            <label for="giatrigiam">Giá trị giảm</label>
+                            <input type="number" class="form-control" id="giatrigiam" th:field="*{giaTriGiam}">
                         </div>
                         <div class="form-group">
-                            <label for="dieukiengiam">Điều kiện giảm</label>
-                            <input type="text" class="form-control" id="dieukiengiam" th:field="*{dieukiengiam}">
+                            <label for="dieukienapdung">Điều kiện áp dụng</label>
+                            <input type="number" class="form-control" id="dieukienapdung" th:field="*{dieuKienApDung}">
+                        </div>
+                        <div class="form-group">
+                            <label for="mucgiamtoida">Mức giảm tối đa</label>
+                            <input type="number" class="form-control" id="mucgiamtoida" th:field="*{mucGiamToiDa}">
                         </div>
                     </div>
                     <div class="col-md-6">
                         <div class="form-group">
                             <label for="ngaybatdau">Ngày bắt đầu</label>
-                            <input type="date" class="form-control" id="ngaybatdau" th:field="*{ngaybatdau}">
+                            <input type="date" class="form-control" id="ngaybatdau" th:field="*{ngayBatDau}">
                         </div>
                         <div class="form-group">
                             <label for="ngayketthuc">Ngày kết thúc</label>
-                            <input type="date" class="form-control" id="ngayketthuc" th:field="*{ngayketthuc}">
+                            <input type="date" class="form-control" id="ngayketthuc" th:field="*{ngayKetThuc}">
                         </div>
                         <div class="form-group">
                             <label for="soluong">Số lượng</label>
-                            <input type="number" class="form-control" id="soluong" th:field="*{soluong}">
+                            <input type="number" class="form-control" id="soluong" th:field="*{soLuong}">
                         </div>
 
                     </div>

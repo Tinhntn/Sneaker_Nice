@@ -14,7 +14,9 @@ public class ChucVu {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private  int id;
+    @JoinColumn(name = "ma_chuc_vu")
     private String maChucVu;
+    @JoinColumn(name = "ten_chuc_vu")
     private String tenChucVu;
 
 }

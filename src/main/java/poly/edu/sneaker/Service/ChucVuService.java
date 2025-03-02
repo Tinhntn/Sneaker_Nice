@@ -4,10 +4,12 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import poly.edu.sneaker.Model.ChucVu;
 
+import java.util.List;
+
 public interface ChucVuService {
     Page<ChucVu> findAll(Pageable pageable);
     ChucVu findById(int id);
-
+    List<ChucVu> getAll();
     ChucVu save(ChucVu chucVu);
     void delete(ChucVu chucVu);
 

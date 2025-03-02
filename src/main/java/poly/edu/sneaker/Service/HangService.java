@@ -7,10 +7,11 @@ import poly.edu.sneaker.Model.Hang;
 import java.util.List;
 
 public interface HangService {
-    Page<Hang> getAllHangs(Pageable pageable);
+    Page<Hang> getAll(Pageable pageable);
     Hang getHangById(int id);
-    Hang saveHang(Hang hang);
+    void saveHang(Hang hang);
     void deleteHang(int id);
     void updateHang(Hang hang);
     List<Hang> getAllHangs();
+    void updateHang(Hang hang, int id);
 }
