@@ -4,64 +4,63 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import poly.edu.sneaker.Model.ChatLieu;
-
-import poly.edu.sneaker.Repository.ChatLieuRepostory;
+import poly.edu.sneaker.Repository.ChatLieuRepository;
+import poly.edu.sneaker.Repository.SanPhamRepository;
 import poly.edu.sneaker.Service.ChatLieuService;
-
-import java.util.Date;
 
 @Service
 public class ChatLieuImplement implements ChatLieuService {
-    private final ChatLieuRepostory chatLieuRepository;
 
     @Autowired
-    public ChatLieuImplement(ChatLieuRepostory chatLieuRepository) {
-        this.chatLieuRepository = chatLieuRepository;
+    private ChatLieuRepository chatLieuRepository;
+
+    @Autowired
+    private SanPhamRepository sanPhamRepository;
+
+    @Override
+    public Page<ChatLieu> getAll(Pageable pageable) {
+        return chatLieuRepository.findAll(pageable);
     }
 
     @Override
-    public Page<ChatLieu> findAll(Pageable pageable) {
-        return chatLieuRepository.findByDeletedAtFalse(pageable);
+    public ChatLieu findChatLieuById(int id) {
+        return chatLieuRepository.findById(id).orElseThrow(() -> new RuntimeException("Chất liệu không tồn tại"));
     }
 
     @Override
-    public ChatLieu findById(int id) {
-        return chatLieuRepository.findByIdAndDeletedAtFalse(id).orElseThrow(() -> new RuntimeException("Chất liệu không tồn tại"));
+    public void save(ChatLieu chatLieu) {
+        chatLieuRepository.save(chatLieu);
     }
 
     @Override
-    public ChatLieu save(ChatLieu chatLieu) {
-        chatLieu.setNgayTao(new Date());
-        chatLieu.setNgaySua(new Date());
-        return chatLieuRepository.save(chatLieu);
+    public void update(ChatLieu chatLieu, int id) {
+        ChatLieu existingChatLieu = chatLieuRepository.findById(id).orElseThrow(() -> new RuntimeException("Chất liệu không tồn tại"));
+        existingChatLieu.setMaChatLieu(chatLieu.getMaChatLieu());
+        existingChatLieu.setTenChatLieu(chatLieu.getTenChatLieu());
+        existingChatLieu.setNgayTao(chatLieu.getNgayTao());
+        existingChatLieu.setNgaySua(chatLieu.getNgaySua());
+        existingChatLieu.setTrangThai(chatLieu.getTrangThai());
+        chatLieuRepository.save(existingChatLieu);
     }
 
     @Override
+    @Transactional
     public void deleteById(int id) {
-        ChatLieu chatLieu = chatLieuRepository.findById(id).orElseThrow(() -> new RuntimeException("Chất liệu không tồn tại"));
-        chatLieu.setDeletedAt(true);
-        chatLieuRepository.save(chatLieu);
+        // Kiểm tra và xóa các sản phẩm liên quan đến chất liệu
+        sanPhamRepository.deleteByChatLieuId(id);
+        // Xóa chất liệu
+        chatLieuRepository.deleteById(id);
     }
 
     @Override
-    public void update(ChatLieu chatLieu) {
-        chatLieu.setNgaySua(new Date());
-        chatLieuRepository.save(chatLieu);
+    public Page<ChatLieu> search(String keyword, Pageable pageable) {
+        return chatLieuRepository.findByMaChatLieuContainingOrTenChatLieuContaining(keyword, keyword, pageable);
     }
 
     @Override
-    public Page<ChatLieu> listPage(Pageable pageable) {
-        return chatLieuRepository.findByDeletedAtFalse(pageable);
-    }
-
-    @Override
-    public void delete(Integer id) {
-        deleteById(id);
-    }
-
-    @Override
-    public Page<ChatLieu> findByTenChatLieuOrMaChatLieuAndDeletedAt(String tenChatLieu, String maChatLieu, boolean deletedAt, Pageable pageable) {
-        return chatLieuRepository.findByTenChatLieuContainingAndDeletedAtFalse(tenChatLieu, pageable);
+    public ChatLieu findByMaChatLieu(String maChatLieu) {
+        return chatLieuRepository.findByMaChatLieu(maChatLieu);
     }
 }

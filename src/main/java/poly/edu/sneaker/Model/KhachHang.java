@@ -6,15 +6,14 @@ import lombok.*;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.util.Date;
-import java.util.List;
 
-@Entity
 @Table(name = "khachhang")
+@Entity
 @Data
 @Getter
 @Setter
-@AllArgsConstructor
 @NoArgsConstructor
+@AllArgsConstructor
 public class KhachHang {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -44,14 +43,13 @@ public class KhachHang {
     @Column(name = "email", unique = true)
     private String email;
 
-    @NotBlank(message = "Số điện thoại không được để trống")
     @Pattern(regexp = "^\\d{10}$", message = "Số điện thoại phải có 10 chữ số và không chứa chữ cái")
     @Column(name = "sdt")
     private String sdt;
 
-    @Column(name = "ngay_sinh")
     @Past(message = "Ngày sinh phải là một ngày trong quá khứ")
     @DateTimeFormat(pattern = "yyyy-MM-dd")
+    @Column(name = "ngay_sinh")
     private Date ngaySinh;
 
     @Column(name = "ngay_tao", nullable = false)
@@ -62,9 +60,9 @@ public class KhachHang {
     @Temporal(TemporalType.TIMESTAMP)
     private Date ngaySua = new Date();
 
-    @Column(name = "mat_khau", nullable = false)
     @NotBlank(message = "Mật khẩu không được để trống")
     @Pattern(regexp = "^(?=.*[A-Z]).{6,}$", message = "Mật khẩu phải có ít nhất 6 ký tự và chứa ít nhất một chữ cái in hoa")
+    @Column(name = "mat_khau", nullable = false)
     private String matKhau;
 
     @Column(name = "hinh_anh")
@@ -72,16 +70,4 @@ public class KhachHang {
 
     @Column(name = "trang_thai", nullable = false)
     private Boolean trangThai = true;
-
-    @Column(name = "deleted_at", nullable = false)
-    private Boolean deletedAt = false;
-
-//    @OneToMany(mappedBy = "khachHang", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-//    private List<DiaChi> diaChiList;
-//
-//    @OneToMany(mappedBy = "khachHang", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-//    private List<HoaDon> hoaDonList;
-//
-//    @OneToMany(mappedBy = "khachHang", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-//    private List<GioHang> gioHangList;
 }

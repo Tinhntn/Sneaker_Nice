@@ -10,14 +10,14 @@ import java.util.Date;
 @Data
 @Getter
 @Setter
-@AllArgsConstructor
 @NoArgsConstructor
+@AllArgsConstructor
 public class ChatLieu {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
-    @Column(name = "ma_chat_lieu", unique = true, nullable = false)
+    @Column(name = "ma_chat_lieu", nullable = false)
     private String maChatLieu;
 
     @Column(name = "ten_chat_lieu", nullable = false)
@@ -33,7 +33,4 @@ public class ChatLieu {
 
     @Column(name = "trang_thai", nullable = false)
     private Boolean trangThai = true;
-
-    @Column(name = "deleted_at", nullable = false)
-    private Boolean deletedAt = false;
 }

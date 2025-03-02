@@ -4,60 +4,53 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import poly.edu.sneaker.Model.ChucVu;
 import poly.edu.sneaker.Repository.ChucVuRepository;
 import poly.edu.sneaker.Service.ChucVuService;
 
-import java.util.Date;
-
 @Service
 public class ChucVuImplement implements ChucVuService {
-    private final ChucVuRepository chucVuRepository;
 
     @Autowired
-    public ChucVuImplement(ChucVuRepository chucVuRepository) {
-        this.chucVuRepository = chucVuRepository;
+    private ChucVuRepository chucVuRepository;
+
+    @Override
+    public Page<ChucVu> getAll(Pageable pageable) {
+        return chucVuRepository.findAll(pageable);
     }
 
     @Override
-    public Page<ChucVu> findAll(Pageable pageable) {
-        return chucVuRepository.findByDeletedAtFalse(pageable);
+    public ChucVu findChucVuById(int id) {
+        return chucVuRepository.findById(id).orElseThrow(() -> new RuntimeException("Chức vụ không tồn tại"));
     }
 
     @Override
-    public ChucVu findById(int id) {
-        return chucVuRepository.findByIdAndDeletedAtFalse(id).orElseThrow(() -> new RuntimeException("Chức vụ không tồn tại"));
+    public void save(ChucVu chucVu) {
+        chucVuRepository.save(chucVu);
     }
 
     @Override
-    public ChucVu save(ChucVu chucVu) {
-        return chucVuRepository.save(chucVu);
+    public void update(ChucVu chucVu, int id) {
+        ChucVu existingChucVu = chucVuRepository.findById(id).orElseThrow(() -> new RuntimeException("Chức vụ không tồn tại"));
+        existingChucVu.setMaChucVu(chucVu.getMaChucVu());
+        existingChucVu.setTenChucVu(chucVu.getTenChucVu());
+        chucVuRepository.save(existingChucVu);
     }
 
     @Override
+    @Transactional
     public void deleteById(int id) {
-        ChucVu chucVu = chucVuRepository.findById(id).orElseThrow(() -> new RuntimeException("Chức vụ không tồn tại"));
-        chucVu.setDeletedAt(true);
-        chucVuRepository.save(chucVu);
+        chucVuRepository.deleteById(id);
     }
 
     @Override
-    public void update(ChucVu chucVu) {
-        chucVuRepository.save(chucVu);
+    public Page<ChucVu> search(String keyword, Pageable pageable) {
+        return chucVuRepository.findByMaChucVuContainingOrTenChucVuContaining(keyword, keyword, pageable);
     }
 
     @Override
-    public Page<ChucVu> listPage(Pageable pageable) {
-        return chucVuRepository.findByDeletedAtFalse(pageable);
-    }
-
-    @Override
-    public void delete(Integer id) {
-        deleteById(id);
-    }
-
-    @Override
-    public Page<ChucVu> findByTenChucVuOrMaChucVuAndDeletedAt(String tenChucVu, String maChucVu, boolean deletedAt, Pageable pageable) {
-        return chucVuRepository.findByTenChucVuContainingAndDeletedAtFalse(tenChucVu, pageable);
+    public ChucVu findByMaChucVu(String maChucVu) {
+        return chucVuRepository.findByMaChucVu(maChucVu);
     }
 }

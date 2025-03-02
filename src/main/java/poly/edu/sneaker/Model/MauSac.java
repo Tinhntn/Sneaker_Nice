@@ -36,7 +36,4 @@ public class MauSac {
 
     @Column(name = "trang_thai", nullable = false)
     private Boolean trangThai = true;
-
-    @Column(name = "deleted_at", nullable = false)
-    private Boolean deletedAt = false;
 }

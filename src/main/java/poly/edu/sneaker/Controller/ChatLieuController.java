@@ -18,53 +18,26 @@ import jakarta.validation.Valid;
 @RequestMapping("/chat_lieu")
 public class ChatLieuController {
 
-    private final ChatLieuService chatLieuService;
-
     @Autowired
-    public ChatLieuController(ChatLieuService chatLieuService) {
-        this.chatLieuService = chatLieuService;
-    }
+    private ChatLieuService chatLieuService;
 
     @GetMapping("/hienthi")
-    public String hienThiChatLieu(@RequestParam(required = false) String search, Pageable pageable, Model model) {
-        Page<ChatLieu> page;
-        if (search != null && !search.isEmpty()) {
-            page = chatLieuService.findByTenChatLieuOrMaChatLieuAndDeletedAt(search, search, false, pageable);
-        } else {
-            page = chatLieuService.findAll(pageable);
-        }
-        model.addAttribute("listCL", page.getContent());
-        model.addAttribute("currentPage", page.getNumber());
-        model.addAttribute("totalPages", page.getTotalPages());
-        model.addAttribute("search", search);
-        return "admin/chat_lieu/ListChatLieu";
-    }
-
-    @GetMapping("/delete/{id}")
-    public String deleteChatLieu(@PathVariable("id") Integer id, RedirectAttributes redirectAttributes) {
-        try {
-            chatLieuService.deleteById(id);
-            redirectAttributes.addFlashAttribute("successMessage", "Xóa chất liệu thành công!");
-        } catch (Exception e) {
-            redirectAttributes.addFlashAttribute("errorMessage", "Lỗi khi xóa chất liệu!");
-        }
-        return "redirect:/chat_lieu/hienthi";
-    }
-
-    @GetMapping("/listPage")
-    @ResponseBody
-    public Page<ChatLieu> listPage(
-            @RequestParam(defaultValue = "0") int page, // Mặc định là trang 0
-            @RequestParam(defaultValue = "10") int size // Mặc định là 10 bản ghi mỗi trang
-    ) {
+    public String hienThiChatLieu(Model model, @RequestParam(defaultValue = "0") int page, @RequestParam(required = false) String keyword) {
+        int size = 10;
         Pageable pageable = PageRequest.of(page, size);
-        return chatLieuService.listPage(pageable);
-    }
+        Page<ChatLieu> chatLieuPage;
 
-    @GetMapping("/add")
-    public String showAddForm(Model model) {
-        model.addAttribute("chatLieu", new ChatLieu());
-        return "admin/chat_lieu/add";
+        if (keyword != null && !keyword.isEmpty()) {
+            chatLieuPage = chatLieuService.search(keyword, pageable);
+            model.addAttribute("keyword", keyword);
+        } else {
+            chatLieuPage = chatLieuService.getAll(pageable);
+        }
+
+        model.addAttribute("listCL", chatLieuPage.getContent());
+        model.addAttribute("currentPage", chatLieuPage.getNumber());
+        model.addAttribute("totalPages", chatLieuPage.getTotalPages());
+        return "admin/chat_lieu/ListChatLieu";
     }
 
     @PostMapping("/add")
@@ -73,8 +46,12 @@ public class ChatLieuController {
             return "admin/chat_lieu/add";
         }
         try {
+            if (chatLieuService.findByMaChatLieu(chatLieu.getMaChatLieu()) != null) {
+                redirectAttributes.addFlashAttribute("errorMessage", "Mã chất liệu đã tồn tại!");
+                return "redirect:/chat_lieu/add";
+            }
             chatLieuService.save(chatLieu);
-            redirectAttributes.addFlashAttribute("successMessage", "Thêm chất liệu thành công!");
+            redirectAttributes.addFlashAttribute("successMessage", "Chất liệu được thêm thành công!");
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("errorMessage", "Lỗi khi thêm chất liệu!");
         }
@@ -83,7 +60,7 @@ public class ChatLieuController {
 
     @GetMapping("/edit/{id}")
     public String showEditForm(@PathVariable("id") Integer id, Model model, RedirectAttributes redirectAttributes) {
-        ChatLieu chatLieu = chatLieuService.findById(id);
+        ChatLieu chatLieu = chatLieuService.findChatLieuById(id);
         if (chatLieu == null) {
             redirectAttributes.addFlashAttribute("errorMessage", "Chất liệu không tồn tại!");
             return "redirect:/chat_lieu/hienthi";
@@ -98,10 +75,11 @@ public class ChatLieuController {
             return "admin/chat_lieu/update";
         }
         try {
-            ChatLieu existingChatLieu = chatLieuService.findById(id);
+            ChatLieu existingChatLieu = chatLieuService.findChatLieuById(id);
             if (existingChatLieu != null) {
                 chatLieu.setId(id);
-                chatLieuService.update(chatLieu);
+                chatLieu.setNgayTao(existingChatLieu.getNgayTao());
+                chatLieuService.update(chatLieu, id);
                 redirectAttributes.addFlashAttribute("successMessage", "Cập nhật chất liệu thành công!");
             } else {
                 redirectAttributes.addFlashAttribute("errorMessage", "Chất liệu không tồn tại!");
@@ -110,5 +88,22 @@ public class ChatLieuController {
             redirectAttributes.addFlashAttribute("errorMessage", "Lỗi khi cập nhật chất liệu!");
         }
         return "redirect:/chat_lieu/hienthi";
+    }
+
+    @GetMapping("/delete/{id}")
+    public String deleteChatLieu(@PathVariable("id") Integer id, RedirectAttributes redirectAttributes) {
+        try {
+            chatLieuService.deleteById(id);
+            redirectAttributes.addFlashAttribute("successMessage", "Xóa chất liệu thành công!");
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Lỗi khi xóa chất liệu!");
+        }
+        return "redirect:/chat_lieu/hienthi";
+    }
+
+    @GetMapping("/add")
+    public String showAddForm(Model model) {
+        model.addAttribute("chatLieu", new ChatLieu());
+        return "admin/chat_lieu/add";
     }
 }

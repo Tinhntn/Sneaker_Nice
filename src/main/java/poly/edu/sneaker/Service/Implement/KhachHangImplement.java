@@ -11,40 +11,56 @@ import poly.edu.sneaker.Service.KhachHangService;
 @Service
 public class KhachHangImplement implements KhachHangService {
 
-    private final KhachHangRepository khachHangRepository;
-
     @Autowired
-    public KhachHangImplement(KhachHangRepository khachHangRepository) {
-        this.khachHangRepository = khachHangRepository;
-    }
+    private KhachHangRepository khachHangRepository;
 
     @Override
-    public Page<KhachHang> findByTenKhachHangContainingOrEmailContainingOrSdtContaining(String tenKhachHang, String email, String sdt, Pageable pageable) {
-        return khachHangRepository.findByTenKhachHangContainingOrEmailContainingOrSdtContaining(tenKhachHang, email, sdt, pageable);
-    }
-
-    @Override
-    public Page<KhachHang> findAll(Pageable pageable) {
+    public Page<KhachHang> getAll(Pageable pageable) {
         return khachHangRepository.findAll(pageable);
     }
 
     @Override
-    public KhachHang findById(Integer id) {
-        return khachHangRepository.findById(id).orElse(null);
+    public KhachHang findKhachHangById(int id) {
+        return khachHangRepository.findById(id).orElseThrow(() -> new RuntimeException("KhachHang not found"));
     }
 
     @Override
-    public void save(KhachHang khachHang) {
+    public void saveKhachHang(KhachHang khachHang) {
         khachHangRepository.save(khachHang);
     }
 
     @Override
-    public void update(KhachHang khachHang) {
-        khachHangRepository.save(khachHang);
+    public void updateKhachHang(KhachHang khachHang, int id) {
+        KhachHang existingKhachHang = khachHangRepository.findById(id).orElseThrow(() -> new RuntimeException("KhachHang not found"));
+        existingKhachHang.setMaKhachHang(khachHang.getMaKhachHang());
+        existingKhachHang.setTenKhachHang(khachHang.getTenKhachHang());
+        existingKhachHang.setTinhThanhPho(khachHang.getTinhThanhPho());
+        existingKhachHang.setQuanHuyen(khachHang.getQuanHuyen());
+        existingKhachHang.setPhuongXa(khachHang.getPhuongXa());
+        existingKhachHang.setGioiTinh(khachHang.getGioiTinh());
+        existingKhachHang.setEmail(khachHang.getEmail());
+        existingKhachHang.setSdt(khachHang.getSdt());
+        existingKhachHang.setNgaySinh(khachHang.getNgaySinh());
+        existingKhachHang.setNgayTao(khachHang.getNgayTao());
+        existingKhachHang.setNgaySua(khachHang.getNgaySua());
+        existingKhachHang.setMatKhau(khachHang.getMatKhau());
+        existingKhachHang.setHinhAnh(khachHang.getHinhAnh());
+        existingKhachHang.setTrangThai(khachHang.getTrangThai());
+        khachHangRepository.save(existingKhachHang);
     }
 
     @Override
-    public void deleteById(Integer id) {
+    public void deleteById(int id) {
         khachHangRepository.deleteById(id);
+    }
+
+    @Override
+    public Page<KhachHang> search(String keyword, Pageable pageable) {
+        return khachHangRepository.findByMaKhachHangContainingOrTenKhachHangContaining(keyword, keyword, pageable);
+    }
+
+    @Override
+    public KhachHang findByEmail(String email) {
+        return khachHangRepository.findByEmail(email);
     }
 }

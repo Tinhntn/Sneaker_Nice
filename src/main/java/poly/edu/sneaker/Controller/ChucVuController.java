@@ -18,53 +18,26 @@ import jakarta.validation.Valid;
 @RequestMapping("/chuc_vu")
 public class ChucVuController {
 
-    private final ChucVuService chucVuService;
-
     @Autowired
-    public ChucVuController(ChucVuService chucVuService) {
-        this.chucVuService = chucVuService;
-    }
+    private ChucVuService chucVuService;
 
     @GetMapping("/hienthi")
-    public String hienThiChucVu(@RequestParam(required = false) String search, Pageable pageable, Model model) {
-        Page<ChucVu> page;
-        if (search != null && !search.isEmpty()) {
-            page = chucVuService.findByTenChucVuOrMaChucVuAndDeletedAt(search, search, false, pageable);
-        } else {
-            page = chucVuService.findAll(pageable);
-        }
-        model.addAttribute("listCV", page.getContent());
-        model.addAttribute("currentPage", page.getNumber());
-        model.addAttribute("totalPages", page.getTotalPages());
-        model.addAttribute("search", search);
-        return "admin/chuc_vu/ListChucVu";
-    }
-
-    @GetMapping("/delete/{id}")
-    public String deleteChucVu(@PathVariable("id") Integer id, RedirectAttributes redirectAttributes) {
-        try {
-            chucVuService.deleteById(id);
-            redirectAttributes.addFlashAttribute("successMessage", "Xóa chức vụ thành công!");
-        } catch (Exception e) {
-            redirectAttributes.addFlashAttribute("errorMessage", "Lỗi khi xóa chức vụ!");
-        }
-        return "redirect:/chuc_vu/hienthi";
-    }
-
-    @GetMapping("/listPage")
-    @ResponseBody
-    public Page<ChucVu> listPage(
-            @RequestParam(defaultValue = "0") int page, // Mặc định là trang 0
-            @RequestParam(defaultValue = "10") int size // Mặc định là 10 bản ghi mỗi trang
-    ) {
+    public String hienThiChucVu(Model model, @RequestParam(defaultValue = "0") int page, @RequestParam(required = false) String keyword) {
+        int size = 10;
         Pageable pageable = PageRequest.of(page, size);
-        return chucVuService.listPage(pageable);
-    }
+        Page<ChucVu> chucVuPage;
 
-    @GetMapping("/add")
-    public String showAddForm(Model model) {
-        model.addAttribute("chucVu", new ChucVu());
-        return "admin/chuc_vu/add";
+        if (keyword != null && !keyword.isEmpty()) {
+            chucVuPage = chucVuService.search(keyword, pageable);
+            model.addAttribute("keyword", keyword);
+        } else {
+            chucVuPage = chucVuService.getAll(pageable);
+        }
+
+        model.addAttribute("listCV", chucVuPage.getContent());
+        model.addAttribute("currentPage", chucVuPage.getNumber());
+        model.addAttribute("totalPages", chucVuPage.getTotalPages());
+        return "admin/chuc_vu/ListChucVu";
     }
 
     @PostMapping("/add")
@@ -73,8 +46,12 @@ public class ChucVuController {
             return "admin/chuc_vu/add";
         }
         try {
+            if (chucVuService.findByMaChucVu(chucVu.getMaChucVu()) != null) {
+                redirectAttributes.addFlashAttribute("errorMessage", "Mã chức vụ đã tồn tại!");
+                return "redirect:/chuc_vu/add";
+            }
             chucVuService.save(chucVu);
-            redirectAttributes.addFlashAttribute("successMessage", "Thêm chức vụ thành công!");
+            redirectAttributes.addFlashAttribute("successMessage", "Chức vụ được thêm thành công!");
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("errorMessage", "Lỗi khi thêm chức vụ!");
         }
@@ -83,7 +60,7 @@ public class ChucVuController {
 
     @GetMapping("/edit/{id}")
     public String showEditForm(@PathVariable("id") Integer id, Model model, RedirectAttributes redirectAttributes) {
-        ChucVu chucVu = chucVuService.findById(id);
+        ChucVu chucVu = chucVuService.findChucVuById(id);
         if (chucVu == null) {
             redirectAttributes.addFlashAttribute("errorMessage", "Chức vụ không tồn tại!");
             return "redirect:/chuc_vu/hienthi";
@@ -98,10 +75,10 @@ public class ChucVuController {
             return "admin/chuc_vu/update";
         }
         try {
-            ChucVu existingChucVu = chucVuService.findById(id);
+            ChucVu existingChucVu = chucVuService.findChucVuById(id);
             if (existingChucVu != null) {
                 chucVu.setId(id);
-                chucVuService.update(chucVu);
+                chucVuService.update(chucVu, id);
                 redirectAttributes.addFlashAttribute("successMessage", "Cập nhật chức vụ thành công!");
             } else {
                 redirectAttributes.addFlashAttribute("errorMessage", "Chức vụ không tồn tại!");
@@ -110,5 +87,22 @@ public class ChucVuController {
             redirectAttributes.addFlashAttribute("errorMessage", "Lỗi khi cập nhật chức vụ!");
         }
         return "redirect:/chuc_vu/hienthi";
+    }
+
+    @GetMapping("/delete/{id}")
+    public String deleteChucVu(@PathVariable("id") Integer id, RedirectAttributes redirectAttributes) {
+        try {
+            chucVuService.deleteById(id);
+            redirectAttributes.addFlashAttribute("successMessage", "Xóa chức vụ thành công!");
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Lỗi khi xóa chức vụ!");
+        }
+        return "redirect:/chuc_vu/hienthi";
+    }
+
+    @GetMapping("/add")
+    public String showAddForm(Model model) {
+        model.addAttribute("chucVu", new ChucVu());
+        return "admin/chuc_vu/add";
     }
 }

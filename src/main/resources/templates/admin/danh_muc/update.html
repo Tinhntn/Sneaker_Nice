@@ -15,63 +15,51 @@
 
 <body>
 <div layout:fragment="content">
-    <div class="container-fluid">
+    <div class="container">
         <h1>Cập Nhật Danh Mục</h1>
         <form th:action="@{/danh_muc/update/{id}(id=${danhMuc.id})}" th:object="${danhMuc}" method="post">
             <div class="mb-3">
                 <label for="maDanhMuc" class="form-label">Mã Danh Mục</label>
-                <input type="text" class="form-control" id="maDanhMuc" th:field="*{maDanhMuc}" readonly>
+                <input type="text" class="form-control" id="maDanhMuc" th:field="*{maDanhMuc}">
+                <div class="text-danger" th:if="${#fields.hasErrors('maDanhMuc')}" th:errors="*{maDanhMuc}">Mã danh mục không hợp lệ</div>
             </div>
             <div class="mb-3">
                 <label for="tenDanhMuc" class="form-label">Tên Danh Mục</label>
-                <input type="text" class="form-control" id="tenDanhMuc" th:field="*{tenDanhMuc}" required>
+                <input type="text" class="form-control" id="tenDanhMuc" th:field="*{tenDanhMuc}">
+                <div class="text-danger" th:if="${#fields.hasErrors('tenDanhMuc')}" th:errors="*{tenDanhMuc}">Tên danh mục không hợp lệ</div>
+            </div>
+            <div class="mb-3">
+                <label for="trangThai" class="form-label">Trạng Thái</label>
+                <select class="form-control" id="trangThai" th:field="*{trangThai}">
+                    <option value="true" th:selected="*{trangThai} == true">Hoạt động</option>
+                    <option value="false" th:selected="*{trangThai} == false">Không hoạt động</option>
+                </select>
             </div>
             <button type="submit" class="btn btn-primary">Cập Nhật</button>
             <a th:href="@{/danh_muc/hienthi}" class="btn btn-secondary">Hủy</a>
         </form>
-
-        <!-- Hiển thị thông báo thành công -->
-        <div th:if="${successMessage}">
-            <script th:inline="javascript">
-                /*<![CDATA[*/
-                var successMessage = /*[[${successMessage}]]*/ 'null';
-                if (successMessage !== 'null') {
-                    Swal.fire({
-                        icon: 'success',
-                        title: 'Thành công',
-                        text: successMessage,
-                        confirmButtonText: 'OK'
-                    }).then(() => {
-                        // Xóa successMessage sau khi hiển thị thông báo
-                        history.replaceState(null, '', location.pathname);
-                    });
-                }
-                /*]]>*/
-            </script>
-        </div>
-
-        <!-- Hiển thị thông báo lỗi -->
-        <div th:if="${errorMessage}">
-            <script th:inline="javascript">
-                /*<![CDATA[*/
-                var errorMessage = /*[[${errorMessage}]]*/ 'null';
-                if (errorMessage !== 'null') {
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Lỗi',
-                        text: errorMessage,
-                        confirmButtonText: 'OK'
-                    }).then(() => {
-                        // Xóa errorMessage sau khi hiển thị thông báo
-                        history.replaceState(null, '', location.pathname);
-                    });
-                }
-                /*]]>*/
-            </script>
-        </div>
     </div>
 </div>
 
-</body>
+<!-- Hiển thị thông báo lỗi -->
+<div th:if="${errorMessage}">
+    <script th:inline="javascript">
+        /*<![CDATA[*/
+        var errorMessage = /*[[${errorMessage}]]*/ 'null';
+        if (errorMessage !== 'null') {
+            Swal.fire({
+                icon: 'error',
+                title: 'Lỗi',
+                text: errorMessage,
+                confirmButtonText: 'OK'
+            }).then(() => {
+                // Xóa errorMessage sau khi hiển thị thông báo
+                history.replaceState(null, '', location.pathname);
+            });
+        }
+        /*]]>*/
+    </script>
+</div>
 
+</body>
 </html>

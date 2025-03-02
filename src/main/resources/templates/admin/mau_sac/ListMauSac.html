@@ -21,8 +21,8 @@
         <div class="float-end">
             <form th:action="@{/mau_sac/hienthi}" method="get" style="width: 300px">
                 <div class="input-group mb-3">
-                    <input type="text" class="form-control" placeholder="Tìm kiếm Theo Mã hoặc Tên Màu Sắc" name="search"
-                           th:value="${search}">
+                    <input type="text" class="form-control" placeholder="Tìm kiếm Theo Mã hoặc Tên" name="keyword"
+                           th:value="${keyword}">
                     <button class="btn btn-primary" type="submit">Tìm kiếm</button>
                 </div>
             </form>
@@ -34,6 +34,9 @@
             <tr>
                 <th scope="col">Mã Màu Sắc</th>
                 <th scope="col">Tên Màu Sắc</th>
+                <th scope="col">Ngày Tạo</th>
+                <th scope="col">Ngày Sửa</th>
+                <th scope="col">Trạng Thái</th>
                 <th scope="col">Hành Động</th>
             </tr>
             </thead>
@@ -41,6 +44,9 @@
             <tr th:each="ms : ${listMS}">
                 <td th:text="${ms.maMauSac}"></td>
                 <td th:text="${ms.tenMauSac}"></td>
+                <td th:text="${#dates.format(ms.ngayTao, 'dd/MM/yyyy')}"></td>
+                <td th:text="${#dates.format(ms.ngaySua, 'dd/MM/yyyy')}"></td>
+                <td th:text="${ms.trangThai ? 'Hoạt động' : 'Không hoạt động'}"></td>
                 <td>
                     <a th:href="@{/mau_sac/edit/{id}(id=${ms.id})}">
                         <button type="button" class="btn btn-outline-warning">Sửa</button>

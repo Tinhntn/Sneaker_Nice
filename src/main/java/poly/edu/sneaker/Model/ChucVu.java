@@ -4,8 +4,6 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import lombok.*;
 
-import java.util.Date;
-
 @Entity
 @Table(name = "chucvu")
 @Data
@@ -25,7 +23,4 @@ public class ChucVu {
     @Column(name = "ten_chuc_vu", nullable = false)
     @NotBlank(message = "Tên chức vụ không được để trống")
     private String tenChucVu;
-
-    @Column(name = "deleted_at", nullable = false)
-    private Boolean deletedAt = false;
 }

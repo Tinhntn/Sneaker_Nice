@@ -10,27 +10,39 @@ import java.util.Date;
 @Data
 @Getter
 @Setter
-@AllArgsConstructor
 @NoArgsConstructor
+@AllArgsConstructor
 public class SanPham {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private  int id;
+    private int id;
+
+    @Column(name = "ma_san_pham", nullable = false)
     private String maSanPham;
+
+    @Column(name = "ten_san_pham", nullable = false)
     private String tenSanPham;
-    @ManyToOne
-    @JoinColumn(name = "idHang")
-    private Hang idHang;
 
     @ManyToOne
-    @JoinColumn(name = "idDanhMuc")
-    private DanhMuc idDanhMuc;
+    @JoinColumn(name = "id_hang", nullable = false)
+    private Hang hang;
 
     @ManyToOne
-    @JoinColumn(name = "idChatLieu")
-    private ChatLieu idChatLieu;
+    @JoinColumn(name = "id_danh_muc", nullable = false)
+    private DanhMuc danhMuc;
 
-    private Date ngayTao;
-    private  Date ngaySua;
-    private Boolean trangThai;
+    @ManyToOne
+    @JoinColumn(name = "id_chat_lieu", nullable = true)
+    private ChatLieu chatLieu;
+
+    @Column(name = "ngay_tao", nullable = false)
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date ngayTao = new Date();
+
+    @Column(name = "ngay_sua", nullable = false)
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date ngaySua = new Date();
+
+    @Column(name = "trang_thai", nullable = false)
+    private Boolean trangThai = true;
 }

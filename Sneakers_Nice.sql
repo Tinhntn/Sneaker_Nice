@@ -9,7 +9,7 @@ CREATE TABLE ChucVu (
     id INT IDENTITY PRIMARY KEY,
     ma_chuc_vu NVARCHAR(50) UNIQUE NOT NULL,
     ten_chuc_vu NVARCHAR(255) NOT NULL,
-    deleted_at BIT DEFAULT 0
+   
 );
 
 -- Bảng Hang
@@ -20,7 +20,7 @@ CREATE TABLE Hang (
     ngay_tao DATETIME DEFAULT GETDATE(),
     ngay_sua DATETIME DEFAULT GETDATE(),
     trang_thai BIT DEFAULT 1,
-    deleted_at BIT DEFAULT 0
+
 );
 
 -- Bảng ChatLieu
@@ -31,7 +31,7 @@ CREATE TABLE ChatLieu (
     ngay_tao DATETIME DEFAULT GETDATE(),
     ngay_sua DATETIME DEFAULT GETDATE(),
     trang_thai BIT DEFAULT 1,
-    deleted_at BIT DEFAULT 0
+
 );
 
 -- Bảng DanhMuc
@@ -42,7 +42,6 @@ CREATE TABLE DanhMuc (
     ngay_tao DATETIME DEFAULT GETDATE(),
     ngay_sua DATETIME DEFAULT GETDATE(),
     trang_thai BIT DEFAULT 1,
-    deleted_at BIT DEFAULT 0
 );
 
 -- Bảng SanPham
@@ -56,7 +55,7 @@ CREATE TABLE SanPham (
     ngay_tao DATETIME DEFAULT GETDATE(),
     ngay_sua DATETIME DEFAULT GETDATE(),
     trang_thai BIT DEFAULT 1,
-    deleted_at BIT DEFAULT 0
+   
 );
 
 -- Bảng NhanVien
@@ -74,7 +73,7 @@ CREATE TABLE NhanVien (
     ngay_tao DATETIME DEFAULT GETDATE(),
     ngay_sua DATETIME DEFAULT GETDATE(),
     trang_thai BIT DEFAULT 1,
-    deleted_at BIT DEFAULT 0
+
 );
 
 -- Bảng KhachHang
@@ -94,7 +93,6 @@ CREATE TABLE KhachHang (
     mat_khau NVARCHAR(255) NOT NULL,
     hinh_anh NVARCHAR(500),
     trang_thai BIT DEFAULT 1,
-    deleted_at BIT DEFAULT 0
 );
 
 -- Bảng DiaChi
@@ -109,7 +107,6 @@ CREATE TABLE DiaChi (
     ngay_tao DATETIME DEFAULT GETDATE(),
     ngay_sua DATETIME DEFAULT GETDATE(),
     trang_thai BIT DEFAULT 0,
-    deleted_at BIT DEFAULT 0
 );
 
 -- Bảng MauSac
@@ -151,7 +148,6 @@ CREATE TABLE KhuyenMai(
     ngay_tao DATETIME DEFAULT GETDATE(),
     ngay_sua DATETIME DEFAULT GETDATE(),
     trang_thai BIT DEFAULT 1,
-    deleted_at BIT DEFAULT 0
 );
 
 -- Bảng ChiTietSanPham
@@ -200,7 +196,6 @@ CREATE TABLE HoaDon (
     ngay_tao DATETIME DEFAULT GETDATE(),
     ngay_sua DATETIME DEFAULT GETDATE(),
     trang_thai BIT DEFAULT 1,
-    deleted_at BIT DEFAULT 0
 );
 
 -- Bảng HoaDonChiTiet
@@ -227,7 +222,6 @@ CREATE TABLE GioHang (
     ngay_sua DATETIME DEFAULT GETDATE(),
     ghi_chu NVARCHAR(255),
     trang_thai BIT DEFAULT 1,
-    deleted_at BIT DEFAULT 0
 );
 
 -- Bảng GioHangChiTiet
@@ -242,7 +236,6 @@ CREATE TABLE GioHangChiTiet (
     ngay_tao DATETIME DEFAULT GETDATE(),
     ngay_sua DATETIME DEFAULT GETDATE(),
     trang_thai BIT DEFAULT 1,
-    deleted_at BIT DEFAULT 0
 );
 
 -- Bảng TrangThaiDonHang
@@ -252,5 +245,4 @@ CREATE TABLE TrangThaiDonHang(
     ngay_cap_nhat DATETIME,
     trang_thai TINYINT NOT NULL,
     ghi_chu NVARCHAR(MAX),
-    deleted_at BIT DEFAULT 0
 );

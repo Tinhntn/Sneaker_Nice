@@ -4,72 +4,64 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import poly.edu.sneaker.Model.DanhMuc;
 import poly.edu.sneaker.Repository.DanhMucRepository;
+import poly.edu.sneaker.Repository.SanPhamRepository;
 import poly.edu.sneaker.Service.DanhMucService;
-
-import java.util.Date;
-import java.util.List;
 
 @Service
 public class DanhMucImplement implements DanhMucService {
 
-    private final DanhMucRepository danhMucRepository;
+    @Autowired
+    private DanhMucRepository danhMucRepository;
 
     @Autowired
-    public DanhMucImplement(DanhMucRepository danhMucRepository) {
-        this.danhMucRepository = danhMucRepository;
-    }
+    private SanPhamRepository sanPhamRepository;
 
     @Override
-    public Page<DanhMuc> findAllDanhMuc(Pageable pageable) {
-        return danhMucRepository.findAllByDeletedAt(false, pageable);
+    public Page<DanhMuc> getAll(Pageable pageable) {
+        return danhMucRepository.findAll(pageable);
     }
 
     @Override
     public DanhMuc findDanhMucById(int id) {
-        return danhMucRepository.findByIdAndDeletedAt(id, false).orElse(null);
+        return danhMucRepository.findById(id).orElseThrow(() -> new RuntimeException("DanhMuc not found"));
     }
 
     @Override
-    public DanhMuc save(DanhMuc danhMuc) {
-        danhMuc.setNgayTao(new Date());
-        danhMuc.setNgaySua(new Date());
-        return danhMucRepository.save(danhMuc);
-    }
-
-    @Override
-    public void updateDanhMuc(DanhMuc danhMuc) {
-        danhMuc.setNgaySua(new Date());
+    public void saveDanhMuc(DanhMuc danhMuc) {
         danhMucRepository.save(danhMuc);
     }
 
     @Override
-    public void delete(Integer id) {
-        DanhMuc danhMuc = findDanhMucById(id);
-        if (danhMuc != null) {
-            danhMuc.setDeletedAt(true);
-            danhMucRepository.save(danhMuc);
-        }
+    public void updateDanhMuc(DanhMuc danhMuc, int id) {
+        DanhMuc existingDanhMuc = danhMucRepository.findById(id).orElseThrow(() -> new RuntimeException("DanhMuc not found"));
+        existingDanhMuc.setMaDanhMuc(danhMuc.getMaDanhMuc());
+        existingDanhMuc.setTenDanhMuc(danhMuc.getTenDanhMuc());
+        existingDanhMuc.setNgayTao(danhMuc.getNgayTao());
+        existingDanhMuc.setNgaySua(danhMuc.getNgaySua());
+        existingDanhMuc.setTrangThai(danhMuc.getTrangThai());
+        danhMucRepository.save(existingDanhMuc);
     }
 
     @Override
-    public Page<DanhMuc> findByMaDanhMucContainingAndDeletedAt(String maDanhMuc, boolean deletedAt, Pageable pageable) {
-        return danhMucRepository.findByMaDanhMucContainingAndDeletedAt(maDanhMuc, deletedAt, pageable);
+    @Transactional
+    public void deleteById(int id) {
+        DanhMuc danhMuc = danhMucRepository.findById(id).orElseThrow(() -> new RuntimeException("DanhMuc not found"));
+        // Xóa tất cả các sản phẩm liên quan đến danh mục
+        sanPhamRepository.deleteByDanhMucId(id);
+        // Xóa danh mục
+        danhMucRepository.deleteById(id);
     }
 
     @Override
-    public Page<DanhMuc> findByTenDanhMucContainingAndDeletedAt(String tenDanhMuc, boolean deletedAt, Pageable pageable) {
-        return danhMucRepository.findByTenDanhMucContainingAndDeletedAt(tenDanhMuc, deletedAt, pageable);
+    public Page<DanhMuc> search(String keyword, Pageable pageable) {
+        return danhMucRepository.findByMaDanhMucContainingOrTenDanhMucContaining(keyword, keyword, pageable);
     }
 
     @Override
-    public Page<DanhMuc> findAllByDeletedAt(boolean deletedAt, Pageable pageable) {
-        return danhMucRepository.findAllByDeletedAt(deletedAt, pageable);
-    }
-
-    @Override
-    public List<DanhMuc> findByTenDanhMucContaining(String tenDanhMuc) {
-        return danhMucRepository.findByTenDanhMucContaining(tenDanhMuc);
+    public DanhMuc findByMaDanhMuc(String maDanhMuc) {
+        return danhMucRepository.findByMaDanhMuc(maDanhMuc);
     }
 }

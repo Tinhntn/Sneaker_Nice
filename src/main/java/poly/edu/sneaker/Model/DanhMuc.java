@@ -3,16 +3,18 @@ package poly.edu.sneaker.Model;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import lombok.*;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import java.util.Date;
+import java.util.List;
 
 @Table(name = "danhmuc")
 @Entity
 @Data
 @Getter
 @Setter
-@AllArgsConstructor
 @NoArgsConstructor
+@AllArgsConstructor
 public class DanhMuc {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -37,6 +39,6 @@ public class DanhMuc {
     @Column(name = "trang_thai", nullable = false)
     private Boolean trangThai = true;
 
-    @Column(name = "deleted_at", nullable = false)
-    private Boolean deletedAt = false;
+    @OneToMany(mappedBy = "danhMuc", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<SanPham> sanPhams;
 }

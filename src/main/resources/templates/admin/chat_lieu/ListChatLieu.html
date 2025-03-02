@@ -18,12 +18,25 @@
     <div class="container-fluid">
         <h1>Danh Sách Chất Liệu</h1>
         <a th:href="@{/chat_lieu/add}" class="btn btn-primary">Thêm +</a>
+        <div class="float-end">
+            <form th:action="@{/chat_lieu/hienthi}" method="get" style="width: 300px">
+                <div class="input-group mb-3">
+                    <input type="text" class="form-control" placeholder="Tìm kiếm Theo Mã hoặc Tên" name="keyword"
+                           th:value="${keyword}">
+                    <button class="btn btn-primary" type="submit">Tìm kiếm</button>
+                </div>
+            </form>
+            <br>
+        </div>
 
         <table class="table table-bordered">
             <thead>
             <tr>
                 <th scope="col">Mã Chất Liệu</th>
                 <th scope="col">Tên Chất Liệu</th>
+                <th scope="col">Ngày Tạo</th>
+                <th scope="col">Ngày Sửa</th>
+                <th scope="col">Trạng Thái</th>
                 <th scope="col">Hành Động</th>
             </tr>
             </thead>
@@ -31,6 +44,9 @@
             <tr th:each="cl : ${listCL}">
                 <td th:text="${cl.maChatLieu}"></td>
                 <td th:text="${cl.tenChatLieu}"></td>
+                <td th:text="${#dates.format(cl.ngayTao, 'dd/MM/yyyy')}"></td>
+                <td th:text="${#dates.format(cl.ngaySua, 'dd/MM/yyyy')}"></td>
+                <td th:text="${cl.trangThai ? 'Hoạt động' : 'Không hoạt động'}"></td>
                 <td>
                     <a th:href="@{/chat_lieu/edit/{id}(id=${cl.id})}">
                         <button type="button" class="btn btn-outline-warning">Sửa</button>
@@ -44,6 +60,23 @@
             </tbody>
         </table>
 
+        <nav aria-label="Page navigation">
+            <ul class="pagination">
+                <li th:classappend="${currentPage == 0} ? 'disabled' : ''" class="page-item">
+                    <a th:href="@{/chat_lieu/hienthi(page=${currentPage - 1}, size=${10})}"
+                       class="page-link">Previous</a>
+                </li>
+                <li th:each="i : ${#numbers.sequence(0, totalPages - 1)}"
+                    th:classappend="${i == currentPage} ? 'active' : ''" class="page-item">
+                    <a th:href="@{/chat_lieu/hienthi(page=${i}, size=${10})}" class="page-link"
+                       th:text="${i + 1}">1</a>
+                </li>
+                <li th:classappend="${currentPage + 1 == totalPages} ? 'disabled' : ''" class="page-item">
+                    <a th:href="@{/chat_lieu/hienthi(page=${currentPage+1}, size=${10})}" class="page-link">Next</a>
+                </li>
+            </ul>
+        </nav>
+
         <!-- Hiển thị thông báo thành công -->
         <div th:if="${successMessage}">
             <script th:inline="javascript">
@@ -56,6 +89,7 @@
                         text: successMessage,
                         confirmButtonText: 'OK'
                     }).then(() => {
+                        // Xóa successMessage sau khi hiển thị thông báo
                         history.replaceState(null, '', location.pathname);
                     });
                 }
@@ -75,6 +109,7 @@
                         text: errorMessage,
                         confirmButtonText: 'OK'
                     }).then(() => {
+                        // Xóa errorMessage sau khi hiển thị thông báo
                         history.replaceState(null, '', location.pathname);
                     });
                 }

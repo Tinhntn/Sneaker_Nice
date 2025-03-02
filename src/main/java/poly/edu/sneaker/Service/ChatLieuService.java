@@ -4,22 +4,18 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import poly.edu.sneaker.Model.ChatLieu;
 
-import java.util.List;
-
 public interface ChatLieuService {
-     Page<ChatLieu> findAll(Pageable pageable);
+     Page<ChatLieu> getAll(Pageable pageable);
 
-     ChatLieu findById(int id);
+     ChatLieu findChatLieuById(int id);
 
-     ChatLieu save(ChatLieu chatLieu);
+     void save(ChatLieu chatLieu);
+
+     void update(ChatLieu chatLieu, int id);
 
      void deleteById(int id);
 
-     void update(ChatLieu chatLieu);
+     Page<ChatLieu> search(String keyword, Pageable pageable);
 
-     Page<ChatLieu> listPage(Pageable pageable);
-
-     void delete(Integer id);
-
-     Page<ChatLieu> findByTenChatLieuOrMaChatLieuAndDeletedAt(String tenChatLieu, String maChatLieu, boolean deletedAt, Pageable pageable);
+     ChatLieu findByMaChatLieu(String maChatLieu);
 }

@@ -1,74 +1,43 @@
 package poly.edu.sneaker.Controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.propertyeditors.CustomDateEditor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import poly.edu.sneaker.Model.DanhMuc;
 import poly.edu.sneaker.Service.DanhMucService;
+
 import jakarta.validation.Valid;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 
 @Controller
 @RequestMapping("/danh_muc")
 public class DanhMucController {
 
-    private final DanhMucService danhMucService;
-
     @Autowired
-    public DanhMucController(DanhMucService danhMucService) {
-        this.danhMucService = danhMucService;
-    }
-
-    @InitBinder
-    public void initBinder(WebDataBinder binder) {
-        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-        dateFormat.setLenient(false);
-        binder.registerCustomEditor(Date.class, new CustomDateEditor(dateFormat, true));
-    }
+    private DanhMucService danhMucService;
 
     @GetMapping("/hienthi")
-    public String hienThi(Model model, @RequestParam(defaultValue = "0") int page,
-                          @RequestParam(required = false) String search) {
+    public String hienThiDanhMuc(Model model, @RequestParam(defaultValue = "0") int page, @RequestParam(required = false) String keyword) {
         int size = 10;
         Pageable pageable = PageRequest.of(page, size);
-        Page<DanhMuc> listDM;
-        if (search != null && !search.isEmpty()) {
-            listDM = danhMucService.findByTenDanhMucContainingAndDeletedAt(search, false, pageable);
+        Page<DanhMuc> danhMucPage;
+
+        if (keyword != null && !keyword.isEmpty()) {
+            danhMucPage = danhMucService.search(keyword, pageable);
+            model.addAttribute("keyword", keyword);
         } else {
-            listDM = danhMucService.findAllDanhMuc(pageable);
+            danhMucPage = danhMucService.getAll(pageable);
         }
-        model.addAttribute("listDM", listDM.getContent());
-        model.addAttribute("currentPage", listDM.getNumber());
-        model.addAttribute("totalPages", listDM.getTotalPages());
-        model.addAttribute("search", search);
+
+        model.addAttribute("listDM", danhMucPage.getContent());
+        model.addAttribute("currentPage", danhMucPage.getNumber());
+        model.addAttribute("totalPages", danhMucPage.getTotalPages());
         return "admin/danh_muc/ListDanhMuc";
-    }
-
-
-    @GetMapping("/delete/{id}")
-    public String deleteDanhMuc(@PathVariable("id") Integer id, RedirectAttributes redirectAttributes) {
-        try {
-            danhMucService.delete(id);
-            redirectAttributes.addFlashAttribute("successMessage", "Xóa danh mục thành công!");
-        } catch (Exception e) {
-            redirectAttributes.addFlashAttribute("errorMessage", "Lỗi khi xóa danh mục!");
-        }
-        return "redirect:/danh_muc/hienthi";
-    }
-
-    @GetMapping("/add")
-    public String showAddForm(Model model) {
-        model.addAttribute("danhMuc", new DanhMuc());
-        return "admin/danh_muc/add";
     }
 
     @PostMapping("/add")
@@ -77,8 +46,12 @@ public class DanhMucController {
             return "admin/danh_muc/add";
         }
         try {
-            danhMucService.save(danhMuc);
-            redirectAttributes.addFlashAttribute("successMessage", "Thêm danh mục thành công!");
+            if (danhMucService.findByMaDanhMuc(danhMuc.getMaDanhMuc()) != null) {
+                redirectAttributes.addFlashAttribute("errorMessage", "Mã danh mục đã tồn tại!");
+                return "redirect:/danh_muc/add";
+            }
+            danhMucService.saveDanhMuc(danhMuc);
+            redirectAttributes.addFlashAttribute("successMessage", "Danh mục được thêm thành công!");
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("errorMessage", "Lỗi khi thêm danh mục!");
         }
@@ -106,8 +79,7 @@ public class DanhMucController {
             if (existingDanhMuc != null) {
                 danhMuc.setId(id);
                 danhMuc.setNgayTao(existingDanhMuc.getNgayTao());
-                danhMuc.setDeletedAt(existingDanhMuc.getDeletedAt() != null ? existingDanhMuc.getDeletedAt() : false);
-                danhMucService.updateDanhMuc(danhMuc);
+                danhMucService.updateDanhMuc(danhMuc, id);
                 redirectAttributes.addFlashAttribute("successMessage", "Cập nhật danh mục thành công!");
             } else {
                 redirectAttributes.addFlashAttribute("errorMessage", "Danh mục không tồn tại!");
@@ -116,5 +88,22 @@ public class DanhMucController {
             redirectAttributes.addFlashAttribute("errorMessage", "Lỗi khi cập nhật danh mục!");
         }
         return "redirect:/danh_muc/hienthi";
+    }
+
+    @GetMapping("/delete/{id}")
+    public String deleteDanhMuc(@PathVariable("id") Integer id, RedirectAttributes redirectAttributes) {
+        try {
+            danhMucService.deleteById(id);
+            redirectAttributes.addFlashAttribute("successMessage", "Xóa danh mục thành công!");
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Lỗi khi xóa danh mục!");
+        }
+        return "redirect:/danh_muc/hienthi";
+    }
+
+    @GetMapping("/add")
+    public String showAddForm(Model model) {
+        model.addAttribute("danhMuc", new DanhMuc());
+        return "admin/danh_muc/add";
     }
 }

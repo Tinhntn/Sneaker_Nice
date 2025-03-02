@@ -18,30 +18,76 @@ import jakarta.validation.Valid;
 @RequestMapping("/mau_sac")
 public class MauSacController {
 
-    private final MauSacService mauSacService;
-
     @Autowired
-    public MauSacController(MauSacService mauSacService) {
-        this.mauSacService = mauSacService;
-    }
+    private MauSacService mauSacService;
 
     @GetMapping("/hienthi")
-    public String hienThiMauSac(@RequestParam(defaultValue = "0") int page,
-                                @RequestParam(required = false) String search,
-                                Model model) {
+    public String hienThiMauSac(Model model, @RequestParam(defaultValue = "0") int page, @RequestParam(required = false) String keyword) {
         int size = 10;
         Pageable pageable = PageRequest.of(page, size);
-        Page<MauSac> listMS;
-        if (search != null && !search.isEmpty()) {
-            listMS = mauSacService.findByMaMauSacContainingOrTenMauSacContaining(search, search, pageable);
+        Page<MauSac> mauSacPage;
+
+        if (keyword != null && !keyword.isEmpty()) {
+            mauSacPage = mauSacService.search(keyword, pageable);
+            model.addAttribute("keyword", keyword);
         } else {
-            listMS = mauSacService.findAll(pageable);
+            mauSacPage = mauSacService.getAll(pageable);
         }
-        model.addAttribute("listMS", listMS.getContent());
-        model.addAttribute("currentPage", listMS.getNumber());
-        model.addAttribute("totalPages", listMS.getTotalPages());
-        model.addAttribute("search", search);
+
+        model.addAttribute("listMS", mauSacPage.getContent());
+        model.addAttribute("currentPage", mauSacPage.getNumber());
+        model.addAttribute("totalPages", mauSacPage.getTotalPages());
         return "admin/mau_sac/ListMauSac";
+    }
+
+    @PostMapping("/add")
+    public String addMauSac(@Valid @ModelAttribute("mauSac") MauSac mauSac, BindingResult bindingResult, RedirectAttributes redirectAttributes) {
+        if (bindingResult.hasErrors()) {
+            return "admin/mau_sac/add";
+        }
+        try {
+            if (mauSacService.findByMaMauSac(mauSac.getMaMauSac()) != null) {
+                redirectAttributes.addFlashAttribute("errorMessage", "Mã màu sắc đã tồn tại!");
+                return "redirect:/mau_sac/add";
+            }
+            mauSacService.save(mauSac);
+            redirectAttributes.addFlashAttribute("successMessage", "Màu sắc được thêm thành công!");
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Lỗi khi thêm màu sắc!");
+        }
+        return "redirect:/mau_sac/hienthi";
+    }
+
+    @GetMapping("/edit/{id}")
+    public String showEditForm(@PathVariable("id") Integer id, Model model, RedirectAttributes redirectAttributes) {
+        MauSac mauSac = mauSacService.findMauSacById(id);
+        if (mauSac == null) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Màu sắc không tồn tại!");
+            return "redirect:/mau_sac/hienthi";
+        }
+        model.addAttribute("mauSac", mauSac);
+        return "admin/mau_sac/update";
+    }
+
+    @PostMapping("/update/{id}")
+    public String editMauSac(@PathVariable("id") Integer id, @Valid @ModelAttribute("mauSac") MauSac mauSac, BindingResult bindingResult, RedirectAttributes redirectAttributes) {
+        if (bindingResult.hasErrors()) {
+            return "admin/mau_sac/update";
+        }
+        try {
+            MauSac existingMauSac = mauSacService.findMauSacById(id);
+            if (existingMauSac != null) {
+                mauSac.setId(id);
+                mauSac.setNgayTao(existingMauSac.getNgayTao());
+                mauSacService.update(mauSac, id);
+                redirectAttributes.addFlashAttribute("successMessage", "Cập nhật màu sắc thành công!");
+            } else {
+                redirectAttributes.addFlashAttribute("errorMessage", "Màu sắc không tồn tại!");
+            }
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Lỗi khi cập nhật màu sắc!");
+        }
+        return "redirect:/mau_sac/hienthi";
     }
 
     @GetMapping("/delete/{id}")
@@ -59,52 +105,5 @@ public class MauSacController {
     public String showAddForm(Model model) {
         model.addAttribute("mauSac", new MauSac());
         return "admin/mau_sac/add";
-    }
-
-    @PostMapping("/add")
-    public String addMauSac(@Valid @ModelAttribute("mauSac") MauSac mauSac, BindingResult bindingResult, RedirectAttributes redirectAttributes) {
-        if (bindingResult.hasErrors()) {
-            return "admin/mau_sac/add";
-        }
-        try {
-            mauSacService.save(mauSac);
-            redirectAttributes.addFlashAttribute("successMessage", "Thêm màu sắc thành công!");
-        } catch (Exception e) {
-            redirectAttributes.addFlashAttribute("errorMessage", "Lỗi khi thêm màu sắc!");
-        }
-        return "redirect:/mau_sac/hienthi";
-    }
-
-    @GetMapping("/edit/{id}")
-    public String showEditForm(@PathVariable("id") Integer id, Model model, RedirectAttributes redirectAttributes) {
-        MauSac mauSac = mauSacService.findById(id);
-        if (mauSac == null) {
-            redirectAttributes.addFlashAttribute("errorMessage", "Màu sắc không tồn tại!");
-            return "redirect:/mau_sac/hienthi";
-        }
-        model.addAttribute("mauSac", mauSac);
-        return "admin/mau_sac/update";
-    }
-
-    @PostMapping("/update/{id}")
-    public String editMauSac(@PathVariable("id") Integer id, @Valid @ModelAttribute("mauSac") MauSac mauSac, BindingResult bindingResult, RedirectAttributes redirectAttributes) {
-        if (bindingResult.hasErrors()) {
-            return "admin/mau_sac/update";
-        }
-        try {
-            MauSac existingMauSac = mauSacService.findById(id);
-            if (existingMauSac != null) {
-                mauSac.setId(id);
-                mauSac.setNgayTao(existingMauSac.getNgayTao());
-                mauSac.setDeletedAt(existingMauSac.getDeletedAt() != null ? existingMauSac.getDeletedAt() : false);
-                mauSacService.update(mauSac);
-                redirectAttributes.addFlashAttribute("successMessage", "Cập nhật màu sắc thành công!");
-            } else {
-                redirectAttributes.addFlashAttribute("errorMessage", "Màu sắc không tồn tại!");
-            }
-        } catch (Exception e) {
-            redirectAttributes.addFlashAttribute("errorMessage", "Lỗi khi cập nhật màu sắc!");
-        }
-        return "redirect:/mau_sac/hienthi";
     }
 }

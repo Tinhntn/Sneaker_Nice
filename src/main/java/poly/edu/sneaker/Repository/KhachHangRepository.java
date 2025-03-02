@@ -9,5 +9,9 @@ import poly.edu.sneaker.Model.KhachHang;
 @Repository
 public interface KhachHangRepository extends JpaRepository<KhachHang, Integer> {
 
-    Page<KhachHang> findByTenKhachHangContainingOrEmailContainingOrSdtContaining(String tenKhachHang, String email, String sdt, Pageable pageable);
+    Page<KhachHang> findByMaKhachHangContainingOrTenKhachHangContaining(String maKhachHang, String tenKhachHang, Pageable pageable);
+
+    KhachHang findByMaKhachHang(String maKhachHang);
+
+    KhachHang findByEmail(String email);
 }
