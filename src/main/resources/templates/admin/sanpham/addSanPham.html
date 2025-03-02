@@ -22,82 +22,88 @@
 
     <div layout:fragment="content">
 
-        <div class="container-fluid">
-            <h1>Thêm Sản Phẩm</h1>
-            <form th:action="@{/sanpham/themsanpham}" th:object="${sanPham}" method="post">
+        <div class="container-fluid row">
+            <div class="col-2"></div>
+            <div class="col-8">
+                <h1>Thêm Sản Phẩm</h1>
+                <form th:action="@{/sanpham/themsanpham}" th:object="${sanPham}" method="post">
 
-                <div class="container p-4 row"
-                    style="background-color: #f8f9fa; border-radius: 10px; border: 1px solid #ddd;">
-                    <h4 class="text-center mb-4">Thêm Sản Phẩm</h4>
+                    <div class="container p-4 row"
+                        style="background-color: #f8f9fa; border-radius: 10px; border: 1px solid #ddd;">
+                        <h4 class="text-center mb-4">Thêm Sản Phẩm</h4>
 
-                    <!-- Mã Sản Phẩm (Không cho chỉnh sửa) -->
-                    <div class=" col-6 mb-3">
-                        <label for="maSanPham" class="form-label">Mã sản phẩm</label>
-                        <input type="text" id="maSanPham" name="maSanPham" class="form-control" th:value="${maSanPham}"
-                            readonly>
-                    </div>
-
-                    <!-- Tên sản phẩm -->
-                    <div class=" col-6 mb-3">
-                        <label for="tenSanPham" class="form-label">Tên sản phẩm</label>
-                        <input type="text" id="tenSanPham" name="tenSanPham" class="form-control" required>
-                    </div>
-
-                    <!-- Hãng (Combobox) -->
-                    <div class="col-md-6">
-                        <label for="hang" class="form-label">Hãng</label>
-                        <div class="input-group">
-                            <select id="hang" name="hang" class="form-select">
-                                <option th:each="hang : ${lstHang}" th:value="${hang.id}" th:text="${hang.tenHang}">
-                                </option>
-                            </select>
-                            <!-- Nút thêm hãng -->
-                            <button type="button" class="btn btn-primary ms-2" data-bs-toggle="modal"
-                                data-bs-target="#themHangModal">
-                                Thêm
-                            </button>
-                        </div>
-                    </div>
-                    <!-- Danh Mục (Combobox) -->
-                    <div class=" col-6 mb-3">
-                        <label for="danhMuc" class="form-label">Danh mục</label>
-                        <div class="input-group">
-                            <select id="danhMuc" name="danhMuc" class="form-select">
-                                <option th:each="danhMuc : ${lstDanhMuc}" th:value="${danhMuc.id}"
-                                    th:text="${danhMuc.tenDanhMuc}"></option>
-                            </select>
-                            <button type="button" class="btn btn-primary ms-2" data-bs-toggle="modal"
-                                data-bs-target="#themDanhMucModal">
-                                Thêm
-                            </button>
+                        <!-- Mã Sản Phẩm (Không cho chỉnh sửa) -->
+                        <div class=" col-6 mb-3">
+                            <label for="maSanPham" class="form-label">Mã sản phẩm</label>
+                            <input type="text" id="maSanPham" name="maSanPham" class="form-control"
+                                th:value="${maSanPham}" readonly>
                         </div>
 
-                    </div>
-
-                    <!-- Chất Liệu (Combobox) -->
-                    <div class=" col-6 mb-3">
-                        <label for="chatLieu" class="form-label">Chất liệu</label>
-                        <div class="input-group">
-                            <select id="chatLieu" name="chatLieu" class="form-select">
-                                <option th:each="chatLieu : ${lstChatlieu}" th:value="${chatLieu.id}"
-                                    th:text="${chatLieu.tenChatLieu}">
-                                </option>
-                            </select>
-                            <button type="button" class="btn btn-primary ms-2" data-bs-toggle="modal"
-                                data-bs-target="#themChatLieuModal">
-                                Thêm
-                            </button>
+                        <!-- Tên sản phẩm -->
+                        <div class=" col-6 mb-3">
+                            <label for="tenSanPham" class="form-label">Tên sản phẩm</label>
+                            <input type="text" id="tenSanPham" name="tenSanPham" class="form-control" required>
                         </div>
 
-                    </div>
+                        <!-- Hãng (Combobox) -->
+                        <div class="col-md-6">
+                            <label for="hang" class="form-label">Hãng</label>
+                            <div class="input-group">
+                                <select id="hang" name="hang" class="form-select">
+                                    <option th:each="hang : ${lstHang}" th:value="${hang.id}" th:text="${hang.tenHang}">
+                                    </option>
+                                </select>
+                                <!-- Nút thêm hãng -->
+                                <button type="button" class="btn btn-primary ms-2" data-bs-toggle="modal"
+                                    data-bs-target="#themHangModal">
+                                    Thêm
+                                </button>
+                            </div>
+                        </div>
+                        <!-- Danh Mục (Combobox) -->
+                        <div class=" col-6 mb-3">
+                            <label for="danhMuc" class="form-label">Danh mục</label>
+                            <div class="input-group">
+                                <select id="danhMuc" name="danhMuc" class="form-select">
+                                    <option th:each="danhMuc : ${lstDanhMuc}" th:value="${danhMuc.id}"
+                                        th:text="${danhMuc.tenDanhMuc}">
+                                    </option>
+                                </select>
+                                <button type="button" class="btn btn-primary ms-2" data-bs-toggle="modal"
+                                    data-bs-target="#themDanhMucModal">
+                                    Thêm
+                                </button>
+                            </div>
 
-                    <!-- Nút Lưu -->
-                    <div class="text-center">
-                        <button type="submit" class="btn btn-primary">Lưu Sản Phẩm</button>
-                        <a href="/sanpham/hienthi" class="btn btn-secondary">Hủy</a>
+                        </div>
+
+                        <!-- Chất Liệu (Combobox) -->
+                        <div class=" col-6 mb-3">
+                            <label for="chatLieu" class="form-label">Chất liệu</label>
+                            <div class="input-group">
+                                <select id="chatLieu" name="chatLieu" class="form-select">
+                                    <option th:each="chatLieu : ${lstChatlieu}" th:value="${chatLieu.id}"
+                                        th:text="${chatLieu.tenChatLieu}">
+                                    </option>
+                                </select>
+                                <button type="button" class="btn btn-primary ms-2" data-bs-toggle="modal"
+                                    data-bs-target="#themChatLieuModal">
+                                    Thêm
+                                </button>
+                            </div>
+
+                        </div>
+
+                        <!-- Nút Lưu -->
+                        <div class="text-center">
+                            <button type="submit" class="btn btn-primary">Lưu Sản Phẩm</button>
+                            <a href="/sanpham/hienthi" class="btn btn-secondary">Hủy</a>
+                        </div>
                     </div>
-                </div>
-            </form>
+                    
+                </form>
+                <br>
+            </div>
 
             <br>
 

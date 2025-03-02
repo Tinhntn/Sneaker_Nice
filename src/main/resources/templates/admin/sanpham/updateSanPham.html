@@ -4,8 +4,9 @@
 <body>
     <div layout:fragment="content">
 
-        <div class="container-fluid">
+        <div class="container-fluid ">
             <h1>Thêm Sản Phẩm</h1>
+
             <form th:action="@{/sanpham/capnhatsanpham/{id}(id=${sanPham.id})}" method="post">
                 <div class=" container p-4"
                     style="background-color: #f8f9fa; border-radius: 10px; border: 1px solid #ddd;">
@@ -171,7 +172,8 @@
                         <tbody>
                             <tr th:each="sanPham : ${lstCTSP}" th:attr="data-id=${sanPham.id}">
                                 <input type="hidden" name="id" th:value="${sanPham.id}" />
-
+                                <input type="hidden" id="idSP"
+                                    th:value="${sanPham.idSanPham!=null?sanPham.idSanPham.id:'Không có'}">
                                 <td th:text="${sanPham.idSanPham!=null?sanPham.idSanPham.maSanPham:'Không có'}"></td>
                                 <td th:text="${sanPham.idSanPham!=null?sanPham.idSanPham.tenSanPham:'Không có'}"></td>
                                 <td
@@ -229,13 +231,16 @@
                                 <td th:text="${sanPham.ngayTao}"></td>
                                 <td th:text="${sanPham.ngaySua}"></td>
                                 <td>
-                                    <span th:text="${sanPham.trangThai? 'Hoạt động' : 'Không hoạt động'}"></span>
-                                    <input type="hidden" name="trangThai" th:value="${sanPham.trangThai}" />
+                                    <input type="checkbox" name="trangThai" class="toggle-status"
+                                        th:checked="${sanPham.trangThai}" th:data-id="${sanPham.id}" />
+                                    <p th:text="${sanPham.trangThai} ? 'Hoạt động' : 'Không hoạt động'"></p>
+
                                 </td>
+
                                 <td>
-                                    <a th:href="@{/sanpham/chitietsanpham/{id}(id=${sanPham.id})}">
-                                        <button type="button" class="btn btn-outline-warning update-btn">Chi
-                                            tiết</button>
+                                    <a th:href="@{/sanpham/updateCTSP/{id}(id=${sanPham.id})}">
+                                        <button type="button" class="btn btn-outline-warning update-btn">Cập
+                                            nhật</button>
                                     </a>
                                 </td>
                             </tr>
@@ -251,52 +256,75 @@
                 document.querySelector("#exampleModal form").submit();
             });
             document.addEventListener("DOMContentLoaded", function () {
+                // Khởi tạo Notyf chỉ một lần
+                var notyf = new Notyf({ ripple: true });
+
                 document.querySelectorAll(".update-btn").forEach(button => {
-                    button.addEventListener("click", function (event) {
+                    button.addEventListener("click", async function (event) {
                         event.preventDefault(); // Ngăn chặn chuyển trang
 
+                        let idSP = document.getElementById("idSP")?.value; // Kiểm tra nếu phần tử tồn tại
                         let row = this.closest("tr");
-                        let idCTSP = row.getAttribute("data-id");
-                        // Kiểm tra nếu không có ID
+                        let idCTSP = row?.getAttribute("data-id");
+
+                        console.log("ID Sản phẩm chính:", idSP);
+                        console.log("ID Chi tiết sản phẩm:", idCTSP);
+
+                        // Kiểm tra nếu không có ID chi tiết sản phẩm
                         if (!idCTSP) {
                             console.error("Không tìm thấy ID sản phẩm!");
+                            notyf.error("Không tìm thấy ID sản phẩm!");
                             return;
                         }
 
-                        // Lấy dữ liệu từ input/select
-                        let formData = {
-                            id: row.querySelector("[name='id']").value,
-                            idSize: row.querySelector("[name='idSize']").value,
-                            idMauSac: row.querySelector("[name='idMauSac']").value,
-                            trongLuong: row.querySelector("[name='trongLuong']").value,
-                            giaNhap: row.querySelector("[name='giaNhap']").value,
-                            giaBan: row.querySelector("[name='giaBan']").value,
-                            soLuong: row.querySelector("[name='soLuong']").value,
-                            moTa: row.querySelector("[name='moTa']").value,
-                            trangThai: row.querySelector("[name='trangThai']").value === "true"
-                        };
+                        try {
+                            // Lấy dữ liệu từ input/select
+                            let formData = {
+                                id: row.querySelector("[name='id']")?.value,
+                                idSize: row.querySelector("[name='idSize']")?.value,
+                                idMauSac: row.querySelector("[name='idMauSac']")?.value,
+                                trongLuong: row.querySelector("[name='trongLuong']")?.value,
+                                giaNhap: row.querySelector("[name='giaNhap']")?.value,
+                                giaBan: row.querySelector("[name='giaBan']")?.value,
+                                soLuong: row.querySelector("[name='soLuong']")?.value,
+                                moTa: row.querySelector("[name='moTa']")?.value,
+                                trangThai:  row.querySelector("[name='trangThai']").checked
+                            };
 
+                            console.log(trangThai)
+                            console.log("Dữ liệu gửi đi:", formData);
 
-                        // Gửi AJAX request cập nhật sản phẩm
-                        fetch(`/sanpham/chitietsanpham/${idCTSP}`, {
-                            method: "PUT",
-                            headers: {
-                                "Content-Type": "application/json"
-                            },
-                            body: JSON.stringify(formData)
-                        })
-                            .then(response => response.json())
-                            .then(data => {
-                                if (data.success) {
-                                    alert("Cập nhật thành công!");
-                                } else {
-                                    alert("Cập nhật thất bại!");
-                                }
-                            })
-                            .catch(error => console.error("Lỗi cập nhật:", error));
+                            // Gửi AJAX request cập nhật sản phẩm
+                            let response = await fetch(`/sanpham/updateCTSP/${idCTSP}`, {
+                                method: "PUT",
+                                headers: { "Content-Type": "application/json" },
+                                body: JSON.stringify(formData)
+                            });
+                            console.log("Phản hồi từ server:", response);
+
+                            let data = await response.json();
+
+                            if (data.success) {
+                                notyf.success("Cập nhật chi tiết sản phẩm thành công!");
+
+                                setTimeout(() => {
+                                    if (idSP) {
+                                        window.location.href = `/sanpham/chitietsanpham/${idSP}`;
+                                    } else {
+                                        notyf.warning("Không tìm thấy ID sản phẩm chính!");
+                                    }
+                                }, 2000);
+                            } else {
+                                notyf.error("Cập nhật thất bại! Vui lòng thử lại.");
+                            }
+                        } catch (error) {
+                            console.error("Lỗi khi cập nhật sản phẩm:", error);
+                            notyf.error("Lỗi khi cập nhật sản phẩm! Vui lòng thử lại.");
+                        }
                     });
                 });
             });
+
 
 
         </script>

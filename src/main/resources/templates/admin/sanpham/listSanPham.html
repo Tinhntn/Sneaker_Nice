@@ -15,76 +15,74 @@
 
 <body>
     <div layout:fragment="content">
-        <a th:href="@{/sanpham/themsanpham}" class="btn btn-primary">Thêm +</a>
-        <div class="float-end">
-            <form th:action="@{/sanpham/hienthi}" method="get" style="width: 300px">
-                <div class="input-group mb-3">
-                    <input type="text" class="form-control" placeholder="Tìm kiếm sản phẩm" name="keyword"
+
+        <div class="container-fluid card p-7">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <a th:href="@{/sanpham/themsanpham}" class="btn btn-primary">Thêm +</a>
+                <form th:action="@{/sanpham/hienthi}" method="get" class="d-flex" style="max-width: 300px;">
+                    <input type="text" class="form-control me-2" placeholder="Tìm kiếm sản phẩm" name="keyword"
                         th:value="${keyword}">
                     <button class="btn btn-primary" type="submit">Tìm kiếm</button>
-                </div>
-            </form>
-            <br>
-        </div>
-        <div class="container-fluid card">
-            <h1>Danh Sách Sản Phẩm</h1>
-            <table class="table table-header">
-            
-                <thead>
-                    <tr>
-                        <th scope="col">Mã sản phẩm</th>
-                        <th scope="col">Tên sản phẩm</th>
-                        <th scope="col">Hãng</th>
-                        <th scope="col">Chất liệu</th>
-                        <th scope="col">Danh mục</th>
-                        <th scope="col">Ngày tạo</th>
-                        <th scope="col">Ngày sửa</th>
-                        <th scope="col">Trạng thái</th>
-                        <th scope="col">Thao tác</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr th:each="sanPham : ${lstSanPham}">
-                        <td th:text="${sanPham.maSanPham}"></td>
-                        <td th:text="${sanPham.tenSanPham}"></td>
-                        <td th:text="${sanPham.idHang != null ? sanPham.idHang.tenHang : 'Không có'}"></td>
-                        <td th:text="${sanPham.idChatLieu != null ? sanPham.idChatLieu.tenChatLieu : 'Không có'}">
-                        </td>
-                        <td th:text="${sanPham.idDanhMuc != null ? sanPham.idDanhMuc.tenDanhMuc : 'Không có'}"></td>
-                        <td th:text="${sanPham.ngayTao}"></td>
-                        <td th:text="${sanPham.ngaySua}"></td>
-                        <td th:text="${sanPham.trangThai? 'Hoạt động' : 'Không hoạt động'}"></td>
-                        <td>
-                            <a th:href="@{/sanpham/chitietsanpham/{id}(id=${sanPham.id})}">
-                                <button type="button" class="btn btn-outline-warning">Cập nhật</button>
-                            </a>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
-
-
-            <nav aria-label="Page navigation">
-                <ul class="pagination">
-                    <li th:classappend="${currentPage == 0} ? 'disabled' : ''" class="page-item">
-                        <a th:href="@{/sanpham/hienthi(page=${currentPage - 1}, size=${10})}"
-                            class="page-link">Previous</a>
+                </form>
+            </div>
+        
+            <h2 class="text-center mb-3">Danh Sách Sản Phẩm</h2>
+        
+            <div class="table-responsive">
+                <table class="table table-bordered table-hover">
+                    <thead class="table-hover">
+                        <tr>
+                            <th scope="col">Mã sản phẩm</th>
+                            <th scope="col">Tên sản phẩm</th>
+                            <th scope="col">Hãng</th>
+                            <th scope="col">Chất liệu</th>
+                            <th scope="col">Danh mục</th>
+                            <th scope="col">Ngày tạo</th>
+                            <th scope="col">Ngày sửa</th>
+                            <th scope="col">Trạng thái</th>
+                            <th scope="col">Thao tác</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="sanPham : ${lstSanPham}">
+                            <td th:text="${sanPham.maSanPham}"></td>
+                            <td th:text="${sanPham.tenSanPham}"></td>
+                            <td th:text="${sanPham.idHang != null ? sanPham.idHang.tenHang : 'Không có'}"></td>
+                            <td th:text="${sanPham.idChatLieu != null ? sanPham.idChatLieu.tenChatLieu : 'Không có'}"></td>
+                            <td th:text="${sanPham.idDanhMuc != null ? sanPham.idDanhMuc.tenDanhMuc : 'Không có'}"></td>
+                            <td th:text="${sanPham.ngayTao}"></td>
+                            <td th:text="${sanPham.ngaySua}"></td>
+                            <td class="text-center" disabled>
+                                <input type="checkbox" class="toggle-status" th:checked="${sanPham.trangThai}"
+                                    th:attr="data-id=${sanPham.id}"  />
+                                <span class="status-label"
+                                    th:text="${sanPham.trangThai ? 'Hoạt động' : 'Không hoạt động'}"></span>
+                            </td>
+                            <td>
+                                <a th:href="@{/sanpham/chitietsanpham/{id}(id=${sanPham.id})}"
+                                    class="btn btn-primary btn-sm">Cập nhật</a>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        
+            <!-- Phân trang -->
+            <nav aria-label="Page navigation" class="mt-3">
+                <ul class="pagination justify-content-center">
+                    <li class="page-item" th:classappend="${currentPage == 0} ? 'disabled' : ''">
+                        <a th:href="@{/sanpham/hienthi(page=${currentPage - 1}, size=${10})}" class="page-link">«</a>
                     </li>
-                    <li th:each="i : ${#numbers.sequence(0, totalPages - 1)}"
-                        th:classappend="${i == currentPage} ? 'active' : ''" class="page-item">
-                        <a th:href="@{/sanpham/hienthi(page=${i}, size=${10})}" class="page-link"
-                            th:text="${i + 1}">1</a>
+                    <li class="page-item" th:each="i : ${#numbers.sequence(0, totalPages - 1)}"
+                        th:classappend="${i == currentPage} ? 'active' : ''">
+                        <a th:href="@{/sanpham/hienthi(page=${i}, size=${10})}" class="page-link" th:text="${i + 1}"></a>
                     </li>
-                    <li th:classappend="${currentPage + 1 == totalPages} ? 'disabled' : ''" class="page-item">
-                        <a th:href="@{/sanpham/hienthi(page=${currentPage+1}, size=${10})}" class="page-link">Next</a>
+                    <li class="page-item" th:classappend="${currentPage + 1 == totalPages} ? 'disabled' : ''">
+                        <a th:href="@{/sanpham/hienthi(page=${currentPage+1}, size=${10})}" class="page-link">»</a>
                     </li>
                 </ul>
             </nav>
-
-
-
-            <br>
-
+        
             <!-- Hiển thị thông báo thành công -->
             <div th:if="${successMessage}">
                 <script th:inline="javascript">
@@ -97,7 +95,6 @@
                             text: successMessage,
                             confirmButtonText: 'OK'
                         }).then(() => {
-                            // Xóa successMessage sau khi hiển thị thông báo
                             history.replaceState(null, '', location.pathname);
                         });
                     }
@@ -105,6 +102,9 @@
                 </script>
             </div>
         </div>
+
+
+
     </div>
 
 </body>
