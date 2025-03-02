@@ -51,6 +51,7 @@ public class Home {
             redirectAttributes.addFlashAttribute("error", "Sản phẩm không tồn tại!");
             return "redirect:/Sneakers/hienthi"; // Điều hướng về trang chủ hoặc trang danh sách sản phẩm
         }
+        System.out.println("id ctsp là "+id);
         System.out.println(chiTietSanPhams.getIdSanPham().getTenSanPham());
         List<Size> lstSize = sizeService.findAll();
         List<MauSac> lstMauSac = mauSacService.findAll();

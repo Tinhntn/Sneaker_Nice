@@ -120,6 +120,12 @@ public class SanPhamController {
         List<DanhMuc> lstDanhMuc = danhMucService.getAllDanhMucs();
         List<ChatLieu> lstChatLieu = chatLieuService.getAllChatLieus();
         List<Size>  lstSize= sizeService.findAll();
+        for(Size sz : lstSize){
+            System.out.println(sz.getTenSize());
+        }
+        for(Hang hang : lstHang){
+            System.out.println(hang.getTenHang());
+        }
         List<MauSac> lstMauSac = mauSacService.findAll();
         model.addAttribute("lstMauSac", lstMauSac);
         model.addAttribute("lstSize", lstSize);
@@ -207,6 +213,7 @@ public class SanPhamController {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND)
                         .body(Collections.singletonMap("message", "Không tìm thấy sản phẩm!"));
             }
+            System.out.println("id chi tiết sản phẩm"+id);
             // Ép kiểu dữ liệu an toàn
             Integer idSize = convertToInt(chiTietSanPham.get("idSize"));
             Integer idMauSac = convertToInt(chiTietSanPham.get("idMauSac"));

@@ -54,7 +54,7 @@
             <div class="container mt-5">
                 <div class="row">
                     <div class="col-lg-6 mb-5 ftco-animate">
-                        <a class="image-popup prod-img-bg"><img th:src="@{${chiTietSanPham.hinhAnh}}" class="img-fluid"
+                        <a class="image-popup prod-img-bg"><img th:src="${chiTietSanPham.hinhAnh}" class="img-fluid"
                                 alt="Colorlib Template"></a>
                     </div>
                     <div class="col-lg-6 product-details pl-md-5 ftco-animate">
@@ -62,12 +62,13 @@
                         <div class="rating d-flex">
                             <p class="text-left mr-4">
                                 <a href="#" class="mr-2">5.0</a>
-                                <a href="#"><span class="ion-ios-star-outline"></span></a>
-                                <a href="#"><span class="ion-ios-star-outline"></span></a>
-                                <a href="#"><span class="ion-ios-star-outline"></span></a>
-                                <a href="#"><span class="ion-ios-star-outline"></span></a>
-                                <a href="#"><span class="ion-ios-star-outline"></span></a>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
                             </p>
+
                             <p class="text-left mr-4">
                                 <a href="#" class="mr-2" style="color: #000;">100 <span
                                         style="color: #bbb;">Rating</span></a>
@@ -78,46 +79,76 @@
                             </p>
                         </div>
                         <h4 class="mb-3"
-                            th:text="'Tên sản phẩm: ' + ${chiTietSanPham.idSanPham.tenSanPham} + ' '+ ${chiTietSanPham.idSanPham.idHang.tenHang} + ' '+ ${chiTietSanPham.idSanPham.idDanhMuc.tenDanhMuc}+ ' '+ ${chiTietSanPham.idSanPham.idChatLieu.tenChatLieu}">
+                            th:text="${chiTietSanPham.idSanPham.tenSanPham + ' ' + chiTietSanPham.idSanPham.idHang.tenHang + ' ' + chiTietSanPham.idSanPham.idDanhMuc.tenDanhMuc + ' ' + chiTietSanPham.idSanPham.idChatLieu.tenChatLieu}">
                         </h4>
+
                         <h4 class="price mb-3" th:text="'Giá: ' + ${chiTietSanPham.giaBan} + ' VND'"></h4>
-                        <h4 class="mb-4" th:text="${chiTietSanPham.soLuong}!=null?'Còn hàng: ' + ${chiTietSanPham.soLuong}:'Hết hàng'"></h4>
+                        <h4 class="mb-4"
+                            th:text="${chiTietSanPham.soLuong != null ? 'Còn hàng: ' + chiTietSanPham.soLuong : 'Hết hàng'}">
+                        </h4>
+
 
                         <!-- Các button chọn Size -->
                         <div id="sizeButtons" class="mb-4">
-                            <span th:each="size : ${lstSize}">
-                                <form th:action=""  method="post">
-                                    <input type="hidden" name="idSanPham" th:if="${chiTietSanPham != null}" th:value="${chiTietSanPham.idSanPham.id}" />
-                                    <input type="hidden" name="idMauSac" th:if="${chiTietSanPham != null}" th:value="${chiTietSanPham.idMauSac.id}" />
-                                    <input type="hidden" name="idSize" th:value="${size.id}" />                        
-                                    <button type="submit"
+                            <form id="sizeForm" method="post" th:action="@{/chon-size}">
+                                <input type="hidden" name="idSanPham" th:if="${chiTietSanPham != null}"
+                                    th:value="${chiTietSanPham.idSanPham.id}" />
+                                <input type="hidden" name="idMauSac" th:if="${chiTietSanPham != null}"
+                                    th:value="${chiTietSanPham.idMauSac.id}" />
+                                <input type="hidden" name="idSize" id="selectedSize" />
+
+                                <div>
+                                    <button type="button" th:each="size : ${lstSize}" th:data-id="${size.id}"
                                         th:text="${size.tenSize}"
                                         th:class="${(chiTietSanPham != null and size.id == chiTietSanPham.idSize.id) ? 'btn btn-secondary size-btn' : 'btn btn-outline-secondary size-btn'}"
-                                        th:disabled="${chiTietSanPham != null and size.id == chiTietSanPham.idSize.id}">
+                                        onclick="selectSize(this)">
                                     </button>
-                                </form>
-                            </span>
+                                </div>
+                            </form>
                         </div>
-                        
+
+                        <script>
+                            function selectSize(button) {
+                                // Xóa class 'btn-secondary' khỏi tất cả các nút
+                                document.querySelectorAll('.size-btn').forEach(btn => {
+                                    btn.classList.remove('btn-secondary');
+                                    btn.classList.add('btn-outline-secondary');
+                                });
+
+                                // Đánh dấu nút được chọn
+                                button.classList.remove('btn-outline-secondary');
+                                button.classList.add('btn-secondary');
+
+                                // Lưu ID size vào input ẩn
+                                document.getElementById("selectedSize").value = button.getAttribute("data-id");
+
+                                // Gửi form (có thể dùng AJAX thay vì submit)
+                                document.getElementById("sizeForm").submit();
+                            }
+
+                        </script>
 
                         <!-- Các button chọn Màu sắc -->
                         <div id="mauSacButtons" class="mb-4">
-                            <span th:each="ms : ${lstMauSac}">
-                                <form th:action="" method="post">
-                                    <input type="hidden" name="idSanPham" th:if="${chiTietSanPham != null}" th:value="${chiTietSanPham.idSanPham.id}" />
-                                    <input type="hidden" name="idMauSac" th:value="${ms.id}" />
-                                    <input type="hidden" name="idSize" th:if="${chiTietSanPham != null}" th:value="${chiTietSanPham.idSize.id}" />
-                                    <button type="submit" class="color-btn"
-                                        th:text="${ms.tenMauSac}"
-                                        th:classappend="${(chiTietSanPham != null and ms.id == chiTietSanPham.idMauSac.id) ? 'btn btn-secondary' : 'btn btn-outline-secondary'}"
-                                        th:disabled="${chiTietSanPham != null and ms.id == chiTietSanPham.idMauSac.id}">
+                            <form th:action="@{/chon-mau-sac}" method="post" id="mauSacForm">
+                                <input type="hidden" name="idSanPham" th:if="${chiTietSanPham != null}"
+                                    th:value="${chiTietSanPham.idSanPham.id}" />
+                                <input type="hidden" name="idMauSac" th:if="${chiTietSanPham != null}"
+                                    th:value="${chiTietSanPham.idMauSac.id}" />
+                                <input type="hidden" name="idSize" id="selectedSize" />
+                                <div>
+                                    <button type="button" th:each="ms : ${lstMauSac}" th:data-id="${ms.id}"
+                                        th:text="${ms.tanMauSac}"
+                                        th:class="${(chiTietSanPham != null and ms.id == chiTietSanPham.idMauSac.id) ? 'btn btn-secondary size-btn' : 'btn btn-outline-secondary size-btn'}"
+                                        onclick="selectMauSac(this)">
                                     </button>
-                                </form>
+                                </div>
+                            </form>
                             </span>
                         </div>
-                        
+
                         <div class="input-group col-md-6 d-flex mb-3">
-                            <span class="input-group-btn mr-2">
+                            <!-- <span class="input-group-btn mr-2">
                                 <button type="button" class="quantity-left-minus btn" data-type="minus" data-field="">
                                     <i class="ion-ios-remove"></i>
                                 </button>
@@ -128,30 +159,31 @@
                                 <button type="button" class="quantity-right-plus btn" data-type="plus" data-field="">
                                     <i class="ion-ios-add"></i>
                                 </button>
-                            </span>
+                            </span> -->
                             <script>
-                                document.querySelector('.quantity-left-minus').addEventListener('click', function () {
-                                    var quantity = parseInt(document.getElementById('quantity').value);
-                                    if (quantity > 1) {
-                                        document.getElementById('quantity').value = quantity - 1;
-                                    }
-                                });
+                                function selectSize(button) {
+                                    document.querySelectorAll('.size-btn').forEach(btn => {
+                                        btn.classList.remove('btn-secondary');
+                                        btn.classList.add('btn-outline-secondary');
+                                    });
 
-                                document.querySelector('.quantity-right-plus').addEventListener('click', function () {
-                                    var quantity = parseInt(document.getElementById('quantity').value);
-                                    if (quantity < 100) {
-                                        document.getElementById('quantity').value = quantity + 1;
-                                    }
-                                });
+                                    button.classList.remove('btn-outline-secondary');
+                                    button.classList.add('btn-secondary');
+
+                                    document.getElementById("selectedSize").value = button.getAttribute("data-id");
+
+                                    // Không tự động submit form nữa
+                                }
+
                             </script>
                         </div>
                         <!-- Các button Thanh toán và Thêm vào giỏ hàng -->
-                        <div class="input-group col-md-6 d-flex mb-3">
+                        <!-- <div class="input-group col-md-6 d-flex mb-3">
                             <form th:action="@{/giohang/addGHCT}" method="post" class="d-inline">
 
-                                <!-- <input class="form-control mb-3" type="number" name="soluongmua" th:value="1" min="1"
-                                    required /> -->
-                                <!-- <input type="hidden" name="idctsp" th:if="${detailsp != null}"
+                                <input class="form-control mb-3" type="number" name="soluongmua" th:value="1" min="1"
+                                    required /> 
+                              <input type="hidden" name="idctsp" th:if="${detailsp != null}"
                                     th:value="${detailsp.id}" />
                                 <input type="hidden" name="soluongkho" th:if="${detailsp != null}"
                                     th:value="${detailsp.soLuong}" />
@@ -159,14 +191,13 @@
                                     th:value="${detailsp.giaBan}" />
                                 <p><a type="submit" class="btn btn-black py-3 px-5 mr-2">Thêm vào giỏ hàng </a>
                                     <a href="cart.html" class="btn btn-primary py-3 px-5">Mua ngay</a>
-                                </p> -->
+                                </p>
                             </form>
-                        </div>
+                        </div> -->
                     </div>
                 </div>
             </div>
         </section>
-
     </div>
 </body>
 

@@ -48,7 +48,7 @@ public class SizeImplement implements SizeService {
 
     @Override
     public List<Size> findAll() {
-        return List.of();
+        return sizeRepository.findAll();
     }
 
     @Override
