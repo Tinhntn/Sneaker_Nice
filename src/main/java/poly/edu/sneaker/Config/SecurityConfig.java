@@ -9,12 +9,11 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-                .csrf().disable() // Tắt CSRF nếu không cần thiết
+                .cors().and()
+                .csrf().disable()
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/sanpham/updateCTSP/**").permitAll() // Cho phép API cập nhật
-                        .anyRequest().authenticated()
+                        .anyRequest().permitAll() // Cho phép tất cả request
                 );
-
         return http.build();
     }
 }

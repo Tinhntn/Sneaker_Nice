@@ -30,9 +30,6 @@ public class HangController {
 
             Pageable pageable = PageRequest.of(page, size);
             Page<Hang> hangPage = hangService.getAll(pageable);
-
-            System.out.println("List hang: " + hangPage.getContent().size());
-
             model.addAttribute("hangCustomList", hangPage.getContent());
             model.addAttribute("currentPage", hangPage.getNumber());
             model.addAttribute("totalPages", hangPage.getTotalPages());

@@ -41,7 +41,6 @@ public class KhuyenMaiController {
             pageKhuyenMaiCustoms = khuyenMaiService.getAll(pageable);
         }
 
-        System.out.println("size: " + pageKhuyenMaiCustoms.getContent().size());
 
         model.addAttribute("listKhuyenMai", pageKhuyenMaiCustoms.getContent());
         model.addAttribute("currentPage", pageKhuyenMaiCustoms.getNumber());
@@ -103,8 +102,8 @@ public class KhuyenMaiController {
         Date endOfDay = calendar.getTime();
 
         khuyenMai.setNgayTao(new Date());
-//        khuyenMai.setLoaiKhuyenMai(true);
-
+        khuyenMai.setLoaiKhuyenMai(true);
+        khuyenMai.setNgaySua(new Date());
         if (khuyenMai.getNgayBatDau().before(endOfDay) && khuyenMai.getNgayKetThuc().after(startOfDay)) {
             khuyenMai.setTrangThai(true);
         } else {
