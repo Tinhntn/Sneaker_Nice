@@ -14,6 +14,8 @@ import poly.edu.sneaker.Service.MauSacService;
 
 import jakarta.validation.Valid;
 
+import java.util.ArrayList;
+
 @Controller
 @RequestMapping("/mau_sac")
 public class MauSacController {
@@ -46,10 +48,19 @@ public class MauSacController {
             return "admin/mau_sac/add";
         }
         try {
+            String maMauSac =mauSacService.taoMaMauSac();
+            ArrayList<MauSac> lstMauSac = mauSacService.findAll();
+            for ( MauSac h : lstMauSac
+            ) {
+                if(h.getMaMauSac().equals(maMauSac)){
+                    maMauSac =mauSacService.taoMaMauSac();                }
+
+            }
             if (mauSacService.findByMaMauSac(mauSac.getMaMauSac()) != null) {
                 redirectAttributes.addFlashAttribute("errorMessage", "Mã màu sắc đã tồn tại!");
                 return "redirect:/mau_sac/add";
             }
+            mauSac.setMaMauSac(maMauSac);
             mauSacService.save(mauSac);
             redirectAttributes.addFlashAttribute("successMessage", "Màu sắc được thêm thành công!");
         } catch (Exception e) {

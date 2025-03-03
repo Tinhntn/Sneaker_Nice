@@ -9,7 +9,9 @@ import poly.edu.sneaker.Model.MauSac;
 import poly.edu.sneaker.Repository.MauSacRepository;
 import poly.edu.sneaker.Service.MauSacService;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 
 @Service
@@ -54,8 +56,8 @@ public class MauSacImplement implements MauSacService {
     }
 
     @Override
-    public List<MauSac> findAll() {
-        return mauSacRepository.findAll();
+    public ArrayList<MauSac> findAll() {
+        return (ArrayList<MauSac>) mauSacRepository.findAll();
     }
 
     @Override
@@ -83,5 +85,12 @@ public class MauSacImplement implements MauSacService {
     @Override
     public MauSac findByMaMauSac(String maMauSac) {
         return mauSacRepository.findByMaMauSac(maMauSac);
+    }
+
+    @Override
+    public String taoMaMauSac() {
+        Random random = new Random();
+        String maMauSac = "MMS"+1000+random.nextInt(9000);
+        return maMauSac;
     }
 }

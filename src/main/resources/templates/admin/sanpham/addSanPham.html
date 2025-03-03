@@ -122,10 +122,10 @@
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body">
-                        <form id="themHangForm">
+                        <form id="themHangForm" method="post" action="/hang/add">
                             <div class="mb-3">
                                 <label for="tenHangMoi" class="form-label">Tên Hãng</label>
-                                <input type="text" class="form-control" id="tenHang" required>
+                                <input type="text" class="form-control" id="tenHang" name="tenHang" required>
                             </div>
                             <button type="submit" class="btn btn-primary">Lưu</button>
                         </form>
@@ -142,10 +142,10 @@
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body">
-                        <form id="themChatLieuForm">
+                        <form id="themChatLieuForm" method="post" action="/chat_lieu/add">
                             <div class="mb-3">
                                 <label for="tenChatLieu" class="form-label">Tên Chất Liệu</label>
-                                <input type="text" class="form-control" id="tenChatLieu" required>
+                                <input type="text" class="form-control" id="tenChatLieu" name="tenChatLieu" required>
                             </div>
                             <button type="submit" class="btn btn-primary">Lưu</button>
                         </form>
@@ -162,10 +162,10 @@
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body">
-                        <form id="themDanhMucForm">
+                        <form id="themDanhMucForm" method="post" action="/danh_muc/add">
                             <div class="mb-3">
                                 <label for="tenDanhMucMoi" class="form-label">Tên Danh Mục</label>
-                                <input type="text" class="form-control" id="tenDanhMuc" required>
+                                <input type="text" class="form-control" id="tenDanhMuc" name="tenDanhMuc" required>
                             </div>
                             <button type="submit" class="btn btn-primary">Lưu</button>
                         </form>

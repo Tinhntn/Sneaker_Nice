@@ -12,6 +12,7 @@ import poly.edu.sneaker.Service.ChatLieuService;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 
 @Service
@@ -64,8 +65,8 @@ public class ChatLieuImplement implements ChatLieuService {
     }
 
     @Override
-    public List<ChatLieu> getAllChatLieus() {
-        return chatLieuRepository.findAll();
+    public ArrayList<ChatLieu> getAllChatLieus() {
+        return (ArrayList<ChatLieu>) chatLieuRepository.findAll();
     }
 
 
@@ -77,5 +78,12 @@ public class ChatLieuImplement implements ChatLieuService {
     @Override
     public ChatLieu findByMaChatLieu(String maChatLieu) {
         return chatLieuRepository.findByMaChatLieu(maChatLieu);
+    }
+
+    @Override
+    public String taoMaChatLieu() {
+        Random random = new Random();
+        String maCL = "CL"+1000+random.nextInt(9000);
+        return maCL;
     }
 }

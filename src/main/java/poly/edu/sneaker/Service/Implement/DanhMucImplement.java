@@ -11,6 +11,7 @@ import poly.edu.sneaker.Repository.SanPhamRepository;
 import poly.edu.sneaker.Service.DanhMucService;
 
 import java.util.List;
+import java.util.Random;
 
 @Service
 public class DanhMucImplement implements DanhMucService {
@@ -83,5 +84,12 @@ public class DanhMucImplement implements DanhMucService {
     @Override
     public DanhMuc findByMaDanhMuc(String maDanhMuc) {
         return danhMucRepository.findByMaDanhMuc(maDanhMuc);
+    }
+
+    @Override
+    public String taoMaDanhMuc() {
+        Random random = new Random();
+        String maDanhMuc = "MDM"+1000+random.nextInt(9000);
+        return maDanhMuc;
     }
 }

@@ -38,6 +38,7 @@
                 <th>Tên size</th>
                 <th>Ngày tạo</th>
                 <th>Ngày sửa</th>
+                <th>Trạng thái</th>
                 <th>Thao tác</th>
             </tr>
             </thead>
@@ -62,7 +63,7 @@
             <ul class="pagination justify-content-center">
                 <!-- Nút "Trang trước" -->
                 <li class="page-item" th:classappend="${currentPage == 0} ? 'disabled'">
-                    <a class="page-link" th:href="@{/size/hienthi(page=${currentPage - 1})}">Previous</a>
+                    <a class="page-link" th:href="@{/size/hienthi(page=${currentPage - 1})}"><<</a>
                 </li>
 
                 <!-- Các nút số trang -->
@@ -73,7 +74,7 @@
 
                 <!-- Nút "Trang sau" -->
                 <li class="page-item" th:classappend="${currentPage + 1 == totalPages} ? 'disabled'">
-                    <a class="page-link" th:href="@{/size/hienthi(page=${currentPage + 1})}">Next</a>
+                    <a class="page-link" th:href="@{/size/hienthi(page=${currentPage + 1})}">>></a>
                 </li>
             </ul>
         </div>

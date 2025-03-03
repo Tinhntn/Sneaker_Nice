@@ -64,7 +64,7 @@
             <ul class="pagination">
                 <li th:classappend="${currentPage == 0} ? 'disabled' : ''" class="page-item">
                     <a th:href="@{/chat_lieu/hienthi(page=${currentPage - 1}, size=${10})}"
-                       class="page-link">Previous</a>
+                       class="page-link"><<</a>
                 </li>
                 <li th:each="i : ${#numbers.sequence(0, totalPages - 1)}"
                     th:classappend="${i == currentPage} ? 'active' : ''" class="page-item">
@@ -72,7 +72,7 @@
                        th:text="${i + 1}">1</a>
                 </li>
                 <li th:classappend="${currentPage + 1 == totalPages} ? 'disabled' : ''" class="page-item">
-                    <a th:href="@{/chat_lieu/hienthi(page=${currentPage+1}, size=${10})}" class="page-link">Next</a>
+                    <a th:href="@{/chat_lieu/hienthi(page=${currentPage+1}, size=${10})}" class="page-link">>></a>
                 </li>
             </ul>
         </nav>

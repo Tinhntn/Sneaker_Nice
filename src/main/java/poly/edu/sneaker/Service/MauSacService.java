@@ -4,6 +4,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import poly.edu.sneaker.Model.MauSac;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public interface MauSacService {
@@ -11,7 +12,7 @@ public interface MauSacService {
     void delete(MauSac mauSac);
     MauSac findById(int id);
     void update(MauSac mauSac);
-    List<MauSac> findAll();
+    ArrayList<MauSac> findAll();
     Page<MauSac> getAll(Pageable pageable);
 
     MauSac findMauSacById(int id);
@@ -25,4 +26,6 @@ public interface MauSacService {
     Page<MauSac> search(String keyword, Pageable pageable);
 
     MauSac findByMaMauSac(String maMauSac);
+
+    String taoMaMauSac();
 }

@@ -15,6 +15,7 @@ import poly.edu.sneaker.Model.Hang;
 import poly.edu.sneaker.Model.NhanVien;
 import poly.edu.sneaker.Service.HangService;
 
+import java.util.ArrayList;
 import java.util.Date;
 
 @Controller
@@ -43,9 +44,6 @@ public class HangController {
                       RedirectAttributes redirectAttributes
     ){
 
-        System.out.println("hoten: " + maHang);
-        System.out.println("idcv: " + tenHang);
-
         if (maHang == null || maHang.trim().isEmpty()) {
             redirectAttributes.addFlashAttribute("errorMessage", "Mã hãng không được để trống.");
             return "redirect:/hang/hienthi";
@@ -55,7 +53,15 @@ public class HangController {
             redirectAttributes.addFlashAttribute("errorMessage", "Tên hãng không được để trống.");
             return "redirect:/hang/hienthi";
         }
+        maHang =hangService.taoMaHang();
+        ArrayList<Hang> lstHang = hangService.getAllHangs();
+        for ( Hang h : lstHang
+             ) {
+            if(h.getMaHang().equals(maHang)){
+                maHang=hangService.taoMaHang();
+            }
 
+        }
         Hang hang = new Hang();
         hang.setMaHang(maHang);
         hang.setTenHang(tenHang);

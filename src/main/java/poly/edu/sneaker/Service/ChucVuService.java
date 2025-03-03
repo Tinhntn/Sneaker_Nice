@@ -4,12 +4,13 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import poly.edu.sneaker.Model.ChucVu;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public interface ChucVuService {
     Page<ChucVu> findAll(Pageable pageable);
     ChucVu findById(int id);
-    List<ChucVu> getAll();
+    ArrayList<ChucVu> getAll();
     void delete(ChucVu chucVu);
     Page<ChucVu> getAll(Pageable pageable);
 
@@ -24,4 +25,5 @@ public interface ChucVuService {
     Page<ChucVu> search(String keyword, Pageable pageable);
 
     ChucVu findByMaChucVu(String maChucVu);
+    String taoMaChucVu();
 }

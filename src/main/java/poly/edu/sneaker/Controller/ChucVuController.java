@@ -14,6 +14,9 @@ import poly.edu.sneaker.Service.ChucVuService;
 
 import jakarta.validation.Valid;
 
+import java.lang.reflect.Array;
+import java.util.ArrayList;
+
 @Controller
 @RequestMapping("/chuc_vu")
 public class ChucVuController {
@@ -46,10 +49,20 @@ public class ChucVuController {
             return "admin/chuc_vu/add";
         }
         try {
+            ArrayList<ChucVu> lstCV = chucVuService.getAll();
+            String maCV = chucVuService.taoMaChucVu();
+            for ( ChucVu cv :lstCV
+                 ) {
+                if(cv.getMaChucVu().equals(maCV)){
+                    maCV= chucVuService.taoMaChucVu();
+                }
+
+            }
             if (chucVuService.findByMaChucVu(chucVu.getMaChucVu()) != null) {
                 redirectAttributes.addFlashAttribute("errorMessage", "Mã chức vụ đã tồn tại!");
                 return "redirect:/chuc_vu/add";
             }
+            chucVu.setMaChucVu(maCV);
             chucVuService.save(chucVu);
             redirectAttributes.addFlashAttribute("successMessage", "Chức vụ được thêm thành công!");
         } catch (Exception e) {

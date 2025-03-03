@@ -9,7 +9,9 @@ import poly.edu.sneaker.Model.NhanVien;
 import poly.edu.sneaker.Repository.HangRepository;
 import poly.edu.sneaker.Service.HangService;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 @Service
 
@@ -55,7 +57,14 @@ public class HangImplement implements HangService {
     }
 
     @Override
-    public List<Hang> getAllHangs() {
-        return hangRepository.findAll();
+    public String taoMaHang() {
+        Random random = new Random();
+        String maMaHang = "MH"+String.valueOf(1000+random.nextInt(9000));
+        return maMaHang;
+    }
+
+    @Override
+    public ArrayList<Hang> getAllHangs() {
+        return (ArrayList<Hang>) hangRepository.findAll();
     }
 }

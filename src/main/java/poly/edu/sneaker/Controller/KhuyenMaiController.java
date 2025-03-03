@@ -46,7 +46,6 @@ public class KhuyenMaiController {
                 maKM=khuyenMaiService.taoMaoKhuyenMai();
             }
         }
-        System.out.println(maKM);
         model.addAttribute("maKhuyenMai",maKM);
         model.addAttribute("listKhuyenMai", pageKhuyenMaiCustoms.getContent());
         model.addAttribute("currentPage", pageKhuyenMaiCustoms.getNumber());

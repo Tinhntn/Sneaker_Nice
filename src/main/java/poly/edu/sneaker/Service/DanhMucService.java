@@ -25,4 +25,5 @@ public interface DanhMucService {
     Page<DanhMuc> search(String keyword, Pageable pageable);
 
     DanhMuc findByMaDanhMuc(String maDanhMuc);
+    String taoMaDanhMuc();
 }

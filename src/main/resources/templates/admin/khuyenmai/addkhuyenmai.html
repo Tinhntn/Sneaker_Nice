@@ -78,7 +78,7 @@
                 <ul class="pagination justify-content-center">
                     <!-- Nút "Trang trước" -->
                     <li class="page-item" th:classappend="${currentPage == 0} ? 'disabled'">
-                        <a class="page-link" th:href="@{/nhanvien/hienthi(page=${currentPage - 1})}"><</a>
+                        <a class="page-link" th:href="@{/nhanvien/hienthi(page=${currentPage - 1})}"><<</a>
                     </li>
     
                     <!-- Các nút số trang -->
@@ -89,7 +89,7 @@
     
                     <!-- Nút "Trang sau" -->
                     <li class="page-item" th:classappend="${currentPage + 1 == totalPages} ? 'disabled'">
-                        <a class="page-link" th:href="@{/nhanvien/hienthi(page=${currentPage + 1})}">></a>
+                        <a class="page-link" th:href="@{/nhanvien/hienthi(page=${currentPage + 1})}">>></a>
                     </li>
                 </ul>
             </div>

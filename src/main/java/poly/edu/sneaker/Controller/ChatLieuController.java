@@ -14,6 +14,8 @@ import poly.edu.sneaker.Service.ChatLieuService;
 
 import jakarta.validation.Valid;
 
+import java.util.ArrayList;
+
 @Controller
 @RequestMapping("/chat_lieu")
 public class ChatLieuController {
@@ -46,6 +48,15 @@ public class ChatLieuController {
             return "admin/chat_lieu/add";
         }
         try {
+            ArrayList<ChatLieu> lstChatLieu = chatLieuService.getAllChatLieus();
+            String maChatLieu = chatLieuService.taoMaChatLieu();
+            for (ChatLieu lst : lstChatLieu
+                 ) {
+                if(lst.getMaChatLieu().equals(maChatLieu)){
+                    maChatLieu=chatLieuService.taoMaChatLieu();
+                }
+            }
+            chatLieu.setMaChatLieu(maChatLieu);
             if (chatLieuService.findByMaChatLieu(chatLieu.getMaChatLieu()) != null) {
                 redirectAttributes.addFlashAttribute("errorMessage", "Mã chất liệu đã tồn tại!");
                 return "redirect:/chat_lieu/add";

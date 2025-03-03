@@ -9,8 +9,9 @@ import poly.edu.sneaker.Model.ChucVu;
 import poly.edu.sneaker.Repository.ChucVuRepository;
 import poly.edu.sneaker.Service.ChucVuService;
 
+import java.util.ArrayList;
 import java.util.List;
-
+import java.util.Random;
 
 
 @Service
@@ -40,8 +41,8 @@ public class ChucVuImplement implements ChucVuService {
     }
 
     @Override
-    public List<ChucVu> getAll() {
-        return chucVuRepository.findAll();
+    public ArrayList<ChucVu> getAll() {
+        return (ArrayList<ChucVu>) chucVuRepository.findAll();
     }
 
     @Override
@@ -76,5 +77,12 @@ public class ChucVuImplement implements ChucVuService {
     @Override
     public ChucVu findByMaChucVu(String maChucVu) {
         return chucVuRepository.findByMaChucVu(maChucVu);
+    }
+
+    @Override
+    public String taoMaChucVu() {
+        Random random = new Random();
+        String maCV = "CV"+1000+random.nextInt(9000);
+        return maCV;
     }
 }

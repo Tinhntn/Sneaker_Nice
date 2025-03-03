@@ -14,7 +14,7 @@ public interface ChatLieuService {
      ChatLieu findChatLieuById(int id);
 
      ChatLieu getChatLieuById(int id);
-     List<ChatLieu> getAllChatLieus();
+     ArrayList<ChatLieu> getAllChatLieus();
 
      void save(ChatLieu chatLieu);
 
@@ -25,4 +25,5 @@ public interface ChatLieuService {
      Page<ChatLieu> search(String keyword, Pageable pageable);
 
      ChatLieu findByMaChatLieu(String maChatLieu);
+     String taoMaChatLieu();
 }
