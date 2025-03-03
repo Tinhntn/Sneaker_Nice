@@ -9,9 +9,7 @@ import poly.edu.sneaker.Model.KhuyenMai;
 import poly.edu.sneaker.Repository.KhuyenMaiRepository;
 import poly.edu.sneaker.Service.KhuyenMaiService;
 
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 @Service
 public class KhuyenMaiImplement implements KhuyenMaiService {
@@ -50,6 +48,18 @@ public class KhuyenMaiImplement implements KhuyenMaiService {
     @Override
     public Page<KhuyenMaiCustom> findKhuyenMaiByMaKhuyenMaiContainingOrTenKhuyenMaiContaining(String maKhuyenMai, String tenKhuyenMai, Pageable pageable) {
         return khuyenMaiRepository.findKhuyenMaiByMaKhuyenMaiContainingOrTenKhuyenMaiContaining(maKhuyenMai, tenKhuyenMai, pageable);
+    }
+
+    @Override
+    public String taoMaoKhuyenMai() {
+        Random random = new Random();
+        String maKhuyenMai =String.valueOf("KM"+1000+ random.nextInt(9000));
+        return maKhuyenMai;
+    }
+
+    @Override
+    public ArrayList<KhuyenMai> getAllKhuyenMai() {
+        return (ArrayList<KhuyenMai>) khuyenMaiRepository.findAll();
     }
 
 

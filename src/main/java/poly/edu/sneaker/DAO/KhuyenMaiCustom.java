@@ -11,7 +11,7 @@ public interface KhuyenMaiCustom {
     float getDieuKienApDung();
     Boolean getLoaiKhuyenMai();
     float getGiaTriGiam();
-    float getMucGiamToiDa();
+    float getMucGiamGiaToiDa();
     int getDaSuDung();
     int getSoLuong();
     Date getNgayBatDau();

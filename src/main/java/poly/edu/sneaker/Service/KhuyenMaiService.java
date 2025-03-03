@@ -5,6 +5,10 @@ import org.springframework.data.domain.Pageable;
 import poly.edu.sneaker.DAO.KhuyenMaiCustom;
 import poly.edu.sneaker.Model.KhuyenMai;
 
+import java.lang.reflect.Array;
+import java.util.ArrayList;
+import java.util.List;
+
 public interface KhuyenMaiService {
 
     Page<KhuyenMaiCustom> getAll(Pageable pageable);
@@ -12,5 +16,6 @@ public interface KhuyenMaiService {
     void updateKhuyenMai(KhuyenMai khuyenMai, int id);
     KhuyenMai detailKhuyenMai(int id);
     Page<KhuyenMaiCustom> findKhuyenMaiByMaKhuyenMaiContainingOrTenKhuyenMaiContaining(String maKhuyenMai, String tenKhuyenMai, Pageable pageable);
-
+    String taoMaoKhuyenMai();
+    ArrayList<KhuyenMai> getAllKhuyenMai();
 }

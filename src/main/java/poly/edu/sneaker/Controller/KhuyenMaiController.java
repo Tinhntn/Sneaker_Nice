@@ -13,10 +13,7 @@ import poly.edu.sneaker.DAO.KhuyenMaiCustom;
 import poly.edu.sneaker.Model.KhuyenMai;
 import poly.edu.sneaker.Service.KhuyenMaiService;
 
-import java.util.Calendar;
-import java.util.Date;
-import java.util.Objects;
-import java.util.UUID;
+import java.util.*;
 
 @Controller
 @RequestMapping("/khuyenmai")
@@ -41,7 +38,16 @@ public class KhuyenMaiController {
             pageKhuyenMaiCustoms = khuyenMaiService.getAll(pageable);
         }
 
-
+        ArrayList<KhuyenMai> lstKhuyenMai = khuyenMaiService.getAllKhuyenMai();
+        String maKM = khuyenMaiService.taoMaoKhuyenMai();
+        for (KhuyenMai km : lstKhuyenMai
+        ) {
+            if(km.getMaKhuyenMai().equals(maKM)){
+                maKM=khuyenMaiService.taoMaoKhuyenMai();
+            }
+        }
+        System.out.println(maKM);
+        model.addAttribute("maKhuyenMai",maKM);
         model.addAttribute("listKhuyenMai", pageKhuyenMaiCustoms.getContent());
         model.addAttribute("currentPage", pageKhuyenMaiCustoms.getNumber());
         model.addAttribute("totalPages", pageKhuyenMaiCustoms.getTotalPages());
@@ -95,7 +101,6 @@ public class KhuyenMaiController {
         calendar.set(Calendar.MINUTE, 0);
         calendar.set(Calendar.SECOND, 0);
         Date startOfDay = calendar.getTime();
-
         calendar.set(Calendar.HOUR_OF_DAY, 23);
         calendar.set(Calendar.MINUTE, 59);
         calendar.set(Calendar.SECOND, 59);
@@ -104,6 +109,7 @@ public class KhuyenMaiController {
         khuyenMai.setNgayTao(new Date());
         khuyenMai.setLoaiKhuyenMai(true);
         khuyenMai.setNgaySua(new Date());
+
         if (khuyenMai.getNgayBatDau().before(endOfDay) && khuyenMai.getNgayKetThuc().after(startOfDay)) {
             khuyenMai.setTrangThai(true);
         } else {
