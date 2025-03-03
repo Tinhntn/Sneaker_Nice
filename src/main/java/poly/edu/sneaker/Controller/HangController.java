@@ -26,7 +26,7 @@ public class HangController {
 
         @GetMapping("/hienthi")
         public String hienthi(Model model, @RequestParam(defaultValue = "0") int page){
-            int size = 1;
+            int size = 5;
 
             Pageable pageable = PageRequest.of(page, size);
             Page<Hang> hangPage = hangService.getAll(pageable);

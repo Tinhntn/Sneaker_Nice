@@ -18,15 +18,15 @@ public class ChiTietSanPham {
     @GeneratedValue (strategy = GenerationType.IDENTITY)
     private int id;
     @ManyToOne
-    @JoinColumn(name="idSanPham")
+    @JoinColumn(name="id_san_pham")
     private SanPham idSanPham;
 
     @ManyToOne
-    @JoinColumn(name = "idSize")
+    @JoinColumn(name = "id_size")
     private Size idSize;
 
     @ManyToOne
-    @JoinColumn(name = "idMauSac")
+    @JoinColumn(name = "id_mau_sac")
     private MauSac idMauSac;
     private float trongLuong;
     private float giaNhap;

@@ -46,6 +46,7 @@ public class SanPhamController {
     public String hienThi(Model model,RedirectAttributes redirectAttributes, @RequestParam(defaultValue = "0") int page, @RequestParam(required = false) String keyword) {
         int size = 5;
         Pageable pageable = PageRequest.of(page, size);
+
         Page<SanPham> lstSanPham;
         if (keyword != null && !keyword.isEmpty()) {
             lstSanPham = sanPhamService.findByMaSanPhamOrTenSanPham(keyword, keyword, pageable);

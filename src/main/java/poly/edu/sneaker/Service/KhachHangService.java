@@ -5,9 +5,17 @@ import org.springframework.data.domain.Pageable;
 import poly.edu.sneaker.Model.KhachHang;
 
 public interface KhachHangService {
-    Page<KhachHang> findAll(Pageable pageable);
-    KhachHang findById(int id);
-    KhachHang save(KhachHang khachHang);
+    Page<KhachHang> getAll(Pageable pageable);
+
+    KhachHang findKhachHangById(int id);
+
+    void saveKhachHang(KhachHang khachHang);
+
+    void updateKhachHang(KhachHang khachHang, int id);
+
     void deleteById(int id);
-    void update(KhachHang khachHang);
+
+    Page<KhachHang> search(String keyword, Pageable pageable);
+
+    KhachHang findByEmail(String email);
 }

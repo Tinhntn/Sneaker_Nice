@@ -10,7 +10,18 @@ public interface ChucVuService {
     Page<ChucVu> findAll(Pageable pageable);
     ChucVu findById(int id);
     List<ChucVu> getAll();
-    ChucVu save(ChucVu chucVu);
     void delete(ChucVu chucVu);
+    Page<ChucVu> getAll(Pageable pageable);
 
+    ChucVu findChucVuById(int id);
+
+    void save(ChucVu chucVu);
+
+    void update(ChucVu chucVu, int id);
+
+    void deleteById(int id);
+
+    Page<ChucVu> search(String keyword, Pageable pageable);
+
+    ChucVu findByMaChucVu(String maChucVu);
 }
