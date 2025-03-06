@@ -18,4 +18,5 @@ public interface KhachHangService {
     Page<KhachHang> search(String keyword, Pageable pageable);
 
     KhachHang findByEmail(String email);
+    KhachHang findByEmailAndMatKhau(String Email,String matKhau);
 }

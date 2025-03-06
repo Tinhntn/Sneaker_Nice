@@ -7,6 +7,9 @@ import org.springframework.stereotype.Service;
 import poly.edu.sneaker.Model.ChiTietSanPham;
 import poly.edu.sneaker.Repository.ChiTietSanPhamRepository;
 import poly.edu.sneaker.Service.ChiTietSanPhamService;
+
+import java.util.ArrayList;
+
 @Service
 
 public class ChiTietSanPhamImplement implements ChiTietSanPhamService {
@@ -46,6 +49,16 @@ public class ChiTietSanPhamImplement implements ChiTietSanPhamService {
     @Override
     public Page<ChiTietSanPham> findChiTietSanPhamJustOne(Pageable pageable) {
         return chiTietSanPhamRepository.findFirstRecordForEachProduct(pageable);
+    }
+
+    @Override
+    public ChiTietSanPham findCTSPByIDMauSac(int idCTSP, int idMauSac) {
+        return chiTietSanPhamRepository.findChiTietSanPhamByIdAndIdMauSacAndTrangThai(idCTSP,idMauSac,true);
+    }
+
+    @Override
+    public ArrayList<ChiTietSanPham> findByIdSanPham(int idSanPham) {
+        return chiTietSanPhamRepository.findByIdSanPham_IdAndTrangThai(idSanPham,true);
     }
 //
 //    @Override

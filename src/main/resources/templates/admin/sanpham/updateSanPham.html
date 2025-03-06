@@ -255,52 +255,48 @@
             document.getElementById("btnSubmit").addEventListener("click", function () {
                 document.querySelector("#exampleModal form").submit();
             });
-            document.addEventListener("DOMContentLoaded", function () {
-                // Khởi tạo Notyf chỉ một lần
+           document.addEventListener("DOMContentLoaded", function () {
                 var notyf = new Notyf({ ripple: true });
 
                 document.querySelectorAll(".update-btn").forEach(button => {
                     button.addEventListener("click", async function (event) {
                         event.preventDefault(); // Ngăn chặn chuyển trang
 
-                        let idSP = document.getElementById("idSP")?.value; // Kiểm tra nếu phần tử tồn tại
+                        let idSP = document.getElementById("idSP")?.value;
                         let row = this.closest("tr");
                         let idCTSP = row?.getAttribute("data-id");
 
-                        console.log("ID Sản phẩm chính:", idSP);
-                        console.log("ID Chi tiết sản phẩm:", idCTSP);
-
-                        // Kiểm tra nếu không có ID chi tiết sản phẩm
                         if (!idCTSP) {
-                            console.error("Không tìm thấy ID sản phẩm!");
-                            notyf.error("Không tìm thấy ID sản phẩm!");
+                            console.error("Không tìm thấy ID chi tiết sản phẩm!");
+                            notyf.error("Không tìm thấy ID chi tiết sản phẩm!");
                             return;
                         }
 
+                        let trangThaiCheckbox = row.querySelector("[name='trangThai']");
+                        let trangThaii = trangThaiCheckbox ? trangThaiCheckbox.checked : false;
+
+                        console.log("ID Sản phẩm chính:", idSP);
+                        console.log("ID Chi tiết sản phẩm:", idCTSP);
+                        console.log("Trạng thái:", trangThaii);
+
                         try {
-                            // Lấy dữ liệu từ input/select
                             let formData = {
-                                id: row.querySelector("[name='id']")?.value,
-                                idSize: row.querySelector("[name='idSize']")?.value,
-                                idMauSac: row.querySelector("[name='idMauSac']")?.value,
-                                trongLuong: row.querySelector("[name='trongLuong']")?.value,
-                                giaNhap: row.querySelector("[name='giaNhap']")?.value,
-                                giaBan: row.querySelector("[name='giaBan']")?.value,
-                                soLuong: row.querySelector("[name='soLuong']")?.value,
-                                moTa: row.querySelector("[name='moTa']")?.value,
-                                trangThai:  row.querySelector("[name='trangThai']").checked
+                                id: row.querySelector("[name='id']")?.value || null,
+                                idSize: row.querySelector("[name='idSize']")?.value || null,
+                                idMauSac: row.querySelector("[name='idMauSac']")?.value || null,
+                                trongLuong: row.querySelector("[name='trongLuong']")?.value || null,
+                                giaNhap: row.querySelector("[name='giaNhap']")?.value || null,
+                                giaBan: row.querySelector("[name='giaBan']")?.value || null,
+                                soLuong: row.querySelector("[name='soLuong']")?.value || null,
+                                moTa: row.querySelector("[name='moTa']")?.value || null,
+                                trangThai: trangThaii
                             };
-
-                            console.log(trangThai)
-                            console.log("Dữ liệu gửi đi:", formData);
-
-                            // Gửi AJAX request cập nhật sản phẩm
+                            console.log(formData)
                             let response = await fetch(`/sanpham/updateCTSP/${idCTSP}`, {
                                 method: "PUT",
                                 headers: { "Content-Type": "application/json" },
                                 body: JSON.stringify(formData)
                             });
-                            console.log("Phản hồi từ server:", response);
 
                             let data = await response.json();
 

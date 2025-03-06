@@ -52,4 +52,14 @@ public class NhanVienImplement implements NhanVienService {
         return nhanVienRepository.searchNhanVien(keyword, pageable);
     }
 
+    @Override
+    public NhanVien getNhanVienByEmailandMatKhau(String email, String matKhau) {
+        return nhanVienRepository.findByEmailAndMatKhau(email,matKhau);
+    }
+
+    @Override
+    public NhanVien getNhanVienByEmail(String email) {
+        return nhanVienRepository.findByEmail(email);
+    }
+
 }

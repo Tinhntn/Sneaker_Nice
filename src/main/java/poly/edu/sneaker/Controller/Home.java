@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -20,7 +21,9 @@ import poly.edu.sneaker.Service.MauSacService;
 import poly.edu.sneaker.Service.SanPhamService;
 import poly.edu.sneaker.Service.SizeService;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Controller
 @RequestMapping("/Sneakers_Nice")
@@ -51,13 +54,34 @@ public class Home {
             redirectAttributes.addFlashAttribute("error", "Sản phẩm không tồn tại!");
             return "redirect:/Sneakers/hienthi"; // Điều hướng về trang chủ hoặc trang danh sách sản phẩm
         }
-        System.out.println("id ctsp là "+id);
-        System.out.println(chiTietSanPhams.getIdSanPham().getTenSanPham());
-        List<Size> lstSize = sizeService.findAll();
-        List<MauSac> lstMauSac = mauSacService.findAll();
+        ArrayList<ChiTietSanPham> lstCTSP = chiTietSanPhamService.findByIdSanPham(chiTietSanPhams.getIdSanPham().getId());
+
+        List<Size> lstSize = lstCTSP.stream()
+                    .map(ChiTietSanPham::getIdSize)
+                    .collect(Collectors.toMap(Size::getId, s -> s, (s1, s2) -> s1))
+                    .values()
+                    .stream()
+                    .collect(Collectors.toList());
+        List<MauSac> lstMauSacs = lstCTSP.stream()
+                        .map(ChiTietSanPham::getIdMauSac)
+                        .collect(Collectors.toMap(MauSac::getId, m -> m, (m1, m2) -> m1))
+                        .values()
+                        .stream()
+                        .collect(Collectors.toList());
+
         model.addAttribute("chiTietSanPham",chiTietSanPhams);
+        model.addAttribute("lstCTSP",lstCTSP);
         model.addAttribute("lstSize",lstSize);
-        model.addAttribute("lstMauSac",lstMauSac);
+        model.addAttribute("lstMauSac",lstMauSacs);
         return "user/sanpham/detailSanPham";
+    }
+    @GetMapping("/chitietsanpham")
+    public ResponseEntity<ChiTietSanPham> getChiTietSanPhamByIdMauSac(@RequestParam int idCTSP, @RequestParam int idMauSac){
+        ChiTietSanPham ct = chiTietSanPhamService.findCTSPByIDMauSac(idCTSP,idMauSac);
+        if(ct!=null){
+            ct.getHinhAnh();
+            return ResponseEntity.ok(ct);
+        }
+        return ResponseEntity.notFound().build();
     }
 }

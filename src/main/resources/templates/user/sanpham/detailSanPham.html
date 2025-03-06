@@ -54,8 +54,8 @@
             <div class="container mt-5">
                 <div class="row">
                     <div class="col-lg-6 mb-5 ftco-animate">
-                        <a class="image-popup prod-img-bg"><img th:src="${chiTietSanPham.hinhAnh}" class="img-fluid"
-                                alt="Colorlib Template"></a>
+                        <a class="image-popup prod-img-bg"><img id="productImage" th:src="${chiTietSanPham.hinhAnh}"
+                                class="img-fluid" alt="Colorlib Template"></a>
                     </div>
                     <div class="col-lg-6 product-details pl-md-5 ftco-animate">
                         <h2 class="mb-4">Thông tin sản phẩm</h2>
@@ -98,35 +98,17 @@
                                 <input type="hidden" name="idSize" id="selectedSize" />
 
                                 <div>
-                                    <button type="button" th:each="size : ${lstSize}" th:data-id="${size.id}"
+                                    <button type="button" th:each="size : ${lstSize}" th:data-idSize="${size.id}"
                                         th:text="${size.tenSize}"
-                                        th:class="${(chiTietSanPham != null and size.id == chiTietSanPham.idSize.id) ? 'btn btn-secondary size-btn' : 'btn btn-outline-secondary size-btn'}"
+                                        th:class="${(chiTietSanPham != null and size.id == chiTietSanPham.idSize.id) ? 'btn btn-secondary size-btn active' : 'btn btn-outline-secondary size-btn'}"
                                         onclick="selectSize(this)">
                                     </button>
                                 </div>
                             </form>
                         </div>
 
-                        <script>
-                            function selectSize(button) {
-                                // Xóa class 'btn-secondary' khỏi tất cả các nút
-                                document.querySelectorAll('.size-btn').forEach(btn => {
-                                    btn.classList.remove('btn-secondary');
-                                    btn.classList.add('btn-outline-secondary');
-                                });
 
-                                // Đánh dấu nút được chọn
-                                button.classList.remove('btn-outline-secondary');
-                                button.classList.add('btn-secondary');
 
-                                // Lưu ID size vào input ẩn
-                                document.getElementById("selectedSize").value = button.getAttribute("data-id");
-
-                                // Gửi form (có thể dùng AJAX thay vì submit)
-                                document.getElementById("sizeForm").submit();
-                            }
-
-                        </script>
 
                         <!-- Các button chọn Màu sắc -->
                         <div id="mauSacButtons" class="mb-4">
@@ -137,9 +119,9 @@
                                     th:value="${chiTietSanPham.idMauSac.id}" />
                                 <input type="hidden" name="idSize" id="selectedSize" />
                                 <div>
-                                    <button type="button" th:each="ms : ${lstMauSac}" th:data-id="${ms.id}"
-                                        th:text="${ms.tanMauSac}"
-                                        th:class="${(chiTietSanPham != null and ms.id == chiTietSanPham.idMauSac.id) ? 'btn btn-secondary size-btn' : 'btn btn-outline-secondary size-btn'}"
+                                    <button type="button" th:each="ms : ${lstMauSac}" th:data-idMauSac="${ms.id}"
+                                        th:text="${ms.tenMauSac}" th:data-idCTSP="${chiTietSanPham.id}"
+                                        th:class="${(chiTietSanPham != null and ms.id == chiTietSanPham.idMauSac.id) ? 'btn btn-secondary btn-mau-sac active' : 'btn btn-outline-secondary btn-mau-sac'}"
                                         onclick="selectMauSac(this)">
                                     </button>
                                 </div>
@@ -148,55 +130,82 @@
                         </div>
 
                         <div class="input-group col-md-6 d-flex mb-3">
-                            <!-- <span class="input-group-btn mr-2">
+                            <span class="input-group-btn mr-2">
                                 <button type="button" class="quantity-left-minus btn" data-type="minus" data-field="">
                                     <i class="ion-ios-remove"></i>
                                 </button>
                             </span>
                             <input type="text" id="quantity" name="quantity" class="quantity form-control input-number"
-                                value="1" min="1" max="100">
+                                value="1" min="1" max="25" disabled>
                             <span class="input-group-btn ml-2">
                                 <button type="button" class="quantity-right-plus btn" data-type="plus" data-field="">
                                     <i class="ion-ios-add"></i>
                                 </button>
-                            </span> -->
+                            </span>
                             <script>
                                 function selectSize(button) {
+                                    // Xóa class active khỏi tất cả các nút size
                                     document.querySelectorAll('.size-btn').forEach(btn => {
-                                        btn.classList.remove('btn-secondary');
-                                        btn.classList.add('btn-outline-secondary');
+                                        btn.classList.remove('active');
                                     });
 
-                                    button.classList.remove('btn-outline-secondary');
-                                    button.classList.add('btn-secondary');
+                                    // Đánh dấu nút được chọn
+                                    button.classList.add('active');
 
+                                    // Cập nhật giá trị size được chọn
                                     document.getElementById("selectedSize").value = button.getAttribute("data-id");
+                                }
 
-                                    // Không tự động submit form nữa
+                                function selectMauSac(button) {
+                                    // Xóa class active khỏi tất cả các nút màu sắc
+                                    document.querySelectorAll('.btn-mau-sac').forEach(btn => {
+                                        btn.classList.remove('active');
+                                    });
+
+                                    // Đánh dấu nút được chọn
+                                    button.classList.add('active');
+
+                                    // Cập nhật giá trị màu sắc được chọn
+                                    document.getElementById("selectedMauSac").value = button.getAttribute("data-idMauSac");
+                                    let idMauSac = document.getElementById("idMauSac");
+                                    let idCTSP = document.getElementById("idCTSP");
+                                    fetch(`/Sneakers_Nice/chitietsanpham?idCTSP=${idCTSP}&idMauSac=${idMauSac}`)
+                                        .then(response => response.json())
+                                        .then(data => {
+                                            if (data && data.hinhAnh) {
+                                                document.getElementById("productImage").src = data.hinhAnh;
+                                            }
+                                        })
+                                        .catch(error => console.error("Lỗi khi lấy ảnh", error)
+                                        );
                                 }
 
                             </script>
+
+
                         </div>
                         <!-- Các button Thanh toán và Thêm vào giỏ hàng -->
-                        <!-- <div class="input-group col-md-6 d-flex mb-3">
+                        <div class="input-group col-md-6 d-flex mb-3">
                             <form th:action="@{/giohang/addGHCT}" method="post" class="d-inline">
 
-                                <input class="form-control mb-3" type="number" name="soluongmua" th:value="1" min="1"
-                                    required /> 
-                              <input type="hidden" name="idctsp" th:if="${detailsp != null}"
+                                <input type="hidden" name="idctsp" th:if="${detailsp != null}"
                                     th:value="${detailsp.id}" />
                                 <input type="hidden" name="soluongkho" th:if="${detailsp != null}"
                                     th:value="${detailsp.soLuong}" />
                                 <input type="hidden" name="giaBan" th:if="${detailsp != null}"
                                     th:value="${detailsp.giaBan}" />
-                                <p><a type="submit" class="btn btn-black py-3 px-5 mr-2">Thêm vào giỏ hàng </a>
-                                    <a href="cart.html" class="btn btn-primary py-3 px-5">Mua ngay</a>
-                                </p>
+
+                                <a type="submit" class="btn btn-primary btnThemVaoGioHang  py-3 px-5 ">Thêm vào giỏ hàng
+                                </a>
+                                <br>
+                                <a href="cart.html" class="btn btn-primary btnMuaNgay py-3 px-5">Mua ngay</a>
+
                             </form>
-                        </div> -->
+                        </div>
                     </div>
                 </div>
             </div>
+
         </section>
     </div>
 </body>

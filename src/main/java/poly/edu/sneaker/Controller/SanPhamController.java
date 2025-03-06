@@ -205,11 +205,11 @@ public class SanPhamController {
         try {
             // Tìm sản phẩm theo ID
             ChiTietSanPham ctsp = chiTietSanPhamService.findById(id);
+            System.out.println(id);
             if (ctsp == null) {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND)
                         .body(Collections.singletonMap("message", "Không tìm thấy sản phẩm!"));
             }
-            System.out.println("id chi tiết sản phẩm"+id);
             // Ép kiểu dữ liệu an toàn
             Integer idSize = convertToInt(chiTietSanPham.get("idSize"));
             Integer idMauSac = convertToInt(chiTietSanPham.get("idMauSac"));

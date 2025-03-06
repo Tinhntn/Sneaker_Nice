@@ -63,4 +63,9 @@ public class KhachHangImplement implements KhachHangService {
     public KhachHang findByEmail(String email) {
         return khachHangRepository.findByEmail(email);
     }
+
+    @Override
+    public KhachHang findByEmailAndMatKhau(String Email, String matKhau) {
+        return khachHangRepository.findByEmailAndMatKhau(Email,matKhau);
+    }
 }

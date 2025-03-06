@@ -244,7 +244,8 @@ caption {
 
 th,
 td {
-  text-overflow: ellipsis; /* Nếu quá dài sẽ hiển thị dấu "..." */
+  text-overflow: ellipsis;
+  /* Nếu quá dài sẽ hiển thị dấu "..." */
   padding: 8px;
   border-bottom: 1px solid #ddd;
   text-align: center;
@@ -254,19 +255,23 @@ td {
   white-space: nowrap;
   /* Giữ chữ trên cùng một dòng */
 }
+
 td select {
   width: 50px;
 }
+
 th {
   background-color: #007bff;
   color: rgb(221, 188, 126);
   font-weight: bold;
   text-transform: uppercase;
 }
+
 td img {
   width: 100px;
   height: auto;
 }
+
 label {
   display: inline-block;
   margin-bottom: 0.5rem;
@@ -2972,6 +2977,7 @@ textarea.form-control.is-invalid {
 .toggle-status:checked::before {
   left: 25px;
 }
+
 .btn:hover {
   color: #212529;
   text-decoration: none;
@@ -7623,9 +7629,33 @@ button.bg-light:focus {
   background-color: #dae0e5 !important;
 }
 
+.btnThemVaoGioHang {
+  margin: 5px;
+}
+
+.btnMuaNgay {
+  margin-left: 40px;
+}
+
 .bg-dark {
   background-color: #343a40 !important;
 }
+
+.size-btn:hover {
+  background-color: #e1d5a2 !important;
+  color: white;
+}
+
+.size-btn.active,.btn-mau-sac.active {
+  background-color: #e1d5a2 !important;
+  color: white;
+}
+.btn-mau-sac:hover {
+  background-color: #e1d5a2 !important;
+  color: white;
+}
+
+
 
 a.bg-dark:hover,
 a.bg-dark:focus,
@@ -13818,6 +13848,7 @@ textarea.form-control {
   visibility: hidden;
 
 }
+
 /* Căn giữa thanh phân trang */
 .pagination {
   display: flex;
@@ -13874,6 +13905,7 @@ textarea.form-control {
   color: white;
   font-weight: bold;
 }
+
 .bg-primary {
   background: #dbcc8f !important;
 }
