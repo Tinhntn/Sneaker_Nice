@@ -44,4 +44,5 @@ public class HoaDon {
     private String sdt_nguoi_giao;
     private Boolean trang_thai;
 
+
 }

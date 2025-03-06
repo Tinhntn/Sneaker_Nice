@@ -29,8 +29,8 @@ public class KhuyenMai {
     private Boolean loaiKhuyenMai;
     @JoinColumn(name = "gia_tri_giam")
     private float giaTriGiam;
-    @JoinColumn(name = "muc_giam_toi_da")
-    private float mucGiamToiDa;
+    @JoinColumn(name = "muc_giam_gia_toi_da")
+    private float mucGiamGiaToiDa;
     @JoinColumn(name = "da_su_dung")
     private int daSuDung;
     @JoinColumn(name = "so_luong")

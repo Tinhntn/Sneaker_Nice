@@ -52,7 +52,7 @@
                 <td th:text="${khuyenMai.tenKhuyenMai}"></td>
                 <td th:text="${khuyenMai.giaTriGiam}"></td>
                 <td th:text="${khuyenMai.dieuKienApDung}"></td>
-                <td th:text="${khuyenMai.mucGiamToiDa}"></td>
+                <td th:text="${khuyenMai.mucGiamGiaToiDa}"></td>
 <!--                <td th:text="${khuyenMai.loaiKhuyenMai}"></td>-->
                 <td th:text="${#dates.format(khuyenMai.ngayBatDau, 'yyyy-MM-dd')}"></td>
                 <td th:text="${#dates.format(khuyenMai.ngayKetThuc, 'yyyy-MM-dd')}"></td>
@@ -112,8 +112,8 @@
                             <input type="number" class="form-control" id="dieukienapdung" th:field="*{dieuKienApDung}">
                         </div>
                         <div class="form-group">
-                            <label for="mucgiamtoida">Mức giảm tối đa</label>
-                            <input type="number" class="form-control" id="mucgiamtoida" th:field="*{mucGiamToiDa}">
+                            <label for="mucgiamtoida">Mức giảm giá tối đa</label>
+                            <input type="number" class="form-control" id="mucgiamtoida" th:field="*{mucGiamGiaToiDa}">
                         </div>
                     </div>
                     <div class="col-md-6">

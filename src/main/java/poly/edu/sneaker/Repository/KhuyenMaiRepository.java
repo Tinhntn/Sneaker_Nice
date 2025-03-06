@@ -14,7 +14,7 @@ public interface KhuyenMaiRepository extends JpaRepository<KhuyenMai, Integer> {
     @Query("""
            SELECT km.id AS id, km.maKhuyenMai AS maKhuyenMai, km.tenKhuyenMai AS tenKhuyenMai, 
            km.moTa AS moTa, km.dieuKienApDung AS dieuKienApDung, km.loaiKhuyenMai AS loaiKhuyenMai, 
-           km.giaTriGiam AS giaTriGiam, km.mucGiamToiDa AS mucGiamToiDa, km.daSuDung AS daSuDung, 
+           km.giaTriGiam AS giaTriGiam, km.mucGiamGiaToiDa AS mucGiamGiaToiDa, km.daSuDung AS daSuDung, 
            km.soLuong AS soLuong, km.ngayBatDau AS ngayBatDau, km.ngayKetThuc AS ngayKetThuc, 
            km.ngayTao AS ngayTao, km.ngaySua AS ngaySua, km.trangThai AS trangThai
            FROM KhuyenMai km
