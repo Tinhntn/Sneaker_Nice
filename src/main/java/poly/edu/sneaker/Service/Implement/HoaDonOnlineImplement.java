@@ -1,0 +1,21 @@
+package poly.edu.sneaker.Service.Implement;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Service;
+import poly.edu.sneaker.DAO.HoaDonOnlCustom;
+import poly.edu.sneaker.Repository.HoaDonOnlRepository;
+import poly.edu.sneaker.Service.HoaDonOnlService;
+
+@Service
+public class HoaDonOnlineImplement implements HoaDonOnlService {
+
+    @Autowired
+    HoaDonOnlRepository hoaDonOnlRepository;
+
+    @Override
+    public Page<HoaDonOnlCustom> getHoaDonOLChoxacnhan(Pageable pageable) {
+        return hoaDonOnlRepository.findCustomHoaDonOnline(pageable);
+    }
+}
