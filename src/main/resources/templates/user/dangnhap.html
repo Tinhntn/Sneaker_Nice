@@ -75,7 +75,7 @@
 
     <div layout:fragment="js">
         <script>
-           function login() {
+            function login() {
                 var email = $('#loginEmail').val();
                 var matKhau = $('#loginPassword').val();
                 var emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -97,7 +97,8 @@
                     url: '/dang-nhap',
                     type: 'POST',
                     contentType: 'application/json',
-                    data: JSON.stringify({  email, matKhau }),
+                    data: JSON.stringify({ email, matKhau }),
+                    xhrFields: { withCredentials: true }, // QUAN TRỌNG: Giữ cookie session
                     success: function (response) {
                         // Lưu thông tin đăng nhập nếu chọn "Remember me"
                         if (rememberMe) {
@@ -107,7 +108,6 @@
                         }
 
                         notyf.success('Đăng nhập thành công!');
-                        console.log(response);
                         // Xác định trang đích dựa trên phản hồi từ server
                         var redirectUrl = response.redirectUrl || '/';
                         console.log(redirectUrl);

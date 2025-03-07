@@ -22,7 +22,9 @@ import poly.edu.sneaker.Service.SanPhamService;
 import poly.edu.sneaker.Service.SizeService;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Controller
@@ -56,18 +58,13 @@ public class Home {
         }
         ArrayList<ChiTietSanPham> lstCTSP = chiTietSanPhamService.findByIdSanPham(chiTietSanPhams.getIdSanPham().getId());
 
-        List<Size> lstSize = lstCTSP.stream()
-                    .map(ChiTietSanPham::getIdSize)
-                    .collect(Collectors.toMap(Size::getId, s -> s, (s1, s2) -> s1))
-                    .values()
-                    .stream()
-                    .collect(Collectors.toList());
-        List<MauSac> lstMauSacs = lstCTSP.stream()
-                        .map(ChiTietSanPham::getIdMauSac)
-                        .collect(Collectors.toMap(MauSac::getId, m -> m, (m1, m2) -> m1))
-                        .values()
-                        .stream()
-                        .collect(Collectors.toList());
+        Set<MauSac> lstMauSacs = new HashSet<>();
+        Set<Size> lstSize = new HashSet<>();
+
+        for (ChiTietSanPham ctsp : lstCTSP) {
+            lstMauSacs.add(ctsp.getIdMauSac());
+            lstSize.add(ctsp.getIdSize());
+        }
 
         model.addAttribute("chiTietSanPham",chiTietSanPhams);
         model.addAttribute("lstCTSP",lstCTSP);

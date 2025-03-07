@@ -18,7 +18,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/sanpham/updateCTSP/**").permitAll() // Cho phép API cập nhật
                         .requestMatchers("/sanpham/**").hasRole("ADMIN") // Đúng
-                        .requestMatchers("/", "/dang-nhap", "/Sneaker_Nice/hienthi/**", "/register",
+                        .requestMatchers("/", "/dang-nhap", "/Sneakers_Nice/hienthi/**","/sanpham/hienthi/**","/Sneakers_Nice/chitietsanpham/**", "/register",
                                 "/css/**", "/js/**", "/fonts/**", "/scss/**",
                                 "/vendor/**", "/images/**", "/Roboto/**")
                         .permitAll()
@@ -27,17 +27,17 @@ public class SecurityConfig {
                 .sessionManagement(
                         session -> session.maximumSessions(1)
                 )
-//                .formLogin(login -> login
-//                        .loginPage("/dang-nhap")
-//                        .loginProcessingUrl("/dang-nhap")
-//                        .defaultSuccessUrl("/sanpham/hienthi", true)
-//                        .successHandler((request, response, authentication) -> {
-//                            response.setContentType("application/json");
-//                            response.setCharacterEncoding("UTF-8");
-//                            response.getWriter().write("{\"message\": \"Đăng nhập thành công!\", \"redirectUrl\": \"/sanpham/hienthi\"}");
-//                        })
-//                        .permitAll()
-//                )
+                .formLogin(login -> login
+                        .loginPage("/dang-nhap")
+                        .loginProcessingUrl("/dang-nhap")
+                        .defaultSuccessUrl("/sanpham/hienthi", true)
+                        .successHandler((request, response, authentication) -> {
+                            response.setContentType("application/json");
+                            response.setCharacterEncoding("UTF-8");
+                            response.getWriter().write("{\"message\": \"Đăng nhập thành công!\", \"redirectUrl\": \"/sanpham/hienthi\"}");
+                        })
+                        .permitAll()
+                )
 
 
                 .logout(logout -> logout

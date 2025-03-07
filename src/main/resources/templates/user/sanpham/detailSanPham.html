@@ -59,6 +59,7 @@
                     </div>
                     <div class="col-lg-6 product-details pl-md-5 ftco-animate">
                         <h2 class="mb-4">Thông tin sản phẩm</h2>
+
                         <div class="rating d-flex">
                             <p class="text-left mr-4">
                                 <a href="#" class="mr-2">5.0</a>
@@ -90,21 +91,13 @@
 
                         <!-- Các button chọn Size -->
                         <div id="sizeButtons" class="mb-4">
-                            <form id="sizeForm" method="post" th:action="@{/chon-size}">
-                                <input type="hidden" name="idSanPham" th:if="${chiTietSanPham != null}"
-                                    th:value="${chiTietSanPham.idSanPham.id}" />
-                                <input type="hidden" name="idMauSac" th:if="${chiTietSanPham != null}"
-                                    th:value="${chiTietSanPham.idMauSac.id}" />
-                                <input type="hidden" name="idSize" id="selectedSize" />
-
-                                <div>
-                                    <button type="button" th:each="size : ${lstSize}" th:data-idSize="${size.id}"
-                                        th:text="${size.tenSize}"
-                                        th:class="${(chiTietSanPham != null and size.id == chiTietSanPham.idSize.id) ? 'btn btn-secondary size-btn active' : 'btn btn-outline-secondary size-btn'}"
-                                        onclick="selectSize(this)">
-                                    </button>
-                                </div>
-                            </form>
+                            <div>
+                                <button type="button" th:each="size : ${lstSize}" th:data-idSize="${size.id}"
+                                    th:text="${size.tenSize}"
+                                    th:class="${(chiTietSanPham != null and size.id == chiTietSanPham.idSize.id) ? 'btn btn-secondary size-btn active' : 'btn btn-outline-secondary size-btn'}"
+                                    onclick="selectSize(this)">
+                                </button>
+                            </div>
                         </div>
 
 
@@ -112,20 +105,13 @@
 
                         <!-- Các button chọn Màu sắc -->
                         <div id="mauSacButtons" class="mb-4">
-                            <form th:action="@{/chon-mau-sac}" method="post" id="mauSacForm">
-                                <input type="hidden" name="idSanPham" th:if="${chiTietSanPham != null}"
-                                    th:value="${chiTietSanPham.idSanPham.id}" />
-                                <input type="hidden" name="idMauSac" th:if="${chiTietSanPham != null}"
-                                    th:value="${chiTietSanPham.idMauSac.id}" />
-                                <input type="hidden" name="idSize" id="selectedSize" />
-                                <div>
-                                    <button type="button" th:each="ms : ${lstMauSac}" th:data-idMauSac="${ms.id}"
-                                        th:text="${ms.tenMauSac}" th:data-idCTSP="${chiTietSanPham.id}"
-                                        th:class="${(chiTietSanPham != null and ms.id == chiTietSanPham.idMauSac.id) ? 'btn btn-secondary btn-mau-sac active' : 'btn btn-outline-secondary btn-mau-sac'}"
-                                        onclick="selectMauSac(this)">
-                                    </button>
-                                </div>
-                            </form>
+                            <div>
+                                <button type="button" th:each="ms : ${lstMauSac}" th:data-idMauSac="${ms.id}"
+                                    th:text="${ms.tenMauSac}" th:data-idCTSP="${chiTietSanPham.id}"
+                                    th:class="${(chiTietSanPham != null and ms.id == chiTietSanPham.idMauSac.id) ? 'btn btn-secondary btn-mau-sac active' : 'btn btn-outline-secondary btn-mau-sac'}"
+                                    onclick="selectMauSac(this)">
+                                </button>
+                            </div>
                             </span>
                         </div>
 
@@ -142,7 +128,7 @@
                                     <i class="ion-ios-add"></i>
                                 </button>
                             </span>
-                            <script>
+                            <script th:inline="javascript">
                                 function selectSize(button) {
                                     // Xóa class active khỏi tất cả các nút size
                                     document.querySelectorAll('.size-btn').forEach(btn => {
@@ -179,7 +165,59 @@
                                         .catch(error => console.error("Lỗi khi lấy ảnh", error)
                                         );
                                 }
+                                document.addEventListener("DOMContentLoaded", function () {
+                                    var combinations = /*[[${lstCTSP}]]*/[];
+                                    console.log("Dữ liệu combinations:", combinations);
+                                    window.onload = function () {
+                                        console.log("Dữ liệu combinations sau khi trang load:", combinations);
+                                    };
+                                    const colorButtons = document.querySelectorAll(".btn-mau-sac");
+                                    const sizeButtons = document.querySelectorAll(".size-btn");
+                                    let selectedColor = null;
+                                    let selectedSize = null;
 
+                                    function updateSizes() {
+                                        sizeButtons.forEach((btn) => {
+                                            const size = btn.getAttribute("data-idSize");
+                                            const isAvailable = combinations.some(c => c.idMauSac.id == selectedColor && c.idSize.id == size);
+                                            btn.disabled = !isAvailable;
+                                        });
+                                    }
+
+                                    function updateColors() {
+                                        colorButtons.forEach((btn) => {
+                                            const color = btn.getAttribute("data-idMauSac");
+                                            const isAvailable = combinations.some(c => c.idSize.id == selectedSize && c.idMauSac.id == color);
+                                            btn.disabled = !isAvailable;
+                                        });
+                                    }
+
+                                    colorButtons.forEach(btn => {
+                                        btn.addEventListener("click", function () {
+                                            selectedColor = this.getAttribute("data-idMauSac");
+                                            updateSizes();
+                                        });
+                                    });
+
+                                    sizeButtons.forEach(btn => {
+                                        btn.addEventListener("click", function () {
+                                            selectedSize = this.getAttribute("data-idSize");
+                                            updateColors();
+                                        });
+                                    });
+                                    document.addEventListener("click", function (event) {
+                                        // Kiểm tra nếu phần tử được click không phải là các nút size hoặc màu sắc
+                                        if (!event.target.classList.contains("btn-mau-sac") && !event.target.classList.contains("size-btn")) {
+                                            selectedColor = null;
+                                            selectedSize = null;
+
+                                            // Bật lại tất cả các nút
+                                            sizeButtons.forEach(btn => btn.disabled = false);
+                                            colorButtons.forEach(btn => btn.disabled = false);
+                                        }
+                                    });
+                                });
+                                
                             </script>
 
 
