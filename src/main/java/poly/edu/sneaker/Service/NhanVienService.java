@@ -11,11 +11,18 @@ import java.util.UUID;
 public interface NhanVienService {
 
     Page<NhanVienCustom> getAll(Pageable pageable);
+
     void saveNhanVien(NhanVien nhanVien);
+
     void updateNhanVien(NhanVien nhanVien, int id);
+
     NhanVien findNhanVienById(int id);
 
     Page<NhanVienCustom> search(String keyword, Pageable pageable);
+
     NhanVien getNhanVienByEmailandMatKhau(String email, String matKhau);
-     NhanVien getNhanVienByEmail(String email);
+
+    NhanVien getNhanVienByEmail(String email);
+
+    boolean layLaiMatKhauNhanVien(NhanVien nhanVien);
 }

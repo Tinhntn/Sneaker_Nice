@@ -12,15 +12,15 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import poly.edu.sneaker.Model.GioHang;
 import poly.edu.sneaker.Model.KhachHang;
 import poly.edu.sneaker.Model.NhanVien;
+import poly.edu.sneaker.Service.GioHangService;
 import poly.edu.sneaker.Service.KhachHangService;
 import poly.edu.sneaker.Service.NhanVienService;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
+import java.util.regex.Pattern;
 
 @Controller
 public class DangNhap {
@@ -28,6 +28,10 @@ public class DangNhap {
     NhanVienService nhanVienService;
     @Autowired
     KhachHangService khachHangService;
+    @Autowired
+    HttpSession session;
+    @Autowired
+    GioHangService gioHangService;
 
     @Controller
     public class AuthController {
@@ -37,13 +41,6 @@ public class DangNhap {
         }
     }
 
-//    @GetMapping("/dang-nhap")
-//    public String dangNhap(Model model, @ModelAttribute("loginError") String loginError) {
-//        model.addAttribute("dangNhap", new DangNhapRequest());
-//        model.addAttribute("dangKy", new DangKyRequest());
-//        model.addAttribute("loginError", loginError);
-//        return "user/dangnhap";
-//    }
 
     @GetMapping("/quen_mat_khau")
     public String quanMatKhau() {
@@ -55,46 +52,37 @@ public class DangNhap {
         return "user/dang_ky_moi";
     }
 
-    //    @PostMapping("/quen_mat_khau")
-//    @ResponseBody
-//    public ResponseEntity<?> QuenMatKhau(@RequestParam("email") String email) {
-//        UUID idNhanVien = nhanVienService.getIdNhanVienByEmail(email);
-//        UUID idKhachHang = khachHangService.getIdKhachHangByEmail(email);
-//
-//        // Kiểm tra nếu cả hai ID đều là null
-//        if (idNhanVien == null && idKhachHang == null) {
-//            return ResponseEntity.badRequest().body(Map.of("message", "Tài khoản không tồn tại"));
-//        }
-//
-//        if (idKhachHang != null) {
-//            KhachHang khachHang = khachHangService.getKhachHangByID(idKhachHang);
-//            if (khachHang == null) {
-//                return ResponseEntity.badRequest().body(Map.of("message", "Tài khoản khách hàng không tồn tại"));
-//            }
-//
-//            boolean kh = khachHangService.layLaiMatKhau(khachHang);
-//            if (!kh) {
-//                return ResponseEntity.badRequest().body(Map.of("message", "Email không còn hoạt động"));
-//            }
-//            return ResponseEntity.ok().body(Map.of("message", "Mật khẩu mới của bạn đã được gửi về địa chỉ email"));
-//        }
-//
-//        if (idNhanVien != null) {
-//            NhanVien nhanVien = nhanVienService.getNhanVienById(idNhanVien);
-//            if (nhanVien == null) {
-//                return ResponseEntity.badRequest().body(Map.of("message", "Tài khoản nhân viên không tồn tại"));
-//            }
-//
-//            boolean nv = nhanVienService.LayLaiMatKhau(nhanVien);
-//            if (!nv) {
-//                return ResponseEntity.badRequest().body(Map.of("message", "Email không còn hoạt động"));
-//            }
-//            return ResponseEntity.ok().body(Map.of("message", "Mật khẩu mới của bạn đã được gửi về địa chỉ email"));
-//        }
-//
-//        return ResponseEntity.badRequest().body(Map.of("message", "Tài khoản không tồn tại"));
-//    }
-//
+    @PostMapping("/quen_mat_khau")
+    @ResponseBody
+    public ResponseEntity<?> QuenMatKhau(@RequestParam("email") String email) {
+
+        NhanVien nhanVien = nhanVienService.getNhanVienByEmail(email);
+        KhachHang khachHang = khachHangService.findByEmail(email);
+
+        // Kiểm tra nếu cả hai ID đều là null
+        if (nhanVien == null && khachHang == null) {
+            return ResponseEntity.badRequest().body(Map.of("message", "Tài khoản không tồn tại"));
+        }
+
+        if (khachHang != null) {
+
+            boolean kh =khachHangService.layLaiKhachHang(khachHang);
+            if (!kh) {
+                return ResponseEntity.badRequest().body(Map.of("message", "Email không còn hoạt động"));
+            }
+            return ResponseEntity.ok().body(Map.of("message", "Mật khẩu mới của bạn đã được gửi về địa chỉ email"));
+        }
+
+        if (nhanVien != null) {
+            boolean nv = nhanVienService.layLaiMatKhauNhanVien(nhanVien);
+            if (!nv) {
+                return ResponseEntity.badRequest().body(Map.of("message", "Email không còn hoạt động"));
+            }
+            return ResponseEntity.ok().body(Map.of("message", "Mật khẩu mới của bạn đã được gửi về địa chỉ email"));
+        }
+
+        return ResponseEntity.badRequest().body(Map.of("message", "Tài khoản không tồn tại"));
+    }
 
 
     @PostMapping("/dang-nhap")
@@ -150,35 +138,64 @@ public class DangNhap {
         return ResponseEntity.ok("User: " + auth.getName() + ", Roles: " + auth.getAuthorities());
     }
 
-//    @PostMapping("/dang-ky")
-//    @ResponseBody
-//    public ResponseEntity<?> dangKy(@RequestBody DangKyRequest dangKyRequest) {
-//        String emailDK = dangKyRequest.getEmailDK();
-//        String hoTen = dangKyRequest.getHoTen();
-//        String matKhauDK = dangKyRequest.getMatKhauDK();
-//        if (emailDK.isEmpty() || emailDK == null || hoTen.isEmpty() || hoTen == null || matKhauDK.isEmpty() || matKhauDK == null) {
-//            return ResponseEntity.badRequest().body(Map.of("message", "Vui lòng điền đầy đủ thông tin"));
-//        }
-//        if (!khachHangService.isPasswordValid(matKhauDK)) {
-//            return ResponseEntity.badRequest().body(Map.of("message", "Mật khẩu phải có ít nhất 6 ký tự và chứa ít nhất một chữ và một số"));
-//        }
-//        if (!khachHangService.emailValidate(emailDK)) {
-//            return ResponseEntity.badRequest().body(Map.of("message", "Email không đúng định dạng"));
-//        }
-//        if (khachHangService.existsByEmail(dangKyRequest.getEmailDK())) {
-//            return ResponseEntity.badRequest().body(Map.of("message", "Tài khoản đã tồn tại"));
-//        }
-//        khachHangService.dangKy(hoTen, emailDK, matKhauDK);
-//        KhachHangReponse kh = khachHangService.getKhachHangByEmailAndMatKhau(emailDK, matKhauDK);
-//        gioHangService.addGioHangByKhachHang(kh.getId());
-//        return ResponseEntity.ok().body(Map.of("message", "Đăng ký thành công"));
-//    }
-//
-//    @GetMapping("/dang-xuat")
-//    public String dangXuat() {
-//        session.setAttribute("khachHang", null);
-//        return "redirect:/";
-//    }
+    @PostMapping("/dang-ky")
+    @ResponseBody
+    public ResponseEntity<?> dangKy(@RequestBody Map<String, Object> thongTinDangKy) {
+        String emailDK = (String) thongTinDangKy.get("email");
+        String hoTen = (String) thongTinDangKy.get("hoTen");
+        String matKhauDK = (String) thongTinDangKy.get("matKhau");
+        if (emailDK.isEmpty() || emailDK == null || hoTen.isEmpty() || hoTen == null || matKhauDK.isEmpty() || matKhauDK == null) {
+            return ResponseEntity.badRequest().body(Map.of("message", "Vui lòng điền đầy đủ thông tin"));
+        }
+        if (!isValidPassword(matKhauDK)) {
+            return ResponseEntity.badRequest().body(Map.of("message", "Mật khẩu phải có ít nhất 6 ký tự và chứa ít nhất một chữ và một số"));
+        }
+        if (!emailValidate(emailDK)) {
+            return ResponseEntity.badRequest().body(Map.of("message", "Email không đúng định dạng"));
+        }
+        if (khachHangService.exitsKhachHangByEmail(emailDK)) {
+            return ResponseEntity.badRequest().body(Map.of("message", "Tài khoản đã tồn tại"));
+        }
+        KhachHang khachHang = new KhachHang();
+        khachHang.setMaKhachHang(khachHangService.taoMaKhachHang());
+        khachHang.setTenKhachHang(hoTen);
+        khachHang.setEmail(emailDK);
+        khachHang.setMatKhau(matKhauDK);
+        khachHang.setNgayTao(new Date());
+        khachHang.setTrangThai(true);
+        khachHangService.saveKhachHang(khachHang);
+        KhachHang kh = khachHangService.findByEmailAndMatKhau(emailDK, matKhauDK);
+        GioHang gioHang = new GioHang();
+        gioHang.setMaGioHang(gioHangService.taoMaGioHang());
+        gioHang.setIdKhachHang(kh);
+        gioHang.setNgayTao(new Date());
+        gioHang.setTrangThai(true);
+        gioHang.setGhiChu("Giỏ hàng tự động tạo khi khách hàng đăng ký");
+        return ResponseEntity.ok().body(Map.of("message", "Đăng ký thành công"));
+    }
 
+    @GetMapping("/dang-xuat")
+    public String dangXuat() {
+        session.setAttribute("khachHang", null);
+        return "redirect:/";
+    }
+
+    private final String EMAIL_REGEX = "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$";
+
+    private boolean emailValidate(String email) {
+        if (email == null) {
+            return false;
+        }
+        return Pattern.matches(EMAIL_REGEX, email);
+    }
+
+    private static final String PASSWORD_REGEX = "^(?=.*[A-Z])(?=.*[a-z])(?=.*\\d)(?=.*[@#$%^&*!]).{8,}$";
+
+    public static boolean isValidPassword(String password) {
+        if (password == null) {
+            return false;
+        }
+        return Pattern.matches(PASSWORD_REGEX, password);
+    }
 
 }

@@ -7,10 +7,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import poly.edu.sneaker.Model.ChiTietSanPham;
 import poly.edu.sneaker.Model.Interface.SanPhamInterface;
@@ -21,10 +18,7 @@ import poly.edu.sneaker.Service.MauSacService;
 import poly.edu.sneaker.Service.SanPhamService;
 import poly.edu.sneaker.Service.SizeService;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Controller
@@ -81,4 +75,5 @@ public class Home {
         }
         return ResponseEntity.notFound().build();
     }
+
 }

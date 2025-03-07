@@ -11,4 +11,5 @@ public interface GioHangService {
     void delete(GioHang gioHang);
     void deleteById(int id);
     void update(GioHang gioHang);
+    String taoMaGioHang();
 }

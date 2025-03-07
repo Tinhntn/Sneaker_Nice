@@ -21,5 +21,5 @@ public interface ChiTietSanPhamRepository extends JpaRepository<ChiTietSanPham, 
     @Query("SELECT c FROM ChiTietSanPham c WHERE c.idSanPham.id = :idSanPham AND c.idMauSac.id = :idMauSac and c.trangThai=true")
     ChiTietSanPham findChiTietSanPhamByIdAndIdMauSacAndTrangThai(@Param("idSanPham") int idSanPham, @Param("idMauSac") int idMauSac,@Param("trangThai")boolean trangThai);
     public abstract ArrayList<ChiTietSanPham> findByIdSanPham_IdAndTrangThai(int idSanPham,boolean trangThai);
-
+    ChiTietSanPham findChiTietSanPhamByIdSanPham_IdAndIdSize_IdAndIdMauSac_Id(int idSanPham,int idSize,int idMauSac);
 }

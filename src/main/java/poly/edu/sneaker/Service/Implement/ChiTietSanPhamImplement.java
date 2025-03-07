@@ -60,6 +60,11 @@ public class ChiTietSanPhamImplement implements ChiTietSanPhamService {
     public ArrayList<ChiTietSanPham> findByIdSanPham(int idSanPham) {
         return chiTietSanPhamRepository.findByIdSanPham_IdAndTrangThai(idSanPham,true);
     }
+
+    @Override
+    public ChiTietSanPham findCTSPByIdSPAndIdMauSacAndIdSize(int idSanPham, int idMauSac, int idSize) {
+        return chiTietSanPhamRepository.findChiTietSanPhamByIdSanPham_IdAndIdSize_IdAndIdMauSac_Id(idSanPham,idMauSac,idSize);
+    }
 //
 //    @Override
 //    public ChiTietSanPham getCTSPByIdSP(Pageable pageable, int idSP) {

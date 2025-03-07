@@ -12,6 +12,7 @@ import poly.edu.sneaker.Repository.NhanVienRepository;
 import poly.edu.sneaker.Service.NhanVienService;
 
 import java.util.List;
+import java.util.Random;
 
 @Service
 public class NhanVienImplement implements NhanVienService {
@@ -60,6 +61,15 @@ public class NhanVienImplement implements NhanVienService {
     @Override
     public NhanVien getNhanVienByEmail(String email) {
         return nhanVienRepository.findByEmail(email);
+    }
+
+    @Override
+    public boolean layLaiMatKhauNhanVien(NhanVien nhanVien) {
+        Random random = new Random();
+        String matKhau = String.valueOf(random.nextInt(9000));
+        nhanVien.setMaNhanVien(matKhau);
+        nhanVienRepository.save(nhanVien);
+        return true;
     }
 
 }
