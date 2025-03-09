@@ -16,14 +16,16 @@ public class DiaChi {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
-    private int id_khach_hang;
-    private String tinh_thanh_pho;
-    private String quan_huyen;
-    private String phuong_xa;
-    private String dia_chi_cu_the;
+    @ManyToOne
+    @JoinColumn(name = "idKhachHang")
+    private KhachHang idKhachHang;
+    private String tinhThanhPho;
+    private String quanHuyen;
+    private String phuongXa;
+    private String diaChiCuThe;
     private String sdt;
-    private Date ngay_tao;
-    private Date ngay_sua;
-    private Boolean trang_thai;
+    private Date ngayTao;
+    private Date ngaySua;
+    private Boolean trangThai;
 
 }

@@ -8,10 +8,50 @@ import poly.edu.sneaker.Model.Hang;
 import poly.edu.sneaker.Model.Size;
 import poly.edu.sneaker.Repository.SizeRepository;
 import poly.edu.sneaker.Service.SizeService;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
+
 @Service
 public class SizeImplement implements SizeService {
     @Autowired
     private SizeRepository sizeRepository;
+
+    @Override
+    public Page<Size> findAll(Pageable pageable) {
+        return null;
+    }
+
+    @Override
+    public Size save(Size size) {
+        return null;
+    }
+
+    @Override
+    public Size findById(int id) {
+        return null;
+    }
+
+    @Override
+    public void delete(Size size) {
+
+    }
+
+    @Override
+    public void deleteById(int id) {
+
+    }
+
+    @Override
+    public void update(Size size) {
+
+    }
+
+    @Override
+    public ArrayList<Size> findAll() {
+        return (ArrayList<Size>) sizeRepository.findAll();
+    }
 
     @Override
     public Page<Size> getAll(Pageable pageable) {
@@ -32,10 +72,7 @@ public class SizeImplement implements SizeService {
         sizeRepository.save(size);
     }
 
-//    @Override
-//    public void deleteSize(int id) {
-//
-//    }
+
 
     @Override
     public void updateSize(Size size, int id) {
@@ -45,6 +82,13 @@ public class SizeImplement implements SizeService {
             throw new IllegalArgumentException("Mã hãng đã tồn tại!");
         }
         sizeRepository.save(size);
+    }
+
+    @Override
+    public String taoMaSize() {
+        Random random = new Random();
+        String maMauSac = "MMS"+1000+random.nextInt(9000);
+        return maMauSac;
     }
 
 }

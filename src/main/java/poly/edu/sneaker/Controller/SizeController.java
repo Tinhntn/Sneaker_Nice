@@ -13,6 +13,7 @@ import poly.edu.sneaker.Model.Hang;
 import poly.edu.sneaker.Model.Size;
 import poly.edu.sneaker.Service.SizeService;
 
+import java.util.ArrayList;
 import java.util.Date;
 
 @Controller
@@ -25,7 +26,7 @@ public class SizeController {
 
     @GetMapping("/hienthi")
     public String hienthi(Model model, @RequestParam(defaultValue = "0") int page){
-        int size = 1;
+        int size = 5;
 
         Pageable pageable = PageRequest.of(page, size);
         Page<Size> sizePage = sizeService.getAll(pageable);
@@ -46,8 +47,7 @@ public class SizeController {
                       RedirectAttributes redirectAttributes
     ){
 
-        System.out.println("maie: " + maSize);
-        System.out.println("tenSize: " + tenSize);
+
 
         if (maSize == null || maSize.trim().isEmpty()) {
             redirectAttributes.addFlashAttribute("errorMessage", "Mã size không được để trống.");
@@ -58,7 +58,15 @@ public class SizeController {
             redirectAttributes.addFlashAttribute("errorMessage", "Tên size không được để trống.");
             return "redirect:/size/hienthi";
         }
+         maSize =sizeService.taoMaSize();
+        ArrayList<Size> lstMauSac = sizeService.findAll();
+        for ( Size h : lstMauSac
+        ) {
+            if(h.getMaSize().equals(maSize)){
+                maSize=sizeService.taoMaSize();
+            }
 
+        }
         Size size = new Size();
         size.setMaSize(maSize);
         size.setTenSize(tenSize);

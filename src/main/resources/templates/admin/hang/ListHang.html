@@ -62,18 +62,18 @@
             <ul class="pagination justify-content-center">
                 <!-- Nút "Trang trước" -->
                 <li class="page-item" th:classappend="${currentPage == 0} ? 'disabled'">
-                    <a class="page-link" th:href="@{/hang/hienthi(page=${currentPage - 1})}">Previous</a>
+                    <a class="page-link" th:href="@{/hang/hienthi(page=${currentPage - 1})}"><<</a>
                 </li>
 
                 <!-- Các nút số trang -->
                 <li class="page-item" th:each="i : ${#numbers.sequence(0, totalPages - 1)}"
                     th:classappend="${i == currentPage} ? 'active'">
-                    <a class="page-link" th:href="@{/hang/hienthi(page=${i})}" th:text="${i + 1}">1</a>
+                    <a class="page-link" th:href="@{/hang/hienthi(page=${i})}" th:text="${i + 1}"></a>
                 </li>
 
                 <!-- Nút "Trang sau" -->
                 <li class="page-item" th:classappend="${currentPage + 1 == totalPages} ? 'disabled'">
-                    <a class="page-link" th:href="@{/hang/hienthi(page=${currentPage + 1})}">Next</a>
+                    <a class="page-link" th:href="@{/hang/hienthi(page=${currentPage + 1})}">>></a>
                 </li>
             </ul>
         </div>

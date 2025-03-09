@@ -19,22 +19,22 @@ public class ChiTietSanPham {
     private int id;
     @ManyToOne
     @JoinColumn(name="id_san_pham")
-    private SanPham id_san_pham;
+    private SanPham idSanPham;
 
     @ManyToOne
     @JoinColumn(name = "id_size")
-    private Size id_size;
+    private Size idSize;
 
     @ManyToOne
     @JoinColumn(name = "id_mau_sac")
-    private MauSac id_mau_sac;
-    private float trong_luong;
-    private float gia_nhap;
-    private float gia_ban;
-    private String hinh_anh;
-    private int so_luong;
-    private String mo_ta;
-    private Date ngay_tao;
-    private Date ngay_sua;
-    private Boolean trang_thai;
+    private MauSac idMauSac;
+    private float trongLuong;
+    private float giaNhap;
+    private float giaBan;
+    private String hinhAnh;
+    private int soLuong;
+    private String moTa;
+    private Date ngayTao;
+    private Date ngaySua;
+    private Boolean trangThai;
 }

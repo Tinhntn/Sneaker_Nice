@@ -15,6 +15,7 @@ import poly.edu.sneaker.Model.Hang;
 import poly.edu.sneaker.Model.NhanVien;
 import poly.edu.sneaker.Service.HangService;
 
+import java.util.ArrayList;
 import java.util.Date;
 
 @Controller
@@ -26,13 +27,10 @@ public class HangController {
 
         @GetMapping("/hienthi")
         public String hienthi(Model model, @RequestParam(defaultValue = "0") int page){
-            int size = 1;
+            int size = 5;
 
             Pageable pageable = PageRequest.of(page, size);
             Page<Hang> hangPage = hangService.getAll(pageable);
-
-            System.out.println("List hang: " + hangPage.getContent().size());
-
             model.addAttribute("hangCustomList", hangPage.getContent());
             model.addAttribute("currentPage", hangPage.getNumber());
             model.addAttribute("totalPages", hangPage.getTotalPages());
@@ -46,9 +44,6 @@ public class HangController {
                       RedirectAttributes redirectAttributes
     ){
 
-        System.out.println("hoten: " + maHang);
-        System.out.println("idcv: " + tenHang);
-
         if (maHang == null || maHang.trim().isEmpty()) {
             redirectAttributes.addFlashAttribute("errorMessage", "Mã hãng không được để trống.");
             return "redirect:/hang/hienthi";
@@ -58,7 +53,15 @@ public class HangController {
             redirectAttributes.addFlashAttribute("errorMessage", "Tên hãng không được để trống.");
             return "redirect:/hang/hienthi";
         }
+        maHang =hangService.taoMaHang();
+        ArrayList<Hang> lstHang = hangService.getAllHangs();
+        for ( Hang h : lstHang
+             ) {
+            if(h.getMaHang().equals(maHang)){
+                maHang=hangService.taoMaHang();
+            }
 
+        }
         Hang hang = new Hang();
         hang.setMaHang(maHang);
         hang.setTenHang(tenHang);

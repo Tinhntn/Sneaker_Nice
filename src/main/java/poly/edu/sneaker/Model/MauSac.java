@@ -16,10 +16,24 @@ public class MauSac {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private   int id;
-    private  String ma_mau_sac;
-    private  String ten_mau_sac;
-    private   Date ngay_tao;
-    private   Date ngay_sua;
-    private   Boolean trang_thai;
+    private int id;
+
+    @Column(name = "ma_mau_sac", nullable = false, unique = true)
+    private String maMauSac;
+
+    @Column(name = "ten_mau_sac", nullable = false)
+    private String tenMauSac;
+
+    @Column(name = "ngay_tao", nullable = false, updatable = false)
+    @Temporal(TemporalType.TIMESTAMP)
+    @org.hibernate.annotations.CreationTimestamp
+    private Date ngayTao;
+
+    @Column(name = "ngay_sua")
+    @Temporal(TemporalType.TIMESTAMP)
+    @org.hibernate.annotations.UpdateTimestamp
+    private Date ngaySua;
+
+    @Column(name = "trang_thai", nullable = false)
+    private Boolean trangThai = true;
 }

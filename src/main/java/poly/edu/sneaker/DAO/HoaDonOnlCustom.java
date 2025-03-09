@@ -1,36 +1,31 @@
 package poly.edu.sneaker.DAO;
 
-import java.util.Date;
-
 public interface HoaDonOnlCustom {
+        int getId();
+        String getTenNhanVien();
+        String getTenKhachHang();
+        String getTenKhuyenMai();
+        String getMaHoaDon();
+        double getTongTien();
+        double getTongTienGiam();
+        double getThanhTien();
+        double getTienKhachDua();
+        double getTienThua();
+        double getPhiShip();
+        String getNgayGiaoHang();
+        String getDonViGiaoHang();
+        String getSdtNguoiGiao();
+        String getEmailNguoiNhan();
+        String getDiaChiChiTiet();
+        String getTinhThanhPho();
+        String getQuanHuyen();
+        String getPhuongXa();
+        boolean getLoaiThanhToan();
+        int getTrangThai();
+        String getNgayTao();
+        String getNgaySua();
 
-    int getId();
-    int getIdNhanVien();
-    int getIdKhachHang();
-    int getIdKhuyenMai();
-    String getMaHoaDon();
-    float getThanhTien();
-    String getGhiChu();
-    Date getNgayTao();
-    Date getNgaySua();
-    float getTienKhachDua();
-    float getTongTien();
-    float getTienThua();
-    float getTongTienGiam();
-    Date getNgayGiaoHang();
-    String getDonViGiaoHang();
-    float getPhiShip();
-    String getTenNguoiGiaoHang();
-    String getEmailNguoiNhan();
-    String getDiaChiChiTiet();
-    String getTinhThanhPho();
-    String getQuanHuyen();
-    String getPhuongXa();
-    Boolean getLoaiHoaDon();
-    Boolean getLoaiThanhToan();
-    String getTenNguoiGiao();
-    String getSdtNguoiGiao();
-    Boolean getTrangThai();
+
 }
 
 

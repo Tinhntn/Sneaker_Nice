@@ -10,4 +10,7 @@ public interface ChiTietSanPhamService {
     ChiTietSanPham findById(int id);
     void deleteChiTietSanPham(int id);
     void update(ChiTietSanPham chiTietSanPham);
+    Page<ChiTietSanPham> findChiTietSanPhamByIDSanPham(int idSanPham, Pageable pageable);
+//    ChiTietSanPham getCTSPByIdSP(Pageable pageable, int idSP);
+    Page<ChiTietSanPham> findChiTietSanPhamJustOne(Pageable pageable);
 }

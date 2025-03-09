@@ -2,6 +2,7 @@ package poly.edu.sneaker.Model;
 
 import jakarta.persistence.*;
 import lombok.*;
+
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.util.Date;
@@ -17,6 +18,7 @@ public class KhuyenMai {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
+
     @JoinColumn(name = "ma_khuyen_mai")
     private String maKhuyenMai;
     @JoinColumn(name = "ten_khuyen_mai")

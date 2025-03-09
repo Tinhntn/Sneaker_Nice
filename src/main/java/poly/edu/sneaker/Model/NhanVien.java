@@ -16,6 +16,7 @@ public class NhanVien {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
+
     @ManyToOne
     @JoinColumn(name = "id_chuc_vu")
     private  ChucVu idChucVu;
@@ -33,6 +34,7 @@ public class NhanVien {
     private  String sdt;
     @JoinColumn(name = "email")
     private String email;
+
     @JoinColumn(name = "mat_khau")
     private String matKhau;
     @JoinColumn(name = "hinh_anh")
