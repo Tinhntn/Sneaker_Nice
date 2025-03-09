@@ -17,4 +17,5 @@ public interface ChiTietSanPhamService {
     Page<ChiTietSanPham> findChiTietSanPhamJustOne(Pageable pageable);
     ChiTietSanPham findCTSPByIDMauSac(int idCTSP, int idMauSac);
     ArrayList<ChiTietSanPham> findByIdSanPham(int idSanPham);
+    ChiTietSanPham findCTSPByIdSPAndIdMauSacAndIdSize(int idSanPham, int idMauSac, int idSize);
 }

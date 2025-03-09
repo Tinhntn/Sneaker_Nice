@@ -139,10 +139,6 @@ public class SanPhamController {
     ) {
         try {
             SanPham existingSanPham = sanPhamService.findById(id);
-            if (existingSanPham == null) {
-                System.out.println("SanPham không tồn tại với ID: " + id);
-            }
-
             if (sanPham.getTrangThai() == null) {
                 sanPham.setTrangThai(false);
             }
@@ -259,19 +255,31 @@ public class SanPhamController {
         }
     }
 
-    // Hàm hỗ trợ chuyển đổi kiểu dữ liệu an toàn
     private int convertToInt(Object value) {
-        if (value instanceof Number) {
-            return ((Number) value).intValue();
+        try {
+            if (value instanceof Number) {
+                return ((Number) value).intValue();
+            }
+            return Integer.parseInt(value.toString());
+        } catch (NumberFormatException e) {
+            return 0; // hoặc có thể ném ngoại lệ tùy vào yêu cầu của bạn
         }
-        return Integer.parseInt(value.toString());
     }
 
+    // Hàm hỗ trợ chuyển đổi kiểu dữ liệu an toàn
+
+
     private float convertToFloat(Object value) {
-        if (value instanceof Number) {
-            return ((Number) value).floatValue();
+        try {
+            if (value instanceof Number) {
+                return ((Number) value).floatValue();
+            }
+            return Float.parseFloat(value.toString());
+
+        } catch (NumberFormatException e) {
+            return 0;
         }
-        return Float.parseFloat(value.toString());
+
     }
 
 }
