@@ -12,4 +12,6 @@ public interface GioHangService {
     void deleteById(int id);
     void update(GioHang gioHang);
     String taoMaGioHang();
+
+    GioHang findGioHangByIDKH(int id);
 }

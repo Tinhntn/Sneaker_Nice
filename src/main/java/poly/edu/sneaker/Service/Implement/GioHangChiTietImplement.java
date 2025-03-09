@@ -7,6 +7,9 @@ import org.springframework.stereotype.Service;
 import poly.edu.sneaker.Model.GioHangChiTiet;
 import poly.edu.sneaker.Repository.GioHangChiTietRepository;
 import poly.edu.sneaker.Service.GioHangChiTietService;
+
+import java.util.ArrayList;
+
 @Service
 
 public class GioHangChiTietImplement implements GioHangChiTietService {
@@ -35,5 +38,15 @@ public class GioHangChiTietImplement implements GioHangChiTietService {
     @Override
     public void update(GioHangChiTiet gioHangChiTiet) {
         gioHangChiTietRepository.save(gioHangChiTiet);
+    }
+
+    @Override
+    public ArrayList<GioHangChiTiet> findByIdGioHang(int idGioHang) {
+        return gioHangChiTietRepository.findByIdGioHang_Id(idGioHang);
+    }
+
+    @Override
+    public GioHangChiTiet findByIdGioHangAndIDCTSP(int idGioHang, int idCTSP) {
+        return gioHangChiTietRepository.findByIdGioHang_IdAndIdChiTietSanPham_Id(idGioHang,idCTSP);
     }
 }

@@ -20,6 +20,7 @@
 <body>
     <div layout:fragment="content">
         <!-- Thông báo thành công -->
+      
         <div th:if="${message}">
             <script th:inline="javascript">
                 /*<![CDATA[*/
@@ -124,109 +125,15 @@
                                     <i class="ion-ios-add"></i>
                                 </button>
                             </span>
-                            <script th:inline="javascript">
-                                function selectSize(button) {
-                                        // Xóa class active khỏi tất cả các nút size
-                                        document.querySelectorAll('.size-btn').forEach(btn => {
-                                            btn.classList.remove('active');
-                                        });
 
-                                        // Đánh dấu nút được chọn
-                                        button.classList.add('active');
-
-                                        // Cập nhật giá trị size được chọn
-                                        document.getElementById("selectedSize").value = button.getAttribute("data-id");
-                                    }
-
-                                    function selectMauSac(button) {
-                                        // Xóa class active khỏi tất cả các nút màu sắc
-                                        document.querySelectorAll('.btn-mau-sac').forEach(btn => {
-                                            btn.classList.remove('active');
-                                        });
-
-                                        // Đánh dấu nút được chọn
-                                        button.classList.add('active');
-
-                                        // Cập nhật giá trị màu sắc được chọn
-                                        document.getElementById("selectedMauSac").value = button.getAttribute("data-idMauSac");
-                                        let idMauSac = document.getElementById("idMauSac");
-                                        let idCTSP = document.getElementById("idCTSP");
-                                        fetch(`/Sneakers_Nice/chitietsanpham?idCTSP=${idCTSP}&idMauSac=${idMauSac}`)
-                                            .then(response => response.json())
-                                            .then(data => {
-                                                if (data && data.hinhAnh) {
-                                                    document.getElementById("productImage").src = data.hinhAnh;
-                                                }
-                                            })
-                                            .catch(error => console.error("Lỗi khi lấy ảnh", error)
-                                            );
-                                    }
-                                document.addEventListener("DOMContentLoaded", function () {
-                                    
-                                    var combinations = /*[[${lstCTSP}]]*/[];
-                                    const colorButtons = document.querySelectorAll(".btn-mau-sac");
-                                    const sizeButtons = document.querySelectorAll(".size-btn");
-                                    let selectedColor = null;
-                                    let selectedSize = null;
-
-                                    function updateSizes() {
-                                        sizeButtons.forEach((btn) => {
-                                            const size = btn.getAttribute("data-idSize");
-                                            const isAvailable = combinations.some(c => c.idMauSac.id == selectedColor && c.idSize.id == size);
-                                            btn.disabled = !isAvailable;
-                                        });
-                                    }
-
-                                    function updateColors() {
-                                        colorButtons.forEach((btn) => {
-                                            const color = btn.getAttribute("data-idMauSac");
-                                            const isAvailable = combinations.some(c => c.idSize.id == selectedSize && c.idMauSac.id == color);
-                                            btn.disabled = !isAvailable;
-                                        });
-                                    }
-
-                                    colorButtons.forEach(btn => {
-                                        btn.addEventListener("click", function () {
-                                            selectedColor = this.getAttribute("data-idMauSac");
-                                            updateSizes();
-                                        });
-                                    });
-
-                                    sizeButtons.forEach(btn => {
-                                        btn.addEventListener("click", function () {
-                                            selectedSize = this.getAttribute("data-idSize");
-                                            updateColors();
-                                        });
-                                    });
-                                    document.addEventListener("click", function (event) {
-                                        // Kiểm tra nếu phần tử được click không phải là các nút size hoặc màu sắc
-                                        if (!event.target.classList.contains("btn-mau-sac") && !event.target.classList.contains("size-btn")) {
-                                            selectedColor = null;
-                                            selectedSize = null;
-
-                                            // Bật lại tất cả các nút
-                                            sizeButtons.forEach(btn => btn.disabled = false);
-                                            colorButtons.forEach(btn => btn.disabled = false);
-                                        }
-                                    });
-                                    $("#themVaoGioHang").click(function(){
-                                        var idSize =$(".btn-mau-sac.active").attr("data-idMauSac");
-                                        var idMauSac = $(".size-btn.active").attr("data-idSize");
-                                        var soLuong = $("quantity").val();
-                                    })
-                                });
-                             
-                               
-
-                             
-                            </script>
 
 
                         </div>
                         <!-- Các button Thanh toán và Thêm vào giỏ hàng -->
                         <div class="input-group col-md-6 d-flex mb-3">
                             <form th:action="@{/giohang/addGHCT}" method="post" class="d-inline">
-                                <a id="themVaoGioHang" class="btn btn-primary btnThemVaoGioHang  py-3 px-5 ">Thêm vào giỏ hàng
+                                <a id="themVaoGioHang" class="btn btn-primary btnThemVaoGioHang  py-3 px-5 ">Thêm vào
+                                    giỏ hàng
                                 </a>
                                 <br>
                                 <a href="cart.html" class="btn btn-primary btnMuaNgay py-3 px-5">Mua ngay</a>
@@ -235,6 +142,149 @@
                         </div>
                     </div>
                 </div>
+                <script th:inline="javascript">
+                     
+                    var notyf = new Notyf({ ripple: true });
+
+                    function selectSize(button) {
+                        // Xóa class active khỏi tất cả các nút size
+                        document.querySelectorAll('.size-btn').forEach(btn => {
+                            btn.classList.remove('active');
+                        });
+
+                        // Đánh dấu nút được chọn
+                        button.classList.add('active');
+
+                        // Cập nhật giá trị size được chọn
+                        document.getElementById("selectedSize").value = button.getAttribute("data-id");
+                    }
+
+                    function selectMauSac(button) {
+                        // Xóa class active khỏi tất cả các nút màu sắc
+                        document.querySelectorAll('.btn-mau-sac').forEach(btn => {
+                            btn.classList.remove('active');
+                        });
+
+                        // Đánh dấu nút được chọn
+                        button.classList.add('active');
+
+                        // Cập nhật giá trị màu sắc được chọn
+                        document.getElementById("selectedMauSac").value = button.getAttribute("data-idMauSac");
+                        let idMauSac = document.getElementById("idMauSac");
+                        let idCTSP = document.getElementById("idCTSP");
+                        fetch(`/Sneakers_Nice/chitietsanpham?idCTSP=${idCTSP}&idMauSac=${idMauSac}`)
+                            .then(response => response.json())
+                            .then(data => {
+                                if (data && data.hinhAnh) {
+                                    document.getElementById("productImage").src = data.hinhAnh;
+                                }
+                            })
+                            .catch(error => notyf.error('Có lỗi xảy ra', error)
+                            );
+                    }
+                    document.addEventListener("DOMContentLoaded", function () {
+                        updateCartCount();
+
+                        var combinations = /*[[${lstCTSP}]]*/[];
+                        const colorButtons = document.querySelectorAll(".btn-mau-sac");
+                        const sizeButtons = document.querySelectorAll(".size-btn");
+                        let selectedColor = null;
+                        let selectedSize = null;
+
+                        function updateSizes() {
+                            sizeButtons.forEach((btn) => {
+                                const size = btn.getAttribute("data-idSize");
+                                const isAvailable = combinations.some(c => c.idMauSac.id == selectedColor && c.idSize.id == size);
+                                btn.disabled = !isAvailable;
+                                if (!isAvailable && btn.classList.contains("active")) {
+                                    btn.classList.remove("active");
+                                }
+                            });
+                        }
+
+                        function updateColors() {
+                            colorButtons.forEach((btn) => {
+                                const color = btn.getAttribute("data-idMauSac");
+                                const isAvailable = combinations.some(c => c.idSize.id == selectedSize && c.idMauSac.id == color);
+                                btn.disabled = !isAvailable;
+                                if (!isAvailable && btn.classList.contains("active")) {
+                                    btn.classList.remove("active");
+                                }
+                            });
+                        }
+
+                        colorButtons.forEach(btn => {
+                            btn.addEventListener("click", function () {
+                                selectedColor = this.getAttribute("data-idMauSac");
+                                updateSizes();
+                            });
+                        });
+
+                        sizeButtons.forEach(btn => {
+                            btn.addEventListener("click", function () {
+                                selectedSize = this.getAttribute("data-idSize");
+                                updateColors();
+                            });
+                        });
+                        document.addEventListener("click", function (event) {
+                            // Kiểm tra nếu phần tử được click không phải là các nút size hoặc màu sắc
+                            if (!event.target.classList.contains("btn-mau-sac") && !event.target.classList.contains("size-btn")) {
+                                selectedColor = null;
+                                selectedSize = null;
+
+                                // Bật lại tất cả các nút
+                                sizeButtons.forEach(btn => btn.disabled = false);
+                                colorButtons.forEach(btn => btn.disabled = false);
+                            }
+                        });
+
+                    });
+
+
+
+                    $("#themVaoGioHang").click(async function themSanPhamVaoGioHang() {
+                        var idSize = $(".btn-mau-sac.active").attr("data-idMauSac");
+                        var idMauSac = $(".size-btn.active").attr("data-idSize");
+                        var soLuong = document.getElementById("quantity").value;
+    var idSanPham = /*[[${chiTietSanPham != null && chiTietSanPham.idSanPham != null ? chiTietSanPham.idSanPham.id : ''}]]*/ "";
+
+                        if (soLuong <= 0) {
+                            notyf.error('Số lượng phải lớn hơn 0');
+                        } else if (idSize == null) {
+                            notyf.error('Vui lòng chọn size');
+                        }
+                        else if (idMauSac == null) {
+                            notyf.error('Vui lòng chọn màu sắc');
+                        }
+                        else {
+                            let formData = {
+                                idSanPham: idSanPham,
+                                idSize: idSize,
+                                idMauSac: idMauSac,
+                                soLuong: soLuong
+                            }
+                            let response = await fetch(`/gio-hang/them-vao-gio-hang`, {
+                                method: "POST",
+                                headers: { "Content-Type": "application/json" },
+                                body: JSON.stringify(formData)
+                            });
+                            if (!response.ok) {
+                                if (response.status == 401) {
+                                    let errorData = await response.json();
+                                    notyf.error(errorData.message || 'Có lỗi xảy ra khi thêm sản phẩm vào giỏ hàng');
+                                } else {
+                                    notyf.error('Lỗi không xác định');
+                                }
+                            } else {
+                                updateCartCount();
+
+                                notyf.success('Thêm sản phẩm vào giỏ hàng thành công');
+
+                            }
+                        }
+                    })
+
+                </script>
             </div>
 
         </section>

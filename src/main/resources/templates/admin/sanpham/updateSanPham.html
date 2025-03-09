@@ -304,9 +304,6 @@
                         let trangThaiCheckbox = row.querySelector("[name='trangThai']");
                         let trangThaii = trangThaiCheckbox ? trangThaiCheckbox.checked : false;
 
-                        console.log("ID Sản phẩm chính:", idSP);
-                        console.log("ID Chi tiết sản phẩm:", idCTSP);
-                        console.log("Trạng thái:", trangThaii);
 
                         try {
                             let formData = {
@@ -320,7 +317,6 @@
                                 moTa: row.querySelector("[name='moTa']")?.value || null,
                                 trangThai: trangThaii
                             };
-                            console.log(formData)
                             let response = await fetch(`/sanpham/updateCTSP/${idCTSP}`, {
                                 method: "PUT",
                                 headers: { "Content-Type": "application/json" },
@@ -343,8 +339,7 @@
                                 notyf.error("Cập nhật thất bại! Vui lòng thử lại.");
                             }
                         } catch (error) {
-                            console.error("Lỗi khi cập nhật sản phẩm:", error);
-                            notyf.error("Lỗi khi cập nhật sản phẩm! Vui lòng thử lại.");
+                                notyf.error("Lỗi khi cập nhật sản phẩm! Vui lòng thử lại.");
                         }
                     });
                 });

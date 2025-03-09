@@ -58,7 +58,6 @@ public class DangNhap {
 
         NhanVien nhanVien = nhanVienService.getNhanVienByEmail(email);
         KhachHang khachHang = khachHangService.findByEmail(email);
-
         // Kiểm tra nếu cả hai ID đều là null
         if (nhanVien == null && khachHang == null) {
             return ResponseEntity.badRequest().body(Map.of("message", "Tài khoản không tồn tại"));
@@ -87,7 +86,7 @@ public class DangNhap {
 
     @PostMapping("/dang-nhap")
     @ResponseBody
-    public ResponseEntity<?> dangNhap(@RequestBody Map<String, String> body, HttpSession httpSession) {
+    public ResponseEntity<?> dangNhap(@RequestBody Map<String, String> body) {
         // Kiểm tra dữ liệu đầu vào
         if (body == null || !body.containsKey("email") || !body.containsKey("matKhau")) {
             return ResponseEntity.badRequest().body(Map.of("message", "Thiếu thông tin đăng nhập!"));
@@ -103,7 +102,18 @@ public class DangNhap {
         NhanVien nhanVien = nhanVienService.getNhanVienByEmailandMatKhau(email, matKhau);
         KhachHang khachHang = khachHangService.findByEmailAndMatKhau(email, matKhau);
 
-        Map<String, Object> response = new HashMap<>();
+        if(nhanVien!=null){
+            session.setAttribute("nhanVienSession",nhanVien);
+
+
+            return ResponseEntity.ok().body(Map.of("message","Đang nhập thành công"));
+        }else if(khachHang!=null){
+            session.setAttribute("khachHangSession",khachHang);
+            return ResponseEntity.ok().body(Map.of("message","Đăng nhập thành công"));
+        }else{
+            return ResponseEntity.badRequest().body(Map.of("message","Đăng nhập thất bại"));
+        }
+//        Map<String, Object> response = new HashMap<>();
 
 //        if (nhanVien != null) {
 //            httpSession.setAttribute("nhanVien", nhanVien);
@@ -124,7 +134,6 @@ public class DangNhap {
 //            return ResponseEntity.ok(response);
 //        }
 
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("message", "Sai email hoặc mật khẩu!"));
     }
 //
 //    @GetMapping("/check-role")
@@ -141,19 +150,21 @@ public class DangNhap {
     @PostMapping("/dang-ky")
     @ResponseBody
     public ResponseEntity<?> dangKy(@RequestBody Map<String, Object> thongTinDangKy) {
-        String emailDK = (String) thongTinDangKy.get("email");
+        String emailDK = (String) thongTinDangKy.get("emailDK");
         String hoTen = (String) thongTinDangKy.get("hoTen");
-        String matKhauDK = (String) thongTinDangKy.get("matKhau");
+        String matKhauDK = (String) thongTinDangKy.get("matKhauDK");
+
         if (emailDK.isEmpty() || emailDK == null || hoTen.isEmpty() || hoTen == null || matKhauDK.isEmpty() || matKhauDK == null) {
             return ResponseEntity.badRequest().body(Map.of("message", "Vui lòng điền đầy đủ thông tin"));
         }
         if (!isValidPassword(matKhauDK)) {
-            return ResponseEntity.badRequest().body(Map.of("message", "Mật khẩu phải có ít nhất 6 ký tự và chứa ít nhất một chữ và một số"));
+            return ResponseEntity.badRequest().body(Map.of("message", "Mật khẩu phải có ít nhất 8 ký tự và chứa ít nhất một chữ và một số"));
         }
         if (!emailValidate(emailDK)) {
             return ResponseEntity.badRequest().body(Map.of("message", "Email không đúng định dạng"));
         }
         if (khachHangService.exitsKhachHangByEmail(emailDK)) {
+            System.out.println(khachHangService.exitsKhachHangByEmail(emailDK));
             return ResponseEntity.badRequest().body(Map.of("message", "Tài khoản đã tồn tại"));
         }
         KhachHang khachHang = new KhachHang();
@@ -171,6 +182,7 @@ public class DangNhap {
         gioHang.setNgayTao(new Date());
         gioHang.setTrangThai(true);
         gioHang.setGhiChu("Giỏ hàng tự động tạo khi khách hàng đăng ký");
+        gioHangService.save(gioHang);
         return ResponseEntity.ok().body(Map.of("message", "Đăng ký thành công"));
     }
 
@@ -189,7 +201,7 @@ public class DangNhap {
         return Pattern.matches(EMAIL_REGEX, email);
     }
 
-    private static final String PASSWORD_REGEX = "^(?=.*[A-Z])(?=.*[a-z])(?=.*\\d)(?=.*[@#$%^&*!]).{8,}$";
+    private static final String PASSWORD_REGEX = "^(?=.*[A-Z])(?=.*\\d)(?=.*[@#$%^&*!]).*$";
 
     public static boolean isValidPassword(String password) {
         if (password == null) {

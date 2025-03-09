@@ -30,6 +30,7 @@ public class KhachHangImplement implements KhachHangService {
 
     @Override
     public void saveKhachHang(KhachHang khachHang) {
+        System.out.println(khachHang.getMaKhachHang());
         khachHangRepository.save(khachHang);
     }
 
@@ -75,7 +76,7 @@ public class KhachHangImplement implements KhachHangService {
 
     @Override
     public boolean exitsKhachHangByEmail(String email) {
-        return !khachHangRepository.existsKhachHangByEmail(email);
+        return khachHangRepository.existsKhachHangByEmail(email);
     }
 
     @Override

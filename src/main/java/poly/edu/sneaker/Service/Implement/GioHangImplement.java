@@ -59,4 +59,9 @@ public class GioHangImplement implements GioHangService {
         }
         return maGioHang;
     }
+
+    @Override
+    public GioHang findGioHangByIDKH(int id) {
+        return gioHangRepository.findByIdKhachHang_Id(id);
+    }
 }
