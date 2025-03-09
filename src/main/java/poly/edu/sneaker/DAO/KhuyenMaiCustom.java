@@ -4,7 +4,7 @@ import java.util.Date;
 
 public interface KhuyenMaiCustom {
 
-    int getId();
+    Integer getId();
     String getMaKhuyenMai();
     String getTenKhuyenMai();
     String getMoTa();
@@ -12,8 +12,8 @@ public interface KhuyenMaiCustom {
     Boolean getLoaiKhuyenMai();
     float getGiaTriGiam();
     float getMucGiamGiaToiDa();
-    int getDaSuDung();
-    int getSoLuong();
+    Integer getDaSuDung();
+    Integer getSoLuong();
     Date getNgayBatDau();
     Date getNgayKetThuc();
     Date getNgayTao();

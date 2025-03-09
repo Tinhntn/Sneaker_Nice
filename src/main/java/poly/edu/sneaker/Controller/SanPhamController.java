@@ -41,9 +41,10 @@ public class SanPhamController {
     @Autowired
     private SizeService sizeService;
     @Autowired
-    private  MauSacService mauSacService;
+    private MauSacService mauSacService;
+
     @GetMapping("/hienthi")
-    public String hienThi(Model model,RedirectAttributes redirectAttributes, @RequestParam(defaultValue = "0") int page, @RequestParam(required = false) String keyword) {
+    public String hienThi(Model model, RedirectAttributes redirectAttributes, @RequestParam(defaultValue = "0") int page, @RequestParam(required = false) String keyword) {
         int size = 5;
         Pageable pageable = PageRequest.of(page, size);
 
@@ -51,11 +52,11 @@ public class SanPhamController {
         if (keyword != null && !keyword.isEmpty()) {
             lstSanPham = sanPhamService.findByMaSanPhamOrTenSanPham(keyword, keyword, pageable);
             model.addAttribute("keyword", keyword);
-            if(lstSanPham==null){
+            if (lstSanPham == null) {
                 redirectAttributes.addFlashAttribute("successMessage", "Không tìm thấy sản phẩm");
                 lstSanPham = sanPhamService.findAll(pageable);
             }
-        } else  {
+        } else {
             lstSanPham = sanPhamService.findAll(pageable);
         }
         model.addAttribute("lstSanPham", lstSanPham.getContent());
@@ -82,17 +83,17 @@ public class SanPhamController {
         model.addAttribute("lstHang", lstHang);
         model.addAttribute("lstDanhMuc", lstDanhMuc);
         model.addAttribute("lstChatlieu", lstChatLieu);
-        model.addAttribute("maSanPham",maSanPham);
+        model.addAttribute("maSanPham", maSanPham);
 
         return "admin/sanpham/addSanPham";
     }
 
     @PostMapping("/themsanpham")
     public String them(@ModelAttribute SanPham sanPham,
-                       @RequestParam("hang")int idHang,
-                       @RequestParam("danhMuc")int idDanhMuc,
-                       @RequestParam("chatLieu")int idChatLieu,
-                       RedirectAttributes redirectAttributes){
+                       @RequestParam("hang") int idHang,
+                       @RequestParam("danhMuc") int idDanhMuc,
+                       @RequestParam("chatLieu") int idChatLieu,
+                       RedirectAttributes redirectAttributes) {
         // Gán giá trị từ combobox vào sản phẩm
         sanPham.setIdHang(hangService.getHangById(idHang));
         sanPham.setIdDanhMuc(danhMucService.findDanhMucById(idDanhMuc));
@@ -106,21 +107,22 @@ public class SanPhamController {
         redirectAttributes.addFlashAttribute("successMessage", "Thêm sản phẩm thành công!");
         return "redirect:/sanpham/hienthi";
     }
+
     @GetMapping("/chitietsanpham/{id}")
-    public String chiTietSanPham(@PathVariable("id")int idSanPham,Model model, @RequestParam(defaultValue = "0")int page
-    ){
+    public String chiTietSanPham(@PathVariable("id") int idSanPham, Model model, @RequestParam(defaultValue = "0") int page
+    ) {
         int size = 5;
         Pageable pageable = PageRequest.of(page, size);
-        Page<ChiTietSanPham> lstCTSP = chiTietSanPhamService.findChiTietSanPhamByIDSanPham(idSanPham,pageable);
+        Page<ChiTietSanPham> lstCTSP = chiTietSanPhamService.findChiTietSanPhamByIDSanPham(idSanPham, pageable);
         model.addAttribute("lstCTSP", lstCTSP.getContent());
         model.addAttribute("currentPage", lstCTSP.getNumber());
         model.addAttribute("totalPages", lstCTSP.getTotalPages());
         SanPham sanPham = sanPhamService.findById(idSanPham);
-        model.addAttribute("sanPham",sanPham);
+        model.addAttribute("sanPham", sanPham);
         List<Hang> lstHang = hangService.getAllHangs();
         List<DanhMuc> lstDanhMuc = danhMucService.getAllDanhMucs();
         List<ChatLieu> lstChatLieu = chatLieuService.getAllChatLieus();
-        List<Size>  lstSize= sizeService.findAll();
+        List<Size> lstSize = sizeService.findAll();
 
         List<MauSac> lstMauSac = mauSacService.findAll();
         model.addAttribute("lstMauSac", lstMauSac);
@@ -131,12 +133,17 @@ public class SanPhamController {
         model.addAttribute("lstChatlieu", lstChatLieu);
         return "admin/sanpham/updateSanPham";
     }
+
     @PostMapping("/capnhatsanpham/{id}")
     public String updateSanPham(@PathVariable("id") int id, @ModelAttribute("sanPham") SanPham sanPham, RedirectAttributes redirectAttributes
-                               ) {
+    ) {
         try {
             SanPham existingSanPham = sanPhamService.findById(id);
-            if(sanPham.getTrangThai()==null){
+            if (existingSanPham == null) {
+                System.out.println("SanPham không tồn tại với ID: " + id);
+            }
+
+            if (sanPham.getTrangThai() == null) {
                 sanPham.setTrangThai(false);
             }
             if (existingSanPham != null) {
@@ -145,7 +152,7 @@ public class SanPhamController {
                 existingSanPham.setIdChatLieu(sanPham.getIdChatLieu());
                 existingSanPham.setIdDanhMuc(sanPham.getIdDanhMuc());
                 existingSanPham.setNgaySua(new Date());
-                existingSanPham.setTrangThai(sanPham.getTrangThai()?true:false);
+                existingSanPham.setTrangThai(sanPham.getTrangThai() ? true : false);
                 sanPhamService.update(existingSanPham);
                 redirectAttributes.addFlashAttribute("", "Cập nhật sản phẩm thành công!");
             } else {
@@ -154,14 +161,15 @@ public class SanPhamController {
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("errorMessage", "Có lỗi xảy ra khi cập nhật sản phẩm!");
         }
-        return "redirect:/sanpham/hienthi";
+        return "redirect:/sanpham/chitietsanpham/"+id;
     }
+
     @PostMapping("/addctsanpham/{id}")
-    public String themChiTietSanPham(@PathVariable("id")int idSanPham,
+    public String themChiTietSanPham(@PathVariable("id") int idSanPham,
                                      @RequestParam("img") MultipartFile file,
-                                     @ModelAttribute ChiTietSanPham chiTietSanPham,RedirectAttributes redirectAttributes){
+                                     @ModelAttribute ChiTietSanPham chiTietSanPham, RedirectAttributes redirectAttributes) {
         try {
-            if(chiTietSanPham!=null){
+            if (chiTietSanPham != null) {
                 if (!file.isEmpty()) {
                     // Lưu file vào thư mục static/images
                     String fileName = file.getOriginalFilename();
@@ -187,16 +195,16 @@ public class SanPhamController {
                 ctsp.setNgaySua(new Date());
                 ctsp.setTrangThai(true);
                 chiTietSanPhamService.saveChiTietSanPham(ctsp);
-                redirectAttributes.addFlashAttribute("successMessage","Thêm chi tiết sản phẩm thành công");
+                redirectAttributes.addFlashAttribute("successMessage", "Thêm chi tiết sản phẩm thành công");
 
-            }else{
-                redirectAttributes.addFlashAttribute("errrorMasage","Có lỗi xảy ra khi thêm chi tiết sản phẩm");
+            } else {
+                redirectAttributes.addFlashAttribute("errrorMasage", "Có lỗi xảy ra khi thêm chi tiết sản phẩm");
             }
-                   }catch (Exception e) {
-            redirectAttributes.addFlashAttribute("errrorMasage","Có lỗi xảy ra khi thêm chi tiết sản phẩm");
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("errrorMasage", "Có lỗi xảy ra khi thêm chi tiết sản phẩm");
         }
 
-        return "redirect:/sanpham/chitietsanpham/"+idSanPham;
+        return "redirect:/sanpham/chitietsanpham/" + idSanPham;
     }
 
 
@@ -205,13 +213,13 @@ public class SanPhamController {
         try {
             // Tìm sản phẩm theo ID
             ChiTietSanPham ctsp = chiTietSanPhamService.findById(id);
-            System.out.println(id);
             if (ctsp == null) {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND)
                         .body(Collections.singletonMap("message", "Không tìm thấy sản phẩm!"));
             }
             // Ép kiểu dữ liệu an toàn
             Integer idSize = convertToInt(chiTietSanPham.get("idSize"));
+            System.out.println(idSize);
             Integer idMauSac = convertToInt(chiTietSanPham.get("idMauSac"));
             Float trongLuong = convertToFloat(chiTietSanPham.get("trongLuong"));
             Float giaNhap = convertToFloat(chiTietSanPham.get("giaNhap"));
@@ -224,6 +232,9 @@ public class SanPhamController {
             // Cập nhật thông tin
             if (idSize != null) {
                 ctsp.setIdSize(sizeService.findById(idSize));
+                Size size = sizeService.findById(idSize);
+                size.getMaSize();
+                System.out.println("ma size"+size.getMaSize());
             }
             if (idMauSac != null) {
                 ctsp.setIdMauSac(mauSacService.findById(idMauSac));
@@ -241,7 +252,7 @@ public class SanPhamController {
             return ResponseEntity.ok(Collections.singletonMap("success", true));
 
 
-        }  catch (Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(Collections.singletonMap("message", "Lỗi khi cập nhật sản phẩm!"));

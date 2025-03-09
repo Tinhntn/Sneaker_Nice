@@ -15,7 +15,7 @@ import java.util.Date;
 public class Size {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    int id;
+    Integer id;
     private  String maSize;
     private  String tenSize;
     private  Date ngayTao;

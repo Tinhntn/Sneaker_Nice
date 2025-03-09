@@ -16,7 +16,7 @@ import java.util.List;
 public class DanhMuc {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    private Integer id;
 
     @Column(name = "ma_danh_muc", unique = true, nullable = false)
     @NotBlank(message = "Mã danh mục không được để trống")

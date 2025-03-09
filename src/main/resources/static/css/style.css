@@ -7640,7 +7640,22 @@ button.bg-light:focus {
 .bg-dark {
   background-color: #343a40 !important;
 }
+.image-label {
+  cursor: pointer;
+  display: inline-block;
+}
 
+.product-img {
+  width: 80px;
+  height: 80px;
+  object-fit: cover;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+.file-input {
+  display: none;
+}
 .size-btn:hover {
   background-color: #e1d5a2 !important;
   color: white;

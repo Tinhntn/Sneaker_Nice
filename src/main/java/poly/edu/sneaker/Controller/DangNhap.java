@@ -4,11 +4,11 @@ import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.context.SecurityContextHolder;
+//import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+//import org.springframework.security.core.Authentication;
+//import org.springframework.security.core.GrantedAuthority;
+//import org.springframework.security.core.authority.SimpleGrantedAuthority;
+//import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -117,38 +117,38 @@ public class DangNhap {
 
         Map<String, Object> response = new HashMap<>();
 
-        if (nhanVien != null) {
-            httpSession.setAttribute("nhanVien", nhanVien);
-            List<GrantedAuthority> authorities = List.of(new SimpleGrantedAuthority("ADMIN"));
-            UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(nhanVien, null, authorities);
-            SecurityContextHolder.getContext().setAuthentication(authToken);
-            response.put("message", "Đăng nhập thành công!");
-            response.put("redirectUrl", "/sanpham/hienthi");
-            return ResponseEntity.ok(response);
-        } else if (khachHang != null) {
-            httpSession.setAttribute("khachHang", khachHang);
-            response.put("message", "Đăng nhập thành công!");
-            List<GrantedAuthority> authorities = List.of(new SimpleGrantedAuthority("USER"));
-            UsernamePasswordAuthenticationToken authToken =
-                    new UsernamePasswordAuthenticationToken(khachHang, null, authorities);
-            SecurityContextHolder.getContext().setAuthentication(authToken);
-            response.put("redirectUrl", "/Sneakers_Nice/hienthi");
-            return ResponseEntity.ok(response);
-        }
+//        if (nhanVien != null) {
+//            httpSession.setAttribute("nhanVien", nhanVien);
+//            List<GrantedAuthority> authorities = List.of(new SimpleGrantedAuthority("ADMIN"));
+//            UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(nhanVien, null, authorities);
+//            SecurityContextHolder.getContext().setAuthentication(authToken);
+//            response.put("message", "Đăng nhập thành công!");
+//            response.put("redirectUrl", "/sanpham/hienthi");
+//            return ResponseEntity.ok(response);
+//        } else if (khachHang != null) {
+//            httpSession.setAttribute("khachHang", khachHang);
+//            response.put("message", "Đăng nhập thành công!");
+//            List<GrantedAuthority> authorities = List.of(new SimpleGrantedAuthority("USER"));
+//            UsernamePasswordAuthenticationToken authToken =
+//                    new UsernamePasswordAuthenticationToken(khachHang, null, authorities);
+//            SecurityContextHolder.getContext().setAuthentication(authToken);
+//            response.put("redirectUrl", "/Sneakers_Nice/hienthi");
+//            return ResponseEntity.ok(response);
+//        }
 
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("message", "Sai email hoặc mật khẩu!"));
     }
-
-    @GetMapping("/check-role")
-    public ResponseEntity<?> checkRole() {
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-
-        if (auth == null || auth.getPrincipal().equals("anonymousUser")) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Chưa đăng nhập!");
-        }
-
-        return ResponseEntity.ok("User: " + auth.getName() + ", Roles: " + auth.getAuthorities());
-    }
+//
+//    @GetMapping("/check-role")
+//    public ResponseEntity<?> checkRole() {
+//        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+//
+//        if (auth == null || auth.getPrincipal().equals("anonymousUser")) {
+//            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Chưa đăng nhập!");
+//        }
+//
+//        return ResponseEntity.ok("User: " + auth.getName() + ", Roles: " + auth.getAuthorities());
+//    }
 
 //    @PostMapping("/dang-ky")
 //    @ResponseBody

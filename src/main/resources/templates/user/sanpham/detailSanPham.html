@@ -99,10 +99,6 @@
                                 </button>
                             </div>
                         </div>
-
-
-
-
                         <!-- Các button chọn Màu sắc -->
                         <div id="mauSacButtons" class="mb-4">
                             <div>
@@ -130,47 +126,44 @@
                             </span>
                             <script th:inline="javascript">
                                 function selectSize(button) {
-                                    // Xóa class active khỏi tất cả các nút size
-                                    document.querySelectorAll('.size-btn').forEach(btn => {
-                                        btn.classList.remove('active');
-                                    });
+                                        // Xóa class active khỏi tất cả các nút size
+                                        document.querySelectorAll('.size-btn').forEach(btn => {
+                                            btn.classList.remove('active');
+                                        });
 
-                                    // Đánh dấu nút được chọn
-                                    button.classList.add('active');
+                                        // Đánh dấu nút được chọn
+                                        button.classList.add('active');
 
-                                    // Cập nhật giá trị size được chọn
-                                    document.getElementById("selectedSize").value = button.getAttribute("data-id");
-                                }
+                                        // Cập nhật giá trị size được chọn
+                                        document.getElementById("selectedSize").value = button.getAttribute("data-id");
+                                    }
 
-                                function selectMauSac(button) {
-                                    // Xóa class active khỏi tất cả các nút màu sắc
-                                    document.querySelectorAll('.btn-mau-sac').forEach(btn => {
-                                        btn.classList.remove('active');
-                                    });
+                                    function selectMauSac(button) {
+                                        // Xóa class active khỏi tất cả các nút màu sắc
+                                        document.querySelectorAll('.btn-mau-sac').forEach(btn => {
+                                            btn.classList.remove('active');
+                                        });
 
-                                    // Đánh dấu nút được chọn
-                                    button.classList.add('active');
+                                        // Đánh dấu nút được chọn
+                                        button.classList.add('active');
 
-                                    // Cập nhật giá trị màu sắc được chọn
-                                    document.getElementById("selectedMauSac").value = button.getAttribute("data-idMauSac");
-                                    let idMauSac = document.getElementById("idMauSac");
-                                    let idCTSP = document.getElementById("idCTSP");
-                                    fetch(`/Sneakers_Nice/chitietsanpham?idCTSP=${idCTSP}&idMauSac=${idMauSac}`)
-                                        .then(response => response.json())
-                                        .then(data => {
-                                            if (data && data.hinhAnh) {
-                                                document.getElementById("productImage").src = data.hinhAnh;
-                                            }
-                                        })
-                                        .catch(error => console.error("Lỗi khi lấy ảnh", error)
-                                        );
-                                }
+                                        // Cập nhật giá trị màu sắc được chọn
+                                        document.getElementById("selectedMauSac").value = button.getAttribute("data-idMauSac");
+                                        let idMauSac = document.getElementById("idMauSac");
+                                        let idCTSP = document.getElementById("idCTSP");
+                                        fetch(`/Sneakers_Nice/chitietsanpham?idCTSP=${idCTSP}&idMauSac=${idMauSac}`)
+                                            .then(response => response.json())
+                                            .then(data => {
+                                                if (data && data.hinhAnh) {
+                                                    document.getElementById("productImage").src = data.hinhAnh;
+                                                }
+                                            })
+                                            .catch(error => console.error("Lỗi khi lấy ảnh", error)
+                                            );
+                                    }
                                 document.addEventListener("DOMContentLoaded", function () {
+                                    
                                     var combinations = /*[[${lstCTSP}]]*/[];
-                                    console.log("Dữ liệu combinations:", combinations);
-                                    window.onload = function () {
-                                        console.log("Dữ liệu combinations sau khi trang load:", combinations);
-                                    };
                                     const colorButtons = document.querySelectorAll(".btn-mau-sac");
                                     const sizeButtons = document.querySelectorAll(".size-btn");
                                     let selectedColor = null;
@@ -216,8 +209,16 @@
                                             colorButtons.forEach(btn => btn.disabled = false);
                                         }
                                     });
+                                    $("#themVaoGioHang").click(function(){
+                                        var idSize =$(".btn-mau-sac.active").attr("data-idMauSac");
+                                        var idMauSac = $(".size-btn.active").attr("data-idSize");
+                                        var soLuong = $("quantity").val();
+                                    })
                                 });
-                                
+                             
+                               
+
+                             
                             </script>
 
 
@@ -225,15 +226,7 @@
                         <!-- Các button Thanh toán và Thêm vào giỏ hàng -->
                         <div class="input-group col-md-6 d-flex mb-3">
                             <form th:action="@{/giohang/addGHCT}" method="post" class="d-inline">
-
-                                <input type="hidden" name="idctsp" th:if="${detailsp != null}"
-                                    th:value="${detailsp.id}" />
-                                <input type="hidden" name="soluongkho" th:if="${detailsp != null}"
-                                    th:value="${detailsp.soLuong}" />
-                                <input type="hidden" name="giaBan" th:if="${detailsp != null}"
-                                    th:value="${detailsp.giaBan}" />
-
-                                <a type="submit" class="btn btn-primary btnThemVaoGioHang  py-3 px-5 ">Thêm vào giỏ hàng
+                                <a id="themVaoGioHang" class="btn btn-primary btnThemVaoGioHang  py-3 px-5 ">Thêm vào giỏ hàng
                                 </a>
                                 <br>
                                 <a href="cart.html" class="btn btn-primary btnMuaNgay py-3 px-5">Mua ngay</a>
