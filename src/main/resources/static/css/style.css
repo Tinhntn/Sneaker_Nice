@@ -5616,6 +5616,47 @@ input[type="button"].btn-block {
   }
 }
 
+.quantity-controls button,.remove-item  {
+  border: none;
+  width: 35px;
+  /* Tăng kích thước */
+  height: 35px;
+  border-radius: 50%;
+  margin: 5px;
+  font-size: 18px;
+  /* Tăng kích thước chữ */
+  font-weight: bold;
+  /* Làm đậm chữ */
+  background-color: #f8f9fa;
+  /* Màu nền nhạt */
+  color: #333;
+  /* Màu chữ tối hơn */
+  cursor: pointer;
+  /* Biến con trỏ thành dạng bàn tay */
+  transition: all 0.3s ease;
+  /* Hiệu ứng mượt mà */
+  box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.1);
+  /* Đổ bóng nhẹ */
+  align-items: center;
+  justify-content: center;
+}
+
+.quantity-controls button:hover,.remove-item:hover {
+  background-color: #dbcc8f;
+  /* Màu xanh khi hover */
+  color: white;
+  /* Chữ trắng */
+  transform: scale(1.1);
+  /* Hiệu ứng phóng to nhẹ */
+}
+
+.quantity-controls button:active,.remove-item:active {
+  transform: scale(0.95);
+  /* Hiệu ứng nhấn xuống */
+  background-color: #0056b3;
+  /* Màu xanh đậm hơn khi nhấn */
+}
+
 .card-columns .card {
   margin-bottom: 0.75rem;
 }
@@ -7640,6 +7681,7 @@ button.bg-light:focus {
 .bg-dark {
   background-color: #343a40 !important;
 }
+
 .image-label {
   cursor: pointer;
   display: inline-block;
@@ -7778,18 +7820,22 @@ button.bg-light:focus {
 .checkout-btn:hover {
   background: #e65c00;
 }
+
 .file-input {
   display: none;
 }
+
 .size-btn:hover {
   background-color: #e1d5a2 !important;
   color: white;
 }
 
-.size-btn.active,.btn-mau-sac.active {
+.size-btn.active,
+.btn-mau-sac.active {
   background-color: #e1d5a2 !important;
   color: white;
 }
+
 .btn-mau-sac:hover {
   background-color: #e1d5a2 !important;
   color: white;
