@@ -20,7 +20,7 @@
         <form th:action="@{/mau_sac/add}" th:object="${mauSac}" method="post">
             <div class="mb-3">
                 <label for="maMauSac" class="form-label">Mã Màu Sắc</label>
-                <input type="text" class="form-control" id="maMauSac" th:field="*{maMauSac}" required>
+                <input type="text" class="form-control" id="maMauSac" th:field="*{maMauSac}" readonly>
             </div>
             <div class="mb-3">
                 <label for="tenMauSac" class="form-label">Tên Màu Sắc</label>

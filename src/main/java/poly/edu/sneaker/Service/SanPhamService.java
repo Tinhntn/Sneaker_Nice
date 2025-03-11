@@ -15,5 +15,8 @@ public interface SanPhamService {
     void update(SanPham sanPham);
     String taoMaSanPham();
     List<SanPham> getAllSanPhams();
-    Page<SanPham> findByMaSanPhamOrTenSanPham(String maSanPham,String tenSanPham, Pageable pageable);
+    Page<SanPham> findByMaSanPhamOrTenSanPham(String maSanPham, String tenSanPham, Pageable pageable);
+
+//    List<SanPham> searchByNameOrHang(String keyword);
+
 }

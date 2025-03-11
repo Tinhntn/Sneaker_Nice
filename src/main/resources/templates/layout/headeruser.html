@@ -1,4 +1,47 @@
 <header th:fragment="header">
+    <style>
+        /* Trạng thái mặc định (chưa cuộn) */
+        #ftco-navbar .input-group-text,
+        #ftco-navbar .form-control {
+            background-color: #343a40 !important; /* màu gốc (tối) */
+            color: #fff !important;
+        }
+
+        /* Khi cuộn, navbar có class .scrolled -> form đổi sang màu gốc (màu tối) */
+        #ftco-navbar.scrolled .input-group-text,
+        #ftco-navbar.scrolled .form-control {
+            background-color: #ffffff !important; /* màu trắng */
+            color: #333 !important;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        /* Trạng thái mặc định (navbar chưa cuộn, form nền tối, chữ trắng) */
+        #ftco-navbar .form-control::placeholder {
+            color: #fff; /* placeholder trắng */
+        }
+
+        /* Khi cuộn, navbar có class .scrolled -> form chuyển sang nền trắng, chữ đen */
+        #ftco-navbar.scrolled .form-control::placeholder {
+            color: #333; /* placeholder đen */
+        }
+
+        /* Điều chỉnh kích thước của icon tìm kiếm */
+        .search-icon {
+            font-size: 0.7rem; /* Điều chỉnh kích thước font */
+            padding: 0.30rem; /* Điều chỉnh khoảng cách bên trong */
+        }
+
+        /* Điều chỉnh kích thước của input tìm kiếm */
+        .search-input {
+            font-size: 0.7rem; /* Điều chỉnh kích thước font */
+            padding: 0.30rem; /* Điều chỉnh khoảng cách bên trong */
+        }
+
+        /* Điều chỉnh kích thước của input-group */
+        .search-group {
+            max-width: 150px; /* Điều chỉnh chiều rộng tối đa */
+        }
+    </style>
     <div class="py-1 bg-black">
         <div class="container">
             <div class="row no-gutters d-flex align-items-start align-items-center px-md-0">
@@ -26,44 +69,64 @@
         <div class="container">
             <a class="navbar-brand" href="/Sneakers_Nice/hienthi">Sneakers Nice</a>
             <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#ftco-nav"
-                aria-controls="ftco-nav" aria-expanded="false" aria-label="Toggle navigation">
+                    aria-controls="ftco-nav" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="oi oi-menu"></span> Menu
             </button>
             <div class="collapse navbar-collapse" id="ftco-nav">
                 <ul class="navbar-nav ml-auto">
                     <li class="nav-item active"><a href="index.html" class="nav-link">Trang chủ</a></li>
-                        <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle" href="#" id="dropdown04" data-toggle="dropdown" aria-haspopup="true"
-                                aria-expanded="false">Catalog</a>
-                            <div class="dropdown-menu" aria-labelledby="dropdown04">
-                                <a class="dropdown-item" href="shop.html">Shop</a>
-                                <a class="dropdown-item" href="product-single.html">Single Product</a>
-                                <a class="dropdown-item" href="cart.html">Cart</a>
-                                <a class="dropdown-item" href="checkout.html">Checkout</a>
-                            </div>
-                        </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="dropdown04" data-toggle="dropdown"
+                           aria-haspopup="true"
+                           aria-expanded="false">Catalog</a>
+                        <div class="dropdown-menu" aria-labelledby="dropdown04">
+                            <a class="dropdown-item" href="shop.html">Shop</a>
+                            <a class="dropdown-item" href="product-single.html">Single Product</a>
+                            <a class="dropdown-item" href="cart.html">Cart</a>
+                            <a class="dropdown-item" href="checkout.html">Checkout</a>
+                        </div>
+                    </li>
                     <li class="nav-item active"><a href="shop.html" class="nav-link">Cửa hàng</a></li>
                     <li class="nav-item"><a href="about.html" class="nav-link">Giới thiệu</a></li>
                     <li class="nav-item"><a href="blog.html" class="nav-link">Tin tức</a></li>
                     <li class="nav-item"><a href="contact.html" class="nav-link">Liên hệ</a></li>
-                    <li class="nav-item cta cta-colored"><a href="cart.html" class="nav-link"><span
-                                class="icon-shopping_cart"></span>[0]</a></li>
 
+                    <form action="javascript:void(0);" class="nav-item">
+                        <div class="input-group search-group">
+                            <span class="input-group-text border-0 search-icon" id="searchIcon">
+                               <i class="fa-solid fa-magnifying-glass"></i>
+                             </span>
+                            <input type="text"
+                                   class="form-control border-0 search-input"
+                                   id="searchInput"
+                                   name="keyword"
+                                   placeholder="Tìm kiếm sản phẩm..."
+                                   autocomplete="off">
+                        </div>
+                        <div id="ajaxSearchResults" class="smart-search-wrapper" style="display: none;"></div>
+                    </form>
+
+                    <li class="nav-item cta cta-colored">
+                        <a href="cart.html" class="nav-link">
+                            <span class="icon-shopping_cart"></span>[0]
+                        </a>
+                    </li>
                 </ul>
             </div>
         </div>
     </nav>
     <!-- END nav -->
+
     <section id="home-section" class="hero">
         <div class="home-slider owl-carousel">
             <div class="slider-item js-fullheight">
                 <div class="overlay"></div>
                 <div class="container-fluid p-0">
                     <div class="row d-md-flex no-gutters slider-text align-items-center justify-content-end"
-                        data-scrollax-parent="true">
+                         data-scrollax-parent="true">
                         <img class="one-third order-md-last img-fluid" src="/images/bg_1.png" alt="">
                         <div class="one-forth d-flex align-items-center ftco-animate"
-                            data-scrollax=" properties: { translateY: '70%' }">
+                             data-scrollax=" properties: { translateY: '70%' }">
                             <div class="text">
                                 <span class="subheading">#Sản phẩm mới</span>
                                 <div class="horizontal">
@@ -88,10 +151,10 @@
                 <div class="overlay"></div>
                 <div class="container-fluid p-0">
                     <div class="row d-flex no-gutters slider-text align-items-center justify-content-end"
-                        data-scrollax-parent="true">
+                         data-scrollax-parent="true">
                         <img class="one-third order-md-last img-fluid" src="/images/spmoi_1.png" alt="">
                         <div class="one-forth d-flex align-items-center ftco-animate"
-                            data-scrollax=" properties: { translateY: '70%' }">
+                             data-scrollax=" properties: { translateY: '70%' }">
                             <div class="text">
                                 <span class="subheading">#Sản phẩm mới</span>
                                 <div class="horizontal">
@@ -114,6 +177,37 @@
             </div>
         </div>
     </section>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const searchInput = document.getElementById('searchInput');
+            const searchResults = document.getElementById('ajaxSearchResults');
+
+            searchInput.addEventListener('input', function () {
+                const keyword = this.value.trim();
+                if (keyword.length > 0) {
+                    fetch('/Sneakers_Nice/ajax-search?keyword=' + encodeURIComponent(keyword))
+                        .then(response => response.text())
+                        .then(data => {
+                            searchResults.innerHTML = data;
+                            searchResults.style.display = 'block';
+                        })
+                        .catch(error => {
+                            console.error('Lỗi:', error);
+                            searchResults.style.display = 'none';
+                        });
+                } else {
+                    searchResults.innerHTML = '';
+                    searchResults.style.display = 'none';
+                }
+            });
+
+            // Ẩn khi click ra ngoài
+            document.addEventListener('click', function (event) {
+                if (!searchResults.contains(event.target) && event.target !== searchInput) {
+                    searchResults.style.display = 'none';
+                }
+            });
+        });
+    </script>
 </header>
-
-

@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/main.html}">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+    <title>Chi Tiết Khách Hàng</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- SweetAlert2 (nếu cần) -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <link rel="stylesheet" type="text/css" href="./styles/main.css">
+
+    <!-- Thêm style cho bảng xuống dòng nội dung -->
+    <style>
+        /* Cho phép xuống dòng trong bảng thay vì tràn ngang */
+        .table-sm td, .table-sm th {
+            white-space: normal !important;
+        }
+    </style>
+</head>
+
+<body>
+<div layout:fragment="content">
+    <div class="container py-4">
+        <h1 class="mb-4 text-center">Chi Tiết Khách Hàng</h1>
+
+        <!-- Avatar (ảnh đại diện) -->
+        <div class="text-center mb-4">
+            <img th:src="${khachHang.hinhAnh}"
+                 alt="Avatar Khách Hàng"
+                 class="img-fluid rounded-circle"
+                 style="max-width: 150px;"
+                 onerror="this.style.display='none'">
+        </div>
+
+        <!-- Card hiển thị thông tin, giới hạn max-width và canh giữa -->
+        <div class="card shadow-sm mx-auto" style="max-width: 1300px;">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0">Thông Tin Khách Hàng</h5>
+            </div>
+            <div class="card-body">
+                <!-- table-responsive giúp bảng có thanh cuộn ngang nếu quá rộng -->
+                <div class="table-responsive">
+                    <table class="table table-borderless table-sm">
+                        <tbody>
+                        <!-- Hàng 1 (6 cột) -->
+                        <tr>
+                            <td><strong>Mã KH:</strong> <span th:text="${khachHang.maKhachHang}">KH0001</span></td>
+                            <td><strong>Tên KH:</strong> <span th:text="${khachHang.tenKhachHang}">Nguyễn Văn A</span></td>
+                            <td><strong>Giới Tính:</strong> <span th:text="${khachHang.gioiTinh ? 'Nam' : 'Nữ'}">Nam</span></td>
+                            <td><strong>Email:</strong> <span th:text="${khachHang.email}">example@example.com</span></td>
+                            <td><strong>SĐT:</strong> <span th:text="${khachHang.sdt}">0123456789</span></td>
+                            <td><strong>Ngày Sinh:</strong> <span th:text="${#dates.format(khachHang.ngaySinh, 'dd/MM/yyyy')}">08/04/2003</span></td>
+                        </tr>
+                        <!-- Hàng 2 (6 cột) -->
+                        <tr>
+                            <td><strong>Tỉnh/Thành Phố:</strong> <span th:text="${khachHang.tinhThanhPho}">Hà Nội</span></td>
+                            <td><strong>Quận/Huyện:</strong> <span th:text="${khachHang.quanHuyen}">Hoàn Kiếm</span></td>
+                            <td><strong>Phường/Xã:</strong> <span th:text="${khachHang.phuongXa}">Hàng Trống</span></td>
+                            <td><strong>Ngày Tạo:</strong> <span th:text="${#dates.format(khachHang.ngayTao, 'dd/MM/yyyy HH:mm')}">11/03/2025 22:00</span></td>
+                            <td><strong>Ngày Sửa:</strong> <span th:text="${#dates.format(khachHang.ngaySua, 'dd/MM/yyyy HH:mm')}">11/03/2025 22:30</span></td>
+                            <td><strong>Trạng Thái:</strong> <span th:text="${khachHang.trangThai ? 'Hoạt động' : 'Không hoạt động'}">Hoạt động</span></td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="text-center">
+                    <!-- Nút "Quay lại" -->
+                    <a th:href="@{/khach_hang/hienthi}" class="btn btn-secondary mt-3">Quay lại</a>
+                    <!-- Nút "Sửa" cạnh nút "Quay lại" -->
+                    <a th:href="@{/khach_hang/edit/{id}(id=${khachHang.id})}" class="btn btn-warning mt-3 ms-2">Sửa</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

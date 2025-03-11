@@ -46,15 +46,19 @@
                 <td th:text="${ms.tenMauSac}"></td>
                 <td th:text="${#dates.format(ms.ngayTao, 'dd/MM/yyyy')}"></td>
                 <td th:text="${#dates.format(ms.ngaySua, 'dd/MM/yyyy')}"></td>
-                <td th:text="${ms.trangThai ? 'Hoạt động' : 'Không hoạt động'}"></td>
+                <td>
+                    <span th:text="${ms.trangThai ? 'Hoạt động' : 'Không hoạt động'}"></span>
+                </td>
                 <td>
                     <a th:href="@{/mau_sac/edit/{id}(id=${ms.id})}">
                         <button type="button" class="btn btn-outline-warning">Sửa</button>
                     </a>
-                    <a th:href="@{/mau_sac/delete/{id}(id=${ms.id})}">
-                        <button type="button" class="btn btn-outline-danger"
-                                onclick="return confirm('Bạn muốn xóa màu sắc này?')">Xóa</button>
-                    </a>
+                    <form th:action="@{/mau_sac/toggleStatus/{id}(id=${ms.id})}" method="post" style="display:inline;">
+                        <button type="submit" class="btn btn-outline-primary"
+                                onclick="return confirm('Bạn muốn thay đổi trạng thái?')">
+                            <span th:text="${ms.trangThai ? 'Tắt' : 'Bật'}"></span>
+                        </button>
+                    </form>
                 </td>
             </tr>
             </tbody>
@@ -64,15 +68,15 @@
             <ul class="pagination">
                 <li th:classappend="${currentPage == 0} ? 'disabled' : ''" class="page-item">
                     <a th:href="@{/mau_sac/hienthi(page=${currentPage - 1}, size=${10})}"
-                       class="page-link">Previous</a>
+                       class="page-link"><<</a>
                 </li>
                 <li th:each="i : ${#numbers.sequence(0, totalPages - 1)}"
                     th:classappend="${i == currentPage} ? 'active' : ''" class="page-item">
                     <a th:href="@{/mau_sac/hienthi(page=${i}, size=${10})}" class="page-link"
-                       th:text="${i + 1}">1</a>
+                       th:text="${i + 1}"></a>
                 </li>
                 <li th:classappend="${currentPage + 1 == totalPages} ? 'disabled' : ''" class="page-item">
-                    <a th:href="@{/mau_sac/hienthi(page=${currentPage+1}, size=${10})}" class="page-link">Next</a>
+                    <a th:href="@{/mau_sac/hienthi(page=${currentPage+1}, size=${10})}" class="page-link">>></a>
                 </li>
             </ul>
         </nav>

@@ -1,11 +1,10 @@
 package poly.edu.sneaker.Controller;
 
-import org.hibernate.annotations.Array;
-import org.hibernate.type.descriptor.java.ObjectJavaType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -41,9 +40,10 @@ public class SanPhamController {
     @Autowired
     private SizeService sizeService;
     @Autowired
-    private  MauSacService mauSacService;
+    private MauSacService mauSacService;
+
     @GetMapping("/hienthi")
-    public String hienThi(Model model,RedirectAttributes redirectAttributes, @RequestParam(defaultValue = "0") int page, @RequestParam(required = false) String keyword) {
+    public String hienThi(Model model, RedirectAttributes redirectAttributes, @RequestParam(defaultValue = "0") int page, @RequestParam(required = false) String keyword) {
         int size = 5;
         Pageable pageable = PageRequest.of(page, size);
 
@@ -51,11 +51,11 @@ public class SanPhamController {
         if (keyword != null && !keyword.isEmpty()) {
             lstSanPham = sanPhamService.findByMaSanPhamOrTenSanPham(keyword, keyword, pageable);
             model.addAttribute("keyword", keyword);
-            if(lstSanPham==null){
+            if (lstSanPham.isEmpty()) {
                 redirectAttributes.addFlashAttribute("successMessage", "Không tìm thấy sản phẩm");
                 lstSanPham = sanPhamService.findAll(pageable);
             }
-        } else  {
+        } else {
             lstSanPham = sanPhamService.findAll(pageable);
         }
         model.addAttribute("lstSanPham", lstSanPham.getContent());
@@ -73,8 +73,7 @@ public class SanPhamController {
         List<ChatLieu> lstChatLieu = chatLieuService.getAllChatLieus();
         List<SanPham> lstSanPham = sanPhamService.getAllSanPhams();
         String maSanPham = sanPhamService.taoMaSanPham();
-        for (SanPham sp : lstSanPham
-        ) {
+        for (SanPham sp : lstSanPham) {
             if (sp.getMaSanPham().equals(maSanPham)) {
                 maSanPham = sanPhamService.taoMaSanPham();
             }
@@ -82,17 +81,17 @@ public class SanPhamController {
         model.addAttribute("lstHang", lstHang);
         model.addAttribute("lstDanhMuc", lstDanhMuc);
         model.addAttribute("lstChatlieu", lstChatLieu);
-        model.addAttribute("maSanPham",maSanPham);
+        model.addAttribute("maSanPham", maSanPham);
 
         return "admin/sanpham/addSanPham";
     }
 
     @PostMapping("/themsanpham")
     public String them(@ModelAttribute SanPham sanPham,
-                       @RequestParam("hang")int idHang,
-                       @RequestParam("danhMuc")int idDanhMuc,
-                       @RequestParam("chatLieu")int idChatLieu,
-                       RedirectAttributes redirectAttributes){
+                       @RequestParam("hang") int idHang,
+                       @RequestParam("danhMuc") int idDanhMuc,
+                       @RequestParam("chatLieu") int idChatLieu,
+                       RedirectAttributes redirectAttributes) {
         // Gán giá trị từ combobox vào sản phẩm
         sanPham.setIdHang(hangService.getHangById(idHang));
         sanPham.setIdDanhMuc(danhMucService.findDanhMucById(idDanhMuc));
@@ -106,22 +105,21 @@ public class SanPhamController {
         redirectAttributes.addFlashAttribute("successMessage", "Thêm sản phẩm thành công!");
         return "redirect:/sanpham/hienthi";
     }
+
     @GetMapping("/chitietsanpham/{id}")
-    public String chiTietSanPham(@PathVariable("id")int idSanPham,Model model, @RequestParam(defaultValue = "0")int page
-    ){
+    public String chiTietSanPham(@PathVariable("id") int idSanPham, Model model, @RequestParam(defaultValue = "0") int page) {
         int size = 5;
         Pageable pageable = PageRequest.of(page, size);
-        Page<ChiTietSanPham> lstCTSP = chiTietSanPhamService.findChiTietSanPhamByIDSanPham(idSanPham,pageable);
+        Page<ChiTietSanPham> lstCTSP = chiTietSanPhamService.findChiTietSanPhamByIDSanPham(idSanPham, pageable);
         model.addAttribute("lstCTSP", lstCTSP.getContent());
         model.addAttribute("currentPage", lstCTSP.getNumber());
         model.addAttribute("totalPages", lstCTSP.getTotalPages());
         SanPham sanPham = sanPhamService.findById(idSanPham);
-        model.addAttribute("sanPham",sanPham);
+        model.addAttribute("sanPham", sanPham);
         List<Hang> lstHang = hangService.getAllHangs();
         List<DanhMuc> lstDanhMuc = danhMucService.getAllDanhMucs();
         List<ChatLieu> lstChatLieu = chatLieuService.getAllChatLieus();
-        List<Size>  lstSize= sizeService.findAll();
-
+        List<Size> lstSize = sizeService.findAll();
         List<MauSac> lstMauSac = mauSacService.findAll();
         model.addAttribute("lstMauSac", lstMauSac);
         model.addAttribute("lstSize", lstSize);
@@ -131,12 +129,12 @@ public class SanPhamController {
         model.addAttribute("lstChatlieu", lstChatLieu);
         return "admin/sanpham/updateSanPham";
     }
+
     @PostMapping("/capnhatsanpham/{id}")
-    public String updateSanPham(@PathVariable("id") int id, @ModelAttribute("sanPham") SanPham sanPham, RedirectAttributes redirectAttributes
-                               ) {
+    public String updateSanPham(@PathVariable("id") int id, @ModelAttribute("sanPham") SanPham sanPham, RedirectAttributes redirectAttributes) {
         try {
             SanPham existingSanPham = sanPhamService.findById(id);
-            if(sanPham.getTrangThai()==null){
+            if (sanPham.getTrangThai() == null) {
                 sanPham.setTrangThai(false);
             }
             if (existingSanPham != null) {
@@ -145,9 +143,9 @@ public class SanPhamController {
                 existingSanPham.setIdChatLieu(sanPham.getIdChatLieu());
                 existingSanPham.setIdDanhMuc(sanPham.getIdDanhMuc());
                 existingSanPham.setNgaySua(new Date());
-                existingSanPham.setTrangThai(sanPham.getTrangThai()?true:false);
+                existingSanPham.setTrangThai(sanPham.getTrangThai() ? true : false);
                 sanPhamService.update(existingSanPham);
-                redirectAttributes.addFlashAttribute("", "Cập nhật sản phẩm thành công!");
+                redirectAttributes.addFlashAttribute("successMessage", "Cập nhật sản phẩm thành công!");
             } else {
                 redirectAttributes.addFlashAttribute("errorMessage", "Sản phẩm không tồn tại!");
             }
@@ -156,12 +154,13 @@ public class SanPhamController {
         }
         return "redirect:/sanpham/hienthi";
     }
+
     @PostMapping("/addctsanpham/{id}")
-    public String themChiTietSanPham(@PathVariable("id")int idSanPham,
+    public String themChiTietSanPham(@PathVariable("id") int idSanPham,
                                      @RequestParam("img") MultipartFile file,
-                                     @ModelAttribute ChiTietSanPham chiTietSanPham,RedirectAttributes redirectAttributes){
+                                     @ModelAttribute ChiTietSanPham chiTietSanPham, RedirectAttributes redirectAttributes) {
         try {
-            if(chiTietSanPham!=null){
+            if (chiTietSanPham != null) {
                 if (!file.isEmpty()) {
                     // Lưu file vào thư mục static/images
                     String fileName = file.getOriginalFilename();
@@ -170,7 +169,6 @@ public class SanPhamController {
                     Files.copy(file.getInputStream(), path, StandardCopyOption.REPLACE_EXISTING);
                     // Lưu đường dẫn file vào database
                     chiTietSanPham.setHinhAnh("/images/" + fileName);
-                    System.out.println(chiTietSanPham.getHinhAnh());
                 }
 
                 ChiTietSanPham ctsp = new ChiTietSanPham();
@@ -187,21 +185,20 @@ public class SanPhamController {
                 ctsp.setNgaySua(new Date());
                 ctsp.setTrangThai(true);
                 chiTietSanPhamService.saveChiTietSanPham(ctsp);
-                redirectAttributes.addFlashAttribute("successMessage","Thêm chi tiết sản phẩm thành công");
+                redirectAttributes.addFlashAttribute("successMessage", "Thêm chi tiết sản phẩm thành công!");
 
-            }else{
-                redirectAttributes.addFlashAttribute("errrorMasage","Có lỗi xảy ra khi thêm chi tiết sản phẩm");
+            } else {
+                redirectAttributes.addFlashAttribute("errorMessage", "Có lỗi xảy ra khi thêm chi tiết sản phẩm");
             }
-                   }catch (Exception e) {
-            redirectAttributes.addFlashAttribute("errrorMasage","Có lỗi xảy ra khi thêm chi tiết sản phẩm");
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Có lỗi xảy ra khi thêm chi tiết sản phẩm");
         }
 
-        return "redirect:/sanpham/chitietsanpham/"+idSanPham;
+        return "redirect:/sanpham/chitietsanpham/" + idSanPham;
     }
 
-
     @PutMapping("/updateCTSP/{id}")
-    public ResponseEntity<?> updateSanPham(@PathVariable int id, @RequestBody Map<String, Object> chiTietSanPham) {
+    public ResponseEntity<?> updateChiTietSanPham(@PathVariable int id, @RequestBody Map<String, Object> chiTietSanPham) {
         try {
             // Tìm sản phẩm theo ID
             ChiTietSanPham ctsp = chiTietSanPhamService.findById(id);
@@ -209,7 +206,7 @@ public class SanPhamController {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND)
                         .body(Collections.singletonMap("message", "Không tìm thấy sản phẩm!"));
             }
-            System.out.println("id chi tiết sản phẩm"+id);
+
             // Ép kiểu dữ liệu an toàn
             Integer idSize = convertToInt(chiTietSanPham.get("idSize"));
             Integer idMauSac = convertToInt(chiTietSanPham.get("idMauSac"));
@@ -240,8 +237,7 @@ public class SanPhamController {
 
             return ResponseEntity.ok(Collections.singletonMap("success", true));
 
-
-        }  catch (Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(Collections.singletonMap("message", "Lỗi khi cập nhật sản phẩm!"));
@@ -261,6 +257,35 @@ public class SanPhamController {
             return ((Number) value).floatValue();
         }
         return Float.parseFloat(value.toString());
+    }
+
+
+    @GetMapping("/filter")
+    public String filterProducts(
+            Model model,
+            @RequestParam(required = false) String hang,
+            @RequestParam(required = false) String priceRange,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "8") int size
+    ) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<ChiTietSanPham> result;
+
+        // Nếu cả hai tham số lọc đều không có, lấy sản phẩm mới về
+        if ((hang == null || hang.trim().isEmpty()) && (priceRange == null || priceRange.trim().isEmpty())) {
+            result = chiTietSanPhamService.findChiTietSanPhamJustOne(pageable);
+        } else {
+            // Nếu có tham số lọc, gọi service lọc theo hãng và khoảng giá
+            result = chiTietSanPhamService.filterByHangAndPrice(hang, priceRange, pageable);
+        }
+
+        model.addAttribute("filteredProducts", result.getContent());
+        model.addAttribute("currentPage", result.getNumber());
+        model.addAttribute("totalPages", result.getTotalPages());
+        model.addAttribute("hang", hang);
+        model.addAttribute("priceRange", priceRange);
+
+        return "user/sanpham/trangchu";
     }
 
 }

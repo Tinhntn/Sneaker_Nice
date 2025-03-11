@@ -17,4 +17,6 @@ public class Corfig implements WebMvcConfigurer {
             }
         };
     }
+
+
 }

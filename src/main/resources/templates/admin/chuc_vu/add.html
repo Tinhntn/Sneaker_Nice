@@ -18,17 +18,14 @@
     <div class="container-fluid">
         <h1>Thêm Chức Vụ</h1>
         <form th:action="@{/chuc_vu/add}" th:object="${chucVu}" method="post" class="needs-validation" novalidate>
-            <div class="mb-3">
-                <label for="maChucVu" class="form-label">Mã Chức Vụ</label>
-                <input type="text" class="form-control" id="maChucVu" th:field="*{maChucVu}" placeholder="Nhập mã chức vụ" required>
-                <div th:if="${#fields.hasErrors('maChucVu')}" class="text-danger" th:errors="*{maChucVu}">Mã chức vụ không hợp lệ</div>
-            </div>
+            <input type="hidden" th:field="*{maChucVu}">
             <div class="mb-3">
                 <label for="tenChucVu" class="form-label">Tên Chức Vụ</label>
                 <input type="text" class="form-control" id="tenChucVu" th:field="*{tenChucVu}" placeholder="Nhập tên chức vụ" required>
                 <div th:if="${#fields.hasErrors('tenChucVu')}" class="text-danger" th:errors="*{tenChucVu}">Tên chức vụ không hợp lệ</div>
             </div>
             <button type="submit" class="btn btn-primary">Thêm</button>
+            <button type="button" class="btn btn-secondary" onclick="history.back()">Trở lại</button>
         </form>
 
         <!-- Hiển thị thông báo thành công -->
