@@ -2,21 +2,7 @@
 <html lang="vi" xmlns:th="http://www.thymeleaf.org"
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="~{layout/main}">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Trang chủ</title>
 
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-
-
-</head>
 <body>
 <div layout:fragment="content">
 
@@ -128,7 +114,7 @@
                                         <input type="hidden" id="" name="ghichu" value="">
                                         <button id="cfxacnhan" type="button" class="btn btn-outline-secondary">Xác nhận</button>
                                     </form>
-<!--                                        </div>-->
+                                        </div>
                                    <!-- scrip confim xac nhan-->
                                     <script th:inline="javascript">
                                         /*<![CDATA[*/
@@ -215,7 +201,7 @@
                                     </script>
 
                                 </div>
-<!--                                <p class="card-text text-muted mt-2">Thành tiền: <span th:text="${hdcxn.thanhtien}"></span></p>-->
+                                <p class="card-text text-muted mt-2">Thành tiền: <span th:text="${hdcxn.thanhTien}"></span></p>
                             </div>
                         </div>
                     </div>
@@ -233,9 +219,9 @@
                                 <p class="card-text text-muted">Trạng thái: Chờ lấy hàng</p>
                                 <hr>
                                 <div class="d-flex justify-content-between">
-<!--                                    <button class="btn btn-outline-secondary" th:attr="data-id=${hdcxn.idhoadon}" onclick="showOrderDetails(this)">-->
-<!--                                        Chi tiết đơn hàng-->
-<!--                                    </button>-->
+                                    <button class="btn btn-outline-secondary" th:data-id="${hdclh.id}" onclick="showOrderDetails(this)">
+                                        Chi tiết đơn hàng
+                                    </button>
                                     <div class="d-inline-flex">
                                         <form id="huyclh" th:action="@{/hoadononline/huydh/{id}(id=${hdclh.id})}" method="post">
                                             <input type="hidden" id="ghichuclh" name="ghichu" value="">
@@ -355,7 +341,7 @@
                                     </script>
 
                                 </div>
-<!--                                <p class="card-text text-muted mt-2">Thành tiền: <span th:text="${hdcxn.thanhtien}"></span></p>-->
+                                <p class="card-text text-muted mt-2">Thành tiền: <span th:text="${hdclh.thanhTien}"></span></p>
                             </div>
                         </div>
                     </div>
@@ -374,9 +360,9 @@
                                 <p class="card-text text-muted">Trạng thái: Đang vận chuyển</p>
                                 <hr>
                                 <div class="d-flex justify-content-between">
-<!--                                    <button class="btn btn-outline-secondary" th:attr="data-id=${hdcxn.idhoadon}" onclick="showOrderDetails(this)">-->
-<!--                                        Chi tiết đơn hàng-->
-<!--                                    </button>-->
+                                    <button class="btn btn-outline-secondary" th:data-id="${hddg.id}" onclick="showOrderDetails(this)">
+                                        Chi tiết đơn hàng
+                                    </button>
                                     <div class="d-inline-flex">
                                         <form id="xacnhandg" th:action="@{/hoadononline/xacnhanhoadonhoanthanh/{id}(id=${hddg.id})}" method="post">
                                             <input type="hidden" name="tennguoigiao" value="">
@@ -465,7 +451,7 @@
                                         /*]]>*/
                                     </script>
                                 </div>
-<!--                                <p class="card-text text-muted mt-2">Thành tiền: <span th:text="${hdcxn.thanhtien}"></span></p>-->
+                                <p class="card-text text-muted mt-2">Thành tiền: <span th:text="${hddg.thanhTien}"></span></p>
                             </div>
                         </div>
                     </div>
@@ -485,25 +471,25 @@
                                 <h5 class="card-title">Mã hóa đơn: <span th:text="${hdht.maHoaDon}"></span></h5>
                                 <p class="card-text text-muted">Trạng thái: Hoàn thành</p>
                                 <hr>
-<!--                                <div class="d-flex justify-content-between">-->
-<!--                                    <button class="btn btn-outline-secondary" th:attr="data-id=${hdcxn.idhoadon}" onclick="showOrderDetails(this)">-->
-<!--                                        Chi tiết đơn hàng-->
-<!--                                    </button>-->
-<!--                                    <div class="d-inline-flex">-->
-<!--                                        <form id="trahang" th:action="@{/hoadononline/huydh/{id}(id=${hdcxn.idhoadon})}" method="post">-->
+                                <div class="d-flex justify-content-between">
+                                    <button class="btn btn-outline-secondary" th:data-id="${hdht.id}" onclick="showOrderDetails(this)">
+                                        Chi tiết đơn hàng
+                                    </button>
+                                    <div class="d-inline-flex">
+                                        <form id="trahang" th:action="@{/hoadononline/huydh/{id}(id=${hdht.id})}" method="post">
 
-<!--                                            <button id="cftrahang" type="button" class="btn btn-outline-secondary">Trả hàng</button>-->
-<!--                                        </form>-->
-<!--                                    </div>-->
-<!--                                    &lt;!&ndash; scrip confim xac nhan&ndash;&gt;-->
-
-
-
-<!--                                    &lt;!&ndash;       //scrip confim huy&ndash;&gt;-->
+                                            <button id="cftrahang" type="button" class="btn btn-outline-secondary">Trả hàng</button>
+                                        </form>
+                                    </div>
+                                    <!-- scrip confim xac nhan-->
 
 
-<!--                                </div>-->
-<!--                                <p class="card-text text-muted mt-2">Thành tiền: <span th:text="${hdcxn.thanhtien}"></span></p>-->
+
+                                    <!--       //scrip confim huy-->
+
+
+                                </div>
+                                <p class="card-text text-muted mt-2">Thành tiền: <span th:text="${hdht.thanhTien}"></span></p>
                             </div>
                         </div>
                     </div>
@@ -520,16 +506,16 @@
                                 <h5 class="card-title">Mã hóa đơn: <span th:text="${hddh.maHoaDon}"></span></h5>
                                 <p class="card-text text-muted">Trạng thái: Đã hủy</p>
                                 <hr>
-<!--                                <div class="d-flex justify-content-between">-->
-<!--                                    <button class="btn btn-outline-secondary" th:attr="data-id=${hdcxn.idhoadon}" onclick="showOrderDetails(this)">-->
-<!--                                        Chi tiết đơn hàng-->
-<!--                                    </button>-->
-<!--                                    <div class="d-inline-flex">-->
+                                <div class="d-flex justify-content-between">
+                                    <button class="btn btn-outline-secondary" th:data-id="${hddh.id}" onclick="showOrderDetails(this)">
+                                        Chi tiết đơn hàng
+                                    </button>
+                                    <div class="d-inline-flex">
 
-<!--                                    </div>-->
+                                    </div>
 
-<!--                                </div>-->
-<!--                                <p class="card-text text-muted mt-2">Thành tiền: <span th:text="${hdcxn.thanhtien}"></span></p>-->
+                                </div>
+                                <p class="card-text text-muted mt-2">Thành tiền: <span th:text="${hddh.thanhTien}"></span></p>
                             </div>
                         </div>
                     </div>
@@ -540,19 +526,19 @@
     </div>
 
         <!-- Modal Chi Tiết Đơn Hàng -->
-        <div class="modal fade" id="orderDetailModal" tabindex="-1" aria-labelledby="orderDetailModalLabel" aria-hidden="true">
+        <div class="modal fade" id="orderDetailModal" data-bs-toggle="modal"  tabindex="-1" aria-labelledby="orderDetailModalLabel" style="display: none" >
             <div class="modal-dialog modal-lg">
                 <div class="modal-content">
                     <div class="modal-header">
                         <h5 class="modal-title" id="orderDetailModalLabel">Chi Tiết Đơn Hàng</h5>
                         <!-- Nút đóng modal -->
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="close"></button>
                     </div>
                     <div class="modal-body" id="orderDetailContent">
                         <!-- Nội dung sẽ được tải vào đây -->
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                        <button type="button" class="btn btn-secondary"  aria-label="close" data-bs-dismiss="modal">Đóng</button>
                     </div>
                 </div>
             </div>
