@@ -86,7 +86,6 @@ public class GioHangController {
     public ResponseEntity<Map<String, Integer>> getSoLuongGioHang() {
         KhachHang khachHang = (KhachHang) httpSession.getAttribute("khachHangSession");
         int soLuongSanPham = 0;
-
         if (khachHang != null) {
             GioHang gh = gioHangService.findGioHangByIDKH(khachHang.getId());
             if (gh != null) {
@@ -121,6 +120,8 @@ public class GioHangController {
                     return ResponseEntity.badRequest().body(Collections.singletonMap("message", "Sản phẩm không còn hoạt động"));
                 } else if (chiTietSanPham.getSoLuong() <= 0) {
                     return ResponseEntity.badRequest().body(Collections.singletonMap("message", "Sản phẩm đã hết hàng"));
+                }else if(chiTietSanPham.getSoLuong()<soLuong){
+                    return ResponseEntity.badRequest().body(Collections.singletonMap("message","Sản phẩm trong kho không đủ"));
                 }
                 GioHangChiTiet ghct = gioHangChiTietService.findByIdGioHangAndIDCTSP(gioHangService.findGioHangByIDKH(khachHang.getId()).getId(), chiTietSanPham.getId());
                 if (ghct != null) {
@@ -163,12 +164,16 @@ public class GioHangController {
 
     @PutMapping("/capNhatSoLuongGioHang/{idGHCT}")
     public ResponseEntity<?> capNhatSoLuongGioHang(@PathVariable int idGHCT,@RequestParam int soLuong){
-
         GioHangChiTiet gioHangChiTiet = gioHangChiTietService.findById(idGHCT);
         if(gioHangChiTiet!=null){
-            gioHangChiTiet.setSoLuong(soLuong);
-            gioHangChiTietService.saveGioHangChitiet(gioHangChiTiet);
-            return ResponseEntity.ok(Collections.singletonMap("success", true));
+            ChiTietSanPham chiTietSanPham = chiTietSanPhamService.findById(gioHangChiTiet.getIdChiTietSanPham().getId());
+            if(chiTietSanPham.getSoLuong()<soLuong){
+                return ResponseEntity.badRequest().body(Collections.singletonMap("message","Số lượng sản phẩm trong kho không đủ"));
+            }else {
+                gioHangChiTiet.setSoLuong(soLuong);
+                gioHangChiTietService.saveGioHangChitiet(gioHangChiTiet);
+                return ResponseEntity.ok(Collections.singletonMap("success", true));
+            }
         }
         return ResponseEntity.badRequest().body(Collections.singletonMap("message","Cập nhật sản phẩm thất bại"));
     }
