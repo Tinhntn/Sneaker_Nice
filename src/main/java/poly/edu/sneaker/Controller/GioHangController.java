@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import poly.edu.sneaker.Model.ChiTietSanPham;
 import poly.edu.sneaker.Model.GioHang;
 import poly.edu.sneaker.Model.GioHangChiTiet;
@@ -32,17 +33,15 @@ public class GioHangController {
     HttpSession httpSession;
 
     @GetMapping("/thanh-toan")
-    public String thanhToan(Model model) {
-        KhachHang khachHangSessiong = (KhachHang) httpSession.getAttribute("khachHangSession");
-        GioHang gioHang = gioHangService.findGioHangByIDKH(khachHangSessiong.getId());
+    public String thanhToan(Model model, @RequestParam int idGH, RedirectAttributes redirectAttributes) {
+        GioHang gioHang = gioHangService.findById(idGH);
         if (gioHang == null) {
-            model.addAttribute("message", "Giỏ hàng của bạn đang trống!");
+            redirectAttributes.addFlashAttribute("errorMessage","Bạn chưa đăng nhập");
             return "redirect:/Sneakers_Nice/hienthi";
         }
         ArrayList<GioHangChiTiet> lstGioHangChiTiet = gioHangChiTietService.findByIdGioHang(gioHang.getId());
-        model.addAttribute("lstGioHandChiTiet", lstGioHangChiTiet);
-        model.addAttribute("gioHang", gioHang);
-        return "user/sanpham/trangchu";
+        model.addAttribute("lstGioHangChiTiet",lstGioHangChiTiet);
+        return "/user/sanpham/checkout";
     }
 
     @GetMapping()

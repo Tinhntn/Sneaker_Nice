@@ -11,11 +11,9 @@
         </div>
 
         <div class="cart-body">
-
-
-            <ul class="cart-items" id="ca rt-items">
+            <ul class="cart-items" id="cart-items">
                 <!-- Danh sách sản phẩm sẽ được thêm vào đây -->
-                <p>Bạn chưa có sản phẩm nào</p>
+                <!-- <p>Bạn chưa có sản phẩm nào</p> -->
             </ul>
         </div>
 
@@ -78,7 +76,6 @@
                             <span id="cart-count">0</span>
 
                         </a></li>
-                    <!-- th:text="${soLuongSanPhamTrongGioHang}" -->
                 </ul>
             </div>
         </div>
@@ -143,6 +140,8 @@
             </div>
             <script>
                 var notyf = new Notyf({ ripple: true, position: { x: 'left', y: 'top' } });
+                var idGH = /*[[${gioHang!=null?gioHang.id:''}]]*/"";
+
                 function updateCartCount() {
                     fetch('/gio-hang/so-luong')
                         .then(response => {
@@ -166,7 +165,32 @@
                 document.addEventListener("DOMContentLoaded", updateCartCount);
 
                 function thanhToan() {
-                    window.location.href = "/gio-hang/thanh-toan";
+                    var btnThanhToan = document.getElementById("thanhToan");
+                    if (idGH == null) {
+                        notyf.Error("Không tìm thấy giỏ hàng");
+                        return;
+                    }
+                    console.log(idGH)
+                    fetch(`/gio-hang/thanh-toan?idGH=${idGH}`, { method: "GET" })
+                        .then(response => {
+                            if (response.redirected) {
+                                window.location.href = response.url;
+                                return;
+                            }
+                            return response.text();
+                        })
+                        .then(data => {
+                            notyf.Error(data)
+                            if (!data.includes("Bạn chưa đăng nhập")) {
+                                notyf.success("Chuyển đến trang thanh toán");
+                                window.location.href = "/user/sanpham/checkout";
+                            } else {
+                                notyf.Error("Bạn chưa đăng nhập")
+                            }
+                        })
+                        .catch(error => {
+                            notyf.Error("Có lỗi xảy ra")
+                        });
                 }
 
 
@@ -182,6 +206,7 @@
                 }
 
                 function loadCartItems() {
+                    var checkoutButton = document.getElementById("thanhToan");
                     fetch('/gio-hang')
                         .then(response => response.json())
                         .then(data => {
@@ -224,7 +249,7 @@
 
                             document.getElementById("total-price").innerText = totalPrice.toLocaleString() + "đ";
                         })
-                        .catch(error => console.error('Lỗi khi tải giỏ hàng:', error));
+                        .catch(error => notyf.Error(error));
                 }
 
 
@@ -246,11 +271,10 @@
                             showCancelButton: true,
                             confirmButtonText: "Xóa",
                             cancelButtonText: "Hủy"
-
                         }).then((result) => {
-                            if (qresult.value) {
+                            if (result.value) {
+                                console.log(idGHCT)
                                 removeFromCart(idGHCT);
-
                             }
                         });
 
@@ -276,7 +300,6 @@
                         })
                         .catch(error => notyf.Error("Cập nhật số lượng thất bại"));
                 }
-
 
             </script>
 
