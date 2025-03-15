@@ -19,7 +19,7 @@
 
         <div class="cart-footer">
             <p class="cart-total">Tổng số phụ: <span id="total-price">0đ</span></p>
-            <button id="thanhToan" class="checkout-btn" onclick="thanhToan()" disabled>Thanh toán</button>
+            <button id="thanhToan" class="checkout-btn"> Thanh toán</a></button>
         </div>
     </div>
 
@@ -140,7 +140,6 @@
             </div>
             <script>
                 var notyf = new Notyf({ ripple: true, position: { x: 'left', y: 'top' } });
-                var idGH = /*[[${gioHang!=null?gioHang.id:''}]]*/"";
 
                 function updateCartCount() {
                     fetch('/gio-hang/so-luong')
@@ -164,34 +163,13 @@
                 // Gọi khi trang tải xong
                 document.addEventListener("DOMContentLoaded", updateCartCount);
 
-                function thanhToan() {
-                    var btnThanhToan = document.getElementById("thanhToan");
-                    if (idGH == null) {
-                        notyf.Error("Không tìm thấy giỏ hàng");
-                        return;
-                    }
-                    console.log(idGH)
-                    fetch(`/gio-hang/thanh-toan?idGH=${idGH}`, { method: "GET" })
-                        .then(response => {
-                            if (response.redirected) {
-                                window.location.href = response.url;
-                                return;
-                            }
-                            return response.text();
-                        })
-                        .then(data => {
-                            notyf.Error(data)
-                            if (!data.includes("Bạn chưa đăng nhập")) {
-                                notyf.success("Chuyển đến trang thanh toán");
-                                window.location.href = "/user/sanpham/checkout";
-                            } else {
-                                notyf.Error("Bạn chưa đăng nhập")
-                            }
-                        })
-                        .catch(error => {
-                            notyf.Error("Có lỗi xảy ra")
-                        });
-                }
+                document.getElementById("thanhToan").addEventListener("click", function () {
+                
+                    window.location.href = "/gio-hang/thanh-toan";
+                });
+
+
+
 
 
                 function openCartModal() {

@@ -1,5 +1,6 @@
 package poly.edu.sneaker.Controller;
 
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -33,16 +34,30 @@ public class GioHangController {
     HttpSession httpSession;
 
     @GetMapping("/thanh-toan")
-    public String thanhToan(Model model, @RequestParam int idGH, RedirectAttributes redirectAttributes) {
-        GioHang gioHang = gioHangService.findById(idGH);
-        if (gioHang == null) {
-            redirectAttributes.addFlashAttribute("errorMessage","Bạn chưa đăng nhập");
+    public String thanhToan(HttpServletRequest request, Model model) {
+        KhachHang khachHang = (KhachHang) httpSession.getAttribute("khachHangSession");
+
+        if (khachHang == null) {
             return "redirect:/Sneakers_Nice/hienthi";
         }
+
+        GioHang gioHang = gioHangService.findGioHangByIDKH(khachHang.getId());
+        if (gioHang == null) {
+            return "redirect:/Sneakers_Nice/hienthi";
+        }
+
         ArrayList<GioHangChiTiet> lstGioHangChiTiet = gioHangChiTietService.findByIdGioHang(gioHang.getId());
-        model.addAttribute("lstGioHangChiTiet",lstGioHangChiTiet);
+        if (lstGioHangChiTiet == null || lstGioHangChiTiet.isEmpty()) {
+            return "redirect:/Sneakers_Nice/hienthi";
+        }
+
+        // Nếu hợp lệ, trả về trang HTML
+        model.addAttribute("lstGioHangChiTiet", lstGioHangChiTiet);
+
         return "/user/sanpham/checkout";
     }
+
+
 
     @GetMapping()
     @ResponseBody
