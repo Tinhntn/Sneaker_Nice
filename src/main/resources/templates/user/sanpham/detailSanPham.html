@@ -143,7 +143,7 @@
                     </div>
                 </div>
                 <script th:inline="javascript">
-    
+
                     var notyf = new Notyf({ ripple: true });
 
                     function selectSize(button) {
@@ -247,7 +247,7 @@
                         var idMauSac = $(".size-btn.active").attr("data-idSize");
                         var soLuong = document.getElementById("quantity").value;
                         var idSanPham = /*[[${chiTietSanPham != null && chiTietSanPham.idSanPham != null ? chiTietSanPham.idSanPham.id : ''}]]*/ "";
-
+                 
                         if (soLuong <= 0) {
                             notyf.error('Số lượng phải lớn hơn 0');
                         } else if (idSize == null) {
@@ -257,43 +257,54 @@
                             notyf.error('Vui lòng chọn màu sắc');
                         }
                         else {
+
                             let formData = {
                                 idSanPham: idSanPham,
                                 idSize: idSize,
                                 idMauSac: idMauSac,
                                 soLuong: soLuong
                             }
-                            let response = await fetch(`/gio-hang/them-vao-gio-hang`, {
-                                method: "POST",
-                                headers: { "Content-Type": "application/json" },
-                                body: JSON.stringify(formData)
-                            });
-                            if (!response.ok) {
-                                let errorData;
-                                try {
-                                    errorData = await response.json(); // Lấy dữ liệu lỗi từ server
-                                } catch (e) {
-                                    errorData = { message: "Lỗi không xác định" }; // Nếu không lấy được dữ liệu
-                                }
+                            try {
+                                let response = await fetch(`/gio-hang/them-vao-gio-hang`, {
+                                    method: "POST",
+                                    headers: { "Content-Type": "application/json" },
+                                    body: JSON.stringify(formData)
+                                });
+                                if (!response.ok) {
+                                    let errorData;
+                                    try {
+                                        errorData = await response.json(); // Lấy dữ liệu lỗi từ server
+                                    } catch (e) {
+                                        errorData = { message: "Lỗi không xác định" }; // Nếu không lấy được dữ liệu
+                                    }
 
-                                if (response.status === 401) {
-                                    window.location.href = "/dang-nhap";
-                                    notyf.error(errorData.message || 'Bạn chưa đăng nhập!');
-                                } else if (response.status === 400) {
-                                    notyf.error(errorData.message || 'Dữ liệu gửi lên không hợp lệ!');
-                                    setTimeout(function () {
-                                        window.location.href = "/dang-nhap";
-                                    }, 2000);
+                                    if (response.status === 401) {
+                                        notyf.error(errorData.message || 'Bạn chưa đăng nhập!');
+                                        setTimeout(() => {
+                                            window.location.href = "/dang-nhap";
+                                        }, 2000);
+
+                                    } else if (response.status === 400) {
+                                        notyf.error(errorData.message || 'Dữ liệu gửi lên không hợp lệ!');
+                                      
+                                    } else {
+                                        notyf.error(errorData.message || 'Có lỗi xảy ra khi thêm sản phẩm vào giỏ hàng');
+                                       
+                                    }
                                 } else {
-                                    notyf.error(errorData.message || 'Có lỗi xảy ra khi thêm sản phẩm vào giỏ hàng');
+                                    updateCartCount();
+                                    notyf.success('Thêm sản phẩm vào giỏ hàng thành công');
+                                    return;
                                 }
-                            } else {
-                                updateCartCount();
-                                notyf.success('Thêm sản phẩm vào giỏ hàng thành công');
+                            } catch (e) {
+                                notyf.error('Có lỗi xảy ra khi thêm sản phẩm vào giỏ hàng');
 
                             }
+
+
                         }
-                    })
+                  
+                    });
 
                 </script>
             </div>

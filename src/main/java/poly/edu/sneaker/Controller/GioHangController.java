@@ -34,12 +34,21 @@ public class GioHangController {
     @GetMapping("/thanh-toan")
     public String thanhToan(Model model) {
         KhachHang khachHangSessiong = (KhachHang) httpSession.getAttribute("khachHangSession");
+        if(khachHangSessiong==null){
+            model.addAttribute("message", "Bạn chưa đăng nhập!");
+            return "redirect:/dang-nhap";
+        }
         GioHang gioHang = gioHangService.findGioHangByIDKH(khachHangSessiong.getId());
         if (gioHang == null) {
             model.addAttribute("message", "Giỏ hàng của bạn đang trống!");
             return "redirect:/Sneakers_Nice/hienthi";
         }
         ArrayList<GioHangChiTiet> lstGioHangChiTiet = gioHangChiTietService.findByIdGioHang(gioHang.getId());
+        System.out.println(lstGioHangChiTiet.size());
+        if (lstGioHangChiTiet == null) {
+            model.addAttribute("message", "Giỏ hàng của bạn đang trống!");
+            return "redirect:/Sneakers_Nice/hienthi";
+        }
         model.addAttribute("lstGioHandChiTiet", lstGioHangChiTiet);
         model.addAttribute("gioHang", gioHang);
         return "user/sanpham/trangchu";
