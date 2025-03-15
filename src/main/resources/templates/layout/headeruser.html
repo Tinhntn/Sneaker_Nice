@@ -27,34 +27,55 @@
 
         /* Điều chỉnh kích thước của icon tìm kiếm */
         .search-icon {
-            font-size: 0.7rem; /* Điều chỉnh kích thước font */
-            padding: 0.30rem; /* Điều chỉnh khoảng cách bên trong */
+            font-size: 0.7rem;
+            padding: 0.30rem;
         }
 
         /* Điều chỉnh kích thước của input tìm kiếm */
         .search-input {
-            font-size: 0.7rem; /* Điều chỉnh kích thước font */
-            padding: 0.30rem; /* Điều chỉnh khoảng cách bên trong */
+            font-size: 0.7rem;
+            padding: 0.30rem;
         }
 
         /* Điều chỉnh kích thước của input-group */
         .search-group {
-            max-width: 150px; /* Điều chỉnh chiều rộng tối đa */
+            max-width: 150px;
         }
     </style>
+
+    <!-- Modal Giỏ Hàng -->
+    <div id="cartOverlay" class="cart-overlay" onclick="closeCartModal()"></div>
+    <div id="cartModal" class="cart-modal">
+        <div class="cart-header">
+            <h3>Giỏ hàng của bạn</h3>
+            <button class="close-btn" onclick="closeCartModal()">✕</button>
+        </div>
+        <div class="cart-body">
+            <ul class="cart-items" id="cart-items">
+                <p>Bạn chưa có sản phẩm nào</p>
+            </ul>
+        </div>
+        <div class="cart-footer">
+            <p class="cart-total">Tổng số phụ: <span id="total-price">0đ</span></p>
+            <button id="thanhToan" class="checkout-btn" onclick="thanhToan()" disabled>Thanh toán</button>
+        </div>
+    </div>
+
     <div class="py-1 bg-black">
         <div class="container">
             <div class="row no-gutters d-flex align-items-start align-items-center px-md-0">
                 <div class="col-lg-12 d-block">
                     <div class="row d-flex">
                         <div class="col-md pr-4 d-flex topper align-items-center">
-                            <div class="icon mr-2 d-flex justify-content-center align-items-center"><span
-                                    class="icon-phone2"></span></div>
+                            <div class="icon mr-2 d-flex justify-content-center align-items-center">
+                                <span class="icon-phone2"></span>
+                            </div>
                             <span class="text">+ 1235 2355 98</span>
                         </div>
                         <div class="col-md pr-4 d-flex topper align-items-center">
-                            <div class="icon mr-2 d-flex justify-content-center align-items-center"><span
-                                    class="icon-paper-plane"></span></div>
+                            <div class="icon mr-2 d-flex justify-content-center align-items-center">
+                                <span class="icon-paper-plane"></span>
+                            </div>
                             <span class="text">SneakersNice@gemail.com</span>
                         </div>
                         <div class="col-md-5 pr-4 d-flex topper align-items-center text-lg-right">
@@ -65,6 +86,7 @@
             </div>
         </div>
     </div>
+
     <nav class="navbar navbar-expand-lg navbar-dark ftco_navbar bg-dark ftco-navbar-light" id="ftco-navbar">
         <div class="container">
             <a class="navbar-brand" href="/Sneakers_Nice/hienthi">Sneakers Nice</a>
@@ -77,8 +99,7 @@
                     <li class="nav-item active"><a href="index.html" class="nav-link">Trang chủ</a></li>
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" href="#" id="dropdown04" data-toggle="dropdown"
-                           aria-haspopup="true"
-                           aria-expanded="false">Catalog</a>
+                           aria-haspopup="true" aria-expanded="false">Catalog</a>
                         <div class="dropdown-menu" aria-labelledby="dropdown04">
                             <a class="dropdown-item" href="shop.html">Shop</a>
                             <a class="dropdown-item" href="product-single.html">Single Product</a>
@@ -90,25 +111,22 @@
                     <li class="nav-item"><a href="about.html" class="nav-link">Giới thiệu</a></li>
                     <li class="nav-item"><a href="blog.html" class="nav-link">Tin tức</a></li>
                     <li class="nav-item"><a href="contact.html" class="nav-link">Liên hệ</a></li>
-
                     <form action="javascript:void(0);" class="nav-item">
                         <div class="input-group search-group">
-                            <span class="input-group-text border-0 search-icon" id="searchIcon">
-                               <i class="fa-solid fa-magnifying-glass"></i>
-                             </span>
-                            <input type="text"
-                                   class="form-control border-0 search-input"
-                                   id="searchInput"
+              <span class="input-group-text border-0 search-icon" id="searchIcon">
+                <i class="fa-solid fa-magnifying-glass"></i>
+              </span>
+                            <input type="text" class="form-control border-0 search-input" id="searchInput"
                                    name="keyword"
-                                   placeholder="Tìm kiếm sản phẩm..."
-                                   autocomplete="off">
+                                   placeholder="Tìm kiếm sản phẩm..." autocomplete="off">
                         </div>
-                        <div id="ajaxSearchResults" class="smart-search-wrapper" style="display: none;"></div>
                     </form>
-
+                    <!-- Kết quả Ajax Search sẽ được load vào đây -->
+                    <div id="ajaxSearchResults" class="smart-search-wrapper" style="display: none;"></div>
                     <li class="nav-item cta cta-colored">
-                        <a href="cart.html" class="nav-link">
-                            <span class="icon-shopping_cart"></span>[0]
+                        <a class="nav-link" id="openModal" onclick="openCartModal()">
+                            <span class="icon-shopping_cart" cart-count></span>
+                            <span id="cart-count">0</span>
                         </a>
                     </li>
                 </ul>
@@ -132,13 +150,9 @@
                                 <div class="horizontal">
                                     <h1 class="mb-4 mt-3">Bộ sưu tập 2024</h1>
                                     <p class="mb-4">Nike tiếp tục ‘hút fan’ với bộ sưu tập mới ứng dụng công nghệ thông
-                                        minh
-                                        đột phá.
+                                        minh đột phá.
                                         Bộ sưu tập sản phẩm mới của Nike là sự kết hợp đột phá, đánh dấu một bước tiến
-                                        mới
-                                        khi ứng dụng công nghệ thông minh vào
-                                        sản xuất giày.
-                                    </p>
+                                        mới khi ứng dụng công nghệ thông minh vào sản xuất giày.</p>
                                     <p><a href="#" class="btn-custom">khám phá ngay</a></p>
                                 </div>
                             </div>
@@ -146,7 +160,6 @@
                     </div>
                 </div>
             </div>
-
             <div class="slider-item js-fullheight">
                 <div class="overlay"></div>
                 <div class="container-fluid p-0">
@@ -159,15 +172,11 @@
                                 <span class="subheading">#Sản phẩm mới</span>
                                 <div class="horizontal">
                                     <h1 class="mb-4 mt-3">Bộ sưu tập 2024</h1>
-                                    <p class="mb-4">Nike Hyperice Boot tối ưu hóa hiệu quả tập luyện
-                                        Nhằm tối ưu hóa hiệu quả luyện tập, mang lại trải nghiệm di chuyển vượt trội và
-                                        đẩy
-                                        nhanh quá trình phục hồi cho vận
-                                        động viên, thương hiệu Nike trình làng bộ sưu tập giày và áo khoác Nike
-                                        Hyperice.
-                                        Đây là bộ sản phẩm có sự kết hợp với
-                                        Hyperice - chuyên gia hàng đầu về công nghệ phục hồi vận động.</p>
-
+                                    <p class="mb-4">Nike Hyperice Boot tối ưu hóa hiệu quả tập luyện. Nhằm tối ưu hóa
+                                        hiệu quả luyện tập, mang lại trải nghiệm di chuyển vượt trội và đẩy nhanh quá
+                                        trình phục hồi cho vận động viên, thương hiệu Nike trình làng bộ sưu tập giày và
+                                        áo khoác Nike Hyperice. Đây là bộ sản phẩm có sự kết hợp với Hyperice - chuyên
+                                        gia hàng đầu về công nghệ phục hồi vận động.</p>
                                     <p><a href="#" class="btn-custom">Khám phá ngay</a></p>
                                 </div>
                             </div>
@@ -175,14 +184,142 @@
                     </div>
                 </div>
             </div>
+
         </div>
     </section>
+    <script>
+        var notyf = new Notyf({ripple: true, position: {x: 'left', y: 'top'}});
+
+        function updateCartCount() {
+            fetch('/gio-hang/so-luong')
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Lỗi khi gọi API');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    let cartCountElement = document.getElementById('cart-count');
+                    if (cartCountElement) {
+                        cartCountElement.textContent = data.soLuong || 0;
+                    }
+                })
+                .catch(error => {
+                    document.getElementById('cart-count').textContent = 0;
+                });
+        }
+
+        document.addEventListener("DOMContentLoaded", updateCartCount);
+
+        function thanhToan() {
+            window.location.href = "/gio-hang/thanh-toan";
+        }
+
+        function openCartModal() {
+            document.getElementById("cartModal").classList.add("open");
+            document.getElementById("cartOverlay").classList.add("open");
+            loadCartItems();
+        }
+
+        function closeCartModal() {
+            document.getElementById("cartModal").classList.remove("open");
+            document.getElementById("cartOverlay").classList.remove("open");
+        }
+
+        function loadCartItems() {
+            fetch('/gio-hang')
+                .then(response => response.json())
+                .then(data => {
+                    let cartList = document.getElementById("cart-items");
+                    let totalPriceElement = document.getElementById("total-price");
+                    let checkoutButton = document.getElementById("thanhToan");
+                    if (!data || !data.items || data.items.length === 0) {
+                        cartList.innerHTML = "<p>Chưa có sản phẩm nào trong giỏ hàng</p>";
+                        totalPriceElement.innerText = "0đ";
+                        checkoutButton.disabled = true;
+                        checkoutButton.classList.add("disabled");
+                        return;
+                    }
+                    checkoutButton.disabled = false;
+                    checkoutButton.classList.remove("disabled");
+                    cartList.innerHTML = "";
+                    let totalPrice = 0;
+                    data.items.forEach(item => {
+                        totalPrice += item.gia * item.soLuong;
+                        let li = document.createElement("li");
+                        li.classList.add("cart-item");
+                        li.innerHTML = `
+                  <img src="${item.hinhAnh}" alt="">
+                  <div class="item-details">
+                      <h4>${item.tenSanPham}</h4>
+                      <p>Size: ${item.size}</p>
+                      <p>Màu: ${item.mauSac}</p>
+                      <p>${item.gia.toLocaleString()}đ</p>
+                      <div class="quantity-controls">
+                          <button onclick="updateQuantity(${item.idGioHangChiTiet}, -1)">-</button>
+                          <span id="quantity-${item.idGioHangChiTiet}">${item.soLuong}</span>
+                          <button onclick="updateQuantity(${item.idGioHangChiTiet}, 1)">+</button>
+                      </div>
+                  </div>
+                  <button class="remove-item" onclick="removeFromCart(${item.idGioHangChiTiet})">✕</button>
+                `;
+                        cartList.appendChild(li);
+                    });
+                    totalPriceElement.innerText = totalPrice.toLocaleString() + "đ";
+                })
+                .catch(error => console.error('Lỗi khi tải giỏ hàng:', error));
+        }
+
+        function removeFromCart(productId) {
+            fetch(`/gio-hang/remove/${productId}`, {method: "DELETE"})
+                .then(() => loadCartItems());
+        }
+
+        function updateQuantity(idGHCT, change) {
+            let quantityElement = document.getElementById(`quantity-${idGHCT}`);
+            let newQuantity = parseInt(quantityElement.innerText) + change;
+            if (newQuantity < 1) {
+                Swal.fire({
+                    title: "Bạn có muốn xóa sản phẩm khỏi giỏ hàng?",
+                    text: "Xóa sản phẩm khỏi giỏ hàng",
+                    icon: "warning",
+                    showCancelButton: true,
+                    confirmButtonText: "Xóa",
+                    cancelButtonText: "Hủy"
+                }).then((result) => {
+                    if (result.value) {
+                        removeFromCart(idGHCT);
+                    }
+                });
+            }
+            fetch(`/gio-hang/capNhatSoLuongGioHang/${idGHCT}?soLuong=${newQuantity}`, {method: "PUT"})
+                .then(response => {
+                    if (!response.ok) {
+                        return response.json().then(err => {
+                            throw new Error(notyf.error(err.message || "Cập nhật sản phẩm thất bại"));
+                        });
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    if (data.success) {
+                        loadCartItems();
+                    } else if (data.message) {
+                        notyf.error(data.message);
+                    } else {
+                        notyf.error("Cập nhật số lượng thất bại");
+                    }
+                })
+                .catch(error => notyf.error("Cập nhật số lượng thất bại"));
+        }
+    </script>
 
     <script>
         document.addEventListener('DOMContentLoaded', function () {
             const searchInput = document.getElementById('searchInput');
             const searchResults = document.getElementById('ajaxSearchResults');
 
+            // 1) Lắng nghe sự kiện input để gọi Ajax tìm kiếm
             searchInput.addEventListener('input', function () {
                 const keyword = this.value.trim();
                 if (keyword.length > 0) {
@@ -193,7 +330,7 @@
                             searchResults.style.display = 'block';
                         })
                         .catch(error => {
-                            console.error('Lỗi:', error);
+                            console.error('Error:', error);
                             searchResults.style.display = 'none';
                         });
                 } else {
@@ -202,12 +339,36 @@
                 }
             });
 
-            // Ẩn khi click ra ngoài
+            // 2) Ẩn khung kết quả khi click ra ngoài ô input hoặc khung kết quả
             document.addEventListener('click', function (event) {
                 if (!searchResults.contains(event.target) && event.target !== searchInput) {
                     searchResults.style.display = 'none';
                 }
             });
+            document.getElementById('ajaxSearchResults').addEventListener('click', function(e) {
+                const targetLink = e.target.closest('a');
+                if (targetLink) {
+                    // Ẩn kết quả nếu muốn, không gọi preventDefault() để cho phép điều hướng mặc định
+                    setTimeout(() => {
+                        this.style.display = 'none';
+                    }, 100);
+                }
+            });
+
+
+            // 3) Khi click vào link trong khung kết quả, ẩn khung sau 100ms
+            searchResults.addEventListener('click', function (e) {
+                const targetLink = e.target.closest('a');
+                if (targetLink) {
+                    setTimeout(() => {
+                        searchResults.style.display = 'none';
+                    }, 100);
+                    // Không gọi e.preventDefault(), cho phép chuyển hướng mặc định
+                }
+            });
         });
     </script>
+
+
+
 </header>

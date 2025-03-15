@@ -43,9 +43,10 @@
                                             </a>
                                             <hr>
 
-                                            <!-- <a href="/oauth2/authorization/google" class="btn btn-google btn-user btn-block">
+                                            <a href="/oauth2/authorization/google"
+                                                class="btn btn-google btn-user btn-block">
                                                 <i class="fab fa-google fa-fw"></i> Đăng nhập bằng tài khoản Google
-                                            </a> -->
+                                            </a>
                                             <a href="index.html" class="btn btn-facebook btn-user btn-block">
                                                 <i class="fab fa-facebook-f fa-fw"></i> Đăng nhập bằng tài khoản
                                                 Facebook
@@ -80,69 +81,62 @@
                 var emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
                 var rememberMe = $('#rememberMe').is(':checked');
 
-                var notyf = new Notyf({
-                    ripple: true
-                });
+                var notyf = new Notyf({ ripple: true });
+
                 if (email === '' || matKhau === '') {
-                    notyf.error('Vui lòng nhập đủ thông tin')
+                    notyf.error('Vui lòng nhập đủ thông tin');
                     return;
                 }
-                if (emailPattern.test(email)) {
-                    $.ajax({
-                        url: '/dang-nhap',
-                        type: 'POST',
-                        contentType: 'application/json',
-                        data: JSON.stringify({ email: email, matKhau: matKhau }),
-                        success: function (response) {
-                            // Xử lý khi đăng nhập thành công
-                            // Xử lý khi đăng ký thành công
-                            if (rememberMe) {
-                                // Lưu thông tin đăng nhập
-                                localStorage.setItem('email', email);
-                                localStorage.setItem('matKhau', matKhau);
 
-                                // Lưu trữ token hoặc thông tin bảo mật khác thay vì mật khẩu
-                                // localStorage.setItem('token', response.token); // Ví dụ
-                            } else {
-                                // Xóa thông tin đăng nhập nếu checkbox không được chọn
-                                localStorage.removeItem('email');
-                                // localStorage.removeItem('token'); // Ví dụ
-                            }
-                            if (response.messageKhachHang != null) {
-                                notyf.success('Đang nhập thành công!');
-                                setTimeout(function () {
-                                    window.location.href = '/trangchuuser/hienthi'
-                                }, 2000)
-                            } else {
-                                notyf.success('Đăng nhập thành công!');
-                                setTimeout(function () {
-                                    window.location.href = '/banhangtaiquay/hienthi'
-                                }, 2000)
-                            }
-
-                        },
-                        error: function (xhr) {
-                            try {
-                                var error = JSON.parse(xhr.responseText);
-                                notyf.error(error.message); // Hiển thị thông báo lỗi từ server
-                            } catch (e) {
-                                notyf.error('Đã xảy ra lỗi không xác định.');
-                            }
-                        }
-                    });
-                } else {
-                    notyf.error('Email không đúng định dạng')
+                if (!emailPattern.test(email)) {
+                    notyf.error('Email không đúng định dạng');
+                    return;
                 }
 
+                let formData = {
+                    email: email,
+                    matKhau: matKhau
+                };
+                $.ajax({
+                    url: '/dang-nhap',
+                    type: 'POST',
+                    contentType: 'application/json',
+                    data: JSON.stringify(formData),
+                    xhrFields: { withCredentials: true }, // QUAN TRỌNG: Giữ cookie session
+                    success: function (response) {
+                        // Lưu thông tin đăng nhập nếu chọn "Remember me"
+                        if (rememberMe) {
+                            localStorage.setItem('email', email);
+                        } else {
+                            localStorage.removeItem('email');
+                        }
+
+                        notyf.success('Đăng nhập thành công!');
+                        // Xác định trang đích dựa trên phản hồi từ server
+                        var redirectUrl = response.redirectUrl || '/';
+                        setTimeout(function () {
+                            window.location.href = "/Sneakers_Nice/hienthi";
+                        }, 2000);
+                    },
+                    error: function (xhr) {
+                        try {
+                            var error = JSON.parse(xhr.responseText);
+                            notyf.error(error.message);
+                        } catch (e) {
+                            notyf.error('Đã xảy ra lỗi không xác định.');
+                        }
+                    }
+                });
             }
+
             $(document).ready(function () {
-                // Khi trang được tải, kiểm tra và điền thông tin nếu đã lưu
                 var savedEmail = localStorage.getItem('email');
                 if (savedEmail) {
                     $('#loginEmail').val(savedEmail);
                     $('#rememberMe').prop('checked', true);
                 }
             });
+
         </script>
     </div>
 

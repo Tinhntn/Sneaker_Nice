@@ -26,11 +26,11 @@
                 <!-- Lọc theo hãng -->
                 <div class="col-md-6 mb-3">
                     <span class="fw-bold fs-4">Các Hãng Nổi Bật</span>
-                    <a th:href="@{/sanpham/filter(hang='Vans')}" class="btn btn-outline-secondary btn-sm ms-3">Vans</a>
-                    <a th:href="@{/sanpham/filter(hang='Adidas')}" class="btn btn-outline-secondary btn-sm ms-3">Adidas</a>
-                    <a th:href="@{/sanpham/filter(hang='Puma')}" class="btn btn-outline-secondary btn-sm ms-3">Puma</a>
-                    <a th:href="@{/sanpham/filter(hang='Converse')}" class="btn btn-outline-secondary btn-sm ms-3">Converse</a>
-                    <a th:href="@{/sanpham/filter(hang='Nike')}" class="btn btn-outline-secondary btn-sm ms-3">Nike</a>
+                    <a th:href="@{/Sneakers_Nice/filter(hang='Vans')}" class="btn btn-outline-secondary btn-sm ms-3">Vans</a>
+                    <a th:href="@{/Sneakers_Nice/filter(hang='Adidas')}" class="btn btn-outline-secondary btn-sm ms-3">Adidas</a>
+                    <a th:href="@{/Sneakers_Nice/filter(hang='Puma')}" class="btn btn-outline-secondary btn-sm ms-3">Puma</a>
+                    <a th:href="@{/Sneakers_Nice/filter(hang='Converse')}" class="btn btn-outline-secondary btn-sm ms-3">Converse</a>
+                    <a th:href="@{/Sneakers_Nice/filter(hang='Nike')}" class="btn btn-outline-secondary btn-sm ms-3">Nike</a>
                 </div>
                 <!-- Lọc theo giá (dropdown) -->
                 <div class="col-md-6 text-end">
@@ -40,12 +40,12 @@
                             Lọc theo giá
                         </button>
                         <ul class="dropdown-menu dropdown-menu-end">
-                            <li><a class="dropdown-item" th:href="@{/sanpham/filter(priceRange='duoi500')}">Dưới 500K</a></li>
-                            <li><a class="dropdown-item" th:href="@{/sanpham/filter(priceRange='500-1000')}">500K - 1 triệu</a></li>
-                            <li><a class="dropdown-item" th:href="@{/sanpham/filter(priceRange='1000-2000')}">1 triệu - 2 triệu</a></li>
-                            <li><a class="dropdown-item" th:href="@{/sanpham/filter(priceRange='2000-3000')}">2 triệu - 3 triệu</a></li>
-                            <li><a class="dropdown-item" th:href="@{/sanpham/filter(priceRange='3000-5000')}">3 triệu - 5 triệu</a></li>
-                            <li><a class="dropdown-item" th:href="@{/sanpham/filter(priceRange='tren5000')}">Trên 5 triệu</a></li>
+                            <li><a class="dropdown-item" th:href="@{/Sneakers_Nice/filter(hang=${hang},priceRange='duoi500')}">Dưới 500K</a></li>
+                            <li><a class="dropdown-item" th:href="@{/Sneakers_Nice/filter(hang=${hang},priceRange='500-1000')}">500K - 1 triệu</a></li>
+                            <li><a class="dropdown-item" th:href="@{/Sneakers_Nice/filter(hang=${hang},priceRange='1000-2000')}">1 triệu - 2 triệu</a></li>
+                            <li><a class="dropdown-item" th:href="@{/Sneakers_Nice/filter(hang=${hang},priceRange='2000-3000')}">2 triệu - 3 triệu</a></li>
+                            <li><a class="dropdown-item" th:href="@{/Sneakers_Nice/filter(hang=${hang},priceRange='3000-5000')}">3 triệu - 5 triệu</a></li>
+                            <li><a class="dropdown-item" th:href="@{/Sneakers_Nice/filter(hang=${hang},priceRange='tren5000')}">Trên 5 triệu</a></li>
                         </ul>
                     </div>
                 </div>
@@ -67,13 +67,18 @@
                 <div class="col-sm-12 col-md-6 col-lg-3 d-flex mb-4"
                      th:each="sp : ${filteredProducts}">
                     <div class="product d-flex flex-column">
-                        <a href="#" class="img-prod">
+
+                        <!-- Thay href="#" bằng link chi tiết sản phẩm -->
+                        <a th:href="@{/Sneakers_Nice/chitietsanpham/{id}(id=${sp.id})}" class="img-prod">
                             <img class="img-fluid" th:src="${sp.hinhAnh}" alt="Sản phẩm lọc">
                             <div class="overlay"></div>
                         </a>
+
                         <div class="text py-3 pb-4 px-3">
                             <h3>
-                                <a th:text="${sp.idSanPham.tenSanPham}">Tên SP</a>
+                                <!-- Tương tự, gắn link cho tên sản phẩm -->
+                                <a th:href="@{/Sneakers_Nice/chitietsanpham/{id}(id=${sp.id})}"
+                                   th:text="${sp.idSanPham.tenSanPham}">Tên SP</a>
                             </h3>
                             <p class="price">
                                 <span th:text="'Giá bán: ' + ${sp.giaBan} + ' VND'">0 VND</span>
@@ -82,26 +87,29 @@
                     </div>
                 </div>
             </div>
+
             <!-- Phân trang cho kết quả lọc -->
             <div class="pagination">
                 <nav aria-label="Page navigation">
                     <ul class="pagination">
                         <li th:classappend="${currentPage == 0} ? 'disabled' : ''" class="page-item">
-                            <a th:href="@{/sanpham/filter(page=${currentPage - 1}, hang=${hang}, priceRange=${priceRange})}" class="page-link">«</a>
+                            <a th:href="@{/Sneakers_Nice/filter(page=${currentPage - 1}, hang=${hang}, priceRange=${priceRange})}" class="page-link">«</a>
                         </li>
                         <li th:each="i : ${#numbers.sequence(0, totalPages - 1)}"
                             th:classappend="${i == currentPage} ? 'active' : ''" class="page-item">
-                            <a th:href="@{/sanpham/filter(page=${i}, hang=${hang}, priceRange=${priceRange})}"
+                            <a th:href="@{/Sneakers_Nice/filter(page=${i}, hang=${hang}, priceRange=${priceRange})}"
                                class="page-link" th:text="${i + 1}">1</a>
                         </li>
                         <li th:classappend="${currentPage + 1 == totalPages} ? 'disabled' : ''" class="page-item">
-                            <a th:href="@{/sanpham/filter(page=${currentPage + 1}, hang=${hang}, priceRange=${priceRange})}" class="page-link">»</a>
+                            <a th:href="@{/Sneakers_Nice/filter(page=${currentPage + 1}, hang=${hang}, priceRange=${priceRange})}" class="page-link">»</a>
                         </li>
                     </ul>
                 </nav>
             </div>
         </div>
     </section>
+
+
 
     <!-- SECTION: Sản phẩm mới về (luôn hiển thị) -->
     <section class="ftco-section bg-light">

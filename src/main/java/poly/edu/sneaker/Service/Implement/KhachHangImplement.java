@@ -63,7 +63,7 @@ public class KhachHangImplement implements KhachHangService {
 
     @Override
     public Page<KhachHang> search(String keyword, Pageable pageable) {
-       return khachHangRepository.findByMaKhachHangContainingOrTenKhachHangContaining(keyword , keyword, pageable);
+        return khachHangRepository.findByMaKhachHangContainingOrTenKhachHangContaining(keyword , keyword, pageable);
     }
 
     @Override

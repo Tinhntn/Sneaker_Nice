@@ -4,7 +4,7 @@ import java.util.Date;
 
 public interface NhanVienCustom {
 
-    int getId();
+    Integer getId();
     String getMaNhanVien();
     String getHoVaTen();
     Boolean getGioiTinh();

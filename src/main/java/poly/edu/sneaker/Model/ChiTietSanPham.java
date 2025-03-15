@@ -13,7 +13,7 @@ import java.util.Date;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class ChiTietSanPham {
+public class    ChiTietSanPham {
     @Id
     @GeneratedValue (strategy = GenerationType.IDENTITY)
     private int id;
