@@ -14,6 +14,7 @@ import java.util.Date;
 @AllArgsConstructor
 @NoArgsConstructor
 public class HoaDon {
+
     @Id
     @GeneratedValue (strategy = GenerationType.IDENTITY)
     private int id;
@@ -38,7 +39,6 @@ public class HoaDon {
     private Date ngayGiaoHang;
     private String donViGiaoHang;
     private float phiShip;
-    private String tenNguoiGiaoHang;
     private String emailNguoiNhan;
     private String diaChiChiTiet;
     private String tinhThanhPho;
@@ -48,6 +48,6 @@ public class HoaDon {
     private Boolean loaiThanhToan;
     private String tenNguoiGiao;
     private String sdtNguoiGiao;
-    private Boolean trangThai;
+    private int trangThai;
 
 }

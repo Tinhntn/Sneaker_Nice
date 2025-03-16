@@ -1,0 +1,95 @@
+package poly.edu.sneaker.Repository;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.stereotype.Repository;
+import poly.edu.sneaker.DAO.HoaDonOnlCustom;
+import poly.edu.sneaker.Model.HoaDon;
+
+@Repository
+public interface HoaDonOnlRepository extends JpaRepository<HoaDon, Integer> {
+
+
+    @Query(value = "SELECT * From HoaDon\n" +
+            "WHERE \n" +
+            "    hoadon.id = :id;", nativeQuery = true)
+    HoaDon getAllHoaDonByid(int id);
+
+    @Query("SELECT h.id AS id, nv.hoVaTen AS tenNhanVien, kh.tenKhachHang AS tenKhachHang, " +
+            "km.tenKhuyenMai AS tenKhuyenMai, h.maHoaDon AS maHoaDon, h.tongTien AS tongTien, " +
+            "h.tongTienGiam AS tongTienGiam, h.thanhTien AS thanhTien, h.tienKhachDua AS tienKhachDua, " +
+            "h.tienThua AS tienThua, h.phiShip AS phiShip, h.ngayGiaoHang AS ngayGiaoHang, " +
+            "h.donViGiaoHang AS donViGiaoHang, h.tenNguoiGiao AS tenNguoiGiao, h.sdtNguoiGiao AS sdtNguoiGiao, " +
+            "h.emailNguoiNhan AS emailNguoiNhan, h.diaChiChiTiet AS diaChiChiTiet, " +
+            "h.tinhThanhPho AS tinhThanhPho, h.quanHuyen AS quanHuyen, h.phuongXa AS phuongXa, " +
+            "h.loaiThanhToan AS loaiThanhToan, h.trangThai AS trangThai, h.ngayTao AS ngayTao, h.ngaySua AS ngaySua " +
+            "FROM HoaDon h " +
+            "LEFT JOIN h.idNhanVien nv " +
+            "LEFT JOIN h.idKhachHang kh " +
+            "LEFT JOIN h.idKhuyenMai km " +
+            "WHERE h.loaiHoaDon = true AND h.trangThai = 0")
+    Page<HoaDonOnlCustom> getHoaDonCustomDH(Pageable pageable);
+
+    @Query("SELECT h.id AS id, nv.hoVaTen AS tenNhanVien, kh.tenKhachHang AS tenKhachHang, " +
+            "km.tenKhuyenMai AS tenKhuyenMai, h.maHoaDon AS maHoaDon, h.tongTien AS tongTien, " +
+            "h.tongTienGiam AS tongTienGiam, h.thanhTien AS thanhTien, h.tienKhachDua AS tienKhachDua, " +
+            "h.tienThua AS tienThua, h.phiShip AS phiShip, h.ngayGiaoHang AS ngayGiaoHang, " +
+            "h.donViGiaoHang AS donViGiaoHang, h.tenNguoiGiao AS tenNguoiGiao, h.sdtNguoiGiao AS sdtNguoiGiao, " +
+            "h.emailNguoiNhan AS emailNguoiNhan, h.diaChiChiTiet AS diaChiChiTiet, " +
+            "h.tinhThanhPho AS tinhThanhPho, h.quanHuyen AS quanHuyen, h.phuongXa AS phuongXa, " +
+            "h.loaiThanhToan AS loaiThanhToan, h.trangThai AS trangThai, h.ngayTao AS ngayTao, h.ngaySua AS ngaySua " +
+            "FROM HoaDon h " +
+            "LEFT JOIN h.idNhanVien nv " +
+            "LEFT JOIN h.idKhachHang kh " +
+            "LEFT JOIN h.idKhuyenMai km " +
+            "WHERE h.loaiHoaDon = true AND h.trangThai = 1")
+    Page<HoaDonOnlCustom> getHoaDonCustomCXN(Pageable pageable);
+
+    @Query("SELECT h.id AS id, nv.hoVaTen AS tenNhanVien, kh.tenKhachHang AS tenKhachHang, " +
+            "km.tenKhuyenMai AS tenKhuyenMai, h.maHoaDon AS maHoaDon, h.tongTien AS tongTien, " +
+            "h.tongTienGiam AS tongTienGiam, h.thanhTien AS thanhTien, h.tienKhachDua AS tienKhachDua, " +
+            "h.tienThua AS tienThua, h.phiShip AS phiShip, h.ngayGiaoHang AS ngayGiaoHang, " +
+            "h.donViGiaoHang AS donViGiaoHang, h.tenNguoiGiao AS tenNguoiGiao, h.sdtNguoiGiao AS sdtNguoiGiao, " +
+            "h.emailNguoiNhan AS emailNguoiNhan, h.diaChiChiTiet AS diaChiChiTiet, " +
+            "h.tinhThanhPho AS tinhThanhPho, h.quanHuyen AS quanHuyen, h.phuongXa AS phuongXa, " +
+            "h.loaiThanhToan AS loaiThanhToan, h.trangThai AS trangThai, h.ngayTao AS ngayTao, h.ngaySua AS ngaySua " +
+            "FROM HoaDon h " +
+            "LEFT JOIN h.idNhanVien nv " +
+            "LEFT JOIN h.idKhachHang kh " +
+            "LEFT JOIN h.idKhuyenMai km " +
+            "WHERE h.loaiHoaDon = true AND h.trangThai = 2")
+    Page<HoaDonOnlCustom> getHoaDonCustomCLH(Pageable pageable);
+
+    @Query("SELECT h.id AS id, nv.hoVaTen AS tenNhanVien, kh.tenKhachHang AS tenKhachHang, " +
+            "km.tenKhuyenMai AS tenKhuyenMai, h.maHoaDon AS maHoaDon, h.tongTien AS tongTien, " +
+            "h.tongTienGiam AS tongTienGiam, h.thanhTien AS thanhTien, h.tienKhachDua AS tienKhachDua, " +
+            "h.tienThua AS tienThua, h.phiShip AS phiShip, h.ngayGiaoHang AS ngayGiaoHang, " +
+            "h.donViGiaoHang AS donViGiaoHang, h.tenNguoiGiao AS tenNguoiGiao, h.sdtNguoiGiao AS sdtNguoiGiao, " +
+            "h.emailNguoiNhan AS emailNguoiNhan, h.diaChiChiTiet AS diaChiChiTiet, " +
+            "h.tinhThanhPho AS tinhThanhPho, h.quanHuyen AS quanHuyen, h.phuongXa AS phuongXa, " +
+            "h.loaiThanhToan AS loaiThanhToan, h.trangThai AS trangThai, h.ngayTao AS ngayTao, h.ngaySua AS ngaySua " +
+            "FROM HoaDon h " +
+            "LEFT JOIN h.idNhanVien nv " +
+            "LEFT JOIN h.idKhachHang kh " +
+            "LEFT JOIN h.idKhuyenMai km " +
+            "WHERE h.loaiHoaDon = true AND h.trangThai = 3")
+    Page<HoaDonOnlCustom> getHoaDonCustomDG(Pageable pageable);
+
+    @Query("SELECT h.id AS id, nv.hoVaTen AS tenNhanVien, kh.tenKhachHang AS tenKhachHang, " +
+            "km.tenKhuyenMai AS tenKhuyenMai, h.maHoaDon AS maHoaDon, h.tongTien AS tongTien, " +
+            "h.tongTienGiam AS tongTienGiam, h.thanhTien AS thanhTien, h.tienKhachDua AS tienKhachDua, " +
+            "h.tienThua AS tienThua, h.phiShip AS phiShip, h.ngayGiaoHang AS ngayGiaoHang, " +
+            "h.donViGiaoHang AS donViGiaoHang, h.tenNguoiGiao AS tenNguoiGiao, h.sdtNguoiGiao AS sdtNguoiGiao, " +
+            "h.emailNguoiNhan AS emailNguoiNhan, h.diaChiChiTiet AS diaChiChiTiet, " +
+            "h.tinhThanhPho AS tinhThanhPho, h.quanHuyen AS quanHuyen, h.phuongXa AS phuongXa, " +
+            "h.loaiThanhToan AS loaiThanhToan, h.trangThai AS trangThai, h.ngayTao AS ngayTao, h.ngaySua AS ngaySua " +
+            "FROM HoaDon h " +
+            "LEFT JOIN h.idNhanVien nv " +
+            "LEFT JOIN h.idKhachHang kh " +
+            "LEFT JOIN h.idKhuyenMai km " +
+            "WHERE h.loaiHoaDon = true AND h.trangThai = 4")
+    Page<HoaDonOnlCustom> getHoaDonCustomHT(Pageable pageable);
+
+}

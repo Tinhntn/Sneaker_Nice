@@ -2,17 +2,7 @@
 <html lang="vi" xmlns:th="http://www.thymeleaf.org"
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="~{layout/main}">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Trang chủ</title>
 
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-
-</head>
 <body>
 <div layout:fragment="content">
 
@@ -82,9 +72,9 @@
                 <span class="badge bg-danger" th:text="${sizeDH}"></span>
             </a>
         </li>
-        <li class="nav-item" th:classappend="${tabActive == 'tab7'} ? 'nav-item' : 'nav-item'">
-            <a class="nav-link" id="tab7-tab" data-bs-toggle="tab" href="#tab7" role="tab" aria-controls="tab7" aria-selected="false">Trả hàng</a>
-        </li>
+<!--        <li class="nav-item" th:classappend="${tabActive == 'tab7'} ? 'nav-item' : 'nav-item'">-->
+<!--            <a class="nav-link" id="tab7-tab" data-bs-toggle="tab" href="#tab7" role="tab" aria-controls="tab7" aria-selected="false">Trả hàng</a>-->
+<!--        </li>-->
     </ul>
 
     <!-- Nội dung của các tab -->
@@ -108,19 +98,19 @@
                         <!-- Sử dụng th:each để lặp qua danh sách hdcxn -->
                         <div th:each="hdcxn : ${listHoaDonCXN}" class="card mb-3">
                             <div class="card-body" style="background-color: wheat; padding-top: 15px;">
-                                <h5 class="card-title">Mã hóa đơn: <span th:text="${hdcxn.mahoadon}"></span></h5>
+                                <h5 class="card-title">Mã hóa đơn: <span th:text="${hdcxn.maHoaDon}"></span></h5>
                                 <p class="card-text text-muted">Trạng thái: Chờ xác nhận</p>
                                 <hr>
                                 <div class="d-flex justify-content-between">
-                                    <button class="btn btn-outline-secondary" th:attr="data-id=${hdcxn.idhoadon}" onclick="showOrderDetails(this)">
+                                    <button class="btn btn-outline-secondary" th:data-id="${hdcxn.id}" onclick="showOrderDetails(this)">
                                         Chi tiết đơn hàng
                                     </button>
                                     <div class="d-inline-flex">
-                                    <form id="huy" th:action="@{/hoadononline/huydh/{id}(id=${hdcxn.idhoadon})}" method="post">
+                                    <form id="huy" th:action="@{/hoadononline/huydh/{id}(id=${hdcxn.id})}" method="post">
                                         <input type="hidden" id="ghichu" name="ghichu" value="">
                                         <button id="cfhuy" type="button" class="btn btn-outline-secondary">Huỷ</button>
                                     </form>
-                                    <form id="xacnhan" th:action="@{/hoadononline/xacnhanhoadoncho/{id}(id=${hdcxn.idhoadon})}" method="post">
+                                    <form id="xacnhan" th:action="@{/hoadononline/xacnhanhoadoncho/{id}(id=${hdcxn.id})}" method="post">
                                         <input type="hidden" id="" name="ghichu" value="">
                                         <button id="cfxacnhan" type="button" class="btn btn-outline-secondary">Xác nhận</button>
                                     </form>
@@ -211,7 +201,7 @@
                                     </script>
 
                                 </div>
-                                <p class="card-text text-muted mt-2">Thành tiền: <span th:text="${hdcxn.thanhtien}"></span></p>
+                                <p class="card-text text-muted mt-2">Thành tiền: <span th:text="${hdcxn.thanhTien}"></span></p>
                             </div>
                         </div>
                     </div>
@@ -223,21 +213,21 @@
             <div class="container">
                 <div class="row" style="margin-top: 15px">
                     <div class="col-md-12">
-                        <div th:each="hdcxn : ${listHoaDonCLH}" class="card mb-3">
+                        <div th:each="hdclh : ${listHoaDonCLH}" class="card mb-3">
                             <div class="card-body" style="background-color: wheat; padding-top: 15px;">
-                                <h5 class="card-title">Mã hóa đơn: <span th:text="${hdcxn.mahoadon}"></span></h5>
+                                <h5 class="card-title">Mã hóa đơn: <span th:text="${hdclh.maHoaDon}"></span></h5>
                                 <p class="card-text text-muted">Trạng thái: Chờ lấy hàng</p>
                                 <hr>
                                 <div class="d-flex justify-content-between">
-                                    <button class="btn btn-outline-secondary" th:attr="data-id=${hdcxn.idhoadon}" onclick="showOrderDetails(this)">
+                                    <button class="btn btn-outline-secondary" th:data-id="${hdclh.id}" onclick="showOrderDetails(this)">
                                         Chi tiết đơn hàng
                                     </button>
                                     <div class="d-inline-flex">
-                                        <form id="huyclh" th:action="@{/hoadononline/huydh/{id}(id=${hdcxn.idhoadon})}" method="post">
+                                        <form id="huyclh" th:action="@{/hoadononline/huydh/{id}(id=${hdclh.id})}" method="post">
                                             <input type="hidden" id="ghichuclh" name="ghichu" value="">
                                             <button id="cfhuyclh" type="button" class="btn btn-outline-secondary">Huỷ</button>
                                         </form>
-                                        <form id="xacnhanclh" th:action="@{/hoadononline/xacnhanhoadondg/{id}(id=${hdcxn.idhoadon})}" method="post">
+                                        <form id="xacnhanclh" th:action="@{/hoadononline/xacnhanhoadondg/{id}(id=${hdclh.id})}" method="post">
                                             <input type="hidden" id="tennguoigiao" name="tennguoigiao" value="">
                                             <input type="hidden" id="sdtnguoigiao" name="sdtnguoigiao" value="">
                                             <button id="cfxacnhanclh" type="button" class="btn btn-outline-secondary">Xác nhận</button>
@@ -351,7 +341,7 @@
                                     </script>
 
                                 </div>
-                                <p class="card-text text-muted mt-2">Thành tiền: <span th:text="${hdcxn.thanhtien}"></span></p>
+                                <p class="card-text text-muted mt-2">Thành tiền: <span th:text="${hdclh.thanhTien}"></span></p>
                             </div>
                         </div>
                     </div>
@@ -364,17 +354,17 @@
             <div class="container">
                 <div class="row" style="margin-top: 15px">
                     <div class="col-md-12">
-                        <div th:each="hdcxn : ${listHoaDonDG}" class="card mb-3">
+                        <div th:each="hddg : ${listHoaDonDG}" class="card mb-3">
                             <div class="card-body" style="background-color: wheat; padding-top: 15px;">
-                                <h5 class="card-title">Mã hóa đơn: <span th:text="${hdcxn.mahoadon}"></span></h5>
+                                <h5 class="card-title">Mã hóa đơn: <span th:text="${hddg.maHoaDon}"></span></h5>
                                 <p class="card-text text-muted">Trạng thái: Đang vận chuyển</p>
                                 <hr>
                                 <div class="d-flex justify-content-between">
-                                    <button class="btn btn-outline-secondary" th:attr="data-id=${hdcxn.idhoadon}" onclick="showOrderDetails(this)">
+                                    <button class="btn btn-outline-secondary" th:data-id="${hddg.id}" onclick="showOrderDetails(this)">
                                         Chi tiết đơn hàng
                                     </button>
                                     <div class="d-inline-flex">
-                                        <form id="xacnhandg" th:action="@{/hoadononline/xacnhanhoadonhoanthanh/{id}(id=${hdcxn.idhoadon})}" method="post">
+                                        <form id="xacnhandg" th:action="@{/hoadononline/xacnhanhoadonhoanthanh/{id}(id=${hddg.id})}" method="post">
                                             <input type="hidden" name="tennguoigiao" value="">
                                             <input type="hidden" name="sdtnguoigiao" value="">
                                             <button id="cfxacnhandg" type="button" class="btn btn-outline-secondary">Xác nhận</button>
@@ -461,7 +451,7 @@
                                         /*]]>*/
                                     </script>
                                 </div>
-                                <p class="card-text text-muted mt-2">Thành tiền: <span th:text="${hdcxn.thanhtien}"></span></p>
+                                <p class="card-text text-muted mt-2">Thành tiền: <span th:text="${hddg.thanhTien}"></span></p>
                             </div>
                         </div>
                     </div>
@@ -476,17 +466,17 @@
                 <div class="row" style="margin-top: 15px">
                     <div class="col-md-12">
                         <!-- Sử dụng th:each để lặp qua danh sách hdcxn -->
-                        <div th:each="hdcxn : ${listHoaDonHT}" class="card mb-3">
+                        <div th:each="hdht : ${listHoaDonHT}" class="card mb-3">
                             <div class="card-body" style="background-color: wheat; padding-top: 15px;">
-                                <h5 class="card-title">Mã hóa đơn: <span th:text="${hdcxn.mahoadon}"></span></h5>
+                                <h5 class="card-title">Mã hóa đơn: <span th:text="${hdht.maHoaDon}"></span></h5>
                                 <p class="card-text text-muted">Trạng thái: Hoàn thành</p>
                                 <hr>
                                 <div class="d-flex justify-content-between">
-                                    <button class="btn btn-outline-secondary" th:attr="data-id=${hdcxn.idhoadon}" onclick="showOrderDetails(this)">
+                                    <button class="btn btn-outline-secondary" th:data-id="${hdht.id}" onclick="showOrderDetails(this)">
                                         Chi tiết đơn hàng
                                     </button>
                                     <div class="d-inline-flex">
-                                        <form id="trahang" th:action="@{/hoadononline/huydh/{id}(id=${hdcxn.idhoadon})}" method="post">
+                                        <form id="trahang" th:action="@{/hoadononline/huydh/{id}(id=${hdht.id})}" method="post">
 
                                             <button id="cftrahang" type="button" class="btn btn-outline-secondary">Trả hàng</button>
                                         </form>
@@ -499,7 +489,7 @@
 
 
                                 </div>
-                                <p class="card-text text-muted mt-2">Thành tiền: <span th:text="${hdcxn.thanhtien}"></span></p>
+                                <p class="card-text text-muted mt-2">Thành tiền: <span th:text="${hdht.thanhTien}"></span></p>
                             </div>
                         </div>
                     </div>
@@ -511,13 +501,13 @@
             <div class="container">
                 <div class="row" style="margin-top: 15px">
                     <div class="col-md-12">
-                        <div th:each="hdcxn : ${listHoaDonDH}" class="card mb-3">
+                        <div th:each="hddh : ${listHoaDonDH}" class="card mb-3">
                             <div class="card-body" style="background-color: wheat; padding-top: 15px;">
-                                <h5 class="card-title">Mã hóa đơn: <span th:text="${hdcxn.mahoadon}"></span></h5>
+                                <h5 class="card-title">Mã hóa đơn: <span th:text="${hddh.maHoaDon}"></span></h5>
                                 <p class="card-text text-muted">Trạng thái: Đã hủy</p>
                                 <hr>
                                 <div class="d-flex justify-content-between">
-                                    <button class="btn btn-outline-secondary" th:attr="data-id=${hdcxn.idhoadon}" onclick="showOrderDetails(this)">
+                                    <button class="btn btn-outline-secondary" th:data-id="${hddh.id}" onclick="showOrderDetails(this)">
                                         Chi tiết đơn hàng
                                     </button>
                                     <div class="d-inline-flex">
@@ -525,7 +515,7 @@
                                     </div>
 
                                 </div>
-                                <p class="card-text text-muted mt-2">Thành tiền: <span th:text="${hdcxn.thanhtien}"></span></p>
+                                <p class="card-text text-muted mt-2">Thành tiền: <span th:text="${hddh.thanhTien}"></span></p>
                             </div>
                         </div>
                     </div>
@@ -535,46 +525,64 @@
 
     </div>
 
-    <div class="modal fade" id="orderDetailModal" tabindex="-1" aria-labelledby="orderDetailModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-lg">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="orderDetailModalLabel">Chi Tiết Đơn Hàng</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body" id="orderDetailContent">
-                    <!-- Nội dung sẽ được tải vào đây -->
+        <!-- Modal Chi Tiết Đơn Hàng -->
+        <div class="modal fade" id="orderDetailModal" data-bs-toggle="modal"  tabindex="-1" aria-labelledby="orderDetailModalLabel" style="display: none" >
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="orderDetailModalLabel">Chi Tiết Đơn Hàng</h5>
+                        <!-- Nút đóng modal -->
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="close"></button>
+                    </div>
+                    <div class="modal-body" id="orderDetailContent">
+                        <!-- Nội dung sẽ được tải vào đây -->
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary"  aria-label="close" data-bs-dismiss="modal">Đóng</button>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
-    <script>
+
+        <script>
         function showOrderDetails(button) {
             var orderId = $(button).data('id');
-            if (orderId) {
-                if (/^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/.test(orderId)) {
-                    $.ajax({
-                        url: '/banhangonline/detailhd/' + encodeURIComponent(orderId),
-                        method: 'GET',
-                        success: function(response) {
-                            $('#orderDetailContent').html(response);
-                            var myModal = new bootstrap.Modal(document.getElementById('orderDetailModal'));
-                            myModal.show();
-                        },
-                        error: function(xhr) {
-                            console.error('Lỗi khi tải chi tiết đơn hàng:', xhr.responseText);
-                        }
-                    });
-                } else {
-                    console.error('ID đơn hàng không hợp lệ:', orderId);
-                }
-            } else {
-                console.error('ID đơn hàng không được truyền');
+
+            if (!orderId || isNaN(orderId)) {
+                Swal.fire("Lỗi", "ID đơn hàng không hợp lệ!", "error");
+                return;
             }
+
+            $.ajax({
+                url: '/hoadononline/detailhdct/' + orderId,
+                method: 'GET',
+                success: function(response) {
+                    let details = `<p><b>Mã hóa đơn:</b> ${response.maHoaDon}</p>
+                       <p><b>Khách hàng:</b> ${response.tenKhachHang}</p>
+                       <p><b>Số điện thoại:</b> ${response.sdt}</p>
+                       <p><b>Tổng tiền:</b> ${response.tongTien} VNĐ</p>`;
+
+                    if (response.chiTietSanPham && response.chiTietSanPham.length > 0) {
+                        response.chiTietSanPham.forEach(item => {
+                            details += `<p><b>Sản phẩm:</b> ${item.idChiTietSanPham} - SL: ${item.soLuong}</p>`;
+                        });
+                    } else {
+                        details += `<p><b>Không có sản phẩm nào trong hóa đơn này.</b></p>`;
+                    }
+
+                    $('#orderDetailContent').html(details);
+                    var myModal = new bootstrap.Modal(document.getElementById('orderDetailModal'));
+                    myModal.show();
+                },
+                error: function(xhr) {
+                    Swal.fire("Lỗi", "Không thể lấy dữ liệu đơn hàng!", "error");
+                }
+            });
+
         }
+
     </script>
-
-
+    </div>
 </div>
 </body>
 </html>

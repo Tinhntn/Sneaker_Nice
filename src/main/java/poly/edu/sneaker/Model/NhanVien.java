@@ -16,8 +16,8 @@ public class NhanVien {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
-    @ManyToOne
 
+    @ManyToOne
     @JoinColumn(name = "id_chuc_vu")
     private  ChucVu idChucVu;
     @JoinColumn(name = "ma_nhan_vien")
