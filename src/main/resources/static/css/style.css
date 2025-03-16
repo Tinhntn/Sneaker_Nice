@@ -288,6 +288,10 @@ tr:nth-child(even) {
 td {
   color: #333;
 }
+.disabled {
+  opacity: 0.5;
+  pointer-events: none;
+}
 
 .table-container {
   width: 100%;

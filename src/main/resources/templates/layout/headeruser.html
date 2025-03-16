@@ -11,16 +11,15 @@
         </div>
 
         <div class="cart-body">
-
-
             <ul class="cart-items" id="cart-items">
                 <!-- Danh sách sản phẩm sẽ được thêm vào đây -->
+                <!-- <p>Bạn chưa có sản phẩm nào</p> -->
             </ul>
         </div>
 
         <div class="cart-footer">
             <p class="cart-total">Tổng số phụ: <span id="total-price">0đ</span></p>
-            <button class="checkout-btn" onclick="thanhToan()">Thanh toán</button>
+            <button id="thanhToan" class="checkout-btn"> Thanh toán</a></button>
         </div>
     </div>
 
@@ -77,7 +76,6 @@
                             <span id="cart-count">0</span>
 
                         </a></li>
-                    <!-- th:text="${soLuongSanPhamTrongGioHang}" -->
                 </ul>
             </div>
         </div>
@@ -146,6 +144,7 @@
                 // if (message) {
                 //     notyf.error(message);
                 // }
+
                 function updateCartCount() {
                     fetch('/gio-hang/so-luong')
                         .then(response => {
@@ -168,9 +167,14 @@
                 // Gọi khi trang tải xong
                 document.addEventListener("DOMContentLoaded", updateCartCount);
 
-                function thanhToan() {
+
+                document.getElementById("thanhToan").addEventListener("click", function () {
+                    loadCartItems();
                     window.location.href = "/gio-hang/thanh-toan";
-                }
+                });
+
+
+
 
 
                 function openCartModal() {
@@ -184,19 +188,42 @@
                     document.getElementById("cartOverlay").classList.remove("open");
                 }
 
-                function loadCartItems() {
+               function loadCartItems() {
+                    var checkoutButton = document.getElementById("thanhToan");
+                    var cartList = document.getElementById("cart-items");
+                    var totalPriceElement = document.getElementById("total-price");
+
                     fetch('/gio-hang')
                         .then(response => response.json())
                         .then(data => {
-                            if (!data || !data.items) {
-                                console.error("Dữ liệu giỏ hàng không hợp lệ:", data);
+                            // Kiểm tra nếu API trả về lỗi hoặc không có dữ liệu
+                            if (!data || !Array.isArray(data.items)) {
+                                console.error("Lỗi: Dữ liệu giỏ hàng không hợp lệ", data);
+                                cartList.innerHTML = "<p>Lỗi tải giỏ hàng. Vui lòng thử lại.</p>";
+                                totalPriceElement.innerText = "0đ";
+                                checkoutButton.disabled = true;
+                                checkoutButton.classList.add("disabled");
                                 return;
                             }
-                            let cartList = document.getElementById("cart-items");
-                            cartList.innerHTML = "";
-                            let totalPrice = 0;
-                            data.items.forEach(item => {
-                                totalPrice += item.gia * item.soLuong;
+
+                            let items = data.items;
+                            let totalPrice = data.totalPrice || 0;
+
+                            if (items.length === 0) {
+                                // Nếu giỏ hàng trống
+                                cartList.innerHTML = "<p>Chưa có sản phẩm nào trong giỏ hàng</p>";
+                                totalPriceElement.innerText = "0đ";
+                                checkoutButton.disabled = true;
+                                checkoutButton.classList.add("disabled");
+                                return;
+                            }
+
+                            // Nếu giỏ hàng có sản phẩm
+                            checkoutButton.disabled = false;
+                            checkoutButton.classList.remove("disabled");
+                            cartList.innerHTML = ""; // Xóa nội dung cũ
+
+                            items.forEach(item => {
                                 let li = document.createElement("li");
                                 li.classList.add("cart-item");
                                 li.innerHTML = `
@@ -205,10 +232,10 @@
                         <h4>${item.tenSanPham}</h4>
                         <p>Size: ${item.size}</p>
                         <p>Màu: ${item.mauSac}</p>
-                        <p>${item.gia.toLocaleString()}đ</p>
+                        <p>${(item.gia || 0).toLocaleString()}đ</p>
                         <div class="quantity-controls">
                             <button onclick="updateQuantity(${item.idGioHangChiTiet}, -1)">-</button>
-                            <span id="quantity-${item.idGioHangChiTiet}">${item.soLuong}</span>
+                            <span id="quantity-${item.idGioHangChiTiet}">${item.soLuong || 0}</span>
                             <button onclick="updateQuantity(${item.idGioHangChiTiet}, 1)">+</button>
                         </div>
                     </div>
@@ -217,10 +244,18 @@
                                 cartList.appendChild(li);
                             });
 
-                            document.getElementById("total-price").innerText = totalPrice.toLocaleString() + "đ";
+                            totalPriceElement.innerText = totalPrice.toLocaleString() + "đ";
                         })
-                        .catch(error => console.error('Lỗi khi tải giỏ hàng:', error));
+                        .catch(error => {
+                            console.error("Lỗi khi tải giỏ hàng:", error);
+                            cartList.innerHTML = "<p>Lỗi kết nối đến server</p>";
+                            totalPriceElement.innerText = "0đ";
+                            checkoutButton.disabled = true;
+                            checkoutButton.classList.add("disabled");
+                            notyf.error("Lỗi tải giỏ hàng!");
+                        });
                 }
+
 
 
                 function removeFromCart(productId) {
@@ -243,26 +278,34 @@
                             cancelButtonText: "Hủy"
 
                         }).then((result) => {
-                            if (qresult.value) {
+                            if (result.value) {
+                                console.log(idGHCT)
                                 removeFromCart(idGHCT);
-                                return;
                             }
                         });
 
                     }
 
                     fetch(`/gio-hang/capNhatSoLuongGioHang/${idGHCT}?soLuong=${newQuantity}`, { method: "PUT" })
-                        .then(response => response.json())
+                        .then(response => {
+                            if (!response.ok) {
+                                return response.json().then(err => {
+                                    throw new Error(notyf.error(err.message || "Cập nhật sản phẩm thất bại"));
+                                });
+                            }
+                            return response.json();
+                        })
                         .then(data => {
                             if (data.success) {
                                 loadCartItems();
+                            } else if (data.message) {
+                                notyf.error(message)
                             } else {
-                                notyf.Error("Cập nhật số lượng thất bại");
+                                notyf.error("Cập nhật số lượng thất bại");
                             }
                         })
-                        .catch(error => notyf.Error("Cập nhật số lượng thất bại"));
+                        .catch(error => notyf.error("Cập nhật số lượng thất bại"));
                 }
-
 
             </script>
 

@@ -48,6 +48,6 @@ public class HoaDon {
     private Boolean loaiThanhToan;
     private String tenNguoiGiao;
     private String sdtNguoiGiao;
-    private Boolean trangThai;
+    private Integer trangThai;
 
 }
