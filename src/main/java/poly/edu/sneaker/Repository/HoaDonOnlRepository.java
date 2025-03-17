@@ -41,9 +41,9 @@ public interface HoaDonOnlRepository extends JpaRepository<HoaDon, Integer> {
             "h.tinhThanhPho AS tinhThanhPho, h.quanHuyen AS quanHuyen, h.phuongXa AS phuongXa, " +
             "h.loaiThanhToan AS loaiThanhToan, h.trangThai AS trangThai, h.ngayTao AS ngayTao, h.ngaySua AS ngaySua " +
             "FROM HoaDon h " +
-            "LEFT JOIN h.idNhanVien nv " +
-            "LEFT JOIN h.idKhachHang kh " +
-            "LEFT JOIN h.idKhuyenMai km " +
+            "LEFT JOIN NhanVien nv ON h.idNhanVien.id = nv.id \n " +
+            "LEFT JOIN KhachHang kh ON h.idKhachHang.id = kh.id " +
+            "LEFT JOIN KhuyenMai km ON h.idKhuyenMai.id = km.id " +
             "WHERE h.loaiHoaDon = true AND h.trangThai = 1")
     Page<HoaDonOnlCustom> getHoaDonCustomCXN(Pageable pageable);
 
