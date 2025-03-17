@@ -9,7 +9,8 @@ import poly.edu.sneaker.Repository.ChiTietSanPhamRepository;
 import poly.edu.sneaker.Service.ChiTietSanPhamService;
 
 import java.util.List;
-import java.util.Optional;
+
+import java.util.ArrayList;
 
 @Service
 
@@ -59,8 +60,22 @@ public class ChiTietSanPhamImplement implements ChiTietSanPhamService {
 
     @Override
     public void capNhatSoLuongKhiHuyHoaDon(int idCTSP, int soLuong) {
-       ChiTietSanPham chiTietSanPham = chiTietSanPhamRepository.findById(idCTSP);
-       chiTietSanPham.setSoLuong(chiTietSanPham.getSoLuong()+soLuong);
+        ChiTietSanPham chiTietSanPham = chiTietSanPhamRepository.findById(idCTSP);
+        chiTietSanPham.setSoLuong(chiTietSanPham.getSoLuong() + soLuong);
+    }
+    @Override
+    public ChiTietSanPham findCTSPByIDMauSac(int idCTSP, int idMauSac) {
+        return chiTietSanPhamRepository.findChiTietSanPhamByIdAndIdMauSacAndTrangThai(idCTSP,idMauSac,true);
+    }
+
+    @Override
+    public ArrayList<ChiTietSanPham> findByIdSanPham(int idSanPham) {
+        return chiTietSanPhamRepository.findByIdSanPham_IdAndTrangThai(idSanPham,true);
+    }
+
+    @Override
+    public ChiTietSanPham findCTSPByIdSPAndIdMauSacAndIdSize(int idSanPham, int idSize, int idMauSac) {
+        return chiTietSanPhamRepository.findChiTietSanPhamByIdSanPham_IdAndIdSize_IdAndIdMauSac_Id(idSanPham,idSize,idMauSac);
     }
 //
 //    @Override

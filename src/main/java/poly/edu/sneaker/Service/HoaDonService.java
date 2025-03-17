@@ -10,4 +10,6 @@ public interface HoaDonService {
     HoaDon save(HoaDon hoaDon);
     void update(HoaDon hoaDon);
     void deleteById(int id);
+
+    String taoMaHoaDon();
 }

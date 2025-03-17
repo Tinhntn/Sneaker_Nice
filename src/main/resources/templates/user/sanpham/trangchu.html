@@ -102,8 +102,9 @@
                                 <h3><a th:href="@{/Sneakers_Nice/chitietsanpham/{id}(id=${sanPham.id})}"
                                         th:text="${sanPham.idSanPham.tenSanPham}"></a></h3>
                                 <div class="pricing">
-                                    <p class="price"><span th:text="'Giá bán: ' + ${sanPham.giaBan} + ' VND'"></span>
+                                    <p class="price"><span  th:text=" 'Giá bán: ' + ${#numbers.formatInteger(sanPham.giaBan,3,'COMMA')} +  ' VND'"></span>
                                     </p>
+                                   
                                 </div>
                                 <p class="bottom-area d-flex px-3">
                                     <a href="#" class="add-to-cart text-center py-2 mr-1">

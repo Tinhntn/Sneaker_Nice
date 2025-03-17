@@ -24,5 +24,5 @@ public interface KhuyenMaiRepository extends JpaRepository<KhuyenMai, Integer> {
     KhuyenMai findByMaKhuyenMai(String maKhuyenMai);
 
     Page<KhuyenMaiCustom> findKhuyenMaiByMaKhuyenMaiContainingOrTenKhuyenMaiContaining(String maKhuyenMai, String tenKhuyenMai, Pageable pageable);
-
+    KhuyenMai findById(int id);
 }

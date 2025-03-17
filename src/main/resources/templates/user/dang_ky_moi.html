@@ -83,8 +83,8 @@
     </div>
     <div layout:fragment="js">
         <script>
-     
-            function register() {
+
+            async function register() {
                 var firstName = $('#registerFirstName').val();
                 var lastName = $('#registerLastName').val();
                 var hoTen = firstName + ' ' + lastName;
@@ -106,35 +106,45 @@
                     return;
                 }
 
-                $.ajax({
-                    url: '/dang-ky',
-                    type: 'POST',
-                    contentType: 'application/json',
-                    data: JSON.stringify({ hoTen: hoTen, emailDK: email, matKhauDK: matKhau }),
-                    success: function (response) {
-                        // Xử lý khi đăng ký thành công
-                        notyf.success('Đăng ký thành công!');
-                        setTimeout(function () {
-                            window.location.href = '/dang-nhap';
-                        }, 2000); // Đợi 2 giây trước khi chuyển hướng để hiển thị thông báo thành công
-                        $('#registerName').val('');
-                        $('#registerEmail').val('');
-                        $('#registerPassword').val('');
-                        $('#confirmPassword').val('');
-                        $('#accept').prop('checked', false);
+                let formData = {
+                    hoTen: hoTen,
+                    emailDK: email,
+                    matKhauDK: matKhau
+                };
+                console.log(formData);
 
-                    },
-                    error: function (xhr) {
-                        try {
-                            var error = JSON.parse(xhr.responseText);
-                            notyf.error(error.message); // Hiển thị thông báo lỗi từ server
-                        } catch (e) {
-                            notyf.error('Đã xảy ra lỗi không xác định.');
+                try {
+                    let response = await fetch(`/dang-ky`, {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify(formData)
+                    });
+                     if (!response.ok) {
+                        // Nếu status là 400 (Bad Request), đọc thông báo lỗi từ response JSON
+                        if (response.status === 400) {
+                            let errorData = await response.json(); // Chuyển JSON lỗi
+                            notyf.error(errorData.message || "Có lỗi xảy ra!");
+                        } else {
+                            notyf.error("Lỗi không xác định!");
                         }
+                    } else {
+                         notyf.success('Đăng ký thành công!');
+                         setTimeout(function () {
+                             window.location.href = '/dang-nhap';
+                         }, 2000); // Đợi 2 giây trước khi chuyển hướng để hiển thị thông báo thành công
+                         $('#registerName').val('');
+                         $('#registerEmail').val('');
+                         $('#registerPassword').val('');
+                         $('#confirmPassword').val('');
+                         $('#accept').prop('checked', false);
                     }
-                });
+                } catch (error) {
+                    notyf.warning("Có lỗi xảy ra, vui lòng thử lại sau.");
+                }
+
+              
             }
-            
+
 
 
         </script>

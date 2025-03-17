@@ -34,20 +34,20 @@
 
                         <!-- Mã Sản Phẩm (Không cho chỉnh sửa) -->
                         <div class=" col-6 mb-3">
-                            <label for="maSanPham" class="form-label">Mã sản phẩm</label>
+                            <label for="maSanPham" class="form-label">Mã sản phẩm<span class="text-danger">*</span></label>
                             <input type="text" id="maSanPham" name="maSanPham" class="form-control"
                                 th:value="${maSanPham}" readonly>
                         </div>
 
                         <!-- Tên sản phẩm -->
                         <div class=" col-6 mb-3">
-                            <label for="tenSanPham" class="form-label">Tên sản phẩm</label>
+                            <label for="tenSanPham" class="form-label">Tên sản phẩm<span class="text-danger">*</span></label>
                             <input type="text" id="tenSanPham" name="tenSanPham" class="form-control" required>
                         </div>
 
                         <!-- Hãng (Combobox) -->
                         <div class="col-md-6">
-                            <label for="hang" class="form-label">Hãng</label>
+                            <label for="hang" class="form-label">Hãng<span class="text-danger">*</span></label>
                             <div class="input-group">
                                 <select id="hang" name="hang" class="form-select">
                                     <option th:each="hang : ${lstHang}" th:value="${hang.id}" th:text="${hang.tenHang}">
@@ -62,13 +62,14 @@
                         </div>
                         <!-- Danh Mục (Combobox) -->
                         <div class=" col-6 mb-3">
-                            <label for="danhMuc" class="form-label">Danh mục</label>
+                            <label for="danhMuc" class="form-label">Danh mục<span class="text-danger">*</span></label>
                             <div class="input-group">
-                                <select id="danhMuc" name="danhMuc" class="form-select">
+                                <select id="danhMuc" name="danhMuc" class="form-select" >
                                     <option th:each="danhMuc : ${lstDanhMuc}" th:value="${danhMuc.id}"
                                         th:text="${danhMuc.tenDanhMuc}">
                                     </option>
-                                </select>
+                                    <span class="text-danger">*</span>
+                                </select >
                                 <button type="button" class="btn btn-primary ms-2" data-bs-toggle="modal"
                                     data-bs-target="#themDanhMucModal">
                                     Thêm
@@ -79,12 +80,13 @@
 
                         <!-- Chất Liệu (Combobox) -->
                         <div class=" col-6 mb-3">
-                            <label for="chatLieu" class="form-label">Chất liệu</label>
+                            <label for="chatLieu" class="form-label">Chất <span class="text-danger">*</span></label>
                             <div class="input-group">
                                 <select id="chatLieu" name="chatLieu" class="form-select">
                                     <option th:each="chatLieu : ${lstChatlieu}" th:value="${chatLieu.id}"
                                         th:text="${chatLieu.tenChatLieu}">
                                     </option>
+                                    <span class="text-danger">*</span>
                                 </select>
                                 <button type="button" class="btn btn-primary ms-2" data-bs-toggle="modal"
                                     data-bs-target="#themChatLieuModal">
@@ -124,7 +126,7 @@
                     <div class="modal-body">
                         <form id="themHangForm" method="post" action="/hang/add">
                             <div class="mb-3">
-                                <label for="tenHangMoi" class="form-label">Tên Hãng</label>
+                                <label for="tenHangMoi" class="form-label">Tên Hãng<span class="text-danger">*</span></label>
                                 <input type="text" class="form-control" id="tenHang" name="tenHang" required>
                             </div>
                             <button type="submit" class="btn btn-primary">Lưu</button>
@@ -144,7 +146,7 @@
                     <div class="modal-body">
                         <form id="themChatLieuForm" method="post" action="/chat_lieu/add">
                             <div class="mb-3">
-                                <label for="tenChatLieu" class="form-label">Tên Chất Liệu</label>
+                                <label for="tenChatLieu" class="form-label">Tên Chất Liệu<span class="text-danger">*</span></label>
                                 <input type="text" class="form-control" id="tenChatLieu" name="tenChatLieu" required>
                             </div>
                             <button type="submit" class="btn btn-primary">Lưu</button>
@@ -164,7 +166,7 @@
                     <div class="modal-body">
                         <form id="themDanhMucForm" method="post" action="/danh_muc/add">
                             <div class="mb-3">
-                                <label for="tenDanhMucMoi" class="form-label">Tên Danh Mục</label>
+                                <label for="tenDanhMucMoi" class="form-label">Tên Danh Mục<span class="text-danger">*</span></label>
                                 <input type="text" class="form-control" id="tenDanhMuc" name="tenDanhMuc" required>
                             </div>
                             <button type="submit" class="btn btn-primary">Lưu</button>
