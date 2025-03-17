@@ -145,9 +145,8 @@
 
 
             <div class="container-fluid card">
-                <form action="" id="updateCTSP">
+                <form th:action="@{/sanpham/updateCTSP}" method="post" id="updateCTSP">
                     <table class="table table-header">
-
                         <thead>
                             <tr>
                                 <th scope="col">Mã sản phẩm</th>
@@ -188,7 +187,8 @@
                                 <td>
                                     <select name="idSize" class="form-select">
                                         <option th:each="size : ${lstSize}" th:value="${size.id}"
-                                            th:text="${size.tenSize}" th:selected="${size.id == sanPham.idSize.id}">
+                                            th:text="${size.tenSize}"
+                                            th:selected="${sanPham.idSize != null and size.id == sanPham.idSize.id}">
                                         </option>
                                     </select>
                                 </td>
@@ -196,7 +196,7 @@
                                     <select name="idMauSac" class="form-select">
                                         <option th:each="mauSac : ${lstMauSac}" th:value="${mauSac.id}"
                                             th:text="${mauSac.tenMauSac}"
-                                            th:selected="${mauSac.id == sanPham.idMauSac.id}">
+                                            th:selected="${mauSac.id!=null and mauSac.id == sanPham.idMauSac.id}">
                                         </option>
                                     </select>
                                 </td>
@@ -216,9 +216,14 @@
                                         class="form-control" />
                                 </td>
                                 <td>
-                                    <img th:src="@{${sanPham.hinhAnh} != null ? ${sanPham.hinhAnh} : '/path/to/default-image.jpg'}"
-                                        alt="Product Image" />
+                                    <label for="fileInput-[[${sanPham.id}]]" class="image-label">
+                                        <img th:src="@{${sanPham.hinhAnh} != null ? ${sanPham.hinhAnh} : '/path/to/default-image.jpg'}"
+                                            alt="Product Image" class="product-img" th:id="'img-'+${sanPham.id}" />
+                                    </label>
+                                    <!-- <input type="file" th:id="'fileInput-'+${sanPham.id}" th:name="'hinhAnh'" class="file-input" accept="image/*"
+                                        onchange="previewImage(this," 'img-'+${sanPham.id}") /> -->
                                 </td>
+
                                 <td>
                                     <input type="text" name="soLuong"
                                         th:value="${sanPham.soLuong!=null?sanPham.soLuong:'Không có'}"
@@ -234,73 +239,89 @@
                                     <input type="checkbox" name="trangThai" class="toggle-status"
                                         th:checked="${sanPham.trangThai}" th:data-id="${sanPham.id}" />
                                     <p th:text="${sanPham.trangThai} ? 'Hoạt động' : 'Không hoạt động'"></p>
-
                                 </td>
-
                                 <td>
-                                    <a th:href="@{/sanpham/updateCTSP/{id}(id=${sanPham.id})}">
-                                        <button type="button" class="btn btn-outline-warning update-btn">Cập
-                                            nhật</button>
-                                    </a>
+                                    <button type="button" class="btn btn-outline-warning update-btn">Cập nhật</button>
                                 </td>
                             </tr>
                         </tbody>
                     </table>
                 </form>
 
+                <th:block th:if="${totalPages > 0}">
+                    <nav aria-label="Page navigation" class="mt-3">
+                        <ul class="pagination justify-content-center">
+                            <li class="page-item" th:classappend="${currentPage == 0} ? 'disabled' : ''">
+                                <a th:href="@{/sanpham/chitietsanpham/{id}(id=${sanPham.id}, page=${currentPage - 1}, size=${10})}"
+                                    class="page-link">«</a>
+                            </li>
+                            <li class="page-item" th:each="i : ${#numbers.sequence(0, totalPages - 1)}"
+                                th:classappend="${i == currentPage} ? 'active' : ''">
+                                <a th:href="@{/sanpham/chitietsanpham/{id}(id=${sanPham.id}, page=${i}, size=${10})}"
+                                    class="page-link" th:text="${i + 1}"></a>
+                            </li>
+                            <li class="page-item" th:classappend="${currentPage + 1 == totalPages} ? 'disabled' : ''">
+                                <a th:href="@{/sanpham/chitietsanpham/{id}(id=${sanPham.id}, page=${currentPage + 1}, size=${10})}"
+                                    class="page-link">»</a>
+                            </li>
+                        </ul>
+                    </nav>
+                </th:block>
+
             </div>
 
         </div>
         <script>
+               function previewImage(input, imgId) {
+                    if (input.files && input.files[0]) {
+                        let reader = new FileReader();
+                        reader.onload = function (e) {
+                            document.getElementById(imgId).src = e.target.result;
+                        };
+                        reader.readAsDataURL(input.files[0]);
+                    }
+                }
             document.getElementById("btnSubmit").addEventListener("click", function () {
                 document.querySelector("#exampleModal form").submit();
             });
             document.addEventListener("DOMContentLoaded", function () {
-                // Khởi tạo Notyf chỉ một lần
                 var notyf = new Notyf({ ripple: true });
 
                 document.querySelectorAll(".update-btn").forEach(button => {
                     button.addEventListener("click", async function (event) {
                         event.preventDefault(); // Ngăn chặn chuyển trang
 
-                        let idSP = document.getElementById("idSP")?.value; // Kiểm tra nếu phần tử tồn tại
+                        let idSP = document.getElementById("idSP")?.value;
                         let row = this.closest("tr");
                         let idCTSP = row?.getAttribute("data-id");
 
-                        console.log("ID Sản phẩm chính:", idSP);
-                        console.log("ID Chi tiết sản phẩm:", idCTSP);
-
-                        // Kiểm tra nếu không có ID chi tiết sản phẩm
                         if (!idCTSP) {
-                            console.error("Không tìm thấy ID sản phẩm!");
-                            notyf.error("Không tìm thấy ID sản phẩm!");
+                            console.error("Không tìm thấy ID chi tiết sản phẩm!");
+                            notyf.error("Không tìm thấy ID chi tiết sản phẩm!");
                             return;
                         }
 
+                        let trangThaiCheckbox = row.querySelector("[name='trangThai']");
+                        let trangThaii = trangThaiCheckbox ? trangThaiCheckbox.checked : false;
+
+
                         try {
-                            // Lấy dữ liệu từ input/select
                             let formData = {
-                                id: row.querySelector("[name='id']")?.value,
-                                idSize: row.querySelector("[name='idSize']")?.value,
-                                idMauSac: row.querySelector("[name='idMauSac']")?.value,
-                                trongLuong: row.querySelector("[name='trongLuong']")?.value,
-                                giaNhap: row.querySelector("[name='giaNhap']")?.value,
-                                giaBan: row.querySelector("[name='giaBan']")?.value,
-                                soLuong: row.querySelector("[name='soLuong']")?.value,
-                                moTa: row.querySelector("[name='moTa']")?.value,
-                                trangThai:  row.querySelector("[name='trangThai']").checked
+                                id: row.querySelector("[name='id']")?.value || null,
+                                idSize: row.querySelector("[name='idSize']")?.value || null,
+                                idMauSac: row.querySelector("[name='idMauSac']")?.value || null,
+                                trongLuong: row.querySelector("[name='trongLuong']")?.value || null,
+                                giaNhap: row.querySelector("[name='giaNhap']")?.value || null,
+                                giaBan: row.querySelector("[name='giaBan']")?.value || null,
+                                soLuong: row.querySelector("[name='soLuong']")?.value || null,
+                                moTa: row.querySelector("[name='moTa']")?.value || null,
+                                trangThai: trangThaii
                             };
-
-                            console.log(trangThai)
-                            console.log("Dữ liệu gửi đi:", formData);
-
-                            // Gửi AJAX request cập nhật sản phẩm
                             let response = await fetch(`/sanpham/updateCTSP/${idCTSP}`, {
                                 method: "PUT",
                                 headers: { "Content-Type": "application/json" },
                                 body: JSON.stringify(formData)
                             });
-                            console.log("Phản hồi từ server:", response);
 
                             let data = await response.json();
 
@@ -318,8 +339,7 @@
                                 notyf.error("Cập nhật thất bại! Vui lòng thử lại.");
                             }
                         } catch (error) {
-                            console.error("Lỗi khi cập nhật sản phẩm:", error);
-                            notyf.error("Lỗi khi cập nhật sản phẩm! Vui lòng thử lại.");
+                                notyf.error("Lỗi khi cập nhật sản phẩm! Vui lòng thử lại.");
                         }
                     });
                 });

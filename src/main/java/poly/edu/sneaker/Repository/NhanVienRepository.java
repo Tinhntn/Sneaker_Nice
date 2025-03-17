@@ -40,5 +40,6 @@ import java.util.UUID;
                OR nv.email LIKE %:keyword%)
     """)
     Page<NhanVienCustom> searchNhanVien(@Param("keyword") String keyword, Pageable pageable);
-
+    NhanVien findByEmailAndMatKhau(String email,String matKhau);
+    NhanVien findByEmail(String email);
 }

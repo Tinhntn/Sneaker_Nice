@@ -11,6 +11,7 @@ import poly.edu.sneaker.Service.SizeService;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.Random;
 
 @Service
@@ -30,7 +31,7 @@ public class SizeImplement implements SizeService {
 
     @Override
     public Size findById(int id) {
-        return null;
+        return sizeRepository.findById(id).get();
     }
 
     @Override
@@ -60,6 +61,7 @@ public class SizeImplement implements SizeService {
 
     @Override
     public Size getSizeById(int id) {
+        System.out.println("id truyền đến repo"+id);
         return sizeRepository.findById(id).get();
     }
 
@@ -71,7 +73,6 @@ public class SizeImplement implements SizeService {
         }
         sizeRepository.save(size);
     }
-
 
 
     @Override
@@ -87,7 +88,7 @@ public class SizeImplement implements SizeService {
     @Override
     public String taoMaSize() {
         Random random = new Random();
-        String maMauSac = "MMS"+1000+random.nextInt(9000);
+        String maMauSac = "MMS" + 1000 + random.nextInt(9000);
         return maMauSac;
     }
 

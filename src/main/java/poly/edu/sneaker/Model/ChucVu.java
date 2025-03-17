@@ -14,7 +14,7 @@ import lombok.*;
 public class ChucVu {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    private Integer id;
     @Column(name = "ma_chuc_vu", unique = true, nullable = false)
     @NotBlank(message = "Mã chức vụ không được để trống")
     private String maChucVu;

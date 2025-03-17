@@ -18,4 +18,5 @@ public interface KhuyenMaiService {
     Page<KhuyenMaiCustom> findKhuyenMaiByMaKhuyenMaiContainingOrTenKhuyenMaiContaining(String maKhuyenMai, String tenKhuyenMai, Pageable pageable);
     String taoMaoKhuyenMai();
     ArrayList<KhuyenMai> getAllKhuyenMai();
+    KhuyenMai findById(int idKM);
 }

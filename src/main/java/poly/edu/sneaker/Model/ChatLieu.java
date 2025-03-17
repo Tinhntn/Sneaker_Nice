@@ -15,7 +15,7 @@ import java.util.Date;
 public class ChatLieu {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    private Integer id;
 
     @Column(name = "ma_chat_lieu", nullable = false)
     private String maChatLieu;
