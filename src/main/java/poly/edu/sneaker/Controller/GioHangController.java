@@ -97,7 +97,7 @@ public class GioHangController {
                 hoaDonChiTiet.setTongTrongLuong(ghct.getTongTrongLuong());
                 hoaDonChiTiet.setDonGia(ghct.getDonGia());
                 hoaDonChiTiet.setNgayTao(new Date());
-                hoaDonChiTiet.setTrangThai(true);
+                hoaDonChiTiet.setTrangThai(1);
                 // Lưu chi tiết hóa đơn
                 hoaDonChiTietService.saveHoaDonChiTiet(hoaDonChiTiet);
 
