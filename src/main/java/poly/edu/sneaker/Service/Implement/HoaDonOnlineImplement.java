@@ -10,6 +10,8 @@ import poly.edu.sneaker.Model.HoaDon;
 import poly.edu.sneaker.Repository.HoaDonOnlRepository;
 import poly.edu.sneaker.Service.HoaDonOnlService;
 
+import java.util.Optional;
+
 @Service
 public class HoaDonOnlineImplement implements HoaDonOnlService {
 
@@ -49,5 +51,10 @@ public class HoaDonOnlineImplement implements HoaDonOnlService {
     @Override
     public void updateHoaDon(HoaDon hd, int id) {
         hoaDonOnlRepository.save(hd);
+    }
+
+    @Override
+    public Optional<HoaDon> findHoaDonById(int id) {
+        return Optional.ofNullable(hoaDonOnlRepository.getAllHoaDonByid(id));
     }
 }

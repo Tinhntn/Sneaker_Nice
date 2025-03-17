@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/main}">
+
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+
+<body>
+<div layout:fragment="content">
+    <style>
+        .modal-dialog {
+            max-width: 90%;
+            width: 90%;
+        }
+    </style>
+
+    <div class="container-fluid">
+        <table class="table table-header">
+            <thead>
+            <tr>
+                <th>Mã</th>
+                <th>Tên khách hàng</th>
+                <th>Tổng số tiền</th>
+                <th>Thành tiền</th>
+                <th>Ngày tạo</th>
+                <th>Thao tác</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="hdcxn : ${listHoaDonCXN}">
+                <td th:text="${hdcxn.maHoaDon}"></td>
+                <td th:text="${hdcxn.tenKhachHang}"></td>
+                <td th:text="${hdcxn.tongTien}"></td>
+                <td th:text="${hdcxn.thanhTien}"></td>
+                <td th:text="${hdcxn.ngayTao}"></td>
+
+            </tr>
+            </tbody>
+        </table>
+<!--        <form id="huy" th:action="@{/hoadononline/huydh/{id}(id=${hdcxn.id})}" method="post">&ndash;&gt;-->
+<!--        <input type="hidden" id="ghichu" name="ghichu" value="">-->
+<!--        <button id="cfhuy" type="button" class="btn btn-outline-secondary">Huỷ</button>-->
+<!--        </form>-->
+<!--        <form id="xacnhan" th:action="@{/hoadononline/xacnhanhoadoncho/{id}(id=${hdcxn.id})}" method="post">-->
+<!--            <input type="hidden" id="" name="ghichu" value="">-->
+<!--            <button id="cfxacnhan" type="button" class="btn btn-outline-secondary">Xác nhận</button>-->
+<!--        </form>-->
+        <a class="btn btn-outline-secondary">Xác nhận</a>
+    </div>
+
+    <div class="container-fluid">
+        <h1>Thông tin đơn hàng</h1>
+        <form >
+            <a th:href="@{/hoadononline/detailkhachhang/{id}(id=${hoaDon.idKhachHang.id})}" class="btn btn-warning">
+                Cập nhật
+            </a>
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <strong>Mã:</strong>
+                        <span th:text="${hoaDon.id}"></span>
+                    </div>
+                    <div class="mb-3">
+                        <strong>Tên khách hàng:</strong>
+                        <span th:text="${hoaDon.idKhachHang.tenKhachHang}"></span>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <strong>Địa chỉ:</strong>
+                        <span th:text="${hoaDon.phuongXa + ', ' + hoaDon.quanHuyen + ', ' + hoaDon.tinhThanhPho}"></span>
+                    </div>
+                    <div class="mb-3">
+                        <strong>Số điện thoại:</strong>
+                        <span th:text="${hoaDon.idKhachHang.sdt}"></span>
+                    </div>
+<!--                    <div class="mb-3">-->
+<!--                        <label>Trạng Thái:</label>-->
+<!--                        <div>-->
+<!--                            <div class="form-check">-->
+<!--                                <input class="form-check-input" type="radio" name="trangthai" value="True" th:checked="${detailNhanVien.trangThai}">-->
+<!--                                <label class="form-check-label">Hoạt động</label>-->
+<!--                            </div>-->
+<!--                            <div class="form-check">-->
+<!--                                <input class="form-check-input" type="radio" name="trangthai" value="False" th:checked="${!detailNhanVien.trangThai}">-->
+<!--                                <label class="form-check-label">Không hoạt động</label>-->
+<!--                            </div>-->
+<!--                        </div>-->
+<!--                    </div>-->
+                </div>
+            </div>
+
+            <div th:if="${errorMessage}" class="alert alert-danger"  role="alert">
+                <p th:text="${errorMessage}"></p>
+            </div>
+
+        </form>
+<!--        <table class="table table-header">-->
+<!--            <thead>-->
+<!--            <tr>-->
+<!--                <th>Mã</th>-->
+<!--                <th>Tên khách hàng</th>-->
+<!--                <th>SDT khách hàng</th>-->
+<!--                <th>Địa chỉ</th>-->
+<!--                <th>Trạng thái</th>-->
+<!--                &lt;!&ndash;            <th>Ngày tạo</th>&ndash;&gt;-->
+<!--                <th>Thao tác</th>-->
+<!--            </tr>-->
+<!--            </thead>-->
+<!--            <tbody>-->
+<!--            <tr th:each="chiTietHoaDon : ${hoaDon}">-->
+<!--                    <td th:text="${chiTietHoaDon.idHoaDon.maHoaDon}"></td>-->
+<!--                    <td th:text="${chiTietHoaDon.idHoaDon.idKhachHang.tenKhachHang}"></td>-->
+<!--                    <td th:text="${chiTietHoaDon.idHoaDon.idKhachHang.sdt}"></td>-->
+<!--                    <td th:text="${chiTietHoaDon.idHoaDon.phuongXa + ', ' + chiTietHoaDon.idHoaDon.quanHuyen + ', ' + chiTietHoaDon.idHoaDon.tinhThanhPho}"></td>-->
+<!--                <td th:text="${chiTietHoaDon.trangThai == 1 ? 'Chờ xác nhận' :-->
+<!--                     chiTietHoaDon.trangThai == 2 ? 'Chờ lấy hàng' :-->
+<!--                     chiTietHoaDon.trangThai == 3 ? 'Đang giao' :-->
+<!--                     chiTietHoaDon.trangThai == 4 ? 'Đã giao' :-->
+<!--                     chiTietHoaDon.trangThai == 0 ? 'Đã hủy' : 'Không xác định'}">-->
+<!--                </td>-->
+<!--                <td>-->
+<!--                    <a th:href="@{/hoadononline/detailkhachhang/{id}(id=${chiTietHoaDon.idHoaDon.idKhachHang.id})}" class="btn btn-outline-warning">-->
+<!--                        Chi tiết-->
+<!--                    </a>-->
+<!--                </td>-->
+<!--            </tr>-->
+<!--            </tbody>-->
+<!--        </table>-->
+    </div>
+
+    <div class="container-fluid">
+        <button type="button" class="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#modalSanPham">
+            Thêm sản phẩm
+        </button>
+
+        <h1>Danh sách sản phẩm</h1>
+        <table class="table table-header">
+            <thead>
+            <tr>
+                <th>Hình ảnh</th>
+                <th>Tên sản phẩm</th>
+                <th>Đơn giá</th>
+                <th>Số lượng</th> <!-- Sửa lỗi tiêu đề -->
+                <th>Size</th>
+                <th>Thao tác</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="chiTietHoaDon : ${chiTietHoaDon}">
+                <td>
+                    <img th:src="${chiTietHoaDon.idChiTietSanPham.hinhAnh}" alt="Image" style="width:80px;height:50px;"/>
+                </td>
+                <td th:text="${chiTietHoaDon.idChiTietSanPham.idSanPham.tenSanPham}"></td>
+
+                <td th:text="${#numbers.formatDecimal(chiTietHoaDon.donGia, 0, 'COMMA', 0, 'POINT')} + ' VNĐ'"></td>
+                <td>
+                    <input type="hidden" th:value="${chiTietHoaDon.id}" class="chiTietHoaDonId"/>
+                    <input type="hidden" th:value="${chiTietHoaDon.idChiTietSanPham.id}" class="chiTietSanPhamId"/>
+                    <input type="number" class="form-control soLuongInput" style="width: 80px; display: inline-block;"
+                           th:value="${chiTietHoaDon.soLuong}" min="1"/>
+                </td>
+                <td th:text="${chiTietHoaDon.idChiTietSanPham.idSize.tenSize}"></td>
+                <td>
+                    <button class="btn btn-danger btnXoaSanPham"
+                            th:data-id-hoa-don="${chiTietHoaDon.idHoaDon.id}"
+                            th:data-id-san-pham="${chiTietHoaDon.idChiTietSanPham.id}">
+                        Xóa
+                    </button>
+
+                </td>
+
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+<!--    Cập nhật số lượng-->
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            document.querySelectorAll(".soLuongInput").forEach(input => {
+                input.addEventListener("change", function () {
+                    let row = this.closest("tr");
+                    let idChiTietHoaDon = row.querySelector(".chiTietHoaDonId")?.value || null;
+                    let idChiTietSanPham = row.querySelector(".chiTietSanPhamId")?.value || null;
+
+                    if (!idChiTietHoaDon || !idChiTietSanPham) {
+                        alert("Lỗi dữ liệu! Vui lòng thử lại.");
+                        return;
+                    }
+
+                    let soLuongMoi = parseInt(this.value);
+
+                    if (soLuongMoi < 1) {
+                        alert("Số lượng phải lớn hơn 0!");
+                        this.value = 1; // Reset lại số lượng nếu nhập sai
+                        return;
+                    }
+
+                    fetch("/hoadononline/update-soluong", {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json"
+                        },
+                        body: JSON.stringify({
+                            idChiTietHoaDon: idChiTietHoaDon,
+                            idChiTietSanPham: idChiTietSanPham,
+                            soLuongMoi: soLuongMoi
+                        })
+                    })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.success) {
+                                alert("Cập nhật thành công!");
+                            } else {
+                                alert("Lỗi: " + data.message);
+                            }
+                        })
+                        .catch(error => {
+                            console.error("Lỗi khi gửi request:", error);
+                            alert("Lỗi hệ thống! Vui lòng thử lại sau.");
+                        });
+                });
+            });
+        });
+    </script>
+
+
+    <!-- Modal -->
+    <div class="modal fade" id="modalSanPham" tabindex="-1" aria-labelledby="modalSanPhamLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalSanPhamLabel">Danh sách sản phẩm chi tiết</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <table class="table table-bordered">
+                        <thead>
+                        <tr>
+                            <th>Hình ảnh</th>
+                            <th>Tên sản phẩm</th>
+                            <th>Giá bán</th>
+                            <th>Số lượng</th>
+                            <th>Thao tác</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr th:each="sanPhamChiTiet : ${sanPhamChiTiet}">
+                            <td><img th:src="${sanPhamChiTiet.hinhAnh}" alt="Hình ảnh" style="width:80px;height:50px;"></td>
+                            <td th:text="${sanPhamChiTiet.idSanPham.tenSanPham}"></td>
+                            <td th:text="${#numbers.formatDecimal(sanPhamChiTiet.giaBan, 0, 'COMMA', 0, 'POINT')} + ' VNĐ'"></td>
+                            <td th:text="${sanPhamChiTiet.soLuong}"></td>
+                            <td>
+                                <button class="btn btn-success btnThemVaoHoaDon"
+                                        th:data-id="${sanPhamChiTiet.id}"
+                                        th:data-ten="${sanPhamChiTiet.idSanPham.tenSanPham}"
+                                        th:data-gia="${sanPhamChiTiet.giaBan}"
+                                        th:data-hinh="${sanPhamChiTiet.hinhAnh}">
+                                    Thêm
+                                </button>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <!--    Thêm sản phẩm vào hóa đơn-->
+    <script>
+        function getIdHoaDonFromPath() {
+            let pathParts = window.location.pathname.split("/");
+            let idHoaDon = pathParts.pop();
+
+            if (!idHoaDon || isNaN(idHoaDon)) {
+                console.error("Không tìm thấy ID hóa đơn!");
+                return null;
+            }
+            return parseInt(idHoaDon); // Đảm bảo ID là số nguyên
+        }
+
+        console.log("URL hiện tại:", window.location.href);
+        console.log("Query string:", window.location.search);
+
+        document.addEventListener("DOMContentLoaded", function () {
+            document.querySelectorAll(".btnThemVaoHoaDon").forEach(button => {
+                button.addEventListener("click", function () {
+                    let idChiTietSanPham = parseInt(this.getAttribute("data-id"));
+                    let tenSanPham = this.getAttribute("data-ten");
+                    let giaBan = parseFloat(this.getAttribute("data-gia"));
+                    let hinhAnh = this.getAttribute("data-hinh");
+
+                    let soLuong = 1; // Mặc định là 1
+                    let idHoaDon = getIdHoaDonFromPath(); // Lấy ID từ URL
+
+                    if (!idHoaDon) {
+                        alert("Không tìm thấy ID hóa đơn trên URL. Vui lòng kiểm tra lại!");
+                        return;
+                    }
+
+                    fetch("/hoadononline/them-chi-tiet", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({
+                            idHoaDon: idHoaDon,  // Truyền ID trực tiếp
+                            idChiTietSanPham: idChiTietSanPham,
+                            soLuong: soLuong,
+                            donGia: giaBan,
+                            trangThai: 1
+                        })
+                    })
+                        .then(response => response.json()) // Chuyển response thành JSON
+                        .then(data => {
+                            if (data.success) {
+                                alert("Thêm sản phẩm thành công!");
+
+                                let tbody = document.querySelector("tbody");
+                                let existingRow = tbody.querySelector(`tr[data-id="${idChiTietSanPham}"]`);
+
+                                if (existingRow) {
+                                    // Nếu sản phẩm đã tồn tại, cập nhật số lượng
+                                    let input = existingRow.querySelector(".soLuongInput");
+                                    input.value = parseInt(input.value) + 1;
+                                } else {
+                                    // Nếu sản phẩm chưa tồn tại, thêm mới
+                                    let newRow = `
+                                <tr data-id="${idChiTietSanPham}">
+                                    <td><img src="${hinhAnh}" alt="Hình ảnh" style="width:80px;height:50px;"></td>
+                                    <td>${tenSanPham}</td>
+                                    <td>${giaBan.toLocaleString()} VNĐ</td>
+                                    <td>
+                                        <input type="number" class="form-control soLuongInput" style="width: 80px;" value="1" min="1"/>
+                                    </td>
+                                    <td>
+                                        <button class="btn btn-danger btnXoaSanPham">Xóa</button>
+                                    </td>
+                                </tr>`;
+                                    tbody.insertAdjacentHTML("beforeend", newRow);
+                                }
+                            } else {
+                                throw new Error(data.message || "Lỗi không xác định!");
+                            }
+                        })
+                        .catch(error => {
+                            console.error("Lỗi:", error);
+                            alert("Lỗi: " + error.message);
+                        });
+
+                    // Đóng modal sau khi thêm
+                    var modal = new bootstrap.Modal(document.getElementById('modalSanPham'));
+                    modal.hide();
+                });
+            });
+        });
+    </script>
+
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            document.querySelectorAll(".btnXoaSanPham").forEach(button => {
+                button.addEventListener("click", function () {
+                    let idHoaDon = this.getAttribute("data-id-hoa-don");
+                    let idChiTietSanPham = this.getAttribute("data-id-san-pham");
+
+                    if (!idHoaDon || !idChiTietSanPham) {
+                        alert("Lỗi: Không lấy được ID sản phẩm hoặc hóa đơn!");
+                        return;
+                    }
+
+                    if (!confirm("Bạn có chắc muốn xóa sản phẩm này khỏi hóa đơn?")) {
+                        return;
+                    }
+
+                    fetch(`/hoadononline/xoa-chi-tiet/${idHoaDon}/${idChiTietSanPham}`, {
+                        method: "DELETE"
+                    })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.success) {
+                                alert("Xóa thành công!");
+                                this.closest("tr").remove(); // Xóa dòng khỏi bảng
+                            } else {
+                                alert("Lỗi: " + data.message);
+                            }
+                        })
+                        .catch(error => {
+                            console.error("Lỗi khi xóa:", error);
+                            alert("Lỗi hệ thống!");
+                        });
+                });
+            });
+        });
+    </script>
+
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-6">
+                <div class="mb-3">
+                    <strong>Phiếu khuyến mại:</strong>
+                    <span th:text="${hoaDon.idKhuyenMai.tenKhuyenMai}"></span>
+                </div>
+                <div class="mb-3">
+                    <strong>Tổng tiền hàng:</strong>
+                    <span th:text="${#numbers.formatDecimal(hoaDon.tongTien, 0, 'COMMA', 0, 'POINT')} + ' VNĐ'"></span>
+                </div>
+                <div class="mb-3">
+                    <strong>Giảm giá:</strong>
+                    <span th:text="${#numbers.formatDecimal(hoaDon.tongTienGiam, 0, 'COMMA', 0, 'POINT')} + ' VNĐ'"></span>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="mb-3">
+                    <strong>Phí vận chuyển:</strong>
+                    <span th:text="${#numbers.formatDecimal(hoaDon.phiShip, 0, 'COMMA', 0, 'POINT')} + ' VNĐ'"></span>
+                </div>
+                <div class="mb-3">
+                    <strong>Thành tiền:</strong>
+                    <span class="text-danger fw-bold" th:text="${#numbers.formatDecimal(hoaDon.thanhTien, 0, 'COMMA', 0, 'POINT')} + ' VNĐ'"></span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+</div>
+</div>
+</body>
+</html>

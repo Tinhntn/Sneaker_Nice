@@ -8,6 +8,8 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import poly.edu.sneaker.Model.ChiTietSanPham;
 
+import java.util.List;
+
 @Repository
 public interface ChiTietSanPhamRepository extends JpaRepository<ChiTietSanPham, Integer> {
 
@@ -16,6 +18,9 @@ public interface ChiTietSanPhamRepository extends JpaRepository<ChiTietSanPham, 
     @Query("SELECT ctp FROM ChiTietSanPham ctp " +
             "WHERE ctp.id = (SELECT MIN(ctp2.id) FROM ChiTietSanPham ctp2 WHERE ctp2.idSanPham.id = ctp.idSanPham.id)")
     Page<ChiTietSanPham> findFirstRecordForEachProduct(Pageable pageable);
+
+    @Query(value = "select * from ChiTietSanPham", nativeQuery = true)
+    List<ChiTietSanPham> getALl();
 
 
 }

@@ -6,6 +6,8 @@ import poly.edu.sneaker.DAO.HoaDonChiTietOnlCustom;
 import poly.edu.sneaker.DAO.HoaDonOnlCustom;
 import poly.edu.sneaker.Model.HoaDon;
 
+import java.util.Optional;
+
 
 public interface HoaDonOnlService {
 
@@ -17,5 +19,8 @@ public interface HoaDonOnlService {
 
     HoaDon detailHD(int id);
     void updateHoaDon(HoaDon hd, int id);
+
+    Optional<HoaDon> findHoaDonById(int id);
+
 
 }

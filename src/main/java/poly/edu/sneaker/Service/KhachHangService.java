@@ -13,6 +13,10 @@ public interface KhachHangService {
 
     void updateKhachHang(KhachHang khachHang, int id);
 
+    void updateKhachHangHung(KhachHang khachHang, int id);
+
+    void updateKhachHangHoaDonOnl(KhachHang khachHang, int id);
+
     void deleteById(int id);
 
     Page<KhachHang> search(String keyword, Pageable pageable);
