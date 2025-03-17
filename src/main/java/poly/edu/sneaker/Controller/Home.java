@@ -42,12 +42,28 @@ public class Home {
 
         int size = 12;
         Page<ChiTietSanPham> lstCTSP = chiTietSanPhamService.findChiTietSanPhamJustOne(PageRequest.of(page, size));
+        for (ChiTietSanPham ctsp : lstCTSP
+             ) {
+            if(ctsp.getSoLuong()<=0){
+                ctsp.setTrangThai(false);
+                chiTietSanPhamService.saveChiTietSanPham(ctsp);
+            }
+        }
         int soLuongSanPhamTrongGioHang = 0;
 
         if (khachHangSession != null) {
             model.addAttribute("khachHang", khachHangSession);
             GioHang gioHang = gioHangService.findGioHangByIDKH(khachHangSession.getId());
             ArrayList<GioHangChiTiet> lstGioHangChiTiet = gioHangChiTietService.findByIdGioHang(gioHang.getId());
+            for ( GioHangChiTiet ghct : lstGioHangChiTiet
+                 ) {
+                ChiTietSanPham chiTietSanPham =ghct.getIdChiTietSanPham();
+                boolean checkSoLuong = chiTietSanPham.getSoLuong()>0&&chiTietSanPham.getSoLuong()<ghct.getSoLuong();
+                if(checkSoLuong){
+                    ghct.setSoLuong(chiTietSanPham.getSoLuong());
+                    gioHangChiTietService.saveGioHangChitiet(ghct);
+                }
+            }
             model.addAttribute("lstGioHangChiTiet", lstGioHangChiTiet);
             for (GioHangChiTiet ghct
                     : lstGioHangChiTiet

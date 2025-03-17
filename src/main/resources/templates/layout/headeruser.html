@@ -56,7 +56,7 @@
             </button>
             <div class="collapse navbar-collapse" id="ftco-nav">
                 <ul class="navbar-nav ml-auto">
-                    <li class="nav-item active"><a href="index.html" class="nav-link">Trang chủ</a></li>
+                    <li class="nav-item active"><a href="/Sneakers_Nice/hienthi" class="nav-link">Trang chủ</a></li>
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" href="#" id="dropdown04" data-toggle="dropdown"
                             aria-haspopup="true" aria-expanded="false">Catalog</a>
@@ -165,7 +165,7 @@
                 }
 
                 // Gọi khi trang tải xong
-                document.addEventListener("DOMContentLoaded", updateCartCount);
+                document.addEventListener("DOMContentLoaded", updateCartCount());
 
 
                 document.getElementById("thanhToan").addEventListener("click", function () {
@@ -188,7 +188,8 @@
                     document.getElementById("cartOverlay").classList.remove("open");
                 }
 
-               function loadCartItems() {
+                function loadCartItems() {
+                    updateCartCount();
                     var checkoutButton = document.getElementById("thanhToan");
                     var cartList = document.getElementById("cart-items");
                     var totalPriceElement = document.getElementById("total-price");
@@ -196,7 +197,6 @@
                     fetch('/gio-hang')
                         .then(response => response.json())
                         .then(data => {
-                            // Kiểm tra nếu API trả về lỗi hoặc không có dữ liệu
                             if (!data || !Array.isArray(data.items)) {
                                 console.error("Lỗi: Dữ liệu giỏ hàng không hợp lệ", data);
                                 cartList.innerHTML = "<p>Lỗi tải giỏ hàng. Vui lòng thử lại.</p>";
@@ -208,9 +208,9 @@
 
                             let items = data.items;
                             let totalPrice = data.totalPrice || 0;
+                            let hasOutOfStock = false;
 
                             if (items.length === 0) {
-                                // Nếu giỏ hàng trống
                                 cartList.innerHTML = "<p>Chưa có sản phẩm nào trong giỏ hàng</p>";
                                 totalPriceElement.innerText = "0đ";
                                 checkoutButton.disabled = true;
@@ -218,14 +218,21 @@
                                 return;
                             }
 
-                            // Nếu giỏ hàng có sản phẩm
                             checkoutButton.disabled = false;
                             checkoutButton.classList.remove("disabled");
-                            cartList.innerHTML = ""; // Xóa nội dung cũ
+                            cartList.innerHTML = "";
 
                             items.forEach(item => {
                                 let li = document.createElement("li");
                                 li.classList.add("cart-item");
+
+                                let outOfStockWarning = item.isOutOfStock ? `<p class="out-of-stock-warning">Hết hàng</p>` : "";
+                                let disableIncreaseButton = item.isOutOfStock ? "disabled" : "";
+
+                                if (item.isOutOfStock) {
+                                    hasOutOfStock = true;
+                                }
+
                                 li.innerHTML = `
                     <img src="${item.hinhAnh}" alt="">
                     <div class="item-details">
@@ -234,17 +241,26 @@
                         <p>Màu: ${item.mauSac}</p>
                         <p>${(item.gia || 0).toLocaleString()}đ</p>
                         <div class="quantity-controls">
-                            <button onclick="updateQuantity(${item.idGioHangChiTiet}, -1)">-</button>
-                            <span id="quantity-${item.idGioHangChiTiet}">${item.soLuong || 0}</span>
-                            <button onclick="updateQuantity(${item.idGioHangChiTiet}, 1)">+</button>
+                            <button ${item.soLuong <= 1 ? "disabled" : ""} ${disableIncreaseButton}  onclick="updateQuantity(${item.idGioHangChiTiet}, -1)">-</button>
+                            <span  id="quantity-${item.idGioHangChiTiet}">${item.soLuong || 0}</span>
+                            <button ${disableIncreaseButton} onclick="updateQuantity(${item.idGioHangChiTiet}, 1)">+</button>
                         </div>
+                        ${outOfStockWarning}
                     </div>
                     <button class="remove-item" onclick="removeFromCart(${item.idGioHangChiTiet})">✕</button>
                 `;
+
                                 cartList.appendChild(li);
                             });
 
                             totalPriceElement.innerText = totalPrice.toLocaleString() + "đ";
+
+                            // Nếu có sản phẩm hết hàng, disable nút thanh toán
+                            if (hasOutOfStock) {
+                                checkoutButton.disabled = true;
+                                checkoutButton.classList.add("disabled");
+                                notyf.error("Có sản phẩm hết hàng, vui lòng kiểm tra lại!");
+                            }
                         })
                         .catch(error => {
                             console.error("Lỗi khi tải giỏ hàng:", error);
@@ -255,6 +271,7 @@
                             notyf.error("Lỗi tải giỏ hàng!");
                         });
                 }
+
 
 
 
@@ -269,20 +286,7 @@
                     let newQuantity = parseInt(quantityElement.innerText) + change;
 
                     if (newQuantity < 1) {
-                        Swal.fire({
-                            tiltle: "Bạn có muốn xóa sản phẩm khỏi giỏ hàng ?",
-                            text: "Xóa sản phẩm khỏi giỏ hàng",
-                            icon: "warning",
-                            showCancelButton: true,
-                            confirmButtonText: "Xóa",
-                            cancelButtonText: "Hủy"
 
-                        }).then((result) => {
-                            if (result.value) {
-                                console.log(idGHCT)
-                                removeFromCart(idGHCT);
-                            }
-                        });
 
                     }
 
@@ -291,6 +295,7 @@
                             if (!response.ok) {
                                 return response.json().then(err => {
                                     throw new Error(notyf.error(err.message || "Cập nhật sản phẩm thất bại"));
+                                    return;
                                 });
                             }
                             return response.json();
@@ -299,12 +304,10 @@
                             if (data.success) {
                                 loadCartItems();
                             } else if (data.message) {
-                                notyf.error(message)
-                            } else {
-                                notyf.error("Cập nhật số lượng thất bại");
+                                notyf.error(message + "cập nhật số lượng thất bại")
                             }
                         })
-                        .catch(error => notyf.error("Cập nhật số lượng thất bại"));
+                        .catch(error => console.error("Lỗi cập nhật số lượng:", error));
                 }
 
             </script>
