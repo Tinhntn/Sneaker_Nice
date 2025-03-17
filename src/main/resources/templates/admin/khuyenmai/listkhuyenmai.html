@@ -58,9 +58,9 @@
                     <tr th:each="khuyenMai : ${listKhuyenMai}">
                         <td th:text="${khuyenMai.maKhuyenMai}"></td>
                         <td th:text="${khuyenMai.tenKhuyenMai}"></td>
-                        <td th:text="${khuyenMai.giaTriGiam}"></td>
-                        <td th:text="${khuyenMai.dieuKienApDung}"></td>
-                        <td th:text="${khuyenMai.mucGiamGiaToiDa}"></td>
+                        <td th:text="${#numbers.formatDecimal(khuyenMai.giaTriGiam, 0, 'COMMA', 0, 'POINT')} + ' VNĐ'"></td>
+                        <td th:text="${#numbers.formatDecimal(khuyenMai.dieuKienApDung, 0, 'COMMA', 0, 'POINT')} + ' VNĐ'"></td>
+                        <td th:text="${#numbers.formatDecimal(khuyenMai.mucGiamGiaToiDa, 0, 'COMMA', 0, 'POINT')} + ' VNĐ'"></td>
                         <!-- <td th:text="${khuyenMai.loaiKhuyenMai}!=null?${khuyenMai.loaiKhuyenMai}:'Không có'"></td> -->
                         <td th:text="${#dates.format(khuyenMai.ngayBatDau, 'yyyy-MM-dd')}"></td>
                         <td th:text="${#dates.format(khuyenMai.ngayKetThuc, 'yyyy-MM-dd')}"></td>

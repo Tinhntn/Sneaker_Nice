@@ -1,588 +1,692 @@
 <!DOCTYPE html>
-<html lang="vi" xmlns:th="http://www.thymeleaf.org"
-      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-      layout:decorate="~{layout/main}">
+<html lang="vi" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+    layout:decorate="~{layout/main}">
 
 <body>
-<div layout:fragment="content">
+    <div layout:fragment="content">
 
-    <div th:if="${message}">
-        <script th:inline="javascript">
-            /*<![CDATA[*/
-            var errorMessage = /*[[${message}]]*/ 'null';
-            if (errorMessage !== 'null') {
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Thất bại',
-                    text: errorMessage,
-                    confirmButtonText: 'OK'
-                });
-            }
-            /*]]>*/
-        </script>
-    </div>
+        <div th:if="${message}">
+            <script th:inline="javascript">
+                /*<![CDATA[*/
+                var errorMessage = /*[[${message}]]*/ 'null';
+                if (errorMessage !== 'null') {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Thất bại',
+                        text: errorMessage,
+                        confirmButtonText: 'OK'
+                    });
+                }
+                /*]]>*/
+            </script>
+        </div>
 
-    <div th:if="${thanhcong}">
-        <script th:inline="javascript">
-            /*<![CDATA[*/
-            var successMessage = /*[[${thanhcong}]]*/ 'null';
-            if (successMessage !== 'null') {
-                Swal.fire({
-                    icon: 'success',
-                    title: 'Thành công',
-                    text: successMessage,
-                    confirmButtonText: 'OK'
-                });
-            }
-            /*]]>*/
-        </script>
-    </div>
+        <div th:if="${thanhcong}">
+            <script th:inline="javascript">
+                /*<![CDATA[*/
+                var successMessage = /*[[${thanhcong}]]*/ 'null';
+                if (successMessage !== 'null') {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Thành công',
+                        text: successMessage,
+                        confirmButtonText: 'OK'
+                    });
+                }
+                /*]]>*/
+            </script>
+        </div>
 
-    <h1>Quản Lý hóa đơn online</h1>
+        <h1>Quản Lý hóa đơn online</h1>
 
-    <ul class="nav nav-tabs" id="myTab" role="tablist">
-        <li class="nav-item" th:classappend="${tabActive == 'tab1'} ? 'nav-item' : 'nav-item'">
-            <a class="nav-link active" id="tab1-tab" data-bs-toggle="tab" href="#tab1" role="tab" aria-controls="tab1" aria-selected="true">Tất cả</a>
-        </li>
-        <li class="nav-item" th:classappend="${tabActive == 'tab2'} ? 'nav-item' : 'nav-item'">
-            <a class="nav-link" id="tab2-tab" data-bs-toggle="tab" href="#tab2" role="tab" aria-controls="tab2" aria-selected="false">
-                Chờ xác nhận
-                <span class="badge bg-danger" th:text="${sizecxn}"></span>
-            </a>
-        </li>
-        <li class="nav-item" th:classappend="${tabActive == 'tab3'} ? 'nav-item' : 'nav-item'">
-            <a class="nav-link" id="tab3-tab" data-bs-toggle="tab" href="#tab3" role="tab" aria-controls="tab3" aria-selected="false">Chờ lấy hàng
-                <span class="badge bg-danger" th:text="${sizeclh}"></span>
-            </a>
-        </li>
-        <li class="nav-item" th:classappend="${tabActive == 'tab4'} ? 'nav-item' : 'nav-item'">
-            <a class="nav-link" id="tab4-tab" data-bs-toggle="tab" href="#tab4" role="tab" aria-controls="tab4" aria-selected="false">
-                Đang giao
-                <span class="badge bg-danger" th:text="${sizedg}"></span>
-            </a>
-        </li>
-        <li class="nav-item" th:classappend="${tabActive == 'tab5'} ? 'nav-item' : 'nav-item'">
-            <a class="nav-link" id="tab5-tab" data-bs-toggle="tab" href="#tab5" role="tab" aria-controls="tab5" aria-selected="false">
-                Đã giao
-                <span class="badge bg-danger" th:text="${sizeht}"></span>
-            </a>
-        </li>
-        <li class="nav-item" th:classappend="${tabActive == 'tab6'} ? 'nav-item' : 'nav-item'">
-            <a class="nav-link" id="tab6-tab" data-bs-toggle="tab" href="#tab6" role="tab" aria-controls="tab6" aria-selected="false">Đã hủy
-                <span class="badge bg-danger" th:text="${sizeDH}"></span>
-            </a>
-        </li>
-<!--        <li class="nav-item" th:classappend="${tabActive == 'tab7'} ? 'nav-item' : 'nav-item'">-->
-<!--            <a class="nav-link" id="tab7-tab" data-bs-toggle="tab" href="#tab7" role="tab" aria-controls="tab7" aria-selected="false">Trả hàng</a>-->
-<!--        </li>-->
-    </ul>
+        <ul class="nav nav-tabs" id="myTab" role="tablist">
+            <li class="nav-item" th:classappend="${tabActive == 'tab1'} ? 'nav-item' : 'nav-item'">
+                <a class="nav-link active" id="tab1-tab" data-bs-toggle="tab" href="#tab1" role="tab"
+                    aria-controls="tab1" aria-selected="true">Tất cả</a>
+            </li>
+            <li class="nav-item" th:classappend="${tabActive == 'tab2'} ? 'nav-item' : 'nav-item'">
+                <a class="nav-link" id="tab2-tab" data-bs-toggle="tab" href="#tab2" role="tab" aria-controls="tab2"
+                    aria-selected="false">
+                    Chờ xác nhận
+                    <span class="badge bg-danger" th:text="${sizecxn}"></span>
+                </a>
+            </li>
+            <li class="nav-item" th:classappend="${tabActive == 'tab3'} ? 'nav-item' : 'nav-item'">
+                <a class="nav-link" id="tab3-tab" data-bs-toggle="tab" href="#tab3" role="tab" aria-controls="tab3"
+                    aria-selected="false">Chờ lấy hàng
+                    <span class="badge bg-danger" th:text="${sizeclh}"></span>
+                </a>
+            </li>
+            <li class="nav-item" th:classappend="${tabActive == 'tab4'} ? 'nav-item' : 'nav-item'">
+                <a class="nav-link" id="tab4-tab" data-bs-toggle="tab" href="#tab4" role="tab" aria-controls="tab4"
+                    aria-selected="false">
+                    Đang giao
+                    <span class="badge bg-danger" th:text="${sizedg}"></span>
+                </a>
+            </li>
+            <li class="nav-item" th:classappend="${tabActive == 'tab5'} ? 'nav-item' : 'nav-item'">
+                <a class="nav-link" id="tab5-tab" data-bs-toggle="tab" href="#tab5" role="tab" aria-controls="tab5"
+                    aria-selected="false">
+                    Đã giao
+                    <span class="badge bg-danger" th:text="${sizeht}"></span>
+                </a>
+            </li>
+            <li class="nav-item" th:classappend="${tabActive == 'tab6'} ? 'nav-item' : 'nav-item'">
+                <a class="nav-link" id="tab6-tab" data-bs-toggle="tab" href="#tab6" role="tab" aria-controls="tab6"
+                    aria-selected="false">Đã hủy
+                    <span class="badge bg-danger" th:text="${sizeDH}"></span>
+                </a>
+            </li>
+            <!--        <li class="nav-item" th:classappend="${tabActive == 'tab7'} ? 'nav-item' : 'nav-item'">-->
+            <!--            <a class="nav-link" id="tab7-tab" data-bs-toggle="tab" href="#tab7" role="tab" aria-controls="tab7" aria-selected="false">Trả hàng</a>-->
+            <!--        </li>-->
+        </ul>
 
-    <!-- Nội dung của các tab -->
-    <div class="tab-content" id="myTabContent">
-        <div class="tab-pane fade show active" id="tab1" role="tabpanel" aria-labelledby="tab1-tab">
-            <div class="container">
-                <div class="row" style="margin-top: 15px">
-                    <div class="col-md-12">
-                        <!-- Sử dụng th:each để lặp qua danh sách hdcxn -->
+        <!-- Nội dung của các tab -->
+        <div class="tab-content" id="myTabContent">
+            <div class="tab-pane fade show active" id="tab1" role="tabpanel" aria-labelledby="tab1-tab">
+                <div class="container">
+                    <div class="row" style="margin-top: 15px">
+                        <div class="col-md-12">
+                            <!-- Sử dụng th:each để lặp qua danh sách hdcxn -->
 
+                        </div>
                     </div>
                 </div>
+
             </div>
+            <!-- Chờ xác nhận -->
+            <div class="tab-pane fade" id="tab2" role="tabpanel" aria-labelledby="tab2-tab">
+                <div class="container">
+                    <div class="row" style="margin-top: 15px">
+                        <div class="col-md-12">
+                            <!-- Sử dụng th:each để lặp qua danh sách hdcxn -->
+                            <div class="card mb-3">
+                                <div class="card-body" style="background-color: wheat; padding-top: 15px;">
+                                    <!--                                <h5 class="card-title">Mã hóa đơn: <span th:text="${hdcxn.maHoaDon}"></span></h5>-->
+                                    <!--                                <p class="card-text text-muted">Trạng thái: Chờ xác nhận</p>-->
+                                    <table class="table table-header">
+                                        <thead>
+                                            <tr>
+                                                <th>Mã</th>
+                                                <th>Tên khách hàng</th>
+                                                <th>Tổng số tiền</th>
+                                                <th>Thành tiền</th>
+                                                <th>Ngày tạo</th>
+                                                <!-- <th>Loại hóa đơn</th> -->
+                                                <!-- <th>Mô tả</th> -->
+                                                <!--                                        <th>Trạng thái</th>-->
+                                                <th>Thao tác</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr th:each="hdcxn : ${listHoaDonCXN}">
+                                                <td th:text="${hdcxn.maHoaDon}"></td>
+                                                <td th:text="${hdcxn.tenKhachHang}"></td>
+                                                <td
+                                                    th:text="${#numbers.formatInteger(hdcxn.tongTien,3,'COMMA')} +  ' VND'">
+                                                </td>
+                                                <td
+                                                    th:text="${#numbers.formatInteger(hdcxn.thanhTien,3,'COMMA')} +  ' VND'">
+                                                </td>
+                                                <!-- <td th:text="${hdcxn.loaiKhuyenMai}!=null?${hdcxn.loaiKhuyenMai}:'Không có'"></td> -->
+                                                <td th:text="${hdcxn.ngayTao}"></td>
 
-        </div>
-        <!-- Chờ xác nhận -->
-        <div class="tab-pane fade" id="tab2" role="tabpanel" aria-labelledby="tab2-tab">
-            <div class="container">
-                <div class="row" style="margin-top: 15px">
-                    <div class="col-md-12">
-                        <!-- Sử dụng th:each để lặp qua danh sách hdcxn -->
-                        <div th:each="hdcxn : ${listHoaDonCXN}" class="card mb-3">
-                            <div class="card-body" style="background-color: wheat; padding-top: 15px;">
-                                <h5 class="card-title">Mã hóa đơn: <span th:text="${hdcxn.maHoaDon}"></span></h5>
-                                <p class="card-text text-muted">Trạng thái: Chờ xác nhận</p>
-                                <hr>
-                                <div class="d-flex justify-content-between">
-                                    <button class="btn btn-outline-secondary" th:data-id="${hdcxn.id}" onclick="showOrderDetails(this)">
-                                        Chi tiết đơn hàng
-                                    </button>
-                                    <div class="d-inline-flex">
-                                    <form id="huy" th:action="@{/hoadononline/huydh/{id}(id=${hdcxn.id})}" method="post">
-                                        <input type="hidden" id="ghichu" name="ghichu" value="">
-                                        <button id="cfhuy" type="button" class="btn btn-outline-secondary">Huỷ</button>
-                                    </form>
-                                    <form id="xacnhan" th:action="@{/hoadononline/xacnhanhoadoncho/{id}(id=${hdcxn.id})}" method="post">
-                                        <input type="hidden" id="" name="ghichu" value="">
-                                        <button id="cfxacnhan" type="button" class="btn btn-outline-secondary">Xác nhận</button>
-                                    </form>
-                                        </div>
-                                   <!-- scrip confim xac nhan-->
-                                    <script th:inline="javascript">
-                                        /*<![CDATA[*/
-                                        document.getElementById('cfxacnhan').addEventListener('click', function() {
-                                            Swal.fire({
-                                                icon: 'warning',
-                                                title: 'Xác nhận đơn hàng',
-                                                text: 'Bạn có chắc chắn muốn xác nhận?',
-                                                showCancelButton: true,
-                                                confirmButtonText: 'Đồng ý',
-                                                cancelButtonText: 'Hủy bỏ'
-                                            }).then((result) => {
-                                                if (result.isConfirmed) {
-                                                    document.getElementById('xacnhan').submit(); // Submit form khi xác nhận
-                                                }
-                                            });
-                                        });
-                                        /*]]>*/
-                                    </script>
+                                                <!--                                        <td th:text="${hdcxn.trangThai == true ? 'Còn hoạt động' : 'Không hoạt động'}"></td>-->
+                                                <td>
+                                                    <a
+                                                        th:href="@{/hoadononline/detailhoadononlinect/{id}(id=${hdcxn.id})}">
+                                                        <button type="button" class="btn btn-outline-primary">Chi
+                                                            tiết</button>
+                                                    </a>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                    <hr>
+                                    <!--                                <div class="d-flex justify-content-between">-->
+                                    <!--                                    <button class="btn btn-outline-secondary" th:data-id="${hdcxn.id}" onclick="showOrderDetails(this)">-->
+                                    <!--                                        Chi tiết đơn hàng-->
+                                    <!--                                    </button>-->
+                                    <!--                                    <div class="d-inline-flex">-->
+                                    <!--                                    <form id="huy" th:action="@{/hoadononline/huydh/{id}(id=${hdcxn.id})}" method="post">-->
+                                    <!--                                        <input type="hidden" id="ghichu" name="ghichu" value="">-->
+                                    <!--                                        <button id="cfhuy" type="button" class="btn btn-outline-secondary">Huỷ</button>-->
+                                    <!--                                    </form>-->
+                                    <!--                                    <form id="xacnhan" th:action="@{/hoadononline/xacnhanhoadoncho/{id}(id=${hdcxn.id})}" method="post">-->
+                                    <!--                                        <input type="hidden" id="" name="ghichu" value="">-->
+                                    <!--                                        <button id="cfxacnhan" type="button" class="btn btn-outline-secondary">Xác nhận</button>-->
+                                    <!--                                    </form>-->
+                                    <!--                                        </div>-->
+                                    <!--                                   &lt;!&ndash; scrip confim xac nhan&ndash;&gt;-->
+                                    <!--                                    <script th:inline="javascript">-->
+                                    <!--                                        /*<![CDATA[*/-->
+                                    <!--                                        document.getElementById('cfxacnhan').addEventListener('click', function() {-->
+                                    <!--                                            Swal.fire({-->
+                                    <!--                                                icon: 'warning',-->
+                                    <!--                                                title: 'Xác nhận đơn hàng',-->
+                                    <!--                                                text: 'Bạn có chắc chắn muốn xác nhận?',-->
+                                    <!--                                                showCancelButton: true,-->
+                                    <!--                                                confirmButtonText: 'Đồng ý',-->
+                                    <!--                                                cancelButtonText: 'Hủy bỏ'-->
+                                    <!--                                            }).then((result) => {-->
+                                    <!--                                                if (result.isConfirmed) {-->
+                                    <!--                                                    document.getElementById('xacnhan').submit(); // Submit form khi xác nhận-->
+                                    <!--                                                }-->
+                                    <!--                                            });-->
+                                    <!--                                        });-->
+                                    <!--                                        /*]]>*/-->
+                                    <!--                                    </script>-->
 
 
-                                    <!--       //scrip confim huy-->
-                                    <script th:inline="javascript">
-                                        /*<![CDATA[*/
-                                        document.getElementById('cfhuy').addEventListener('click', function(event) {
-                                            event.preventDefault(); // Ngăn chặn hành vi mặc định của button
+                                    <!--                                    &lt;!&ndash;       //scrip confim huy&ndash;&gt;-->
+                                    <!--                                    <script th:inline="javascript">-->
+                                    <!--                                        /*<![CDATA[*/-->
+                                    <!--                                        document.getElementById('cfhuy').addEventListener('click', function(event) {-->
+                                    <!--                                            event.preventDefault(); // Ngăn chặn hành vi mặc định của button-->
 
-                                            // Hiển thị hộp thoại nhập ghi chú
-                                            Swal.fire({
-                                                title: 'Xác nhận hủy',
-                                                text: 'Bạn có chắc chắn muốn hủy?',
-                                                icon: 'warning',
-                                                html: `
-                                        <form id="cancelForm">
-                                            <div class="form-check">
-                                                <input class="form-check-input" type="radio" name="reason" id="reason1" value="Thay đổi địa chỉ" checked>
-                                                <label class="form-check-label" for="reason1">Thay đổi địa chỉ</label>
-                                            </div>
-                                            <div class="form-check">
-                                                <input class="form-check-input" type="radio" name="reason" id="reason2" value="Không thấy phù hợp nữa">
-                                                <label class="form-check-label" for="reason2">Không thấy phù hợp nữa</label>
-                                            </div>
-                                            <div class="form-check">
-                                                <input class="form-check-input" type="radio" name="reason" id="reason3" value="Tìm thấy giá rẻ hơn ở nơi khác">
-                                                <label class="form-check-label" for="reason3">Tìm thấy giá rẻ hơn ở nơi khác</label>
-                                            </div>
-                                            <div class="form-check">
-                                                <input class="form-check-input" type="radio" name="reason" id="reason4" value="Đơn hàng bị đặt nhầm hoặc sai sản phẩm">
-                                                <label class="form-check-label" for="reason4">Đơn hàng bị đặt nhầm hoặc sai sản phẩm</label>
-                                            </div>
-                                        </form>`,
-                                                inputValidator: () => {
-                                                    const radios = document.querySelectorAll('input[name="reason"]');
-                                                    let selected = false;
-                                                    radios.forEach(radio => {
-                                                        if (radio.checked) {
-                                                            selected = true;
-                                                        }
-                                                    });
-                                                    if (!selected) {
-                                                        return 'Bạn cần chọn một lý do để xác nhận hủy đơn hàng!';
-                                                    }
-                                                },
-                                                showCancelButton: true,
-                                                confirmButtonText: 'Đồng ý',
-                                                cancelButtonText: 'Hủy bỏ',
-                                                preConfirm: () => {
-                                                    const radios = document.querySelectorAll('input[name="reason"]');
-                                                    let selectedReason = '';
-                                                    radios.forEach(radio => {
-                                                        if (radio.checked) {
-                                                            selectedReason = radio.value;
-                                                        }
-                                                    });
-                                                    document.getElementById('ghichu').value = selectedReason; // Lưu lý do vào input hidden
-                                                }
-                                            }).then((result) => {
-                                                if (result.isConfirmed) {
-                                                    document.getElementById('huy').submit(); // Submit form sau khi người dùng xác nhận
-                                                }
-                                            });
-                                        });
-                                        /*]]>*/
-                                    </script>
+                                    <!--                                            // Hiển thị hộp thoại nhập ghi chú-->
+                                    <!--                                            Swal.fire({-->
+                                    <!--                                                title: 'Xác nhận hủy',-->
+                                    <!--                                                text: 'Bạn có chắc chắn muốn hủy?',-->
+                                    <!--                                                icon: 'warning',-->
+                                    <!--                                                html: `-->
+                                    <!--                                        <form id="cancelForm">-->
+                                    <!--                                            <div class="form-check">-->
+                                    <!--                                                <input class="form-check-input" type="radio" name="reason" id="reason1" value="Thay đổi địa chỉ" checked>-->
+                                    <!--                                                <label class="form-check-label" for="reason1">Thay đổi địa chỉ</label>-->
+                                    <!--                                            </div>-->
+                                    <!--                                            <div class="form-check">-->
+                                    <!--                                                <input class="form-check-input" type="radio" name="reason" id="reason2" value="Không thấy phù hợp nữa">-->
+                                    <!--                                                <label class="form-check-label" for="reason2">Không thấy phù hợp nữa</label>-->
+                                    <!--                                            </div>-->
+                                    <!--                                            <div class="form-check">-->
+                                    <!--                                                <input class="form-check-input" type="radio" name="reason" id="reason3" value="Tìm thấy giá rẻ hơn ở nơi khác">-->
+                                    <!--                                                <label class="form-check-label" for="reason3">Tìm thấy giá rẻ hơn ở nơi khác</label>-->
+                                    <!--                                            </div>-->
+                                    <!--                                            <div class="form-check">-->
+                                    <!--                                                <input class="form-check-input" type="radio" name="reason" id="reason4" value="Đơn hàng bị đặt nhầm hoặc sai sản phẩm">-->
+                                    <!--                                                <label class="form-check-label" for="reason4">Đơn hàng bị đặt nhầm hoặc sai sản phẩm</label>-->
+                                    <!--                                            </div>-->
+                                    <!--                                        </form>`,-->
+                                    <!--                                                inputValidator: () => {-->
+                                    <!--                                                    const radios = document.querySelectorAll('input[name="reason"]');-->
+                                    <!--                                                    let selected = false;-->
+                                    <!--                                                    radios.forEach(radio => {-->
+                                    <!--                                                        if (radio.checked) {-->
+                                    <!--                                                            selected = true;-->
+                                    <!--                                                        }-->
+                                    <!--                                                    });-->
+                                    <!--                                                    if (!selected) {-->
+                                    <!--                                                        return 'Bạn cần chọn một lý do để xác nhận hủy đơn hàng!';-->
+                                    <!--                                                    }-->
+                                    <!--                                                },-->
+                                    <!--                                                showCancelButton: true,-->
+                                    <!--                                                confirmButtonText: 'Đồng ý',-->
+                                    <!--                                                cancelButtonText: 'Hủy bỏ',-->
+                                    <!--                                                preConfirm: () => {-->
+                                    <!--                                                    const radios = document.querySelectorAll('input[name="reason"]');-->
+                                    <!--                                                    let selectedReason = '';-->
+                                    <!--                                                    radios.forEach(radio => {-->
+                                    <!--                                                        if (radio.checked) {-->
+                                    <!--                                                            selectedReason = radio.value;-->
+                                    <!--                                                        }-->
+                                    <!--                                                    });-->
+                                    <!--                                                    document.getElementById('ghichu').value = selectedReason; // Lưu lý do vào input hidden-->
+                                    <!--                                                }-->
+                                    <!--                                            }).then((result) => {-->
+                                    <!--                                                if (result.isConfirmed) {-->
+                                    <!--                                                    document.getElementById('huy').submit(); // Submit form sau khi người dùng xác nhận-->
+                                    <!--                                                }-->
+                                    <!--                                            });-->
+                                    <!--                                        });-->
+                                    <!--                                        /*]]>*/-->
+                                    <!--                                    </script>-->
 
+                                    <!--                                </div>-->
+                                    <!--                                <p class="card-text text-muted mt-2">Thành tiền: <span th:text="${hdcxn.thanhTien}"></span></p>-->
                                 </div>
-                                <p class="card-text text-muted mt-2">Thành tiền: <span th:text="${hdcxn.thanhTien}"></span></p>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
-        <!-- Chờ lấy hàng -->
-        <div class="tab-pane fade" id="tab3" role="tabpanel" aria-labelledby="tab3-tab">
-            <div class="container">
-                <div class="row" style="margin-top: 15px">
-                    <div class="col-md-12">
-                        <div th:each="hdclh : ${listHoaDonCLH}" class="card mb-3">
-                            <div class="card-body" style="background-color: wheat; padding-top: 15px;">
-                                <h5 class="card-title">Mã hóa đơn: <span th:text="${hdclh.maHoaDon}"></span></h5>
-                                <p class="card-text text-muted">Trạng thái: Chờ lấy hàng</p>
-                                <hr>
-                                <div class="d-flex justify-content-between">
-                                    <button class="btn btn-outline-secondary" th:data-id="${hdclh.id}" onclick="showOrderDetails(this)">
-                                        Chi tiết đơn hàng
-                                    </button>
-                                    <div class="d-inline-flex">
-                                        <form id="huyclh" th:action="@{/hoadononline/huydh/{id}(id=${hdclh.id})}" method="post">
-                                            <input type="hidden" id="ghichuclh" name="ghichu" value="">
-                                            <button id="cfhuyclh" type="button" class="btn btn-outline-secondary">Huỷ</button>
-                                        </form>
-                                        <form id="xacnhanclh" th:action="@{/hoadononline/xacnhanhoadondg/{id}(id=${hdclh.id})}" method="post">
-                                            <input type="hidden" id="tennguoigiao" name="tennguoigiao" value="">
-                                            <input type="hidden" id="sdtnguoigiao" name="sdtnguoigiao" value="">
-                                            <button id="cfxacnhanclh" type="button" class="btn btn-outline-secondary">Xác nhận</button>
-                                        </form>
+            <!-- Chờ lấy hàng -->
+            <div class="tab-pane fade" id="tab3" role="tabpanel" aria-labelledby="tab3-tab">
+                <div class="container">
+                    <div class="row" style="margin-top: 15px">
+                        <div class="col-md-12">
+                            <div class="card mb-3">
+                                <div class="card-body" style="background-color: wheat; padding-top: 15px;">
+                                    <!--                                <h5 class="card-title">Mã hóa đơn: <span th:text="${hdclh.maHoaDon}"></span></h5>-->
+                                    <!--                                <table class="table table-header">-->
+                                    <!--                                    <thead>-->
+                                    <!--                                    <tr>-->
+                                    <!--                                        <th>Mã</th>-->
+                                    <!--                                        <th>Tổng SP</th>-->
+                                    <!--                                        <th>Tổng số tiền</th>-->
+                                    <!--                                        <th>Tên khách hàng</th>-->
+                                    <!--                                        <th>Ngày tạo</th>-->
+                                    <!--                                        &lt;!&ndash; <th>Loại hóa đơn</th> &ndash;&gt;-->
+                                    <!--                                        &lt;!&ndash; <th>Mô tả</th> &ndash;&gt;-->
+                                    <!--                                        <th>Trạng thái</th>-->
+                                    <!--                                        <th>Thao tác</th>-->
+                                    <!--                                    </tr>-->
+                                    <!--                                    </thead>-->
+                                    <!--                                    <tbody>-->
+                                    <!--                                    <tr th:each="hdclh : ${listHoaDonCLH}">-->
+                                    <!--                                        <td th:text="${hdclh.maHoaDon}"></td>-->
+                                    <!--&lt;!&ndash;                                        <td th:text="${hdclh.tenKhuyenMai}"></td>&ndash;&gt;-->
+                                    <!--&lt;!&ndash;                                        <td th:text="${hdclh.giaTriGiam}"></td>&ndash;&gt;-->
+                                    <!--&lt;!&ndash;                                        <td th:text="${hdclh.dieuKienApDung}"></td>&ndash;&gt;-->
+                                    <!--&lt;!&ndash;                                        <td th:text="${hdclh.mucGiamGiaToiDa}"></td>&ndash;&gt;-->
+                                    <!--&lt;!&ndash;                                        &lt;!&ndash; <td th:text="${khuyenMai.loaiKhuyenMai}!=null?${khuyenMai.loaiKhuyenMai}:'Không có'"></td> &ndash;&gt;&ndash;&gt;-->
+                                    <!--&lt;!&ndash;                                        <td th:text="${#dates.format(khuyenMai.ngayBatDau, 'yyyy-MM-dd')}"></td>&ndash;&gt;-->
+                                    <!--&lt;!&ndash;                                        <td th:text="${#dates.format(khuyenMai.ngayKetThuc, 'yyyy-MM-dd')}"></td>&ndash;&gt;-->
+                                    <!--&lt;!&ndash;                                        <td th:text="${khuyenMai.soLuong}"></td>&ndash;&gt;-->
+                                    <!--&lt;!&ndash;                                        &lt;!&ndash; <td th:text="${khuyenMai.moTa}!=null?${khuyenMai.moTa}:'Không có'"></td> &ndash;&gt;&ndash;&gt;-->
+                                    <!--&lt;!&ndash;                                        <td th:text="${#dates.format(khuyenMai.ngayTao, 'yyyy-MM-dd')}"></td>&ndash;&gt;-->
+                                    <!--&lt;!&ndash;                                        <td&ndash;&gt;-->
+                                    <!--&lt;!&ndash;                                                th:text="${#dates.format(khuyenMai.ngaySua, 'yyyy-MM-dd')}!=null?${#dates.format(khuyenMai.ngaySua, 'yyyy-MM-dd')}:'Không có'">&ndash;&gt;-->
+                                    <!--&lt;!&ndash;                                        </td>&ndash;&gt;-->
+                                    <!--&lt;!&ndash;                                        <td th:text="${khuyenMai.trangThai == true ? 'Còn hoạt động' : 'Không hoạt động'}"></td>&ndash;&gt;-->
+                                    <!--&lt;!&ndash;                                        <td>&ndash;&gt;-->
+                                    <!--&lt;!&ndash;                                            <a th:href="@{/khuyenmai/detail/{id}(id=${khuyenMai.id})}">&ndash;&gt;-->
+                                    <!--&lt;!&ndash;                                                <button type="button" class="btn btn-outline-primary">Chi tiết</button>&ndash;&gt;-->
+                                    <!--&lt;!&ndash;                                            </a>&ndash;&gt;-->
+                                    <!--&lt;!&ndash;                                        </td>&ndash;&gt;-->
+                                    <!--                                    </tr>-->
+                                    <!--                                    </tbody>-->
+                                    <!--                                </table>-->
+                                    <!--                                <p class="card-text text-muted">Trạng thái: Chờ lấy hàng</p>-->
+                                    <hr>
+                                    <div class="d-flex justify-content-between">
+                                        <!--                                    <button class="btn btn-outline-secondary" th:data-id="${hdclh.id}" onclick="showOrderDetails(this)">-->
+                                        <!--                                        Chi tiết đơn hàng-->
+                                        <!--                                    </button>-->
+                                        <!--                                    <a th:href="@{/hoadononline/detailhoadononlinect/{id}(id=${hdclh.id})}">-->
+                                        <!--                                        <button type="button" class="btn btn-outline-primary">Chi tiết</button>-->
+                                        <!--                                    </a>-->
+                                        <div class="d-inline-flex">
+                                            <!--                                        <form id="huyclh" th:action="@{/hoadononline/huydh/{id}(id=${hdclh.id})}" method="post">-->
+                                            <!--                                            <input type="hidden" id="ghichuclh" name="ghichu" value="">-->
+                                            <!--                                            <button id="cfhuyclh" type="button" class="btn btn-outline-secondary">Huỷ</button>-->
+                                            <!--                                        </form>-->
+                                            <!--                                        <form id="xacnhanclh" th:action="@{/hoadononline/xacnhanhoadondg/{id}(id=${hdclh.id})}" method="post">-->
+                                            <!--                                            <input type="hidden" id="tennguoigiao" name="tennguoigiao" value="">-->
+                                            <!--                                            <input type="hidden" id="sdtnguoigiao" name="sdtnguoigiao" value="">-->
+                                            <!--                                            <button id="cfxacnhanclh" type="button" class="btn btn-outline-secondary">Xác nhận</button>-->
+                                            <!--                                        </form>-->
+                                            <!--                                    </div>-->
+                                            <!--                                    &lt;!&ndash; scrip confim xac nhan&ndash;&gt;-->
+                                            <!--                                    <script th:inline="javascript">-->
+                                            <!--                                        /*<![CDATA[*/-->
+                                            <!--                                        document.getElementById('cfxacnhanclh').addEventListener('click', function() {-->
+                                            <!--                                            Swal.fire({-->
+                                            <!--                                                icon: 'warning',-->
+                                            <!--                                                title: 'Xác nhận đơn hàng',-->
+                                            <!--                                                html: `-->
+                                            <!--                                            <input type="text" id="swal-input1" class="swal2-input" placeholder="Tên người giao">-->
+                                            <!--                                            <input type="text" id="swal-input2" class="swal2-input" placeholder="Số ĐT người giao" maxlength="10" pattern="[0-9]{10}">-->
+                                            <!--                                        `,-->
+                                            <!--                                                showCancelButton: true,-->
+                                            <!--                                                confirmButtonText: 'Đồng ý',-->
+                                            <!--                                                cancelButtonText: 'Hủy bỏ',-->
+                                            <!--                                                preConfirm: () => {-->
+                                            <!--                                                    const tenNguoiGiao = document.getElementById('swal-input1').value;-->
+                                            <!--                                                    const sdtNguoiGiao = document.getElementById('swal-input2').value;-->
+
+                                            <!--                                                    if (!tenNguoiGiao || !sdtNguoiGiao) {-->
+                                            <!--                                                        Swal.showValidationMessage('Bạn cần nhập cả tên người giao và số điện thoại!');-->
+                                            <!--                                                        return false; // Dừng quá trình nếu dữ liệu không hợp lệ-->
+                                            <!--                                                    }-->
+
+                                            <!--                                                    // Kiểm tra số điện thoại-->
+                                            <!--                                                    const phonePattern = /^[0-9]{10}$/; // Điều chỉnh mẫu regex theo yêu cầu-->
+                                            <!--                                                    if (!phonePattern.test(sdtNguoiGiao)) {-->
+                                            <!--                                                        Swal.showValidationMessage('Số điện thoại phải gồm 10 chữ số!');-->
+                                            <!--                                                        return false; // Dừng quá trình nếu số điện thoại không hợp lệ-->
+                                            <!--                                                    }-->
+
+                                            <!--                                                    return { tennguoigiao: tenNguoiGiao, sdtnguoigiao: sdtNguoiGiao };-->
+                                            <!--                                                }-->
+                                            <!--                                            }).then((result) => {-->
+                                            <!--                                                if (result.isConfirmed) {-->
+                                            <!--                                                    document.getElementById('tennguoigiao').value = result.value.tennguoigiao;-->
+                                            <!--                                                    document.getElementById('sdtnguoigiao').value = result.value.sdtnguoigiao;-->
+                                            <!--                                                    document.getElementById('xacnhanclh').submit(); // Submit form khi xác nhận-->
+                                            <!--                                                }-->
+                                            <!--                                            });-->
+                                            <!--                                        });-->
+                                            <!--                                        /*]]>*/-->
+                                            <!--                                    </script>-->
+
+                                            <!--                                    &lt;!&ndash;       //scrip confim huy&ndash;&gt;-->
+                                            <!--                                    <script th:inline="javascript">-->
+                                            <!--                                        /*<![CDATA[*/-->
+                                            <!--                                        document.getElementById('cfhuyclh').addEventListener('click', function(event) {-->
+                                            <!--                                            event.preventDefault(); // Ngăn chặn hành vi mặc định của button-->
+
+                                            <!--                                            // Hiển thị hộp thoại nhập ghi chú-->
+                                            <!--                                            Swal.fire({-->
+                                            <!--                                                title: 'Xác nhận hủy',-->
+                                            <!--                                                text: 'Bạn có chắc chắn muốn hủy?',-->
+                                            <!--                                                icon: 'warning',-->
+                                            <!--                                                html: `-->
+                                            <!--                                    <form id="cancelForm">-->
+                                            <!--                                        <div class="form-check">-->
+                                            <!--                                            <input class="form-check-input" type="radio" name="reason" id="reason1" value="Thay đổi địa chỉ" checked>-->
+                                            <!--                                            <label class="form-check-label" for="reason1">Thay đổi địa chỉ</label>-->
+                                            <!--                                        </div>-->
+                                            <!--                                        <div class="form-check">-->
+                                            <!--                                            <input class="form-check-input" type="radio" name="reason" id="reason2" value="Không thấy phù hợp nữa">-->
+                                            <!--                                            <label class="form-check-label" for="reason2">Không thấy phù hợp nữa</label>-->
+                                            <!--                                        </div>-->
+                                            <!--                                        <div class="form-check">-->
+                                            <!--                                            <input class="form-check-input" type="radio" name="reason" id="reason3" value="Tìm thấy giá rẻ hơn ở nơi khác">-->
+                                            <!--                                            <label class="form-check-label" for="reason3">Tìm thấy giá rẻ hơn ở nơi khác</label>-->
+                                            <!--                                        </div>-->
+                                            <!--                                        <div class="form-check">-->
+                                            <!--                                            <input class="form-check-input" type="radio" name="reason" id="reason4" value="Đơn hàng bị đặt nhầm hoặc sai sản phẩm">-->
+                                            <!--                                            <label class="form-check-label" for="reason4">Đơn hàng bị đặt nhầm hoặc sai sản phẩm</label>-->
+                                            <!--                                        </div>-->
+                                            <!--                                    </form>`,-->
+                                            <!--                                                inputValidator: () => {-->
+                                            <!--                                                    const radios = document.querySelectorAll('input[name="reason"]');-->
+                                            <!--                                                    let selected = false;-->
+                                            <!--                                                    radios.forEach(radio => {-->
+                                            <!--                                                        if (radio.checked) {-->
+                                            <!--                                                            selected = true;-->
+                                            <!--                                                        }-->
+                                            <!--                                                    });-->
+                                            <!--                                                    if (!selected) {-->
+                                            <!--                                                        return 'Bạn cần chọn một lý do để xác nhận hủy đơn hàng!';-->
+                                            <!--                                                    }-->
+                                            <!--                                                },-->
+                                            <!--                                                showCancelButton: true,-->
+                                            <!--                                                confirmButtonText: 'Đồng ý',-->
+                                            <!--                                                cancelButtonText: 'Hủy bỏ',-->
+                                            <!--                                                preConfirm: () => {-->
+                                            <!--                                                    const radios = document.querySelectorAll('input[name="reason"]');-->
+                                            <!--                                                    let selectedReason = '';-->
+                                            <!--                                                    radios.forEach(radio => {-->
+                                            <!--                                                        if (radio.checked) {-->
+                                            <!--                                                            selectedReason = radio.value;-->
+                                            <!--                                                        }-->
+                                            <!--                                                    });-->
+                                            <!--                                                    document.getElementById('ghichuclh').value = selectedReason; // Lưu lý do vào input hidden-->
+                                            <!--                                                }-->
+                                            <!--                                            }).then((result) => {-->
+                                            <!--                                                if (result.isConfirmed) {-->
+                                            <!--                                                    document.getElementById('huyclh').submit(); // Submit form sau khi người dùng xác nhận-->
+                                            <!--                                                }-->
+                                            <!--                                            });-->
+                                            <!--                                        });-->
+                                            <!--                                        /*]]>*/-->
+                                            <!--                                    </script>-->
+
+                                            <!--                                </div>-->
+                                            <!--                                <p class="card-text text-muted mt-2">Thành tiền: <span th:text="${hdclh.thanhTien}"></span></p>-->
+                                        </div>
                                     </div>
-                                    <!-- scrip confim xac nhan-->
-                                    <script th:inline="javascript">
-                                        /*<![CDATA[*/
-                                        document.getElementById('cfxacnhanclh').addEventListener('click', function() {
-                                            Swal.fire({
-                                                icon: 'warning',
-                                                title: 'Xác nhận đơn hàng',
-                                                html: `
-                                            <input type="text" id="swal-input1" class="swal2-input" placeholder="Tên người giao">
-                                            <input type="text" id="swal-input2" class="swal2-input" placeholder="Số ĐT người giao" maxlength="10" pattern="[0-9]{10}">
-                                        `,
-                                                showCancelButton: true,
-                                                confirmButtonText: 'Đồng ý',
-                                                cancelButtonText: 'Hủy bỏ',
-                                                preConfirm: () => {
-                                                    const tenNguoiGiao = document.getElementById('swal-input1').value;
-                                                    const sdtNguoiGiao = document.getElementById('swal-input2').value;
-
-                                                    if (!tenNguoiGiao || !sdtNguoiGiao) {
-                                                        Swal.showValidationMessage('Bạn cần nhập cả tên người giao và số điện thoại!');
-                                                        return false; // Dừng quá trình nếu dữ liệu không hợp lệ
-                                                    }
-
-                                                    // Kiểm tra số điện thoại
-                                                    const phonePattern = /^[0-9]{10}$/; // Điều chỉnh mẫu regex theo yêu cầu
-                                                    if (!phonePattern.test(sdtNguoiGiao)) {
-                                                        Swal.showValidationMessage('Số điện thoại phải gồm 10 chữ số!');
-                                                        return false; // Dừng quá trình nếu số điện thoại không hợp lệ
-                                                    }
-
-                                                    return { tennguoigiao: tenNguoiGiao, sdtnguoigiao: sdtNguoiGiao };
-                                                }
-                                            }).then((result) => {
-                                                if (result.isConfirmed) {
-                                                    document.getElementById('tennguoigiao').value = result.value.tennguoigiao;
-                                                    document.getElementById('sdtnguoigiao').value = result.value.sdtnguoigiao;
-                                                    document.getElementById('xacnhanclh').submit(); // Submit form khi xác nhận
-                                                }
-                                            });
-                                        });
-                                        /*]]>*/
-                                    </script>
-
-                                    <!--       //scrip confim huy-->
-                                    <script th:inline="javascript">
-                                        /*<![CDATA[*/
-                                        document.getElementById('cfhuyclh').addEventListener('click', function(event) {
-                                            event.preventDefault(); // Ngăn chặn hành vi mặc định của button
-
-                                            // Hiển thị hộp thoại nhập ghi chú
-                                            Swal.fire({
-                                                title: 'Xác nhận hủy',
-                                                text: 'Bạn có chắc chắn muốn hủy?',
-                                                icon: 'warning',
-                                                html: `
-                                    <form id="cancelForm">
-                                        <div class="form-check">
-                                            <input class="form-check-input" type="radio" name="reason" id="reason1" value="Thay đổi địa chỉ" checked>
-                                            <label class="form-check-label" for="reason1">Thay đổi địa chỉ</label>
-                                        </div>
-                                        <div class="form-check">
-                                            <input class="form-check-input" type="radio" name="reason" id="reason2" value="Không thấy phù hợp nữa">
-                                            <label class="form-check-label" for="reason2">Không thấy phù hợp nữa</label>
-                                        </div>
-                                        <div class="form-check">
-                                            <input class="form-check-input" type="radio" name="reason" id="reason3" value="Tìm thấy giá rẻ hơn ở nơi khác">
-                                            <label class="form-check-label" for="reason3">Tìm thấy giá rẻ hơn ở nơi khác</label>
-                                        </div>
-                                        <div class="form-check">
-                                            <input class="form-check-input" type="radio" name="reason" id="reason4" value="Đơn hàng bị đặt nhầm hoặc sai sản phẩm">
-                                            <label class="form-check-label" for="reason4">Đơn hàng bị đặt nhầm hoặc sai sản phẩm</label>
-                                        </div>
-                                    </form>`,
-                                                inputValidator: () => {
-                                                    const radios = document.querySelectorAll('input[name="reason"]');
-                                                    let selected = false;
-                                                    radios.forEach(radio => {
-                                                        if (radio.checked) {
-                                                            selected = true;
-                                                        }
-                                                    });
-                                                    if (!selected) {
-                                                        return 'Bạn cần chọn một lý do để xác nhận hủy đơn hàng!';
-                                                    }
-                                                },
-                                                showCancelButton: true,
-                                                confirmButtonText: 'Đồng ý',
-                                                cancelButtonText: 'Hủy bỏ',
-                                                preConfirm: () => {
-                                                    const radios = document.querySelectorAll('input[name="reason"]');
-                                                    let selectedReason = '';
-                                                    radios.forEach(radio => {
-                                                        if (radio.checked) {
-                                                            selectedReason = radio.value;
-                                                        }
-                                                    });
-                                                    document.getElementById('ghichuclh').value = selectedReason; // Lưu lý do vào input hidden
-                                                }
-                                            }).then((result) => {
-                                                if (result.isConfirmed) {
-                                                    document.getElementById('huyclh').submit(); // Submit form sau khi người dùng xác nhận
-                                                }
-                                            });
-                                        });
-                                        /*]]>*/
-                                    </script>
-
                                 </div>
-                                <p class="card-text text-muted mt-2">Thành tiền: <span th:text="${hdclh.thanhTien}"></span></p>
                             </div>
                         </div>
                     </div>
-                </div>
-            </div>
-        </div>
 
-        <!-- đang vận chuyển -->
-        <div class="tab-pane fade" id="tab4" role="tabpanel" aria-labelledby="tab4-tab">
-            <div class="container">
-                <div class="row" style="margin-top: 15px">
-                    <div class="col-md-12">
-                        <div th:each="hddg : ${listHoaDonDG}" class="card mb-3">
-                            <div class="card-body" style="background-color: wheat; padding-top: 15px;">
-                                <h5 class="card-title">Mã hóa đơn: <span th:text="${hddg.maHoaDon}"></span></h5>
-                                <p class="card-text text-muted">Trạng thái: Đang vận chuyển</p>
-                                <hr>
-                                <div class="d-flex justify-content-between">
-                                    <button class="btn btn-outline-secondary" th:data-id="${hddg.id}" onclick="showOrderDetails(this)">
-                                        Chi tiết đơn hàng
-                                    </button>
-                                    <div class="d-inline-flex">
-                                        <form id="xacnhandg" th:action="@{/hoadononline/xacnhanhoadonhoanthanh/{id}(id=${hddg.id})}" method="post">
-                                            <input type="hidden" name="tennguoigiao" value="">
-                                            <input type="hidden" name="sdtnguoigiao" value="">
-                                            <button id="cfxacnhandg" type="button" class="btn btn-outline-secondary">Xác nhận</button>
-                                        </form>
-                                    </div>
-                                    <!-- Script confirm xác nhận -->
-                                    <script th:inline="javascript">
-                                        /*<![CDATA[*/
-                                        document.getElementById('cfxacnhandg').addEventListener('click', function() {
-                                            Swal.fire({
-                                                title: 'Xác nhận đơn hàng',
-                                                html:
-                                                    '<input type="radio" id="thanhcong" name="trangthai" value="thanhcong">' +
-                                                    '<label for="thanhcong"> Giao hàng thành công</label><br>' +
-                                                    '<input type="radio" id="thatbai" name="trangthai" value="thatbai">' +
-                                                    '<label for="thatbai"> Giao hàng thất bại</label><br>' +
-                                                    '<div id="ghichuContainer" style="display: none; margin-top: 10px;">' +
-                                                    '<label for="ghichu">Ghi chú</label>' +
-                                                    '<textarea id="ghichu" class="swal2-textarea" placeholder="Nhập ghi chú"></textarea>' +
-                                                    '</div>',
-                                                showCancelButton: true,
-                                                confirmButtonText: 'Đồng ý',
-                                                cancelButtonText: 'Hủy bỏ',
-                                                preConfirm: () => {
-                                                    const trangthai = document.querySelector('input[name="trangthai"]:checked');
-                                                    if (!trangthai) {
-                                                        Swal.showValidationMessage('Vui lòng chọn trạng thái giao hàng');
-                                                        return false;
-                                                    }
-                                                    if (trangthai.value === 'thatbai') {
-                                                        const ghichu = Swal.getPopup().querySelector('#ghichu').value.trim();
-                                                        if (!ghichu) {
-                                                            Swal.showValidationMessage('Vui lòng điền ghi chú khi giao hàng thất bại');
-                                                            return false;
-                                                        }
-                                                    }
-                                                    return {
-                                                        trangthai: trangthai.value,
-                                                        ghichu: trangthai.value === 'thatbai' ? Swal.getPopup().querySelector('#ghichu').value.trim() : ''
-                                                    };
-                                                }
-                                            }).then((result) => {
-                                                if (result.isConfirmed) {
-                                                    // Thêm giá trị vào form
-                                                    const form = document.getElementById('xacnhandg');
-                                                    const trangthaiInput = document.createElement('input');
-                                                    trangthaiInput.type = 'hidden';
-                                                    trangthaiInput.name = 'trangthai';
-                                                    trangthaiInput.value = result.value.trangthai;
-                                                    form.appendChild(trangthaiInput);
-
-                                                    if (result.value.trangthai === 'thatbai') {
-                                                        const ghichuInput = document.createElement('input');
-                                                        ghichuInput.type = 'hidden';
-                                                        ghichuInput.name = 'ghichu';
-                                                        ghichuInput.value = result.value.ghichu;
-                                                        form.appendChild(ghichuInput);
-
-                                                        // Hiển thị thông báo không thành công
+                    <!-- đang vận chuyển -->
+                    <div class="tab-pane fade" id="tab4" role="tabpanel" aria-labelledby="tab4-tab">
+                        <div class="container">
+                            <div class="row" style="margin-top: 15px">
+                                <div class="col-md-12">
+                                    <div th:each="hddg : ${listHoaDonDG}" class="card mb-3">
+                                        <div class="card-body" style="background-color: wheat; padding-top: 15px;">
+                                            <h5 class="card-title">Mã hóa đơn: <span th:text="${hddg.maHoaDon}"></span>
+                                            </h5>
+                                            <p class="card-text text-muted">Trạng thái: Đang vận chuyển</p>
+                                            <hr>
+                                            <div class="d-flex justify-content-between">
+                                                <button class="btn btn-outline-secondary" th:data-id="${hddg.id}"
+                                                    onclick="showOrderDetails(this)">
+                                                    Chi tiết đơn hàng
+                                                </button>
+                                                <div class="d-inline-flex">
+                                                    <form id="xacnhandg"
+                                                        th:action="@{/hoadononline/xacnhanhoadonhoanthanh/{id}(id=${hddg.id})}"
+                                                        method="post">
+                                                        <input type="hidden" name="tennguoigiao" value="">
+                                                        <input type="hidden" name="sdtnguoigiao" value="">
+                                                        <button id="cfxacnhandg" type="button"
+                                                            class="btn btn-outline-secondary">Xác nhận</button>
+                                                    </form>
+                                                </div>
+                                                <!-- Script confirm xác nhận -->
+                                                <script th:inline="javascript">
+                                                    /*<![CDATA[*/
+                                                    document.getElementById('cfxacnhandg').addEventListener('click', function () {
                                                         Swal.fire({
-                                                            icon: 'info',
-                                                            title: 'Giao hàng thất bại',
-                                                            text: 'Đơn hàng đã được cập nhật trạng thái thất bại.',
-                                                            confirmButtonText: 'OK'
+                                                            title: 'Xác nhận đơn hàng',
+                                                            html:
+                                                                '<input type="radio" id="thanhcong" name="trangthai" value="thanhcong">' +
+                                                                '<label for="thanhcong"> Giao hàng thành công</label><br>' +
+                                                                '<input type="radio" id="thatbai" name="trangthai" value="thatbai">' +
+                                                                '<label for="thatbai"> Giao hàng thất bại</label><br>' +
+                                                                '<div id="ghichuContainer" style="display: none; margin-top: 10px;">' +
+                                                                '<label for="ghichu">Ghi chú</label>' +
+                                                                '<textarea id="ghichu" class="swal2-textarea" placeholder="Nhập ghi chú"></textarea>' +
+                                                                '</div>',
+                                                            showCancelButton: true,
+                                                            confirmButtonText: 'Đồng ý',
+                                                            cancelButtonText: 'Hủy bỏ',
+                                                            preConfirm: () => {
+                                                                const trangthai = document.querySelector('input[name="trangthai"]:checked');
+                                                                if (!trangthai) {
+                                                                    Swal.showValidationMessage('Vui lòng chọn trạng thái giao hàng');
+                                                                    return false;
+                                                                }
+                                                                if (trangthai.value === 'thatbai') {
+                                                                    const ghichu = Swal.getPopup().querySelector('#ghichu').value.trim();
+                                                                    if (!ghichu) {
+                                                                        Swal.showValidationMessage('Vui lòng điền ghi chú khi giao hàng thất bại');
+                                                                        return false;
+                                                                    }
+                                                                }
+                                                                return {
+                                                                    trangthai: trangthai.value,
+                                                                    ghichu: trangthai.value === 'thatbai' ? Swal.getPopup().querySelector('#ghichu').value.trim() : ''
+                                                                };
+                                                            }
+                                                        }).then((result) => {
+                                                            if (result.isConfirmed) {
+                                                                // Thêm giá trị vào form
+                                                                const form = document.getElementById('xacnhandg');
+                                                                const trangthaiInput = document.createElement('input');
+                                                                trangthaiInput.type = 'hidden';
+                                                                trangthaiInput.name = 'trangthai';
+                                                                trangthaiInput.value = result.value.trangthai;
+                                                                form.appendChild(trangthaiInput);
+
+                                                                if (result.value.trangthai === 'thatbai') {
+                                                                    const ghichuInput = document.createElement('input');
+                                                                    ghichuInput.type = 'hidden';
+                                                                    ghichuInput.name = 'ghichu';
+                                                                    ghichuInput.value = result.value.ghichu;
+                                                                    form.appendChild(ghichuInput);
+
+                                                                    // Hiển thị thông báo không thành công
+                                                                    Swal.fire({
+                                                                        icon: 'info',
+                                                                        title: 'Giao hàng thất bại',
+                                                                        text: 'Đơn hàng đã được cập nhật trạng thái thất bại.',
+                                                                        confirmButtonText: 'OK'
+                                                                    });
+                                                                } else {
+                                                                    form.submit(); // Submit form khi giao hàng thành công
+                                                                }
+                                                            }
                                                         });
-                                                    } else {
-                                                        form.submit(); // Submit form khi giao hàng thành công
-                                                    }
-                                                }
-                                            });
 
-                                            // Hiển thị ghi chú khi chọn thất bại
-                                            document.querySelectorAll('input[name="trangthai"]').forEach((radio) => {
-                                                radio.addEventListener('change', function() {
-                                                    const ghichuContainer = Swal.getPopup().querySelector('#ghichuContainer');
-                                                    if (this.value === 'thatbai') {
-                                                        ghichuContainer.style.display = 'block';
-                                                    } else {
-                                                        ghichuContainer.style.display = 'none';
-                                                    }
-                                                });
-                                            });
-                                        });
-                                        /*]]>*/
-                                    </script>
-                                </div>
-                                <p class="card-text text-muted mt-2">Thành tiền: <span th:text="${hddg.thanhTien}"></span></p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-
-        <!-- Đã giao -->
-        <div class="tab-pane fade" id="tab5" role="tabpanel" aria-labelledby="tab5-tab">
-            <div class="container">
-                <div class="row" style="margin-top: 15px">
-                    <div class="col-md-12">
-                        <!-- Sử dụng th:each để lặp qua danh sách hdcxn -->
-                        <div th:each="hdht : ${listHoaDonHT}" class="card mb-3">
-                            <div class="card-body" style="background-color: wheat; padding-top: 15px;">
-                                <h5 class="card-title">Mã hóa đơn: <span th:text="${hdht.maHoaDon}"></span></h5>
-                                <p class="card-text text-muted">Trạng thái: Hoàn thành</p>
-                                <hr>
-                                <div class="d-flex justify-content-between">
-                                    <button class="btn btn-outline-secondary" th:data-id="${hdht.id}" onclick="showOrderDetails(this)">
-                                        Chi tiết đơn hàng
-                                    </button>
-                                    <div class="d-inline-flex">
-                                        <form id="trahang" th:action="@{/hoadononline/huydh/{id}(id=${hdht.id})}" method="post">
-
-                                            <button id="cftrahang" type="button" class="btn btn-outline-secondary">Trả hàng</button>
-                                        </form>
+                                                        // Hiển thị ghi chú khi chọn thất bại
+                                                        document.querySelectorAll('input[name="trangthai"]').forEach((radio) => {
+                                                            radio.addEventListener('change', function () {
+                                                                const ghichuContainer = Swal.getPopup().querySelector('#ghichuContainer');
+                                                                if (this.value === 'thatbai') {
+                                                                    ghichuContainer.style.display = 'block';
+                                                                } else {
+                                                                    ghichuContainer.style.display = 'none';
+                                                                }
+                                                            });
+                                                        });
+                                                    });
+                                                    /*]]>*/
+                                                </script>
+                                            </div>
+                                            <p class="card-text text-muted mt-2">Thành tiền: <span
+                                                    th:text="${hddg.thanhTien}"></span></p>
+                                        </div>
                                     </div>
-                                    <!-- scrip confim xac nhan-->
-
-
-
-                                    <!--       //scrip confim huy-->
-
-
                                 </div>
-                                <p class="card-text text-muted mt-2">Thành tiền: <span th:text="${hdht.thanhTien}"></span></p>
                             </div>
                         </div>
                     </div>
-                </div>
-            </div>
-        </div>
-        <!-- Đã hủy -->
-        <div class="tab-pane fade" id="tab6" role="tabpanel" aria-labelledby="tab6-tab">
-            <div class="container">
-                <div class="row" style="margin-top: 15px">
-                    <div class="col-md-12">
-                        <div th:each="hddh : ${listHoaDonDH}" class="card mb-3">
-                            <div class="card-body" style="background-color: wheat; padding-top: 15px;">
-                                <h5 class="card-title">Mã hóa đơn: <span th:text="${hddh.maHoaDon}"></span></h5>
-                                <p class="card-text text-muted">Trạng thái: Đã hủy</p>
-                                <hr>
-                                <div class="d-flex justify-content-between">
-                                    <button class="btn btn-outline-secondary" th:data-id="${hddh.id}" onclick="showOrderDetails(this)">
-                                        Chi tiết đơn hàng
-                                    </button>
-                                    <div class="d-inline-flex">
 
+
+                    <!-- Đã giao -->
+                    <div class="tab-pane fade" id="tab5" role="tabpanel" aria-labelledby="tab5-tab">
+                        <div class="container">
+                            <div class="row" style="margin-top: 15px">
+                                <div class="col-md-12">
+                                    <!-- Sử dụng th:each để lặp qua danh sách hdcxn -->
+                                    <div th:each="hdht : ${listHoaDonHT}" class="card mb-3">
+                                        <div class="card-body" style="background-color: wheat; padding-top: 15px;">
+                                            <h5 class="card-title">Mã hóa đơn: <span th:text="${hdht.maHoaDon}"></span>
+                                            </h5>
+                                            <p class="card-text text-muted">Trạng thái: Hoàn thành</p>
+                                            <hr>
+                                            <div class="d-flex justify-content-between">
+                                                <button class="btn btn-outline-secondary" th:data-id="${hdht.id}"
+                                                    onclick="showOrderDetails(this)">
+                                                    Chi tiết đơn hàng
+                                                </button>
+                                                <div class="d-inline-flex">
+                                                    <form id="trahang"
+                                                        th:action="@{/hoadononline/huydh/{id}(id=${hdht.id})}"
+                                                        method="post">
+
+                                                        <button id="cftrahang" type="button"
+                                                            class="btn btn-outline-secondary">Trả hàng</button>
+                                                    </form>
+                                                </div>
+                                                <!-- scrip confim xac nhan-->
+
+
+
+                                                <!--       //scrip confim huy-->
+
+
+                                            </div>
+                                            <p class="card-text text-muted mt-2">Thành tiền: <span
+                                                    th:text="${hdht.thanhTien}"></span></p>
+                                        </div>
                                     </div>
-
                                 </div>
-                                <p class="card-text text-muted mt-2">Thành tiền: <span th:text="${hddh.thanhTien}"></span></p>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Đã hủy -->
+                    <div class="tab-pane fade" id="tab6" role="tabpanel" aria-labelledby="tab6-tab">
+                        <div class="container">
+                            <div class="row" style="margin-top: 15px">
+                                <div class="col-md-12">
+                                    <div th:each="hddh : ${listHoaDonDH}" class="card mb-3">
+                                        <div class="card-body" style="background-color: wheat; padding-top: 15px;">
+                                            <h5 class="card-title">Mã hóa đơn: <span th:text="${hddh.maHoaDon}"></span>
+                                            </h5>
+                                            <p class="card-text text-muted">Trạng thái: Đã hủy</p>
+                                            <hr>
+                                            <div class="d-flex justify-content-between">
+                                                <button class="btn btn-outline-secondary" th:data-id="${hddh.id}"
+                                                    onclick="showOrderDetails(this)">
+                                                    Chi tiết đơn hàng
+                                                </button>
+                                                <div class="d-inline-flex">
+
+                                                </div>
+
+                                            </div>
+                                            <p class="card-text text-muted mt-2">Thành tiền: <span
+                                                    th:text="${hddh.thanhTien}"></span></p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- Modal Chi Tiết Đơn Hàng -->
+                <div class="modal fade" id="orderDetailModal" data-bs-toggle="modal" tabindex="-1"
+                    aria-labelledby="orderDetailModalLabel" style="display: none">
+                    <div class="modal-dialog modal-lg">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="orderDetailModalLabel">Chi Tiết Đơn Hàng</h5>
+                                <!-- Nút đóng modal -->
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                    aria-label="close"></button>
+                            </div>
+                            <div class="modal-body" id="orderDetailContent">
+                                <!-- Nội dung sẽ được tải vào đây -->
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" aria-label="close"
+                                    data-bs-dismiss="modal">Đóng</button>
                             </div>
                         </div>
                     </div>
                 </div>
-            </div>
-        </div>
 
-    </div>
+                <script>
+                    function showOrderDetails(button) {
+                        var orderId = $(button).data('id');
 
-        <!-- Modal Chi Tiết Đơn Hàng -->
-        <div class="modal fade" id="orderDetailModal" data-bs-toggle="modal"  tabindex="-1" aria-labelledby="orderDetailModalLabel" style="display: none" >
-            <div class="modal-dialog modal-lg">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="orderDetailModalLabel">Chi Tiết Đơn Hàng</h5>
-                        <!-- Nút đóng modal -->
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="close"></button>
-                    </div>
-                    <div class="modal-body" id="orderDetailContent">
-                        <!-- Nội dung sẽ được tải vào đây -->
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary"  aria-label="close" data-bs-dismiss="modal">Đóng</button>
-                    </div>
-                </div>
-            </div>
-        </div>
+                        if (!orderId || isNaN(orderId)) {
+                            Swal.fire("Lỗi", "ID đơn hàng không hợp lệ!", "error");
+                            return;
+                        }
 
-        <script>
-        function showOrderDetails(button) {
-            var orderId = $(button).data('id');
-
-            if (!orderId || isNaN(orderId)) {
-                Swal.fire("Lỗi", "ID đơn hàng không hợp lệ!", "error");
-                return;
-            }
-
-            $.ajax({
-                url: '/hoadononline/detailhdct/' + orderId,
-                method: 'GET',
-                success: function(response) {
-                    let details = `<p><b>Mã hóa đơn:</b> ${response.maHoaDon}</p>
+                        $.ajax({
+                            url: '/hoadononline/detailhdct/' + orderId,
+                            method: 'GET',
+                            success: function (response) {
+                                let details = `<p><b>Mã hóa đơn:</b> ${response.maHoaDon}</p>
                        <p><b>Khách hàng:</b> ${response.tenKhachHang}</p>
                        <p><b>Số điện thoại:</b> ${response.sdt}</p>
                        <p><b>Tổng tiền:</b> ${response.tongTien} VNĐ</p>`;
 
-                    if (response.chiTietSanPham && response.chiTietSanPham.length > 0) {
-                        response.chiTietSanPham.forEach(item => {
-                            details += `<p><b>Sản phẩm:</b> ${item.idChiTietSanPham} - SL: ${item.soLuong}</p>`;
+                                if (response.chiTietSanPham && response.chiTietSanPham.length > 0) {
+                                    response.chiTietSanPham.forEach(item => {
+                                        details += `<p><b>Sản phẩm:</b> ${item.idChiTietSanPham} - SL: ${item.soLuong}</p>`;
+                                    });
+                                } else {
+                                    details += `<p><b>Không có sản phẩm nào trong hóa đơn này.</b></p>`;
+                                }
+
+                                $('#orderDetailContent').html(details);
+                                var myModal = new bootstrap.Modal(document.getElementById('orderDetailModal'));
+                                myModal.show();
+                            },
+                            error: function (xhr) {
+                                Swal.fire("Lỗi", "Không thể lấy dữ liệu đơn hàng!", "error");
+                            }
                         });
-                    } else {
-                        details += `<p><b>Không có sản phẩm nào trong hóa đơn này.</b></p>`;
+
                     }
 
-                    $('#orderDetailContent').html(details);
-                    var myModal = new bootstrap.Modal(document.getElementById('orderDetailModal'));
-                    myModal.show();
-                },
-                error: function(xhr) {
-                    Swal.fire("Lỗi", "Không thể lấy dữ liệu đơn hàng!", "error");
-                }
-            });
-
-        }
-
-    </script>
-    </div>
-</div>
+                </script>
+            </div>
+        </div>
 </body>
+
 </html>

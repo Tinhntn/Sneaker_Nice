@@ -40,6 +40,8 @@ public class HoaDon {
     private String donViGiaoHang;
     private float phiShip;
     private String emailNguoiNhan;
+    private String tenNguoiNhan;
+    private String sdtNguoiNhan;
     private String diaChiChiTiet;
     private String tinhThanhPho;
     private String quanHuyen;
