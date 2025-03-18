@@ -16,42 +16,65 @@
 <body>
 <div layout:fragment="content">
 
-    <!-- SECTION: Khối Lọc (luôn hiển thị) -->
+    <!-- SECTION: Bộ lọc -->
     <section class="ftco-section bg-light">
         <div class="container">
-
-            <div class="row mb-3">
-
-
-                <!-- Lọc theo hãng -->
-                <div class="col-md-6 mb-3">
-                    <span class="fw-bold fs-4">Các Hãng Nổi Bật</span>
-                    <a th:href="@{/Sneakers_Nice/filter(hang='Vans')}" class="btn btn-outline-secondary btn-sm ms-3">Vans</a>
-                    <a th:href="@{/Sneakers_Nice/filter(hang='Adidas')}" class="btn btn-outline-secondary btn-sm ms-3">Adidas</a>
-                    <a th:href="@{/Sneakers_Nice/filter(hang='Puma')}" class="btn btn-outline-secondary btn-sm ms-3">Puma</a>
-                    <a th:href="@{/Sneakers_Nice/filter(hang='Converse')}" class="btn btn-outline-secondary btn-sm ms-3">Converse</a>
-                    <a th:href="@{/Sneakers_Nice/filter(hang='Nike')}" class="btn btn-outline-secondary btn-sm ms-3">Nike</a>
+            <div class="row align-items-center">
+                <!-- Bộ lọc theo hãng bên trái -->
+                <div class="col-md-6">
+                    <span class="fw-bold fs-4">Các Hãng Nổi Bật:</span>
+                    <a th:href="@{/Sneakers_Nice/filter(hang='Vans')}" class="btn btn-outline-secondary btn-sm">Vans</a>
+                    <a th:href="@{/Sneakers_Nice/filter(hang='Adidas')}" class="btn btn-outline-secondary btn-sm">Adidas</a>
+                    <a th:href="@{/Sneakers_Nice/filter(hang='Puma')}" class="btn btn-outline-secondary btn-sm">Puma</a>
+                    <a th:href="@{/Sneakers_Nice/filter(hang='Converse')}" class="btn btn-outline-secondary btn-sm">Converse</a>
+                    <a th:href="@{/Sneakers_Nice/filter(hang='Nike')}" class="btn btn-outline-secondary btn-sm">Nike</a>
                 </div>
-                <!-- Lọc theo giá (dropdown) -->
+                <!-- Bộ lọc theo giá và chất liệu bên phải -->
                 <div class="col-md-6 text-end">
-                    <div class="dropdown d-inline-block">
-                        <button class="btn btn-outline-secondary btn-sm dropdown-toggle"
-                                type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                            Lọc theo giá
-                        </button>
-                        <ul class="dropdown-menu dropdown-menu-end">
-                            <li><a class="dropdown-item" th:href="@{/Sneakers_Nice/filter(hang=${hang},priceRange='duoi500')}">Dưới 500K</a></li>
-                            <li><a class="dropdown-item" th:href="@{/Sneakers_Nice/filter(hang=${hang},priceRange='500-1000')}">500K - 1 triệu</a></li>
-                            <li><a class="dropdown-item" th:href="@{/Sneakers_Nice/filter(hang=${hang},priceRange='1000-2000')}">1 triệu - 2 triệu</a></li>
-                            <li><a class="dropdown-item" th:href="@{/Sneakers_Nice/filter(hang=${hang},priceRange='2000-3000')}">2 triệu - 3 triệu</a></li>
-                            <li><a class="dropdown-item" th:href="@{/Sneakers_Nice/filter(hang=${hang},priceRange='3000-5000')}">3 triệu - 5 triệu</a></li>
-                            <li><a class="dropdown-item" th:href="@{/Sneakers_Nice/filter(hang=${hang},priceRange='tren5000')}">Trên 5 triệu</a></li>
-                        </ul>
-                    </div>
+                    <div class="row">
+                        <!-- Dropdown Lọc theo giá -->
+                        <div class="col-md-6">
+                            <div class="dropdown d-inline-block">
+                                <button class="btn btn-outline-secondary btn-sm dropdown-toggle"
+                                        type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                    Lọc theo giá
+                                </button>
+                                <ul class="dropdown-menu dropdown-menu-end">
+                                    <li><a class="dropdown-item" th:href="@{/Sneakers_Nice/filter(priceRange='duoi500')}" >Dưới 500K</a></li>
+                                    <li><a class="dropdown-item" th:href="@{/Sneakers_Nice/filter(priceRange='500-1000')}" >500K - 1 triệu</a></li>
+                                    <li><a class="dropdown-item" th:href="@{/Sneakers_Nice/filter(priceRange='1000-2000')}" >1 triệu - 2 triệu</a></li>
+                                    <li><a class="dropdown-item" th:href="@{/Sneakers_Nice/filter(priceRange='2000-3000')}" >2 triệu - 3 triệu</a></li>
+                                    <li><a class="dropdown-item" th:href="@{/Sneakers_Nice/filter(priceRange='3000-5000')}" >3 triệu - 5 triệu</a></li>
+                                    <li><a class="dropdown-item" th:href="@{/Sneakers_Nice/filter(priceRange='tren5000')}" >Trên 5 triệu</a></li>
+                                </ul>
+                            </div>
+                        </div>
+                        <!-- Dropdown Lọc theo chất liệu -->
+                        <div class="col-md-6">
+                            <div class="dropdown d-inline-block">
+                                <button class="btn btn-outline-secondary btn-sm dropdown-toggle"
+                                        type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                    Lọc theo chất liệu
+                                </button>
+                                <ul class="dropdown-menu dropdown-menu-end">
+
+
+                                    <li><a class="dropdown-item" th:href="@{/Sneakers_Nice/filter(chatLieu='Vải')}" >Vải</a></li>
+                                    <li><a class="dropdown-item" th:href="@{/Sneakers_Nice/filter(chatLieu='Da')}" >Da</a></li>
+                                    <li><a class="dropdown-item" th:href="@{/Sneakers_Nice/filter(chatLieu='Canvas')}" >Canvas</a></li>
+                                    <li><a class="dropdown-item" th:href="@{/Sneakers_Nice/filter(chatLieu='Nhựa')}" >Nhựa</a></li>
+                                    <li><a class="dropdown-item" th:href="@{/Sneakers_Nice/filter(chatLieu='Cao su')}" >Cao su</a></li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div> <!-- end inner row -->
                 </div>
             </div>
         </div>
+
+
     </section>
+
 
     <!-- SECTION: Kết quả lọc (chỉ hiển thị nếu filteredProducts có dữ liệu) -->
     <section class="ftco-section bg-light"

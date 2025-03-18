@@ -16,6 +16,7 @@ import org.springframework.http.ResponseEntity;
 import poly.edu.sneaker.Model.ChiTietSanPham;
 import poly.edu.sneaker.Model.MauSac;
 import poly.edu.sneaker.Model.Size;
+import poly.edu.sneaker.Repository.ChiTietSanPhamRepository;
 import poly.edu.sneaker.Service.ChiTietSanPhamService;
 import poly.edu.sneaker.Service.MauSacService;
 import poly.edu.sneaker.Service.SanPhamService;
@@ -44,11 +45,13 @@ public class Home {
     private GioHangService gioHangService;
     @Autowired
     private GioHangChiTietService gioHangChiTietService;
+    @Autowired
+    private ChiTietSanPhamRepository chiTietSanPhamRepository;
+
 
     @GetMapping("/hienthi")
     public String hienthi(Model model, @RequestParam(defaultValue = "0") int page) {
         KhachHang khachHangSession = (KhachHang) httpSession.getAttribute("khachHangSession");
-
         int size = 12;
         Page<ChiTietSanPham> lstCTSP = chiTietSanPhamService.findChiTietSanPhamJustOne(PageRequest.of(page, size));
         int soLuongSanPhamTrongGioHang = 0;
@@ -58,13 +61,10 @@ public class Home {
             GioHang gioHang = gioHangService.findGioHangByIDKH(khachHangSession.getId());
             ArrayList<GioHangChiTiet> lstGioHangChiTiet = gioHangChiTietService.findByIdGioHang(gioHang.getId());
             model.addAttribute("lstGioHangChiTiet", lstGioHangChiTiet);
-            for (GioHangChiTiet ghct
-                    : lstGioHangChiTiet
-            ) {
-                soLuongSanPhamTrongGioHang = soLuongSanPhamTrongGioHang+ghct.getSoLuong();
+            for (GioHangChiTiet ghct : lstGioHangChiTiet) {
+                soLuongSanPhamTrongGioHang += ghct.getSoLuong();
             }
-
-            model.addAttribute("soLuongSanPhamTrongGioHang",soLuongSanPhamTrongGioHang);
+            model.addAttribute("soLuongSanPhamTrongGioHang", soLuongSanPhamTrongGioHang);
         }
         model.addAttribute("listSanPham", lstCTSP);
         model.addAttribute("currentPage", lstCTSP.getNumber());
@@ -112,10 +112,12 @@ public class Home {
         model.addAttribute("keyword", keyword);
         return "layout/ajaxSearch :: ajaxSearchResultsFragment";
     }
+
     @GetMapping("/filter")
     public String filterProducts(
             Model model,
             @RequestParam(required = false) String hang,
+            @RequestParam(required = false) String chatLieu,
             @RequestParam(required = false) String priceRange,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "8") int size
@@ -123,27 +125,28 @@ public class Home {
         Pageable pageable = PageRequest.of(page, size);
         Page<ChiTietSanPham> result;
 
-        // Nếu cả hai tham số lọc đều không có, lấy sản phẩm mới về
-        if ((hang == null || hang.trim().isEmpty()) && (priceRange == null || priceRange.trim().isEmpty())) {
+        if ((hang == null || hang.trim().isEmpty()) &&
+                (chatLieu == null || chatLieu.trim().isEmpty()) &&
+                (priceRange == null || priceRange.trim().isEmpty())) {
             result = chiTietSanPhamService.findChiTietSanPhamJustOne(pageable);
         } else {
-            // Nếu có tham số lọc, gọi service lọc theo hãng và khoảng giá
-            result = chiTietSanPhamService.filterByHangAndPrice(hang, priceRange, pageable);
+            result = chiTietSanPhamService.filterByHangAndPrice(hang, chatLieu, priceRange, pageable);
         }
 
         model.addAttribute("filteredProducts", result.getContent());
         model.addAttribute("currentPage", result.getNumber());
         model.addAttribute("totalPages", result.getTotalPages());
         model.addAttribute("hang", hang);
+        model.addAttribute("chatLieu", chatLieu);
         model.addAttribute("priceRange", priceRange);
 
-        // LẤY DANH SÁCH "SẢN PHẨM MỚI VỀ" và đưa vào model
-        // Giả sử bạn muốn lấy 12 sản phẩm mới
+        // Nếu cần, thêm danh sách sản phẩm mới
         Page<ChiTietSanPham> newProducts = chiTietSanPhamService.findChiTietSanPhamJustOne(PageRequest.of(0, 12));
         model.addAttribute("listSanPham", newProducts);
 
         return "user/sanpham/trangchu";
     }
+
 
 
 

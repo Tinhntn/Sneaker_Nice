@@ -1,96 +1,68 @@
 <!doctype html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-    layout:decorate="~{layout/main.html}">
-
+      layout:decorate="~{layout/main.html}">
 <head>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Document</title>
+    <title>Thống kê</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" type="text/css" href="./styles/main.css">
-
     <style>
         body {
             font-family: Arial, sans-serif;
             background-color: #f8f9fa;
         }
-
         .container-fluid {
-
             padding: 20px;
         }
-
         h1 {
             text-align: center;
             margin-bottom: 30px;
         }
-
         .card {
             box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
             border-radius: 10px;
             margin-bottom: 20px;
             height: 100%;
-            /* Đảm bảo chiều cao thẻ card bằng nhau */
             color: #fff;
         }
-
         .card-body {
             border-radius: 10px;
             padding: 20px;
         }
-
-        h5,
-        h6 {
+        h5, h6 {
             text-align: center;
             margin-bottom: 10px;
         }
-
         .details {
             display: flex;
-            /* Sử dụng Flexbox để sắp xếp các phần tử theo hàng ngang */
             gap: 20px;
-            /* Khoảng cách giữa các phần tử */
             justify-content: space-between;
-            /* Phân phối đều các phần tử giữa hai bên lề */
-            /* Cho phép phần tử xuống dòng nếu không còn đủ không gian */
         }
-
         .details p {
             margin: 10px 10px 50px 10px;
-            /* Loại bỏ margin mặc định của <p> để căn chỉnh chính xác hơn */
         }
-
-
-
-
         .today {
             background-color: rgb(66, 127, 232);
         }
-
         .week {
             background-color: rgb(241, 144, 71);
         }
-
         .month {
             background-color: rgb(75, 206, 226);
         }
-
         .year {
             background-color: rgb(91, 212, 149);
         }
-
         .row {
             display: flex;
             justify-content: space-around;
         }
-
         .col-md-6 {
             max-width: 45%;
             flex: 1;
         }
-
         @media (max-width: 768px) {
             .col-md-6 {
                 max-width: 100%;
@@ -98,383 +70,354 @@
         }
     </style>
 </head>
-
 <body>
-    <div layout:fragment="content">
-        <div class="container-fluid">
+<div layout:fragment="content">
+    <div class="container-fluid">
+        <!-- Card Thống kê tổng -->
+        <div class="card shadow container-fluid">
+            <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold text-primary">Thống kê</h6>
+            </div>
+            <div class="row card-body">
+                <!-- Hôm nay -->
+                <div class="col-md-6 col-sm-12">
+                    <div class="card today">
+                        <div>
+                            <h6>Hôm nay</h6>
+                            <h5>
+                                <span th:text="${doanhThuTrongNgay}"></span> VNĐ
+                            </h5>
+                            <br>
+                            <div class="details">
+                                <p>Sản phẩm: <span th:text="${soLuongSanPhamTrongNgay}">21</span></p>
+                                <p>Đơn thành công: <span th:text="${soLuongHoaDonThanhCongTrongNgay}">2</span></p>
+                                <p>Đơn hủy: <span th:text="${soluongHoaDonHuyTrongNgay}">0</span></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Tuần này -->
+                <div class="col-md-6 col-sm-12">
+                    <div class="card week">
+                        <div>
+                            <h6>Tuần này</h6>
+                            <h5><span th:text="${doanhThuTrongTuan}">8,834,904</span> VNĐ</h5>
+                            <br>
+                            <div class="details">
+                                <p>Sản phẩm: <span th:text="${soLuongSanPhamTrongTuan}">37</span></p>
+                                <p>Đơn thành công: <span th:text="${soLuongHoaDonThanhCongTrongTuan}">6</span></p>
+                                <p>Đơn hủy: <span th:text="${soluongHoaDonHuyTrongTuan}">1</span></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Tháng này & Năm nay -->
+            <div class="row">
+                <div class="col-md-6 col-sm-12">
+                    <div class="card month">
+                        <div>
+                            <h6>Tháng này</h6>
+                            <h5><span th:text="${doanhThuTrongThang}">8,834,904</span> VNĐ</h5>
+                            <br>
+                            <div class="details">
+                                <p>Sản phẩm: <span th:text="${soLuongSanPhamTrongThang}">37</span></p>
+                                <p>Đơn thành công: <span th:text="${soLuongHoaDonThanhCongTrongThang}">6</span></p>
+                                <p>Đơn hủy: <span th:text="${soluongHoaDonHuyTrongThang}">1</span></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6 col-sm-12">
+                    <div class="card year">
+                        <div>
+                            <h6>Năm nay</h6>
+                            <h5><span th:text="${doanhThuTrongNam}">8,834,904</span> VNĐ</h5>
+                            <br>
+                            <div class="details">
+                                <p>Sản phẩm: <span th:text="${soLuongSanPhamTrongNam}">37</span></p>
+                                <p>Đơn thành công: <span th:text="${soLuongHoaDonThanhCongTrongNam}">6</span></p>
+                                <p>Đơn hủy: <span th:text="${soluongHoaDonHuyTrongNam}">1</span></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <br>
+            <!-- Bộ lọc và thống kê chi tiết -->
             <div class="card shadow container-fluid">
                 <div class="card-header py-3">
-                    <h6 class="m-0 font-weight-bold text-primary">Thống kê</h6>
+                    <h7 class="m-0 font-weight-bold text-primary"><strong>Bộ lọc</strong></h7>
                 </div>
                 <div class="row card-body">
-                    <div class="col-md-6 col-sm-12">
-                        <div class="card today">
-                            <div>
-                                <h6>Hôm nay</h6>
-                                <h5>
-                                    <span th:text="${doanhThuTrongNgay}"></span> VNĐ
-                                </h5>
-                                <br>
-                                <div class="details">
-                                    <p>Sản phẩm: <span th:text="${soLuongSanPhamTrongNgay}">21</span></p>
-                                    <p>Đơn thành công: <span th:text="${soLuongHoaDonThanhCongTrongNgay}">2</span></p>
-                                    <p>Đơn hủy: <span th:text="${soluongHoaDonHuyTrongNgay}">0</span></p>
-                                </div>
-                            </div>
+                    <div class="col-md-12 d-flex align-items-center mb-3">
+                        <div class="me-3">
+                            <button class="btn btn-outline-info me-2" onclick="sendData(0)">Ngày</button>
+                            <button class="btn btn-outline-info me-2" onclick="sendData(1)">Tuần</button>
+                            <button class="btn btn-outline-info me-2" onclick="sendData(2)">Tháng</button>
+                            <button class="btn btn-outline-info me-2" onclick="sendData(3)">Năm nay</button>
+                        </div>
+                        <div class="d-flex align-items-center me-3">
+                            <label for="startDate" class="me-2" style="color: black;">Ngày bắt đầu:</label>
+                            <input type="date" id="startDate" class="form-control me-2" style="width: 150px;">
+                        </div>
+                        <div class="d-flex align-items-center me-3">
+                            <label for="endDate" class="me-2" style="color: black;">Ngày kết thúc:</label>
+                            <input type="date" id="endDate" class="form-control me-2" style="width: 150px;">
+                        </div>
+                        <button class="btn btn-outline-success me-1" onclick="filterData()">Lọc</button>
+                        <button class="btn btn-outline-success">Xuất excel</button>
+                    </div>
+                    <div class="card shadow col-md-6">
+                        <canvas id="orderChart" style="width: 400px; height: 400px;"></canvas>
+                    </div>
+                    <div class="card shadow col-md-6">
+                        <div class="card-header">
+                            <p style="display: block; font-size: medium; margin: 5px; color: rgb(43, 40, 40);">
+                                <strong>Top 5 sản phẩm bán chạy</strong>
+                            </p>
+                        </div>
+                        <div class="card-body">
+                            <table class="table table-bordered mt-3 text-center" id="dataTable" cellspacing="0">
+                                <thead style="background-color: rgb(240, 117, 69);">
+                                <tr>
+                                    <th>Tên sản phẩm</th>
+                                    <th>Ảnh</th>
+                                    <th>Đơn giá</th>
+                                    <th>Số lượng đã bán</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <!-- Nội dung sẽ được cập nhật bởi JavaScript -->
+                                </tbody>
+                            </table>
                         </div>
                     </div>
-                    <div class="col-md-6 col-sm-12">
-                        <div class="card week">
-                            <div>
-                                <h6>Tuần này</h6>
-                                <h5><span th:text="${doanhThuTrongTuan}">8,834,904 ₫</span> VNĐ</h5>
-                                <br>
-                                <div class="details">
-                                    <p>Sản phẩm: <span th:text="${soLuongSanPhamTrongTuan}">37</span></p>
-                                    <p>Đơn thành công: <span th:text="${soLuongHoaDonThanhCongTrongTuan}">6</span></p>
-                                    <p>Đơn hủy: <span th:text="${soluongHoaDonHuyTrongTuan}">1</span></p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="row">
-                    <div class="col-md-6 col-sm-12">
-                        <div class="card month">
-                            <div>
-                                <h6>Tháng này</h6>
-                                <h5><span th:text="${doanhThuTrongThang}">8,834,904 ₫</span> VNĐ</h5>
-                                <br>
-                                <div class="details">
-                                    <p>Sản phẩm: <span th:text="${soLuongSanPhamTrongThang}">37</span></p>
-                                    <p>Đơn thành công: <span th:text="${soLuongHoaDonThanhCongTrongThang}">6</span></p>
-                                    <p>Đơn hủy: <span th:text="${soluongHoaDonHuyTrongThang}">1</span></p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-6 col-sm-12">
-                        <div class="card year">
-                            <div>
-                                <h6>Năm nay</h6>
-                                <h5><span th:text="${doanhThuTrongNam}">8,834,904 ₫</span> VNĐ</h5>
-                                <br>
-                                <div class="details">
-                                    <p>Sản phẩm: <span th:text="${soLuongSanPhamTrongNam}">37</span></p>
-                                    <p>Đơn thành công: <span th:text="${soLuongHoaDonThanhCongTrongNam}">6</span></p>
-                                    <p>Đơn hủy: <span th:text="${soluongHoaDonHuyTrongNam}">1</span></p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <br>
-                <div class="card shadow container-fluid">
-                    <div class="card-header py-3">
-                        <h7 class="m-0 font-weight-bold text-primary"><strong>Bộ lọc</strong></h7>
-                    </div>
-                    <div class=" row card-body">
-                        <div class="col-md-12 d-flex align-items-center mb-3">
-                            <div class="me-3">
-                                <button class="btn btn-outline-info me-2" onclick="sendData(0)">Ngày</button>
-                                <button class="btn btn-outline-info me-2" onclick="sendData(1)">Tuần</button>
-                                <button class="btn btn-outline-info me-2" onclick="sendData(2)">Tháng</button>
-                                <button class="btn btn-outline-info me-2" onclick="sendData(3)">Năm nay</button>
-                            </div>
-
-                            <div class="d-flex align-items-center me-3">
-                                <label for="startDate" class="me-2 " style="color: black;">Ngày bắt đầu:</label>
-                                <input type="date" id="startDate" class="form-control me-2"
-                                    style="width: 150px; margin-left: 0%;" placeholder="">
-                            </div>
-
-                            <div class="d-flex align-items-center me-3">
-                                <label for="endDate" class="me-2" style="color: black;">Ngày kết thúc:</label>
-                                <input type="date" id="endDate" class="form-control me-2" style="width: 150px;">
-                            </div>
-
-                            <button class="btn btn-outline-success me-1" onclick="filterData('custom')">Lọc</button>
-                            <button class="btn btn-outline-success">Xuất excel</button>
-
-                        </div>
-
-                        <div class=" card shadow col-md-6 ">
-                            <canvas id="orderChart" style="width: 400px; height: 400px;"></canvas>
-                        </div>
-
-                        <div class="card shadow col-md-6">
-                            <div class="card-header">
-                                <p style="display: block; font-size: medium; margin: 5px; color: rgb(43, 40, 40);">
-                                    <strong>Top 5 sản phẩm bán chạy</strong>
-                                </p>
-                            </div>
-                            <div id="sanPhamBanChay"></div>
-                            <div class="card-body">
-                                <table class="table table-bordered mt-3 text-center" id="dataTable" cellspacing="0">
-                                    <thead style="background-color: rgb(240, 117, 69);">
-                                        <tr>
-                                            <th>Tên sản phẩm</th>
-                                            <th>Ảnh</th>
-                                            <th>Đơn giá</th>
-                                            <th>Số lượng đã bán</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <!-- Nội dung sẽ được cập nhật bởi JavaScript -->
-                                    </tbody>
-                                </table>
-                            </div>
-
-                        </div>
-
-                    </div>
-
                 </div>
             </div>
         </div>
-
     </div>
+</div>
 
-</body>
+<!-- Scripts -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <div layout:fragment="js">
     <script>
-        // Biến biểu đồ toàn cục
-        let orderChart;
+        document.addEventListener("DOMContentLoaded", function() {
+            // Biến biểu đồ toàn cục
+            let orderChart;
 
-        function filterData() {
-            const startDate = document.getElementById('startDate').value;
-            const endDate = document.getElementById('endDate').value;
-
-            fetch('/thongke/khoangngay', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded',
-                },
-                body: `startDate=${startDate}&endDate=${endDate}`
-            })
-                .then(response => response.json())
-                .then(data => {
-                    // Cập nhật bảng dữ liệu
-                    const tbody = document.querySelector('#dataTable tbody');
-                    tbody.innerHTML = ''; // Xóa nội dung cũ trong bảng
-
-                    data.lstSanPhamBanChay.forEach(sanPham => {
-                        const row = document.createElement('tr');
-                        row.innerHTML = `
-                    <td>${sanPham.tensanpham}</td>
-                    <td><img src="${sanPham.hinhanh[0]}" alt="Ảnh sản phẩm" style="width: 50px; height: 50px;"></td>
-                    <td>${sanPham.giaban} VNĐ</td>
-                    <td>${sanPham.soluongbanduoc}</td>
-                `;
-                        tbody.appendChild(row);
-                    });
-
-                    // Cập nhật dữ liệu cho biểu đồ
-                    const dataFromServer = [
-                        data.hd.trangThai_0 !== undefined ? data.hd.trangThai_0 : 0,
-                        data.hd.trangThai_1 !== undefined ? data.hd.trangThai_1 : 0,
-                        data.hd.trangThai_2 !== undefined ? data.hd.trangThai_2 : 0,
-                        data.hd.trangThai_3 !== undefined ? data.hd.trangThai_3 : 0,
-                        data.hd.trangThai_4 !== undefined ? data.hd.trangThai_4 : 0,
-                        data.hd.trangThai_5 !== undefined ? data.hd.trangThai_5 : 0,
-                        data.hd.trangThai_6 !== undefined ? data.hd.trangThai_6 : 0
-                    ];
-
-                    console.log(dataFromServer)
-
-                    if (dataFromServer)
-                        // Cập nhật biểu đồ nếu đã khởi tạo
+            function filterData() {
+                const startDate = document.getElementById('startDate').value;
+                const endDate = document.getElementById('endDate').value;
+                fetch('/thongke/khoangngay', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                    body: `startDate=${startDate}&endDate=${endDate}`
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        console.log(data);
+                        // Cập nhật bảng dữ liệu Top 5 sản phẩm bán chạy
+                        const tbody = document.querySelector('#dataTable tbody');
+                        tbody.innerHTML = '';
+                        data.lstSanPhamBanChay.forEach(sanPham => {
+                            const row = document.createElement('tr');
+                            row.innerHTML = `
+                            <td>${sanPham.tenSanPham}</td>
+                            <td><img src="${sanPham.hinhAnh}" alt="Ảnh sản phẩm" style="width: 50px; height: 50px;"></td>
+                            <td>${sanPham.giaBan} VNĐ</td>
+                            <td>${sanPham.soLuongBan}</td>
+                        `;
+                            tbody.appendChild(row);
+                        });
+                        // Cập nhật dữ liệu cho biểu đồ
+                        const dataFromServer = [
+                            data.hd.trangThai_0 ?? 0,
+                            data.hd.trangThai_1 ?? 0,
+                            data.hd.trangThai_2 ?? 0,
+                            data.hd.trangThai_3 ?? 0,
+                            data.hd.trangThai_4 ?? 0,
+                            data.hd.trangThai_5 ?? 0,
+                            data.hd.trangThai_6 ?? 0
+                        ];
                         if (orderChart) {
                             orderChart.data.datasets[0].data = dataFromServer;
                             orderChart.update();
                         } else {
-                            // Khởi tạo biểu đồ nếu chưa được khởi tạo
-                            const ctx = document.getElementById('orderChart').getContext('2d');
-                            orderChart = new Chart(ctx, {
-                                type: 'pie', // Hoặc 'bar', 'line', tùy thuộc vào loại biểu đồ bạn muốn
-                                data: {
-                                    labels: [
-                                        'Đơn hàng chưa thanh toán',
-                                        'Đơn hàng đã thanh toán',
-                                        'Đơn hàng chờ xác nhận',
-                                        'Đơn hàng chờ lấy hàng',
-                                        'Đơn hàng đang giao',
-                                        'Đơn hàng đã giao',
-                                        'Đơn hàng đã hủy'
-
-                                    ],
-                                    datasets: [{
-                                        label: 'Số đơn hàng',
-                                        data: dataFromServer, // Dữ liệu cho biểu đồ
-                                        backgroundColor: [
-                                            'rgba(255, 99, 132, 0.2)',
-                                            'rgba(54, 162, 235, 0.2)',
-                                            'rgba(255, 206, 86, 0.2)',
-                                            'rgba(75, 192, 192, 0.2)',
-                                            'rgba(153, 102, 255, 0.2)',
-                                            'rgba(255, 159, 64, 0.2)',
-                                            'rgba(199, 199, 199, 0.2)'
+                            const canvas = document.getElementById('orderChart');
+                            if(canvas) {
+                                const ctx = canvas.getContext('2d');
+                                orderChart = new Chart(ctx, {
+                                    type: 'pie',
+                                    data: {
+                                        labels: [
+                                            'Đơn hàng chưa thanh toán',
+                                            'Đơn hàng đã thanh toán',
+                                            'Đơn hàng chờ xác nhận',
+                                            'Đơn hàng chờ lấy hàng',
+                                            'Đơn hàng đang giao',
+                                            'Đơn hàng đã giao',
+                                            'Đơn hàng đã hủy'
                                         ],
-                                        borderColor: [
-                                            'rgba(255, 99, 132, 1)',
-                                            'rgba(54, 162, 235, 1)',
-                                            'rgba(255, 206, 86, 1)',
-                                            'rgba(75, 192, 192, 1)',
-                                            'rgba(153, 102, 255, 1)',
-                                            'rgba(255, 159, 64, 1)',
-                                            'rgba(199, 199, 199, 1)'
-                                        ],
-                                        borderWidth: 1
-                                    }]
-                                },
-                                options: {
-                                    responsive: true,
-                                    maintainAspectRatio: false,
-                                    plugins: {
-                                        legend: {
-                                            position: 'top',
-                                        },
-                                        tooltip: {
-                                            callbacks: {
-                                                label: function (tooltipItem) {
-                                                    const label = tooltipItem.label || '';
-                                                    if (label) {
-                                                        return `${label}: ${tooltipItem.raw} đơn hàng`;
+                                        datasets: [{
+                                            label: 'Số đơn hàng',
+                                            data: dataFromServer,
+                                            backgroundColor: [
+                                                'rgba(255, 99, 132, 0.2)',
+                                                'rgba(54, 162, 235, 0.2)',
+                                                'rgba(255, 206, 86, 0.2)',
+                                                'rgba(75, 192, 192, 0.2)',
+                                                'rgba(153, 102, 255, 0.2)',
+                                                'rgba(255, 159, 64, 0.2)',
+                                                'rgba(199, 199, 199, 0.2)'
+                                            ],
+                                            borderColor: [
+                                                'rgba(255, 99, 132, 1)',
+                                                'rgba(54, 162, 235, 1)',
+                                                'rgba(255, 206, 86, 1)',
+                                                'rgba(75, 192, 192, 1)',
+                                                'rgba(153, 102, 255, 1)',
+                                                'rgba(255, 159, 64, 1)',
+                                                'rgba(199, 199, 199, 1)'
+                                            ],
+                                            borderWidth: 1
+                                        }]
+                                    },
+                                    options: {
+                                        responsive: true,
+                                        maintainAspectRatio: false,
+                                        plugins: {
+                                            legend: { position: 'top' },
+                                            tooltip: {
+                                                callbacks: {
+                                                    label: function (tooltipItem) {
+                                                        const label = tooltipItem.label || '';
+                                                        return label ? `${label}: ${tooltipItem.raw} đơn hàng` : '';
                                                     }
-                                                    return '';
                                                 }
-                                            }
-                                        },
-                                        title: {
-                                            display: true,
-                                            text: 'Biểu đồ thống kê đơn hàng', // Tên của biểu đồ
-                                            font: {
-                                                size: 18 // Kích thước chữ của tiêu đề
+                                            },
+                                            title: {
+                                                display: true,
+                                                text: 'Biểu đồ thống kê đơn hàng',
+                                                font: { size: 18 }
                                             }
                                         }
                                     }
-                                }
-                            });
-                        }
-                })
-                .catch(error => console.error('Error:', error));
-        }
-
-        function sendData(dangLoc) {
-            fetch('/thongke/loc', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded',
-                },
-                body: `bien=${dangLoc}`
-            })
-                .then(response => response.json())
-                .then(data => {
-                    // Cập nhật bảng dữ liệu
-                    const tbody = document.querySelector('#dataTable tbody');
-                    tbody.innerHTML = ''; // Xóa nội dung cũ trong bảng
-
-                    data.lstSanPhamBanChay.forEach(sanPham => {
-                        const row = document.createElement('tr');
-                        row.innerHTML = `
-                    <td>${sanPham.tensanpham}</td>
-                    <td><img src="${sanPham.hinhanh[0]}" alt="Ảnh sản phẩm" style="width: 50px; height: 50px;"></td>
-                    <td>${sanPham.giaban} VNĐ</td>
-                    <td>${sanPham.soluongbanduoc}</td>
-                `;
-                        tbody.appendChild(row);
-                    });
-                    // Cập nhật dữ liệu cho biểu đồ
-                    const dataFromServer = [
-                        data.hd.trangThai_0 !== undefined ? data.hd.trangThai_0 : 0,
-                        data.hd.trangThai_1 !== undefined ? data.hd.trangThai_1 : 0,
-                        data.hd.trangThai_2 !== undefined ? data.hd.trangThai_2 : 0,
-                        data.hd.trangThai_3 !== undefined ? data.hd.trangThai_3 : 0,
-                        data.hd.trangThai_4 !== undefined ? data.hd.trangThai_4 : 0,
-                        data.hd.trangThai_5 !== undefined ? data.hd.trangThai_5 : 0,
-                        data.hd.trangThai_6 !== undefined ? data.hd.trangThai_6 : 0
-                    ];
-
-
-                    console.log(dataFromServer)
-                    // Cập nhật biểu đồ nếu đã khởi tạo
-                    if (orderChart) {
-                        orderChart.data.datasets[0].data = dataFromServer;
-                        orderChart.update();
-                    } else {
-                        // Khởi tạo biểu đồ nếu chưa được khởi tạo
-                        const ctx = document.getElementById('orderChart').getContext('2d');
-                        orderChart = new Chart(ctx, {
-                            type: 'pie', // Hoặc 'bar', 'line', tùy thuộc vào loại biểu đồ bạn muốn
-                            data: {
-                                labels: [
-                                    'Đơn hàng chưa thanh toán',
-                                    'Đơn hàng đã thanh toán',
-                                    'Đơn hàng chờ xác nhận',
-                                    'Đơn hàng chờ lấy hàng',
-                                    'Đơn hàng đang giao',
-                                    'Đơn hàng đã giao',
-                                    'Đơn hàng đã hủy'
-                                ],
-                                datasets: [{
-                                    label: 'Số đơn hàng',
-                                    data: dataFromServer, // Dữ liệu cho biểu đồ
-                                    backgroundColor: [
-                                        'rgba(255, 99, 132, 0.2)',
-                                        'rgba(54, 162, 235, 0.2)',
-                                        'rgba(255, 206, 86, 0.2)',
-                                        'rgba(75, 192, 192, 0.2)',
-                                        'rgba(153, 102, 255, 0.2)',
-                                        'rgba(255, 159, 64, 0.2)',
-                                        'rgba(199, 199, 199, 0.2)'
-                                    ],
-                                    borderColor: [
-                                        'rgba(255, 99, 132, 1)',
-                                        'rgba(54, 162, 235, 1)',
-                                        'rgba(255, 206, 86, 1)',
-                                        'rgba(75, 192, 192, 1)',
-                                        'rgba(153, 102, 255, 1)',
-                                        'rgba(255, 159, 64, 1)',
-                                        'rgba(199, 199, 199, 1)'
-                                    ],
-                                    borderWidth: 1
-                                }]
-                            },
-                            options: {
-                                responsive: true,
-                                maintainAspectRatio: false,
-                                plugins: {
-                                    legend: {
-                                        position: 'top',
-                                    },
-                                    tooltip: {
-                                        callbacks: {
-                                            label: function (tooltipItem) {
-                                                const label = tooltipItem.label || '';
-                                                if (label) {
-                                                    return `${label}: ${tooltipItem.raw} đơn hàng`;
-                                                }
-                                                return '';
-                                            }
-                                        }
-                                    },
-                                    title: {
-                                        display: true,
-                                        text: 'Biểu đồ thống kê đơn hàng', // Tên của biểu đồ
-                                        font: {
-                                            size: 18 // Kích thước chữ của tiêu đề
-                                        }
-                                    }
-                                }
+                                });
                             }
-                        });
-                    }
+                        }
+                    })
+                    .catch(error => console.error('Error:', error));
+            }
+
+            function sendData(dangLoc) {
+                fetch('/thongke/loc', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                    body: `bien=${dangLoc}`
                 })
-                .catch(error => console.error('Error:', error));
-        }
+                    .then(response => response.json())
+                    .then(data => {
+                        // Cập nhật bảng dữ liệu Top 5 sản phẩm bán chạy
+                        const tbody = document.querySelector('#dataTable tbody');
+                        tbody.innerHTML = '';
+                        data.lstSanPhamBanChay.forEach(sanPham => {
+                            const row = document.createElement('tr');
+                            row.innerHTML = `
+                            <td>${sanPham.tenSanPham}</td>
+                            <td><img src="${sanPham.hinhAnh}" alt="Ảnh sản phẩm" style="width: 50px; height: 50px;"></td>
+                            <td>${sanPham.giaBan} VNĐ</td>
+                            <td>${sanPham.soLuongBan}</td>
+                        `;
+                            tbody.appendChild(row);
+                        });
+                        // Cập nhật dữ liệu cho biểu đồ
+                        const dataFromServer = [
+                            data.hd.trangThai_0 ?? 0,
+                            data.hd.trangThai_1 ?? 0,
+                            data.hd.trangThai_2 ?? 0,
+                            data.hd.trangThai_3 ?? 0,
+                            data.hd.trangThai_4 ?? 0,
+                            data.hd.trangThai_5 ?? 0,
+                            data.hd.trangThai_6 ?? 0
+                        ];
+                        if (orderChart) {
+                            orderChart.data.datasets[0].data = dataFromServer;
+                            orderChart.update();
+                        } else {
+                            const canvas = document.getElementById('orderChart');
+                            if(canvas) {
+                                const ctx = canvas.getContext('2d');
+                                orderChart = new Chart(ctx, {
+                                    type: 'pie',
+                                    data: {
+                                        labels: [
+                                            'Đơn hàng chưa thanh toán',
+                                            'Đơn hàng đã thanh toán',
+                                            'Đơn hàng chờ xác nhận',
+                                            'Đơn hàng chờ lấy hàng',
+                                            'Đơn hàng đang giao',
+                                            'Đơn hàng đã giao',
+                                            'Đơn hàng đã hủy'
+                                        ],
+                                        datasets: [{
+                                            label: 'Số đơn hàng',
+                                            data: dataFromServer,
+                                            backgroundColor: [
+                                                'rgba(255, 99, 132, 0.2)',
+                                                'rgba(54, 162, 235, 0.2)',
+                                                'rgba(255, 206, 86, 0.2)',
+                                                'rgba(75, 192, 192, 0.2)',
+                                                'rgba(153, 102, 255, 0.2)',
+                                                'rgba(255, 159, 64, 0.2)',
+                                                'rgba(199, 199, 199, 0.2)'
+                                            ],
+                                            borderColor: [
+                                                'rgba(255, 99, 132, 1)',
+                                                'rgba(54, 162, 235, 1)',
+                                                'rgba(255, 206, 86, 1)',
+                                                'rgba(75, 192, 192, 1)',
+                                                'rgba(153, 102, 255, 1)',
+                                                'rgba(255, 159, 64, 1)',
+                                                'rgba(199, 199, 199, 1)'
+                                            ],
+                                            borderWidth: 1
+                                        }]
+                                    },
+                                    options: {
+                                        responsive: true,
+                                        maintainAspectRatio: false,
+                                        plugins: {
+                                            legend: { position: 'top' },
+                                            tooltip: {
+                                                callbacks: {
+                                                    label: function (tooltipItem) {
+                                                        const label = tooltipItem.label || '';
+                                                        return label ? `${label}: ${tooltipItem.raw} đơn hàng` : '';
+                                                    }
+                                                }
+                                            },
+                                            title: {
+                                                display: true,
+                                                text: 'Biểu đồ thống kê đơn hàng',
+                                                font: { size: 18 }
+                                            }
+                                        }
+                                    }
+                                });
+                            }
+                        }
+                    })
+                    .catch(error => console.error('Error:', error));
+            }
+
+            // Expose các hàm ra global để sử dụng trong thuộc tính onclick của các button
+            window.filterData = filterData;
+            window.sendData = sendData;
+        });
     </script>
-
 </div>
-
+</body>
 </html>

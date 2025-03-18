@@ -6,6 +6,10 @@
             background-color: #343a40 !important; /* màu gốc (tối) */
             color: #fff !important;
         }
+        #ajaxSearchResults {
+            position: absolute;
+            z-index: 9999; /* cao hơn overlay */
+        }
 
         /* Khi cuộn, navbar có class .scrolled -> form đổi sang màu gốc (màu tối) */
         #ftco-navbar.scrolled .input-group-text,
@@ -339,35 +343,31 @@
                 }
             });
 
-            // 2) Ẩn khung kết quả khi click ra ngoài ô input hoặc khung kết quả
+            // 2) Khi click ra ngoài ô input và vùng kết quả (trừ khi click vào link bên trong), ẩn hộp kết quả
             document.addEventListener('click', function (event) {
+                // Nếu không click vào ô input và không click vào link bên trong searchResults, ẩn hộp
                 if (!searchResults.contains(event.target) && event.target !== searchInput) {
-                    searchResults.style.display = 'none';
+                    // Nếu click vào phần tử bên trong searchResults nhưng không phải link thì ẩn luôn
+                    if (!event.target.closest('#ajaxSearchResults a')) {
+                        searchResults.style.display = 'none';
+                    }
                 }
             });
-            document.getElementById('ajaxSearchResults').addEventListener('click', function(e) {
-                const targetLink = e.target.closest('a');
-                if (targetLink) {
-                    // Ẩn kết quả nếu muốn, không gọi preventDefault() để cho phép điều hướng mặc định
-                    setTimeout(() => {
-                        this.style.display = 'none';
-                    }, 100);
-                }
-            });
-
-
-            // 3) Khi click vào link trong khung kết quả, ẩn khung sau 100ms
             searchResults.addEventListener('click', function (e) {
                 const targetLink = e.target.closest('a');
                 if (targetLink) {
+                    // Tăng delay để cho phép chuyển hướng hoàn tất, ví dụ 500ms
                     setTimeout(() => {
                         searchResults.style.display = 'none';
-                    }, 100);
-                    // Không gọi e.preventDefault(), cho phép chuyển hướng mặc định
+                    }, 500);
+                    // Không gọi e.preventDefault() để cho phép hành vi chuyển hướng mặc định
                 }
             });
+
         });
     </script>
+
+
 
 
 

@@ -38,16 +38,19 @@ public interface ChiTietSanPhamRepository extends JpaRepository<ChiTietSanPham, 
             "OR dm.tenDanhMuc LIKE %:keyword%")
     List<ChiTietSanPham> searchByMultipleFields(@Param("keyword") String keyword);
 
-
     @Query("SELECT ctp FROM ChiTietSanPham ctp " +
             "JOIN ctp.idSanPham sp " +
             "JOIN sp.idHang h " +
+            "JOIN sp.idChatLieu cl " +
             "WHERE (:tenHang IS NULL OR h.tenHang = :tenHang) " +
+            "AND (:chatLieu IS NULL OR cl.tenChatLieu = :chatLieu) " +
             "AND ctp.giaBan BETWEEN :minPrice AND :maxPrice")
     Page<ChiTietSanPham> filterByHangAndPrice(
             @Param("tenHang") String tenHang,
+            @Param("chatLieu") String chatLieu,
             @Param("minPrice") long minPrice,
             @Param("maxPrice") long maxPrice,
             Pageable pageable);
+
 
 }

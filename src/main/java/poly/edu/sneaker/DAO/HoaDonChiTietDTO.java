@@ -1,6 +1,9 @@
 package poly.edu.sneaker.DAO;
 
+import jakarta.persistence.Column;
+
 public class HoaDonChiTietDTO {
+
 
     private int idChiTietSanPham;
     private int soLuong;

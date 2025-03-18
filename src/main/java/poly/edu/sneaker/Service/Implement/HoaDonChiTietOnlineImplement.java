@@ -19,4 +19,6 @@ public class HoaDonChiTietOnlineImplement implements HoaDonChiTietOnlService {
     public List<HoaDonChiTietOnlCustom> findByHoaDonId(HoaDon idhoadon) {
         return hoaDonChiTietOnlRepository.findByIdHoaDon(idhoadon);
     }
+
+    
 }

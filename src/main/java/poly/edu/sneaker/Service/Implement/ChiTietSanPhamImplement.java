@@ -78,52 +78,49 @@ public class ChiTietSanPhamImplement implements ChiTietSanPhamService {
         }
         return list;
     }
+    @Override
+    public Page<ChiTietSanPham> filterByHangAndPrice(String hang, String chatLieu, String priceRange, Pageable pageable) {
+        long minPrice = 0;
+        long maxPrice = Long.MAX_VALUE;
 
-@Override
-public Page<ChiTietSanPham> filterByHangAndPrice(String hang, String priceRange, Pageable pageable) {
-    // Mặc định không có giới hạn giá
-    long minPrice = 0;
-    long maxPrice = Long.MAX_VALUE;
-
-    // Nếu có chỉ định khoảng giá thì tính toán minPrice, maxPrice
-    if (priceRange != null && !priceRange.trim().isEmpty()) {
-        switch (priceRange) {
-            case "duoi500":
-                maxPrice = 500000;
-                break;
-            case "500-1000":
-                minPrice = 500000;
-                maxPrice = 1000000;
-                break;
-            case "1000-2000":
-                minPrice = 1000000;
-                maxPrice = 2000000;
-                break;
-            case "2000-3000":
-                minPrice = 2000000;
-                maxPrice = 3000000;
-                break;
-            case "3000-5000":
-                minPrice = 3000000;
-                maxPrice = 5000000;
-                break;
-            case "tren5000":
-                minPrice = 5000000;
-                break;
-            default:
-                // Nếu không khớp, giữ mặc định
-                break;
+        if (priceRange != null && !priceRange.trim().isEmpty()) {
+            switch (priceRange) {
+                case "duoi500":
+                    maxPrice = 500000;
+                    break;
+                case "500-1000":
+                    minPrice = 500000;
+                    maxPrice = 1000000;
+                    break;
+                case "1000-2000":
+                    minPrice = 1000000;
+                    maxPrice = 2000000;
+                    break;
+                case "2000-3000":
+                    minPrice = 2000000;
+                    maxPrice = 3000000;
+                    break;
+                case "3000-5000":
+                    minPrice = 3000000;
+                    maxPrice = 5000000;
+                    break;
+                case "tren5000":
+                    minPrice = 5000000;
+                    break;
+                default:
+                    break;
+            }
         }
+
+        if (hang != null && hang.trim().isEmpty()) {
+            hang = null;
+        }
+        if (chatLieu != null && chatLieu.trim().isEmpty()) {
+            chatLieu = null;
+        }
+
+        return chiTietSanPhamRepository.filterByHangAndPrice(hang, chatLieu, minPrice, maxPrice, pageable);
     }
 
-    // Nếu biến hang rỗng thì chuyển về null để không áp dụng điều kiện hãng
-    if (hang != null && hang.trim().isEmpty()) {
-        hang = null;
-    }
-
-    // Gọi repository với điều kiện: nếu hang khác null thì chỉ lọc theo hãng và giá,
-    // ngược lại chỉ lọc theo khoảng giá.
-    return chiTietSanPhamRepository.filterByHangAndPrice(hang, minPrice, maxPrice, pageable);
-}
 
 }

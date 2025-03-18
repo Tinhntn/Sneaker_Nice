@@ -19,9 +19,8 @@ public interface ChiTietSanPhamService {
     ChiTietSanPham findCTSPByIdSPAndIdMauSacAndIdSize(int idSanPham, int idMauSac, int idSize);
     List<ChiTietSanPham> searchByMultipleFields(String keyword);
 
-    // Lọc theo hãng nếu chỉ cần hãng
-//    Page<ChiTietSanPham> findByHang(String hang, Pageable pageable);
 
     // Lọc theo hãng + khoảng giá (các tham số có thể là null hoặc rỗng)
-    Page<ChiTietSanPham> filterByHangAndPrice(String hang, String priceRange, Pageable pageable);
+    Page<ChiTietSanPham> filterByHangAndPrice(String hang, String chatLieu, String priceRange, Pageable pageable);
+
 }
