@@ -9,24 +9,32 @@ import org.springframework.stereotype.Repository;
 import poly.edu.sneaker.Model.ChiTietSanPham;
 
 import java.util.ArrayList;
-
 import java.util.List;
 
 @Repository
 public interface ChiTietSanPhamRepository extends JpaRepository<ChiTietSanPham, Integer> {
 
+    // Lấy sản phẩm theo id của sản phẩm (SanPham)
     Page<ChiTietSanPham> findChiTietSanPhamByIdSanPham_Id(int idSanPham, Pageable pageable);
 
+    // Lấy bản ghi mới nhất cho mỗi sản phẩm
     @Query("SELECT ctp FROM ChiTietSanPham ctp " +
-            "WHERE ctp.ngayTao = (SELECT MAX(ctp2.ngayTao) FROM ChiTietSanPham ctp2 WHERE ctp2.idSanPham.id = ctp.idSanPham.id and ctp.trangThai = true) ")
+            "WHERE ctp.ngayTao = (SELECT MAX(ctp2.ngayTao) FROM ChiTietSanPham ctp2 WHERE ctp2.idSanPham.id = ctp.idSanPham.id and ctp.trangThai = true)")
     Page<ChiTietSanPham> findFirstRecordForEachProduct(Pageable pageable);
-    @Query("SELECT c FROM ChiTietSanPham c WHERE c.idSanPham.id = :idSanPham AND c.idMauSac.id = :idMauSac and c.trangThai=true")
-    ChiTietSanPham findChiTietSanPhamByIdAndIdMauSacAndTrangThai(@Param("idSanPham") int idSanPham, @Param("idMauSac") int idMauSac,@Param("trangThai")boolean trangThai);
-    public abstract ArrayList<ChiTietSanPham> findByIdSanPham_IdAndTrangThai(int idSanPham,boolean trangThai);
-    ChiTietSanPham findChiTietSanPhamByIdSanPham_IdAndIdSize_IdAndIdMauSac_Id(int idSanPham,int idSize,int idMauSac);
 
-    // 3) Tìm kiếm theo nhiều trường (tên SP, tên hãng, chất liệu, danh mục)
+    // Tìm chi tiết sản phẩm theo id sản phẩm và id màu sắc, với trạng thái đang hoạt động
+    @Query("SELECT c FROM ChiTietSanPham c WHERE c.idSanPham.id = :idSanPham AND c.idMauSac.id = :idMauSac and c.trangThai = true")
+    ChiTietSanPham findChiTietSanPhamByIdAndIdMauSacAndTrangThai(@Param("idSanPham") int idSanPham,
+                                                                 @Param("idMauSac") int idMauSac,
+                                                                 @Param("trangThai") boolean trangThai);
 
+    // Lấy danh sách chi tiết sản phẩm theo id sản phẩm với trạng thái đang hoạt động
+    ArrayList<ChiTietSanPham> findByIdSanPham_IdAndTrangThai(int idSanPham, boolean trangThai);
+
+    // Tìm chi tiết sản phẩm theo id sản phẩm, id size và id màu sắc
+    ChiTietSanPham findChiTietSanPhamByIdSanPham_IdAndIdSize_IdAndIdMauSac_Id(int idSanPham, int idSize, int idMauSac);
+
+    // Tìm kiếm theo nhiều trường (tên SP, tên hãng, chất liệu, danh mục)
     @Query("SELECT ctsp FROM ChiTietSanPham ctsp " +
             "JOIN ctsp.idSanPham sp " +
             "JOIN sp.idHang h " +
@@ -38,6 +46,7 @@ public interface ChiTietSanPhamRepository extends JpaRepository<ChiTietSanPham, 
             "OR dm.tenDanhMuc LIKE %:keyword%")
     List<ChiTietSanPham> searchByMultipleFields(@Param("keyword") String keyword);
 
+    // Lọc sản phẩm theo hãng, chất liệu và khoảng giá
     @Query("SELECT ctp FROM ChiTietSanPham ctp " +
             "JOIN ctp.idSanPham sp " +
             "JOIN sp.idHang h " +
@@ -52,5 +61,18 @@ public interface ChiTietSanPhamRepository extends JpaRepository<ChiTietSanPham, 
             @Param("maxPrice") long maxPrice,
             Pageable pageable);
 
+    // Lấy danh sách chất liệu (chatLieu) có sẵn theo hãng được chọn (cascading filter)
+    @Query("SELECT DISTINCT cl.tenChatLieu FROM ChiTietSanPham ctp " +
+            "JOIN ctp.idSanPham sp " +
+            "JOIN sp.idChatLieu cl " +
+            "WHERE (:hang IS NULL OR sp.idHang.tenHang = :hang)")
+    List<String> findDistinctChatLieuByHang(@Param("hang") String hang);
 
+    // Lấy danh sách hãng có sẵn theo chất liệu được chọn (cascading filter)
+    @Query("SELECT DISTINCT h.tenHang FROM ChiTietSanPham ctp " +
+            "JOIN ctp.idSanPham sp " +
+            "JOIN sp.idHang h " +
+            "JOIN sp.idChatLieu cl " +
+            "WHERE (:chatLieu IS NULL OR cl.tenChatLieu = :chatLieu)")
+    List<String> findDistinctHangByChatLieu(@Param("chatLieu") String chatLieu);
 }

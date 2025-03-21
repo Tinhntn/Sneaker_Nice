@@ -16,10 +16,6 @@ public class ChiTietSanPhamImplement implements ChiTietSanPhamService {
     @Autowired
     private ChiTietSanPhamRepository chiTietSanPhamRepository;
 
-
-
-    // Các phương thức còn lại được cài đặt tương tự...
-
     @Override
     public Page<ChiTietSanPham> findAll(Pageable pageable) {
         return chiTietSanPhamRepository.findAll(pageable);
@@ -78,6 +74,7 @@ public class ChiTietSanPhamImplement implements ChiTietSanPhamService {
         }
         return list;
     }
+
     @Override
     public Page<ChiTietSanPham> filterByHangAndPrice(String hang, String chatLieu, String priceRange, Pageable pageable) {
         long minPrice = 0;
@@ -88,23 +85,23 @@ public class ChiTietSanPhamImplement implements ChiTietSanPhamService {
                 case "duoi500":
                     maxPrice = 500000;
                     break;
-                case "500-1000":
+                case "500000-1000000":
                     minPrice = 500000;
                     maxPrice = 1000000;
                     break;
-                case "1000-2000":
+                case "1000000-2000000":
                     minPrice = 1000000;
                     maxPrice = 2000000;
                     break;
-                case "2000-3000":
+                case "2000000-3000000":
                     minPrice = 2000000;
                     maxPrice = 3000000;
                     break;
-                case "3000-5000":
+                case "3000000-5000000":
                     minPrice = 3000000;
                     maxPrice = 5000000;
                     break;
-                case "tren5000":
+                case "tren5000000":
                     minPrice = 5000000;
                     break;
                 default:
@@ -122,5 +119,13 @@ public class ChiTietSanPhamImplement implements ChiTietSanPhamService {
         return chiTietSanPhamRepository.filterByHangAndPrice(hang, chatLieu, minPrice, maxPrice, pageable);
     }
 
+    @Override
+    public List<String> findDistinctChatLieuByHang(String hang) {
+        return chiTietSanPhamRepository.findDistinctChatLieuByHang(hang);
+    }
 
+    @Override
+    public List<String> findDistinctHangByChatLieu(String chatLieu) {
+        return chiTietSanPhamRepository.findDistinctHangByChatLieu(chatLieu);
+    }
 }

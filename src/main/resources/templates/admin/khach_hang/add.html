@@ -15,6 +15,8 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <!-- Custom CSS -->
     <link rel="stylesheet" type="text/css" href="./styles/main.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+
 </head>
 <body>
 <div layout:fragment="content">
@@ -81,10 +83,16 @@
                         </div>
                         <div class="col-md-6">
                             <label for="matKhau" class="form-label">Mật Khẩu</label>
-                            <input type="password" class="form-control" id="matKhau" th:field="*{matKhau}" required>
+                            <div class="input-group">
+                                <input type="password" class="form-control" id="matKhau" th:field="*{matKhau}" required>
+                                <button class="btn btn-outline-secondary" type="button" id="togglePassword">
+                                    <i class="fa fa-eye"></i>
+                                </button>
+                            </div>
                             <div class="text-danger" th:if="${#fields.hasErrors('matKhau')}" th:errors="*{matKhau}"></div>
                         </div>
                     </div>
+
                     <!-- Hàng 5: Upload hình ảnh & Trạng thái -->
                     <div class="row mb-3">
                         <div class="col-md-6">
@@ -145,6 +153,21 @@
                 /*]]>*/
             </script>
         </div>
+        <script>
+            document.getElementById("togglePassword").addEventListener("click", function () {
+                var passwordInput = document.getElementById("matKhau");
+                var icon = this.querySelector("i");
+                if (passwordInput.type === "password") {
+                    passwordInput.type = "text";
+                    icon.classList.remove("fa-eye");
+                    icon.classList.add("fa-eye-slash");
+                } else {
+                    passwordInput.type = "password";
+                    icon.classList.remove("fa-eye-slash");
+                    icon.classList.add("fa-eye");
+                }
+            });
+        </script>
 
     </div>
 </div>

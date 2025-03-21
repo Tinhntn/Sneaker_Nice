@@ -84,8 +84,12 @@
                         </div>
                         <div class="col-md-6">
                             <label for="matKhau" class="form-label">Mật Khẩu</label>
-                            <!-- Để bảo mật, ô mật khẩu trống; gợi ý nhập nếu muốn thay đổi -->
-                            <input type="password" class="form-control" id="matKhau" th:field="*{matKhau}" placeholder="Nhập mật khẩu mới nếu muốn thay đổi" required>
+                            <div class="input-group">
+                                <input type="password" class="form-control" id="matKhau" th:field="*{matKhau}" placeholder="Nhập mật khẩu" required>
+                                <button class="btn btn-outline-secondary" type="button" id="togglePassword">
+                                    <i class="fa fa-eye"></i>
+                                </button>
+                            </div>
                             <div class="text-danger" th:if="${#fields.hasErrors('matKhau')}" th:errors="*{matKhau}"></div>
                         </div>
                     </div>
@@ -158,5 +162,20 @@
         /*]]>*/
     </script>
 </div>
+<script>
+    document.getElementById("togglePassword").addEventListener("click", function () {
+        var passwordInput = document.getElementById("matKhau");
+        var icon = this.querySelector("i");
+        if (passwordInput.type === "password") {
+            passwordInput.type = "text";
+            icon.classList.remove("fa-eye");
+            icon.classList.add("fa-eye-slash");
+        } else {
+            passwordInput.type = "password";
+            icon.classList.remove("fa-eye-slash");
+            icon.classList.add("fa-eye");
+        }
+    });
+</script>
 </body>
 </html>

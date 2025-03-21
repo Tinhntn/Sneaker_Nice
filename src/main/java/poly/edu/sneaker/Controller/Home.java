@@ -21,10 +21,9 @@ import poly.edu.sneaker.Service.ChiTietSanPhamService;
 import poly.edu.sneaker.Service.MauSacService;
 import poly.edu.sneaker.Service.SanPhamService;
 import poly.edu.sneaker.Service.SizeService;
-
-import java.util.List;
 import poly.edu.sneaker.Model.*;
 import poly.edu.sneaker.Service.*;
+
 import java.util.*;
 
 @Controller
@@ -38,7 +37,6 @@ public class Home {
     private SizeService sizeService;
     @Autowired
     private MauSacService mauSacService;
-
     @Autowired
     private HttpSession httpSession;
     @Autowired
@@ -47,7 +45,6 @@ public class Home {
     private GioHangChiTietService gioHangChiTietService;
     @Autowired
     private ChiTietSanPhamRepository chiTietSanPhamRepository;
-
 
     @GetMapping("/hienthi")
     public String hienthi(Model model, @RequestParam(defaultValue = "0") int page) {
@@ -77,7 +74,7 @@ public class Home {
         ChiTietSanPham chiTietSanPhams = chiTietSanPhamService.findById(id);
         if (chiTietSanPhams == null) {
             redirectAttributes.addFlashAttribute("error", "Sản phẩm không tồn tại!");
-            return "redirect:/Sneakers/hienthi"; // Điều hướng về trang chủ hoặc trang danh sách sản phẩm
+            return "redirect:/Sneakers/hienthi";
         }
         ArrayList<ChiTietSanPham> lstCTSP = chiTietSanPhamService.findByIdSanPham(chiTietSanPhams.getIdSanPham().getId());
 
@@ -105,6 +102,7 @@ public class Home {
         }
         return ResponseEntity.notFound().build();
     }
+
     @GetMapping("/ajax-search")
     public String ajaxSearch(@RequestParam("keyword") String keyword, Model model) {
         List<ChiTietSanPham> results = chiTietSanPhamService.searchByMultipleFields(keyword);
@@ -123,15 +121,7 @@ public class Home {
             @RequestParam(defaultValue = "8") int size
     ) {
         Pageable pageable = PageRequest.of(page, size);
-        Page<ChiTietSanPham> result;
-
-        if ((hang == null || hang.trim().isEmpty()) &&
-                (chatLieu == null || chatLieu.trim().isEmpty()) &&
-                (priceRange == null || priceRange.trim().isEmpty())) {
-            result = chiTietSanPhamService.findChiTietSanPhamJustOne(pageable);
-        } else {
-            result = chiTietSanPhamService.filterByHangAndPrice(hang, chatLieu, priceRange, pageable);
-        }
+        Page<ChiTietSanPham> result = chiTietSanPhamService.filterByHangAndPrice(hang, chatLieu, priceRange, pageable);
 
         model.addAttribute("filteredProducts", result.getContent());
         model.addAttribute("currentPage", result.getNumber());
@@ -140,14 +130,16 @@ public class Home {
         model.addAttribute("chatLieu", chatLieu);
         model.addAttribute("priceRange", priceRange);
 
-        // Nếu cần, thêm danh sách sản phẩm mới
+        // Lấy các giá trị bộ lọc phụ theo cascading
+        List<String> availableChatLieu = chiTietSanPhamService.findDistinctChatLieuByHang(hang);
+        List<String> availableHang = chiTietSanPhamService.findDistinctHangByChatLieu(chatLieu);
+        model.addAttribute("availableChatLieu", availableChatLieu);
+        model.addAttribute("availableHang", availableHang);
+
+        // Thêm danh sách sản phẩm mới
         Page<ChiTietSanPham> newProducts = chiTietSanPhamService.findChiTietSanPhamJustOne(PageRequest.of(0, 12));
         model.addAttribute("listSanPham", newProducts);
 
         return "user/sanpham/trangchu";
     }
-
-
-
-
 }
