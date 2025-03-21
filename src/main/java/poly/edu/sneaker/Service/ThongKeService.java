@@ -11,4 +11,5 @@ public interface ThongKeService {
     Map<String, Object> getThongKeTheoKhoangNgay(String startDate, String endDate);
     List<SanPhamBanChayResponse> getTop5SanPhamBanChay();
 
+
 }

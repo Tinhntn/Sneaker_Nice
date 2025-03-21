@@ -13,13 +13,16 @@
             font-family: Arial, sans-serif;
             background-color: #f8f9fa;
         }
+
         .container-fluid {
             padding: 20px;
         }
+
         h1 {
             text-align: center;
             margin-bottom: 30px;
         }
+
         .card {
             box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
             border-radius: 10px;
@@ -27,42 +30,53 @@
             height: 100%;
             color: #fff;
         }
+
         .card-body {
             border-radius: 10px;
             padding: 20px;
         }
+
         h5, h6 {
             text-align: center;
             margin-bottom: 10px;
         }
+
         .details {
             display: flex;
             gap: 20px;
             justify-content: space-between;
         }
+
         .details p {
             margin: 10px 10px 50px 10px;
         }
+
         .today {
             background-color: rgb(66, 127, 232);
         }
+
         .week {
             background-color: rgb(241, 144, 71);
         }
+
         .month {
             background-color: rgb(75, 206, 226);
         }
+
         .year {
             background-color: rgb(91, 212, 149);
         }
+
         .row {
             display: flex;
             justify-content: space-around;
         }
+
         .col-md-6 {
             max-width: 45%;
             flex: 1;
         }
+
         @media (max-width: 768px) {
             .col-md-6 {
                 max-width: 100%;
@@ -166,7 +180,20 @@
                             <input type="date" id="endDate" class="form-control me-2" style="width: 150px;">
                         </div>
                         <button class="btn btn-outline-success me-1" onclick="filterData()">Lọc</button>
-                        <button class="btn btn-outline-success">Xuất excel</button>
+                        <button class="btn btn-outline-success" onclick="exportExcel()">Xuất excel</button>
+                        <script>
+                            function exportExcel() {
+                                const startDate = document.getElementById('startDate').value;
+                                const endDate = document.getElementById('endDate').value;
+                                // Nếu có bộ lọc theo khoảng ngày thì gửi startDate & endDate, ngược lại có thể gửi loaiLoc
+                                if(startDate && endDate) {
+                                    window.location.href = `/thongke/export?startDate=${startDate}&endDate=${endDate}`;
+                                } else {
+                                    // Ví dụ: nếu bạn có một bộ lọc loại và lưu giá trị ở biến global currentLoaiLoc
+                                    window.location.href = `/thongke/export?loaiLoc=${currentLoaiLoc}`;
+                                }
+                            }
+                        </script>
                     </div>
                     <div class="card shadow col-md-6">
                         <canvas id="orderChart" style="width: 400px; height: 400px;"></canvas>
@@ -204,7 +231,7 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <div layout:fragment="js">
     <script>
-        document.addEventListener("DOMContentLoaded", function() {
+        document.addEventListener("DOMContentLoaded", function () {
             // Biến biểu đồ toàn cục
             let orderChart;
 
@@ -213,7 +240,7 @@
                 const endDate = document.getElementById('endDate').value;
                 fetch('/thongke/khoangngay', {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                    headers: {'Content-Type': 'application/x-www-form-urlencoded'},
                     body: `startDate=${startDate}&endDate=${endDate}`
                 })
                     .then(response => response.json())
@@ -247,18 +274,24 @@
                             orderChart.update();
                         } else {
                             const canvas = document.getElementById('orderChart');
-                            if(canvas) {
+                            if (canvas) {
                                 const ctx = canvas.getContext('2d');
                                 orderChart = new Chart(ctx, {
                                     type: 'pie',
                                     data: {
                                         labels: [
                                             'Đơn hàng chưa thanh toán',
+
                                             'Đơn hàng đã thanh toán',
+
                                             'Đơn hàng chờ xác nhận',
+
                                             'Đơn hàng chờ lấy hàng',
+
                                             'Đơn hàng đang giao',
+
                                             'Đơn hàng đã giao',
+
                                             'Đơn hàng đã hủy'
                                         ],
                                         datasets: [{
@@ -289,7 +322,7 @@
                                         responsive: true,
                                         maintainAspectRatio: false,
                                         plugins: {
-                                            legend: { position: 'top' },
+                                            legend: {position: 'top'},
                                             tooltip: {
                                                 callbacks: {
                                                     label: function (tooltipItem) {
@@ -301,7 +334,7 @@
                                             title: {
                                                 display: true,
                                                 text: 'Biểu đồ thống kê đơn hàng',
-                                                font: { size: 18 }
+                                                font: {size: 18}
                                             }
                                         }
                                     }
@@ -315,7 +348,7 @@
             function sendData(dangLoc) {
                 fetch('/thongke/loc', {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                    headers: {'Content-Type': 'application/x-www-form-urlencoded'},
                     body: `bien=${dangLoc}`
                 })
                     .then(response => response.json())
@@ -348,7 +381,7 @@
                             orderChart.update();
                         } else {
                             const canvas = document.getElementById('orderChart');
-                            if(canvas) {
+                            if (canvas) {
                                 const ctx = canvas.getContext('2d');
                                 orderChart = new Chart(ctx, {
                                     type: 'pie',
@@ -390,7 +423,7 @@
                                         responsive: true,
                                         maintainAspectRatio: false,
                                         plugins: {
-                                            legend: { position: 'top' },
+                                            legend: {position: 'top'},
                                             tooltip: {
                                                 callbacks: {
                                                     label: function (tooltipItem) {
@@ -402,7 +435,7 @@
                                             title: {
                                                 display: true,
                                                 text: 'Biểu đồ thống kê đơn hàng',
-                                                font: { size: 18 }
+                                                font: {size: 18}
                                             }
                                         }
                                     }
@@ -417,7 +450,9 @@
             window.filterData = filterData;
             window.sendData = sendData;
         });
+
     </script>
+
 </div>
 </body>
 </html>

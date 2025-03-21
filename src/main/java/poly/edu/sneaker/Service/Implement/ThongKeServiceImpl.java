@@ -31,10 +31,9 @@ public class ThongKeServiceImpl implements ThongKeService {
         Long orderSuccessNgay = thongKeResponsitory.getSuccessfulOrderCountBetweenDates(todayStart, todayEnd);
         Long orderCancelNgay = thongKeResponsitory.getCancelledOrderCountBetweenDates(todayStart, todayEnd);
 
-// Thêm truy vấn tính tổng số lượng sản phẩm bán ra từ HoaDonChiTiet
+        // Tính tổng số lượng sản phẩm bán ra từ HoaDonChiTiet
         Long totalProductsToday = hoaDonChiTietOnlRepository.getTotalProductSoldBetweenDates(todayStart, todayEnd);
         int soSanPhamNgay = totalProductsToday != null ? totalProductsToday.intValue() : 0;
-        ;
 
         // Tạo DTO cho "Hôm nay"
         ThongKeDTO tkNgay = new ThongKeDTO(doanhThuNgay, soSanPhamNgay,
@@ -44,13 +43,12 @@ public class ThongKeServiceImpl implements ThongKeService {
         stats.put("soLuongHoaDonThanhCongTrongNgay", tkNgay.getSoHoaDonThanhCong());
         stats.put("soluongHoaDonHuyTrongNgay", tkNgay.getSoHoaDonHuy());
 
-
+        // Thống kê theo tuần
         Date weekStart = getStartOfWeek(now);
         Date weekEnd = getEndOfWeek(now);
         Double doanhThuTuan = thongKeResponsitory.getRevenueBetweenDates(weekStart, weekEnd);
         Long orderSuccessTuan = thongKeResponsitory.getSuccessfulOrderCountBetweenDates(weekStart, weekEnd);
         Long orderCancelTuan = thongKeResponsitory.getCancelledOrderCountBetweenDates(weekStart, weekEnd);
-// Tính tổng số sản phẩm bán ra trong tuần
         Long totalProductsWeek = hoaDonChiTietOnlRepository.getTotalProductSoldBetweenDates(weekStart, weekEnd);
         int soSanPhamTuan = totalProductsWeek != null ? totalProductsWeek.intValue() : 0;
         ThongKeDTO tkTuan = new ThongKeDTO(doanhThuTuan, soSanPhamTuan,
@@ -59,13 +57,13 @@ public class ThongKeServiceImpl implements ThongKeService {
         stats.put("soLuongSanPhamTrongTuan", tkTuan.getSoSanPham());
         stats.put("soLuongHoaDonThanhCongTrongTuan", tkTuan.getSoHoaDonThanhCong());
         stats.put("soluongHoaDonHuyTrongTuan", tkTuan.getSoHoaDonHuy());
-////thang
+
+        // Thống kê theo tháng
         Date monthStart = getStartOfMonth(now);
         Date monthEnd = getEndOfMonth(now);
         Double doanhThuThang = thongKeResponsitory.getRevenueBetweenDates(monthStart, monthEnd);
         Long orderSuccessThang = thongKeResponsitory.getSuccessfulOrderCountBetweenDates(monthStart, monthEnd);
         Long orderCancelThang = thongKeResponsitory.getCancelledOrderCountBetweenDates(monthStart, monthEnd);
-// Tính tổng số sản phẩm bán ra trong tháng
         Long totalProductsMonth = hoaDonChiTietOnlRepository.getTotalProductSoldBetweenDates(monthStart, monthEnd);
         int soSanPhamThang = totalProductsMonth != null ? totalProductsMonth.intValue() : 0;
         ThongKeDTO tkThang = new ThongKeDTO(doanhThuThang, soSanPhamThang,
@@ -74,13 +72,13 @@ public class ThongKeServiceImpl implements ThongKeService {
         stats.put("soLuongSanPhamTrongThang", tkThang.getSoSanPham());
         stats.put("soLuongHoaDonThanhCongTrongThang", tkThang.getSoHoaDonThanhCong());
         stats.put("soluongHoaDonHuyTrongThang", tkThang.getSoHoaDonHuy());
-             //năm
+
+        // Thống kê theo năm
         Date yearStart = getStartOfYear(now);
         Date yearEnd = getEndOfYear(now);
         Double doanhThuNam = thongKeResponsitory.getRevenueBetweenDates(yearStart, yearEnd);
         Long orderSuccessNam = thongKeResponsitory.getSuccessfulOrderCountBetweenDates(yearStart, yearEnd);
         Long orderCancelNam = thongKeResponsitory.getCancelledOrderCountBetweenDates(yearStart, yearEnd);
-// Tính tổng số sản phẩm bán ra trong năm
         Long totalProductsYear = hoaDonChiTietOnlRepository.getTotalProductSoldBetweenDates(yearStart, yearEnd);
         int soSanPhamNam = totalProductsYear != null ? totalProductsYear.intValue() : 0;
         ThongKeDTO tkNam = new ThongKeDTO(doanhThuNam, soSanPhamNam,
@@ -90,23 +88,27 @@ public class ThongKeServiceImpl implements ThongKeService {
         stats.put("soLuongHoaDonThanhCongTrongNam", tkNam.getSoHoaDonThanhCong());
         stats.put("soluongHoaDonHuyTrongNam", tkNam.getSoHoaDonHuy());
 
-        // Dữ liệu cho biểu đồ đơn hàng: giả sử trả về Map với các trạng thái
+        // Cập nhật dữ liệu cho biểu đồ đơn hàng dựa trên trạng thái
         Map<String, Integer> hd = new HashMap<>();
-        hd.put("trangThai_0", 0);
-        hd.put("trangThai_1", 0);
-        hd.put("trangThai_2", 0);
-        hd.put("trangThai_3", 0);
-        hd.put("trangThai_4", 0);
-        hd.put("trangThai_5", 0);
-        hd.put("trangThai_6", 0);
+        // Giả sử trạng thái đơn hàng từ 0 đến 6
+        for (int i = 0; i <= 6; i++) {
+            hd.put("trangThai_" + i, 0);
+        }
+        // Truy vấn số lượng đơn hàng theo trạng thái trong khoảng thời gian "Hôm nay"
+        List<Object[]> statusCounts = thongKeResponsitory.countHoaDonByTrangThaiBetweenDates(todayStart, todayEnd);
+        for (Object[] row : statusCounts) {
+            Integer trangThai = (Integer) row[0]; // trạng thái của đơn hàng
+            Long count = (Long) row[1]; // số lượng đơn hàng có trạng thái đó
+            hd.put("trangThai_" + trangThai, count.intValue());
+        }
         stats.put("hd", hd);
 
+        // Lấy danh sách top 5 sản phẩm bán chạy
         List<SanPhamBanChayResponse> listSanPhamBanChay = hoaDonChiTietOnlRepository.findTop5SanPhamBanChay();
         if (listSanPhamBanChay == null) {
             listSanPhamBanChay = new ArrayList<>();
         }
         stats.put("lstSanPhamBanChay", listSanPhamBanChay);
-
 
         return stats;
     }
@@ -115,7 +117,6 @@ public class ThongKeServiceImpl implements ThongKeService {
     public List<SanPhamBanChayResponse> getTop5SanPhamBanChay() {
         return hoaDonChiTietOnlRepository.findTop5SanPhamBanChay();
     }
-
 
     @Override
     public Map<String, Object> getThongKeTheoLoai(int loaiLoc) {
@@ -145,14 +146,11 @@ public class ThongKeServiceImpl implements ThongKeService {
         }
         return getStatisticsBetweenDates(start, end);
     }
-
     @Override
     public Map<String, Object> getThongKeTheoKhoangNgay(String startDateStr, String endDateStr) {
         Map<String, Object> stats = new HashMap<>();
-        // Kiểm tra nếu chuỗi rỗng hoặc null, bạn có thể trả về lỗi hoặc giá trị mặc định
         if (startDateStr == null || startDateStr.trim().isEmpty() ||
                 endDateStr == null || endDateStr.trim().isEmpty()) {
-            // Ví dụ: trả về map rỗng, hoặc bạn có thể thêm thông báo lỗi
             stats.put("error", "Ngày bắt đầu và ngày kết thúc không được để trống!");
             return stats;
         }
@@ -161,7 +159,51 @@ public class ThongKeServiceImpl implements ThongKeService {
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
             Date start = sdf.parse(startDateStr);
             Date end = sdf.parse(endDateStr);
-            return getStatisticsBetweenDates(start, end);
+
+            // Lấy doanh thu tổng hợp (gộp cả online và offline)
+            Double doanhThu = thongKeResponsitory.getRevenueBetweenDates(start, end);
+            // Lấy số hóa đơn tổng
+            Long soDonHang = thongKeResponsitory.getOrderCountBetweenDates(start, end);
+            // Lấy số hóa đơn thành công
+            Long soDonHangThanhCong = thongKeResponsitory.getSuccessfulOrderCountBetweenDates(start, end);
+            // Lấy số hóa đơn hủy
+            Long soDonHangHuy = thongKeResponsitory.getCancelledOrderCountBetweenDates(start, end);
+            // Lấy tổng số sản phẩm bán ra
+            Long totalProducts = hoaDonChiTietOnlRepository.getTotalProductSoldBetweenDates(start, end);
+            int soSanPham = (totalProducts != null) ? totalProducts.intValue() : 0;
+
+            // Tính số lượng đơn hàng theo trạng thái (map hd)
+            Map<String, Integer> hd = new HashMap<>();
+            // Giả sử trạng thái đơn hàng từ 0 đến 6
+            for (int i = 0; i <= 6; i++) {
+                hd.put("trangThai_" + i, 0);
+            }
+            List<Object[]> statusCounts = thongKeResponsitory.countHoaDonByTrangThaiBetweenDates(start, end);
+            for (Object[] row : statusCounts) {
+                Integer trangThai = (Integer) row[0];
+                Long count = (Long) row[1];
+                hd.put("trangThai_" + trangThai, count.intValue());
+            }
+
+            // Tạo DTO mới có chứa dữ liệu chi tiết theo trạng thái
+            ThongKeDTO tk = new ThongKeDTO(doanhThu, soSanPham,
+                    soDonHangThanhCong.intValue(), soDonHangHuy.intValue(), hd);
+
+            // Đưa dữ liệu vào map thống kê
+            stats.put("doanhThu", tk.getDoanhThu());
+            stats.put("soLuongSanPham", tk.getSoSanPham());
+            stats.put("soLuongHoaDonThanhCong", tk.getSoHoaDonThanhCong());
+            stats.put("soluongHoaDonHuy", tk.getSoHoaDonHuy());
+            stats.put("hd", tk.getHd());
+
+            // Ngoài ra, nếu bạn có thêm dữ liệu như danh sách sản phẩm bán chạy thì cũng thêm vào
+            List<SanPhamBanChayResponse> listSanPhamBanChay = hoaDonChiTietOnlRepository.findTop5SanPhamBanChay();
+            if (listSanPhamBanChay == null) {
+                listSanPhamBanChay = new ArrayList<>();
+            }
+            stats.put("lstSanPhamBanChay", listSanPhamBanChay);
+
+            return stats;
         } catch (Exception e) {
             e.printStackTrace();
             stats.put("error", "Lỗi phân tích ngày: " + e.getMessage());
@@ -170,13 +212,13 @@ public class ThongKeServiceImpl implements ThongKeService {
     }
 
 
+
     private Map<String, Object> getStatisticsBetweenDates(Date start, Date end) {
         Map<String, Object> stats = new HashMap<>();
         Double doanhThu = thongKeResponsitory.getRevenueBetweenDates(start, end);
         Long soDonHang = thongKeResponsitory.getOrderCountBetweenDates(start, end);
         Long soDonHangThanhCong = thongKeResponsitory.getSuccessfulOrderCountBetweenDates(start, end);
         Long soDonHangHuy = thongKeResponsitory.getCancelledOrderCountBetweenDates(start, end);
-        // Số sản phẩm bán ra có thể tính thêm nếu có truy vấn
         Integer soSanPham = 0;
 
         ThongKeDTO tk = new ThongKeDTO(doanhThu, soSanPham, soDonHangThanhCong.intValue(), soDonHangHuy.intValue());
@@ -185,15 +227,17 @@ public class ThongKeServiceImpl implements ThongKeService {
         stats.put("soLuongHoaDonThanhCong", tk.getSoHoaDonThanhCong());
         stats.put("soluongHoaDonHuy", tk.getSoHoaDonHuy());
 
-        // Dữ liệu cho biểu đồ
+        // Cập nhật dữ liệu cho biểu đồ đơn hàng theo trạng thái
         Map<String, Integer> hd = new HashMap<>();
-        hd.put("trangThai_0", 0);
-        hd.put("trangThai_1", 0);
-        hd.put("trangThai_2", 0);
-        hd.put("trangThai_3", 0);
-        hd.put("trangThai_4", 0);
-        hd.put("trangThai_5", 0);
-        hd.put("trangThai_6", 0);
+        for (int i = 0; i <= 6; i++) {
+            hd.put("trangThai_" + i, 0);
+        }
+        List<Object[]> statusCounts = thongKeResponsitory.countHoaDonByTrangThaiBetweenDates(start, end);
+        for (Object[] row : statusCounts) {
+            Integer trangThai = (Integer) row[0];
+            Long count = (Long) row[1];
+            hd.put("trangThai_" + trangThai, count.intValue());
+        }
         stats.put("hd", hd);
 
         List<SanPhamBanChayResponse> listSanPhamBanChay = hoaDonChiTietOnlRepository.findTop5SanPhamBanChay();
@@ -205,7 +249,7 @@ public class ThongKeServiceImpl implements ThongKeService {
         return stats;
     }
 
-    // --- Các phương thức tiện ích để tính khoảng thời gian ---
+    // Các phương thức tiện ích để tính khoảng thời gian
     private Date getStartOfDay(Date date) {
         Calendar cal = Calendar.getInstance();
         cal.setTime(date);
@@ -269,5 +313,4 @@ public class ThongKeServiceImpl implements ThongKeService {
         cal.set(Calendar.DAY_OF_MONTH, 31);
         return getEndOfDay(cal.getTime());
     }
-
 }

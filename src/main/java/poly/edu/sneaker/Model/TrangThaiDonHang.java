@@ -5,7 +5,7 @@ import lombok.*;
 
 import java.util.Date;
 
-@Table(name = "lichsutrangthai")
+@Table(name = "trangthaidonhang")
 @Entity
 @Data
 @Getter
@@ -20,7 +20,7 @@ public class TrangThaiDonHang {
     @ManyToOne
     @JoinColumn(name = "idHoaDon")
     private HoaDon idHoaDon;
-    private Date thoiGian;
+  private  Date  ngayCapNhat;
     private Byte trangThai;
     private String ghiChu;
 }

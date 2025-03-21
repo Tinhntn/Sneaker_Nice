@@ -7,13 +7,16 @@ import poly.edu.sneaker.Model.HoaDon;
 
 
 import java.util.Date;
+import java.util.List;
 
 public interface ThongKeResponsitory extends JpaRepository<HoaDon, Integer> {
+
+
     // Lấy tổng doanh thu (tongTien) của các hóa đơn có ngày tạo nằm trong khoảng thời gian (startDate đến endDate)
     // và trạng thái hóa đơn (trangThai) bằng 1 (đã thanh toán).
     @Query("SELECT COALESCE(SUM(h.tongTien), 0) " +
             "FROM HoaDon h " +
-            "WHERE h.ngayTao BETWEEN :startDate AND :endDate AND h.trangThai = 1")
+            "WHERE h.ngayTao BETWEEN :startDate AND :endDate")
     Double getRevenueBetweenDates(@Param("startDate") Date startDate,
                                   @Param("endDate") Date endDate);
     // Đếm tổng số hóa đơn có ngày tạo nằm trong khoảng thời gian (startDate đến endDate).
@@ -28,13 +31,15 @@ public interface ThongKeResponsitory extends JpaRepository<HoaDon, Integer> {
             "WHERE h.loaiHoaDon = true AND h.ngayTao BETWEEN :startDate AND :endDate")
     Long getSuccessfulOrderCountBetweenDates(@Param("startDate") Date startDate,
                                              @Param("endDate") Date endDate);
-    // Đếm số lượng hóa đơn bị hủy (loaiHoaDon = false) có ngày tạo nằm trong khoảng thời gian (startDate đến endDate).
     @Query("SELECT COUNT(h) " +
             "FROM HoaDon h " +
-            "WHERE h.loaiHoaDon = false AND h.ngayTao BETWEEN :startDate AND :endDate")
+            "WHERE h.trangThai = 6 AND h.ngayTao BETWEEN :startDate AND :endDate")
     Long getCancelledOrderCountBetweenDates(@Param("startDate") Date startDate,
                                             @Param("endDate") Date endDate);
 
+    @Query("SELECT h.trangThai, COUNT(h) FROM HoaDon h WHERE h.ngayTao BETWEEN :startDate AND :endDate GROUP BY h.trangThai")
+    List<Object[]> countHoaDonByTrangThaiBetweenDates(@Param("startDate") Date startDate,
+                                                      @Param("endDate") Date endDate);
 
 
 }
