@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.math.BigDecimal;
+import java.time.temporal.ChronoUnit;
 import java.util.Date;
 
 @Table(name = "hoadon")
@@ -40,6 +41,8 @@ public class HoaDon {
     private String donViGiaoHang;
     private float phiShip;
     private String emailNguoiNhan;
+    private String tenNguoiNhan;
+    private String sdtNguoiNhan;
     private String diaChiChiTiet;
     private String tinhThanhPho;
     private String quanHuyen;
@@ -48,6 +51,12 @@ public class HoaDon {
     private Boolean loaiThanhToan;
     private String tenNguoiGiao;
     private String sdtNguoiGiao;
-    private int trangThai;
-
+    private Integer trangThai;
+ @PrePersist
+    public void prePersist() {
+        if (ngayGiaoHang == null) {
+            ngayTao = new Date(); // Mặc định là ngày hiện tại nếu chưa có
+        }
+        ngayGiaoHang = Date.from(ngayTao.toInstant().plus(3, ChronoUnit.DAYS)); // Cộng 3 ngày
+    }
 }

@@ -1,204 +1,300 @@
-<html lang="en">
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	  layout:decorate="~{layout/mainUser}">
 
 <body class="goto-here">
-	<div layout:fragment="content">
-		<section class="ftco-section">
-			<div class="container">
-				<div class="row justify-content-center">
-					<div class="col-xl-10 ftco-animate">
-						<form action="#" class="billing-form">
-							<h3 class="mb-4 billing-heading">Billing Details</h3>
-							<div class="row align-items-end">
-								<div class="col-md-6">
-									<div class="form-group">
-										<label for="firstname">Firt Name</label>
-										<input type="text" class="form-control" placeholder="">
-									</div>
-								</div>
-								<div class="col-md-6">
-									<div class="form-group">
-										<label for="lastname">Last Name</label>
-										<input type="text" class="form-control" placeholder="">
-									</div>
-								</div>
-								<div class="w-100"></div>
-								<div class="col-md-12">
-									<div class="form-group">
-										<label for="country">State / Country</label>
-										<div class="select-wrap">
-											<div class="icon"><span class="ion-ios-arrow-down"></span></div>
-											<select name="" id="" class="form-control">
-												<option value="">France</option>
-												<option value="">Italy</option>
-												<option value="">Philippines</option>
-												<option value="">South Korea</option>
-												<option value="">Hongkong</option>
-												<option value="">Japan</option>
-											</select>
-										</div>
-									</div>
-								</div>
-								<div class="w-100"></div>
-								<div class="col-md-6">
-									<div class="form-group">
-										<label for="streetaddress">Street Address</label>
-										<input type="text" class="form-control"
-											placeholder="House number and street name">
-									</div>
-								</div>
-								<div class="col-md-6">
-									<div class="form-group">
-										<input type="text" class="form-control"
-											placeholder="Appartment, suite, unit etc: (optional)">
-									</div>
-								</div>
-								<div class="w-100"></div>
-								<div class="col-md-6">
-									<div class="form-group">
-										<label for="towncity">Town / City</label>
-										<input type="text" class="form-control" placeholder="">
-									</div>
-								</div>
-								<div class="col-md-6">
-									<div class="form-group">
-										<label for="postcodezip">Postcode / ZIP *</label>
-										<input type="text" class="form-control" placeholder="">
-									</div>
-								</div>
-								<div class="w-100"></div>
-								<div class="col-md-6">
-									<div class="form-group">
-										<label for="phone">Phone</label>
-										<input type="text" class="form-control" placeholder="">
-									</div>
-								</div>
-								<div class="col-md-6">
-									<div class="form-group">
-										<label for="emailaddress">Email Address</label>
-										<input type="text" class="form-control" placeholder="">
-									</div>
-								</div>
-								<div class="w-100"></div>
-								<div class="col-md-12">
-									<div class="form-group mt-4">
-										<div class="radio">
-											<label class="mr-3"><input type="radio" name="optradio"> Create an Account?
-											</label>
-											<label><input type="radio" name="optradio"> Ship to different
-												address</label>
-										</div>
-									</div>
-								</div>
-							</div>
-						</form><!-- END -->
+<div layout:fragment="content">
+	<section class="ftco-section">
+		<div class="container">
+			<div class="row">
+				<!-- Cột bên trái: Thông tin thanh toán -->
+				<div class="col-md-6">
+					<h3 class="mb-4 billing-heading">Thông tin thanh toán</h3>
+					<form action="#" class="billing-form">
+						<div class="form-group">
+							<label for="fullname">Họ và Tên</label>
+							<input type="text" id="hoVaTen" class="form-control" placeholder="Nhập họ và tên">
+						</div>
+						<div class="form-group">
+							<label for="phone">Số điện thoại</label>
+							<input type="text" id="soDienThoai" class="form-control"
+								   placeholder="Nhập số điện thoại">
+						</div>
+						<div class="form-group">
+							<label for="email">Email</label>
+							<input type="text" id="email" class="form-control" placeholder="Nhập email">
+						</div>
+
+						<!-- Chọn tỉnh/thành phố -->
+						<div class="form-group">
+							<label for="province">Tỉnh/Thành phố</label>
+							<select class="form-control" id="province" onchange="loadDistricts()">
+								<option value="">Chọn tỉnh/thành phố</option>
+							</select>
+						</div>
+
+						<!-- Chọn quận/huyện -->
+						<div class="form-group">
+							<label for="district">Quận/Huyện</label>
+							<select class="form-control" id="district" onchange="loadWards()">
+								<option value="">Chọn quận/huyện</option>
+							</select>
+						</div>
+
+						<!-- Chọn phường/xã -->
+						<div class="form-group">
+							<label for="ward">Phường/Xã</label>
+							<select class="form-control" id="ward">
+								<option value="">Chọn phường/xã</option>
+							</select>
+						</div>
+
+						<div class="form-group">
+							<label for="address">Địa chỉ cụ thể</label>
+							<input type="text" id="diaChiCuThe" class="form-control"
+								   placeholder="Nhập số nhà, tên đường">
+						</div>
+
+						<div class="form-group">
+							<label for="note">Ghi chú đơn hàng</label>
+							<textarea class="form-control" id="ghiChu" rows="3"
+									  placeholder="Ghi chú nếu có"></textarea>
+						</div>
+					</form>
+				</div>
 
 
+				<!-- Cột bên phải: Giỏ hàng và phương thức thanh toán -->
+				<div class="col-md-6">
+					<div class="cart-detail cart-total bg-light p-3">
+						<h3 class="billing-heading mb-4">Đơn hàng của bạn</h3>
+						<div th:each="item : ${lstGioHangChiTiet}" class="d-flex align-items-center">
 
-						<div class="row mt-5 pt-3 d-flex">
-							<div class="col-md-6 d-flex">
-								<div class="cart-detail cart-total bg-light p-3 p-md-4">
-									<h3 class="billing-heading mb-4">Cart Total</h3>
-									<p class="d-flex">
-										<span>Subtotal</span>
-										<span>$20.60</span>
-									</p>
-									<p class="d-flex">
-										<span>Delivery</span>
-										<span>$0.00</span>
-									</p>
-									<p class="d-flex">
-										<span>Discount</span>
-										<span>$3.00</span>
-									</p>
-									<hr>
-									<p class="d-flex total-price">
-										<span>Total</span>
-										<span>$17.60</span>
-									</p>
-								</div>
-							</div>
-							<div class="col-md-6">
-								<div class="cart-detail bg-light p-3 p-md-4">
-									<h3 class="billing-heading mb-4">Payment Method</h3>
-									<div class="form-group">
-										<div class="col-md-12">
-											<div class="radio">
-												<label><input type="radio" name="optradio" class="mr-2"> Direct Bank
-													Tranfer</label>
-											</div>
-										</div>
-									</div>
-									<div class="form-group">
-										<div class="col-md-12">
-											<div class="radio">
-												<label><input type="radio" name="optradio" class="mr-2"> Check
-													Payment</label>
-											</div>
-										</div>
-									</div>
-									<div class="form-group">
-										<div class="col-md-12">
-											<div class="radio">
-												<label><input type="radio" name="optradio" class="mr-2"> Paypal</label>
-											</div>
-										</div>
-									</div>
-									<div class="form-group">
-										<div class="col-md-12">
-											<div class="checkbox">
-												<label><input type="checkbox" value="" class="mr-2"> I have read and
-													accept the
-													terms and conditions</label>
-											</div>
-										</div>
-									</div>
-									<p><a href="#" class="btn btn-primary py-3 px-4">Place an order</a></p>
-								</div>
+							<input type="checkbox" class="cart-checkbox mr-2" th:data-id="${item.id}"
+								   th:data-price="${item.tongTien}" checked>
+							<img th:src="${item.idChiTietSanPham.hinhAnh}" alt=""
+								 style="width: 50px; height: 50px; margin-right: 10px;">
+							<div>
+								<span th:text="${item.idChiTietSanPham.idSanPham.tenSanPham}"></span> -
+								<span
+										th:text="'Size: ' + ${item.idChiTietSanPham.idSize.tenSize} + ', Màu: ' + ${item.idChiTietSanPham.idMauSac.tenMauSac}"></span>
+								<p th:text="'Đơn giá: '+${#numbers.formatInteger(item.donGia, 3, 'COMMA')} + 'đ'">
+								</p>
+								<p
+										th:text="'Thành tiền: '+${#numbers.formatInteger(item.tongTien, 3, 'COMMA')} + 'đ'">
+								</p>
+								<p th:text="'Số lượng: ' + ${item.soLuong}"></p>
+
 							</div>
 						</div>
-					</div> <!-- .col-md-8 -->
+
+						<hr>
+						<div class="d-flex">
+							<span style="margin-right: 5px;">Phí giao hàng </span>
+							<span id="shipping-fee"
+								  th:text="${#numbers.formatInteger(shippingFee,3,'COMMA')} + 'đ'"></span>
+
+						</div>
+						<hr>
+						<div class="d-flex ">
+							<span style="margin-right: 5px;"><strong>Tổng </strong></span>
+							<span id="total-price"
+								  th:text="${#numbers.formatInteger(totalPrice,3,'COMMA')} + 'đ'"></span>
+						</div>
+					</div>
+
+					<div class="cart-detail bg-light p-3 mt-4">
+						<h3 class="billing-heading mb-4">Phương thức thanh toán</h3>
+						<div class="form-group">
+							<input type="radio" name="payment" id="bank" class="mr-2"> <label for="bank">Chuyển
+							khoản ngân hàng</label>
+						</div>
+						<div class="form-group">
+							<input type="radio" name="payment" id="cod" class="mr-2" checked> <label for="cod">Thanh
+							toán
+							khi nhận hàng (COD)</label>
+						</div>
+						<div class="form-group">
+							<input type="radio" name="payment" id="paypal" class="mr-2"> <label for="paypal">Thanh
+							toán qua Paypal</label>
+						</div>
+						<div class="form-group">
+							<input type="checkbox" id="terms" class="mr-2"> <label for="terms">Tôi đồng ý với điều
+							khoản mua hàng</label>
+						</div>
+						<button class="btn btn-primary w-100" id="thanhToanDonHang">Thanh toán</button>
+					</div>
 				</div>
 			</div>
-		</section>
+		</div>
+	</section>
+	<script>
+		const API_PROVINCE = "https://provinces.open-api.vn/api/";
 
+		// Load danh sách tỉnh/thành phố
+		async function loadProvinces() {
+			try {
+				let response = await fetch(API_PROVINCE + "?depth=1");
+				let data = await response.json();
 
-		<script>
-			$(document).ready(function () {
+				let provinceSelect = document.getElementById("province");
+				provinceSelect.innerHTML = '<option value="">Chọn tỉnh/thành phố</option>';
 
-				var quantitiy = 0;
-				$('.quantity-right-plus').click(function (e) {
-
-					// Stop acting like a button
-					e.preventDefault();
-					// Get the field name
-					var quantity = parseInt($('#quantity').val());
-
-					// If is not undefined
-
-					$('#quantity').val(quantity + 1);
-
-
-					// Increment
-
+				data.forEach(province => {
+					let option = document.createElement("option");
+					option.value = province.code;
+					option.textContent = province.name;
+					provinceSelect.appendChild(option);
 				});
+			} catch (error) {
+				console.error("Lỗi khi tải danh sách tỉnh/thành phố:", error);
+			}
+		}
 
-				$('.quantity-left-minus').click(function (e) {
-					// Stop acting like a button
-					e.preventDefault();
-					// Get the field name
-					var quantity = parseInt($('#quantity').val());
+		// Load danh sách quận/huyện khi chọn tỉnh/thành phố
+		async function loadDistricts() {
+			let provinceCode = document.getElementById("province").value;
+			if (!provinceCode) return;
 
-					// If is not undefined
+			try {
+				let response = await fetch(API_PROVINCE + "p/" + provinceCode + "?depth=2");
+				let data = await response.json();
 
-					// Increment
-					if (quantity > 0) {
-						$('#quantity').val(quantity - 1);
-					}
+				let districtSelect = document.getElementById("district");
+				districtSelect.innerHTML = '<option value="">Chọn quận/huyện</option>';
+
+				data.districts.forEach(district => {
+					let option = document.createElement("option");
+					option.value = district.code;
+					option.textContent = district.name;
+					districtSelect.appendChild(option);
 				});
+			} catch (error) {
+				console.error("Lỗi khi tải danh sách quận/huyện:", error);
+			}
+		}
+
+		// Load danh sách phường/xã khi chọn quận/huyện
+		async function loadWards() {
+			let districtCode = document.getElementById("district").value;
+			if (!districtCode) return;
+
+			try {
+				let response = await fetch(API_PROVINCE + "d/" + districtCode + "?depth=2");
+				let data = await response.json();
+
+				let wardSelect = document.getElementById("ward");
+				wardSelect.innerHTML = '<option value="">Chọn phường/xã</option>';
+
+				data.wards.forEach(ward => {
+					let option = document.createElement("option");
+					option.value = ward.code;
+					option.textContent = ward.name;
+					wardSelect.appendChild(option);
+				});
+			} catch (error) {
+				console.error("Lỗi khi tải danh sách phường/xã:", error);
+			}
+		}
+
+		// Gọi API khi trang tải lần đầu
+		document.addEventListener("DOMContentLoaded", loadProvinces);
+		function updateTotalPrice() {
+			let total = 0;
+			document.querySelectorAll('.cart-checkbox:checked').forEach(checkbox => {
+				total += parseFloat(checkbox.getAttribute('data-price')) || 0;
+			});
+			let shippingFee = parseFloat(document.getElementById("shipping-fee").innerText.replace('đ', '').replace(',', '')) || 0;
+			document.getElementById("total-price").innerText = (total + shippingFee).toLocaleString() + "đ";
+		}
+		document.addEventListener("DOMContentLoaded", updateTotalPrice);
+
+		document.addEventListener('change', function (event) {
+			if (event.target.classList.contains('cart-checkbox')) {
+				updateTotalPrice();
+			}
+		});
+
+		document.getElementById("thanhToanDonHang").addEventListener("click", function () {
+			var thanhToanKhiNhanHang = document.getElementById("cod").checked;
+			let selectedItems = [];
+			document.querySelectorAll('.cart-checkbox:checked').forEach(checkbox => {
+				selectedItems.push(parseInt(checkbox.getAttribute('data-id')));
 
 			});
-		</script>
-	</div>
+			if (selectedItems.length === 0) {
+				notyf.error("Vui lòng chọn ít nhất một sản phẩm để thanh toán!");
+				return;
+			}
+			var hoVaTen = document.getElementById("hoVaTen").value;
+			var soDienThoai = document.getElementById("soDienThoai").value;
+			var email = document.getElementById("email").value;
+			var provinceSelect = document.getElementById("province");
+			var province = provinceSelect.options[provinceSelect.selectedIndex].text;
+			var districtSelect = document.getElementById("district");
+			var district = districtSelect.options[districtSelect.selectedIndex].text;
+			var wardSelect = document.getElementById("ward");
+			var ward = wardSelect.options[wardSelect.selectedIndex].text;
+			var diaChiCuThe = document.getElementById("diaChiCuThe").value;
+			var ghiChu = document.getElementById("ghiChu").value;
+			if (!hoVaTen || !soDienThoai || !email || !province || !district || !ward || !diaChiCuThe) {
+				notyf.error("Vui lòng nhập đầy đủ thông tin thanh toán!");
+				return;
+			}
+			if (!document.getElementById("terms").checked) {
+				notyf.error("Vui lòng đồng ý với điều khoản mua hàng!");
+				return;
+			}
+			var shippingFee = parseFloat(document.getElementById("shipping-fee").innerText.replace(/[^\d]/g, '')) || 0;
+			var totalPrice = parseFloat(document.getElementById("total-price").innerText.replace(/[^\d]/g, '')) || 0;
+
+			let sanPhamThanhToan = {
+				hoVaTen: hoVaTen,
+				soDienThoai: soDienThoai,
+				email: email,
+				province: province,
+				district: district,
+				ward: ward,
+				diaChiCuThe: diaChiCuThe,
+				ghiChu: ghiChu,
+				tienShip: shippingFee,
+				tongTien: totalPrice,
+				selectedItems: selectedItems
+			};
+			if (thanhToanKhiNhanHang) {
+				console.log("Đơn hàng của bạn:", sanPhamThanhToan);
+				// Gửi dữ liệu lên server để xử lý thanh toán
+				fetch('/gio-hang/thanh-toan', {
+					method: 'POST',
+					headers: { 'Content-Type': 'application/json' },
+					body: JSON.stringify(sanPhamThanhToan)
+
+				})
+						.then(response => {
+
+							if (!response.ok) {
+								return response.json().then(err => {
+									throw new Error(notyf.error(err.message || "Thanh toán thất bại!"));
+								});
+							}
+							return response.json();
+						})
+						.then(data => {
+							notyf.success(data.message || "Thanh toán thành công!");
+							setTimeout(() => {
+								window.location.href = "/Sneakers_Nice/hienthi";
+							}, 2000);
+						})
+						.catch(error => {
+							console.error("Lỗi khi thanh toán:", error);
+						});
+
+
+			}
+
+		});
+	</script>
+</div>
 
 
 

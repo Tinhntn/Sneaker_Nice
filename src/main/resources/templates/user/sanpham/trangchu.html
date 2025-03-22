@@ -1,19 +1,24 @@
 <!DOCTYPE html>
-<html lang="en"
-      xmlns:th="http://www.thymeleaf.org"
-      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="~{layout/mainUser}">
+
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Trang chủ</title>
+
     <!-- CSS Bootstrap -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
-    <!-- FontAwesome -->
+    <!-- FontAwesome for icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
 </head>
+
 <body>
 <div layout:fragment="content">
+
     <!-- SECTION: Bộ lọc -->
     <section class="ftco-section bg-light">
         <div class="container">
@@ -179,9 +184,322 @@
             </div>
         </div>
     </section>
+    <section class="ftco-section ftco-no-pt ftco-no-pb">
+        <div class="container">
+            <div class="row no-gutters ftco-services">
+                <div class="col-lg-4 text-center d-flex align-self-stretch ftco-animate">
+                    <div class="media block-6 services p-4 py-md-5">
+                        <div class="icon d-flex justify-content-center align-items-center mb-4">
+                            <span class="flaticon-bag"></span>
+                        </div>
+                        <div class="media-body">
+                            <h3 class="heading">Free Shipping</h3>
+                            <p>Dịch vụ vận chuyển chuyên nghiệp, nhanh chóng, tận tình, tận tâm
+                                ,chất lượng và đúng giờ mang đến cho khách hàng trải nghiệm mua hàng tốt nhất
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-4 text-center d-flex align-self-stretch ftco-animate">
+                    <div class="media block-6 services p-4 py-md-5">
+                        <div class="icon d-flex justify-content-center align-items-center mb-4">
+                            <span class="flaticon-customer-service"></span>
+                        </div>
+                        <div class="media-body">
+                            <h3 class="heading">Support Customer</h3>
+                            <p>Dịch vụ chăm sóc khách hàng 24/7, nhiệt tình, chuyên nghiệp luôn sẵn sàng hỗ trợ giải
+                                đáp thắc mắc của khách hàng
+                                về các vấn đề liên quan đến sản phẩm,
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-4 text-center d-flex align-self-stretch ftco-animate">
+                    <div class="media block-6 services p-4 py-md-5">
+                        <div class="icon d-flex justify-content-center align-items-center mb-4">
+                            <span class="flaticon-payment-security"></span>
+                        </div>
+                        <div class="media-body">
+                            <h3 class="heading">Secure Payments</h3>
+                            <p>Đa dạng phương thức thanh toán, thanh toán nhanh chóng, dễ dàng. Thông tin luôn được
+                                bảo mật, đảm bảo
+                                an toàn thông tin cho khách hàng, luôn đặt khách hàng lên trên hết.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+
+
+    <section class="ftco-section ftco-choose ftco-no-pb ftco-no-pt">
+        <div class="container">
+            <div class="row no-gutters">
+                <div class="col-lg-4">
+                    <div class="choose-wrap divider-one img p-5 d-flex align-items-end"
+                         style="background-image: url(/images/choose-1.jpg);">
+
+                        <div class="text text-center text-white px-2">
+                            <span class="subheading">Đa dạng sản phẩm</span>
+                            <h2>Lựa chọn hấp dẫn</h2>
+                            <p>Five cung cấp các sản phẩm chính hãng, đa dạng mẫu mã, chủng loại,
+                                cập nhật liên tục bắt kịp xu hướng
+                            </p>
+                            <p><a href="#" class="btn btn-black px-3 py-2">Mua ngay</a></p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-8">
+                    <div class="row no-gutters choose-wrap divider-two align-items-stretch">
+                        <div class="col-md-12">
+                            <div class="choose-wrap full-wrap img align-self-stretch d-flex align-item-center justify-content-end"
+                                 style="background-image: url(/images/choose-2.jpg);">
+                                <div class="col-md-7 d-flex align-items-center">
+                                    <div class="text text-white px-5">
+                                        <span class="subheading">Chất lượng tuyệt đối</span>
+                                        <h2>Sản phẩm chính hãng</h2>
+                                        <p>Tự hào là đơn vị phân phối các sản phẩm chính hãng từ các thương hiệu
+                                            lớn
+                                            như
+                                            Nike, Adidas, Jordan,...
+                                        </p>
+                                        <p><a href="#" class="btn btn-black px-3 py-2">Mua ngay</a></p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-12">
+                            <div class="row no-gutters">
+                                <div class="col-md-6">
+                                    <div
+                                            class="choose-wrap wrap img align-self-stretch bg-light d-flex align-items-center">
+                                        <div class="text text-center px-5">
+                                            <span class="subheading">Ưu đãi </span>
+                                            <h2>Chiết khấu hấp hẫn</h2>
+                                            <p>Liên tục cập nhật các chính sách ưu đãi hấp dẫn, các chương trình
+                                                khuyến
+                                                mại
+                                                hấp dẫn</p>
+                                            <p><a href="#" class="btn btn-black px-3 py-2">Mua ngay</a></p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="choose-wrap wrap img align-self-stretch d-flex align-items-center"
+                                         style="background-image: url(/images/choose-3.jpg);">
+                                        <div class="text text-center text-white px-5">
+                                            <span class="subheading">Vận chuyển</span>
+                                            <h2>Giao hàng nhanh chóng</h2>
+                                            <p>Cung cấp dịch vụ vận chuyển an toàn, chuyên nghiệp, nhanh chóng.
+
+                                            </p>
+                                            <p><a href="#" class="btn btn-black px-3 py-2">Mua ngay</a></p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <section class="ftco-section ftco-deal bg-primary">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6">
+                    <img src="/images/prod-1.png" class="img-fluid" alt="">
+                </div>
+                <div class="col-md-6">
+                    <div class="heading-section heading-section-white">
+                        <span class="subheading">Khuyến mại</span>
+                        <h2 class="mb-3">Giảm giá đón Đông</h2>
+                    </div>
+                    <div id="timer" class="d-flex mb-4">
+                        <div class="time" id="days"></div>
+                        <div class="time pl-4" id="hours"></div>
+                        <div class="time pl-4" id="minutes"></div>
+                        <div class="time pl-4" id="seconds"></div>
+                    </div>
+                    <div class="text-deal">
+                        <h2><a href="#">Nike Free RN 2019 iD</a></h2>
+                        <p class="price"><span class="mr-2 price-dc">$120.00</span><span
+                                class="price-sale">$80.00</span>
+                        </p>
+                        <ul class="thumb-deal d-flex mt-4">
+                            <li class="img" style="background-image: url(/images/product-6.png);"></li>
+                            <li class="img" style="background-image: url(/images/product-2.png);"></li>
+                            <li class="img" style="background-image: url(/images/product-4.png);"></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="ftco-section testimony-section">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-5">
+                    <div class="services-flow">
+                        <div class="services-2 p-4 d-flex ftco-animate">
+                            <div class="icon">
+                                <span class="flaticon-bag"></span>
+                            </div>
+                            <div class="text">
+                                <h3 class="heading">Miễn phí ship</h3>
+                                <p>Miễn phí ship cho các hóa đơn trong bán kính 10km,
+                                    miễn phí ship toàn quốc cho các hóa đơn có giá trị trên 50 triệu </p>
+                            </div>
+                        </div>
+                        <div class="services-2 p-4 d-flex ftco-animate">
+                            <div class="icon">
+                                <span class="flaticon-heart-box"></span>
+                            </div>
+                            <div class="text">
+                                <h3>Quà tặng giá trị</h3>
+                                <p class="mb-0">Các sản phẩm quà tặng chính hãng, vô cùng hấp dẫn.</p>
+                            </div>
+                        </div>
+                        <div class="services-2 p-4 d-flex ftco-animate">
+                            <div class="icon">
+                                <span class="flaticon-payment-security"></span>
+                            </div>
+                            <div class="text">
+                                <h3>Đổi trả miễn phí</h3>
+                                <p class="mb-0">Hỗ trợ đổi size, sản phẩm lỗi hoàn toàn miễn phí, thủ tục nhanh
+                                    chóng.
+                                </p>
+                            </div>
+                        </div>
+                        <div class="services-2 p-4 d-flex ftco-animate">
+                            <div class="icon">
+                                <span class="flaticon-customer-service"></span>
+                            </div>
+                            <div class="text">
+                                <h3>Hỗ trợ 24/7</h3>
+                                <p class="mb-0">Đội ngũ nhân viên hỗ trợ 24/7, nhiệt tình tận tâm.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-7">
+                    <div class="heading-section ftco-animate mb-5">
+                        <h2 class="mb-4">Đánh giá của khách hàng</h2>
+                        <p>Five Bee luôn trân trọng khách hàng, trải nghiệm mua hàng của bạn ảnh hưởng trực tiếp
+                            tới hệ
+                            thông kinh doanh của chúng tôi.
+                            Chúng tôi luôn hết mình vì bạn!
+                        </p>
+                    </div>
+                    <div class="carousel-testimony owl-carousel">
+                        <div class="item">
+                            <div class="testimony-wrap">
+                                <div class="user-img mb-4" style="background-image: url(/images/person_1.jpg)">
+                                        <span class="quote d-flex align-items-center justify-content-center">
+                                            <i class="icon-quote-left"></i>
+                                        </span>
+                                </div>
+                                <div class="text">
+                                    <p class="mb-4 pl-4 line">Trải nghiệm mua hàng vô cùng tuyệt vời, rất hài
+                                        lòng với
+                                        dịch
+                                        vụ tại đây.</p>
+                                    <p class="name">Nguyễn Trọng Đạt</p>
+                                    <span class="position">khách hàng thân thiết!</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="item">
+                            <div class="testimony-wrap">
+                                <div class="user-img mb-4" style="background-image: url(/images/person_2.jpg)">
+                                        <span class="quote d-flex align-items-center justify-content-center">
+                                            <i class="icon-quote-left"></i>
+                                        </span>
+                                </div>
+                                <div class="text">
+                                    <p class="mb-4 pl-4 line">Chính sách giảm giá tuyệt vời, nhân viên tư vấn
+                                        rất nhiệt
+                                        tình.
+                                        Sẽ quay lại ủng hộ!
+                                    </p>
+                                    <p class="name">Nguyễn Thùy Dung</p>
+                                    <span class="position">Khách hàng mới</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="item">
+                            <div class="testimony-wrap">
+                                <div class="user-img mb-4" style="background-image: url(/images/person_3.jpg)">
+                                        <span class="quote d-flex align-items-center justify-content-center">
+                                            <i class="icon-quote-left"></i>
+                                        </span>
+                                </div>
+                                <div class="text">
+                                    <p class="mb-4 pl-4 line">Sản phẩm lỗi nhưng đã được các bạn nhân viên hỗ
+                                        trợ đổi.
+                                        Dịch vụ rất tốt, trải nghiệm mua hàng tuyệt vời, sẽ quay lại ủng hộ
+                                    </p>
+                                    <p class="name">Lê Tiến Mạnh</p>
+                                    <span class="position">Khách hàng mới!</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="item">
+                            <div class="testimony-wrap">
+                                <div class="user-img mb-4" style="background-image: url(/images/person_1.jpg)">
+                                        <span class="quote d-flex align-items-center justify-content-center">
+                                            <i class="icon-quote-left"></i>
+                                        </span>
+                                </div>
+                                <div class="text">
+                                    <p class="mb-4 pl-4 line">Sản phẩm chính hãng, chất lượng rất tốt, vô cùng
+                                        hài lòng,
+                                        có
+                                        dịp sẽ quay lại ủng hộ</p>
+                                    <p class="name">Nguyễn Tiến Việt</p>
+                                    <span class="position">Khách hàng thân thiết!</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="item">
+                            <div class="testimony-wrap">
+                                <div class="user-img mb-4" style="background-image: url(/images/person_1.jpg)">
+                                        <span class="quote d-flex align-items-center justify-content-center">
+                                            <i class="icon-quote-left"></i>
+                                        </span>
+                                </div>
+                                <div class="text">
+                                    <p class="mb-4 pl-4 line">Dịch vụ chuyên nghiệp, chính sách hấp dẫn, các sản
+                                        phẩm
+                                        rất đa
+                                        dạng,
+                                        trải nghiệm mua hàng tuyệt vời.
+                                    </p>
+                                    <p class="name">Ngô Đăng Việt</p>
+                                    <span class="position">khách hàng thân thiết!</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
 </div>
-<!-- Bootstrap JS, jQuery -->
+
+
+
+
+
+
+
+<!-- JavaScript Bootstrap (với Popper.js) -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 </body>
+
 </html>

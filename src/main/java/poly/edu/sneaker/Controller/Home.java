@@ -5,12 +5,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.springframework.http.ResponseEntity;
 import poly.edu.sneaker.Model.ChiTietSanPham;
@@ -25,6 +23,7 @@ import poly.edu.sneaker.Model.*;
 import poly.edu.sneaker.Service.*;
 
 import java.util.*;
+
 
 @Controller
 @RequestMapping("/Sneakers_Nice")
@@ -51,17 +50,36 @@ public class Home {
         KhachHang khachHangSession = (KhachHang) httpSession.getAttribute("khachHangSession");
         int size = 12;
         Page<ChiTietSanPham> lstCTSP = chiTietSanPhamService.findChiTietSanPhamJustOne(PageRequest.of(page, size));
+        for (ChiTietSanPham ctsp : lstCTSP
+             ) {
+            if(ctsp.getSoLuong()<=0){
+                ctsp.setTrangThai(false);
+                chiTietSanPhamService.saveChiTietSanPham(ctsp);
+            }
+        }
         int soLuongSanPhamTrongGioHang = 0;
 
         if (khachHangSession != null) {
             model.addAttribute("khachHang", khachHangSession);
             GioHang gioHang = gioHangService.findGioHangByIDKH(khachHangSession.getId());
             ArrayList<GioHangChiTiet> lstGioHangChiTiet = gioHangChiTietService.findByIdGioHang(gioHang.getId());
-            model.addAttribute("lstGioHangChiTiet", lstGioHangChiTiet);
-            for (GioHangChiTiet ghct : lstGioHangChiTiet) {
-                soLuongSanPhamTrongGioHang += ghct.getSoLuong();
+            for ( GioHangChiTiet ghct : lstGioHangChiTiet
+                 ) {
+                ChiTietSanPham chiTietSanPham =ghct.getIdChiTietSanPham();
+                boolean checkSoLuong = chiTietSanPham.getSoLuong()>0&&chiTietSanPham.getSoLuong()<ghct.getSoLuong();
+                if(checkSoLuong){
+                    ghct.setSoLuong(chiTietSanPham.getSoLuong());
+                    gioHangChiTietService.saveGioHangChitiet(ghct);
+                }
             }
-            model.addAttribute("soLuongSanPhamTrongGioHang", soLuongSanPhamTrongGioHang);
+            model.addAttribute("lstGioHangChiTiet", lstGioHangChiTiet);
+            for (GioHangChiTiet ghct
+                    : lstGioHangChiTiet
+            ) {
+                soLuongSanPhamTrongGioHang = soLuongSanPhamTrongGioHang+ghct.getSoLuong();
+            }
+
+            model.addAttribute("soLuongSanPhamTrongGioHang",soLuongSanPhamTrongGioHang);
         }
         model.addAttribute("listSanPham", lstCTSP);
         model.addAttribute("currentPage", lstCTSP.getNumber());

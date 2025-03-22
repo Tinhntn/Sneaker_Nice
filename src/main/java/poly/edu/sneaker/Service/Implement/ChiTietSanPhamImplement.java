@@ -9,7 +9,6 @@ import poly.edu.sneaker.Repository.ChiTietSanPhamRepository;
 import poly.edu.sneaker.Service.ChiTietSanPhamService;
 import java.util.ArrayList;
 import java.util.List;
-
 @Service
 public class ChiTietSanPhamImplement implements ChiTietSanPhamService {
 
@@ -53,7 +52,7 @@ public class ChiTietSanPhamImplement implements ChiTietSanPhamService {
 
     @Override
     public ChiTietSanPham findCTSPByIDMauSac(int idCTSP, int idMauSac) {
-        return chiTietSanPhamRepository.findChiTietSanPhamByIdAndIdMauSacAndTrangThai(idCTSP, idMauSac, true);
+        return chiTietSanPhamRepository.findChiTietSanPhamByIdAndIdMauSacAndTrangThai(idCTSP,idMauSac,true);
     }
 
     @Override
@@ -128,4 +127,11 @@ public class ChiTietSanPhamImplement implements ChiTietSanPhamService {
     public List<String> findDistinctHangByChatLieu(String chatLieu) {
         return chiTietSanPhamRepository.findDistinctHangByChatLieu(chatLieu);
     }
+
+//
+//    @Override
+//    public ChiTietSanPham getCTSPByIdSP(Pageable pageable, int idSP) {
+//        return chiTietSanPhamRepository.findChiTietSanPhamByIdSanPham(idSP);
+//    }
+
 }

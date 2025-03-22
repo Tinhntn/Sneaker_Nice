@@ -6,6 +6,8 @@ import poly.edu.sneaker.Model.ChiTietSanPham;
 import java.util.ArrayList;
 import java.util.List;
 
+import java.util.ArrayList;
+
 public interface ChiTietSanPhamService {
     Page<ChiTietSanPham> findAll(Pageable pageable);
     void saveChiTietSanPham(ChiTietSanPham chiTietSanPham);

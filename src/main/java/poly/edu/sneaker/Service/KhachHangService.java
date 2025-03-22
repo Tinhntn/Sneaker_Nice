@@ -26,5 +26,4 @@ public interface KhachHangService {
     KhachHang findByMaKhachHang(String maKhachHang);
     Page<KhachHang> filterAndSort(Boolean trangThai, String sortBy, String sortDir, Pageable pageable);
 
-
 }

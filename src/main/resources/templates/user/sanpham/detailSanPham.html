@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-    layout:decorate="~{layout/mainUser.html}">
+      layout:decorate="~{layout/mainUser.html}">
 
 <head>
     <meta charset="UTF-8">
@@ -18,109 +18,109 @@
 </head>
 
 <body>
-    <div layout:fragment="content">
-        <!-- Thông báo thành công -->
+<div layout:fragment="content">
+    <!-- Thông báo thành công -->
 
-        <div th:if="${message}">
-            <script th:inline="javascript">
-                /*<![CDATA[*/
-                var errorMessage = /*[[${message}]]*/ 'null';
-                if (errorMessage !== 'null') {
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Thất bại',
-                        text: errorMessage,
-                        confirmButtonText: 'OK'
-                    });
-                }
-                /*]]>*/
-            </script>
-        </div>
-        <div th:if="${thanhcong}">
-            <script th:inline="javascript">
-                /*<![CDATA[*/
-                var successMessage = /*[[${message}]]*/ 'null';
-                if (successMessage !== 'null') {
-                    Swal.fire({
-                        icon: 'success',
-                        title: 'Thành công',
-                        text: successMessage,
-                        confirmButtonText: 'OK'
-                    });
-                }
-                /*]]>*/
-            </script>
-        </div>
-        <section class="ftco-section">
-            <div class="container mt-5">
-                <div class="row">
-                    <div class="col-lg-6 mb-5 ftco-animate">
-                        <a class="image-popup prod-img-bg"><img id="productImage" th:src="${chiTietSanPham.hinhAnh}"
-                                class="img-fluid" alt="Colorlib Template"></a>
+    <div th:if="${message}">
+        <script th:inline="javascript">
+            /*<![CDATA[*/
+            var errorMessage = /*[[${message}]]*/ 'null';
+            if (errorMessage !== 'null') {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Thất bại',
+                    text: errorMessage,
+                    confirmButtonText: 'OK'
+                });
+            }
+            /*]]>*/
+        </script>
+    </div>
+    <div th:if="${thanhcong}">
+        <script th:inline="javascript">
+            /*<![CDATA[*/
+            var successMessage = /*[[${message}]]*/ 'null';
+            if (successMessage !== 'null') {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Thành công',
+                    text: successMessage,
+                    confirmButtonText: 'OK'
+                });
+            }
+            /*]]>*/
+        </script>
+    </div>
+    <section class="ftco-section">
+        <div class="container mt-5">
+            <div class="row">
+                <div class="col-lg-6 mb-5 ftco-animate">
+                    <a class="image-popup prod-img-bg"><img id="productImage" th:src="${chiTietSanPham.hinhAnh}"
+                                                            class="img-fluid" alt="Colorlib Template"></a>
+                </div>
+                <div class="col-lg-6 product-details pl-md-5 ftco-animate">
+                    <h2 class="mb-4">Thông tin sản phẩm</h2>
+
+                    <div class="rating d-flex">
+                        <p class="text-left mr-4">
+                            <a href="#" class="mr-2">5.0</a>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                        </p>
+
+                        <p class="text-left mr-4">
+                            <a href="#" class="mr-2" style="color: #000;">100 <span
+                                    style="color: #bbb;">Rating</span></a>
+                        </p>
+                        <p class="text-left">
+                            <a href="#" class="mr-2" style="color: #000;">500 <span
+                                    style="color: #bbb;">Sold</span></a>
+                        </p>
                     </div>
-                    <div class="col-lg-6 product-details pl-md-5 ftco-animate">
-                        <h2 class="mb-4">Thông tin sản phẩm</h2>
+                    <h4 class="mb-3"
+                        th:text="${chiTietSanPham.idSanPham.tenSanPham + ' ' + chiTietSanPham.idSanPham.idHang.tenHang + ' ' + chiTietSanPham.idSanPham.idDanhMuc.tenDanhMuc + ' ' + chiTietSanPham.idSanPham.idChatLieu.tenChatLieu}">
+                    </h4>
 
-                        <div class="rating d-flex">
-                            <p class="text-left mr-4">
-                                <a href="#" class="mr-2">5.0</a>
-                                <i class="fas fa-star"></i>
-                                <i class="fas fa-star"></i>
-                                <i class="fas fa-star"></i>
-                                <i class="fas fa-star"></i>
-                                <i class="fas fa-star"></i>
-                            </p>
-
-                            <p class="text-left mr-4">
-                                <a href="#" class="mr-2" style="color: #000;">100 <span
-                                        style="color: #bbb;">Rating</span></a>
-                            </p>
-                            <p class="text-left">
-                                <a href="#" class="mr-2" style="color: #000;">500 <span
-                                        style="color: #bbb;">Sold</span></a>
-                            </p>
-                        </div>
-                        <h4 class="mb-3"
-                            th:text="${chiTietSanPham.idSanPham.tenSanPham + ' ' + chiTietSanPham.idSanPham.idHang.tenHang + ' ' + chiTietSanPham.idSanPham.idDanhMuc.tenDanhMuc + ' ' + chiTietSanPham.idSanPham.idChatLieu.tenChatLieu}">
-                        </h4>
-
-                        <h4 class="price mb-3" th:text="'Giá: ' + ${chiTietSanPham.giaBan} + ' VND'"></h4>
-                        <h4 class="mb-4"
-                            th:text="${chiTietSanPham.soLuong != null ? 'Còn hàng: ' + chiTietSanPham.soLuong : 'Hết hàng'}">
-                        </h4>
+                    <h4 class="price mb-3" th:text="'Giá: ' + ${chiTietSanPham.giaBan} + ' VND'"></h4>
+                    <h4 class="mb-4"
+                        th:text="${chiTietSanPham.soLuong != null ? 'Còn hàng: ' + chiTietSanPham.soLuong : 'Hết hàng'}">
+                    </h4>
 
 
-                        <!-- Các button chọn Size -->
-                        <div id="sizeButtons" class="mb-4">
-                            <div>
-                                <button type="button" th:each="size : ${lstSize}" th:data-idSize="${size.id}"
+                    <!-- Các button chọn Size -->
+                    <div id="sizeButtons" class="mb-4">
+                        <div>
+                            <button type="button" th:each="size : ${lstSize}" th:data-idSize="${size.id}"
                                     th:text="${size.tenSize}"
                                     th:class="${(chiTietSanPham != null and size.id == chiTietSanPham.idSize.id) ? 'btn btn-secondary size-btn active' : 'btn btn-outline-secondary size-btn'}"
                                     onclick="selectSize(this)">
-                                </button>
-                            </div>
+                            </button>
                         </div>
-                        <!-- Các button chọn Màu sắc -->
-                        <div id="mauSacButtons" class="mb-4">
-                            <div>
-                                <button type="button" th:each="ms : ${lstMauSac}" th:data-idMauSac="${ms.id}"
+                    </div>
+                    <!-- Các button chọn Màu sắc -->
+                    <div id="mauSacButtons" class="mb-4">
+                        <div>
+                            <button type="button" th:each="ms : ${lstMauSac}" th:data-idMauSac="${ms.id}"
                                     th:text="${ms.tenMauSac}" th:data-idCTSP="${chiTietSanPham.id}"
                                     th:class="${(chiTietSanPham != null and ms.id == chiTietSanPham.idMauSac.id) ? 'btn btn-secondary btn-mau-sac active' : 'btn btn-outline-secondary btn-mau-sac'}"
                                     onclick="selectMauSac(this)">
-                                </button>
-                            </div>
-                            </span>
+                            </button>
                         </div>
+                        </span>
+                    </div>
 
-                        <div class="input-group col-md-6 d-flex mb-3">
+                    <div class="input-group col-md-6 d-flex mb-3">
                             <span class="input-group-btn mr-2">
                                 <button type="button" class="quantity-left-minus btn" data-type="minus" data-field="">
                                     <i class="ion-ios-remove"></i>
                                 </button>
                             </span>
-                            <input type="text" id="quantity" name="quantity" class="quantity form-control input-number"
-                                value="1" min="1" max="25" disabled>
-                            <span class="input-group-btn ml-2">
+                        <input type="text" id="quantity" name="quantity" class="quantity form-control input-number"
+                               value="1" min="1" max="25" disabled>
+                        <span class="input-group-btn ml-2">
                                 <button type="button" class="quantity-right-plus btn" data-type="plus" data-field="">
                                     <i class="ion-ios-add"></i>
                                 </button>
@@ -128,141 +128,143 @@
 
 
 
-                        </div>
-                        <!-- Các button Thanh toán và Thêm vào giỏ hàng -->
-                        <div class="input-group col-md-6 d-flex mb-3">
-                            <form th:action="@{/giohang/addGHCT}" method="post" class="d-inline">
-                                <a id="themVaoGioHang" class="btn btn-primary btnThemVaoGioHang  py-3 px-5 ">Thêm vào
-                                    giỏ hàng
-                                </a>
-                                <br>
-                                <a href="cart.html" class="btn btn-primary btnMuaNgay py-3 px-5">Mua ngay</a>
+                    </div>
+                    <!-- Các button Thanh toán và Thêm vào giỏ hàng -->
+                    <div class="input-group col-md-6 d-flex mb-3">
+                        <form th:action="@{/giohang/addGHCT}" method="post" class="d-inline">
+                            <a id="themVaoGioHang" class="btn btn-primary btnThemVaoGioHang  py-3 px-5 ">Thêm vào
+                                giỏ hàng
+                            </a>
+                            <br>
+                            <a href="cart.html" class="btn btn-primary btnMuaNgay py-3 px-5">Mua ngay</a>
 
-                            </form>
-                        </div>
+                        </form>
                     </div>
                 </div>
-                <script th:inline="javascript">
-    
-                    var notyf = new Notyf({ ripple: true });
+            </div>
+            <script th:inline="javascript">
 
-                    function selectSize(button) {
-                        // Xóa class active khỏi tất cả các nút size
-                        document.querySelectorAll('.size-btn').forEach(btn => {
-                            btn.classList.remove('active');
-                        });
+                var notyf = new Notyf({ ripple: true });
 
-                        // Đánh dấu nút được chọn
-                        button.classList.add('active');
-
-                        // Cập nhật giá trị size được chọn
-                        document.getElementById("selectedSize").value = button.getAttribute("data-id");
-                    }
-
-                    function selectMauSac(button) {
-                        // Xóa class active khỏi tất cả các nút màu sắc
-                        document.querySelectorAll('.btn-mau-sac').forEach(btn => {
-                            btn.classList.remove('active');
-                        });
-
-                        // Đánh dấu nút được chọn
-                        button.classList.add('active');
-
-                        // Cập nhật giá trị màu sắc được chọn
-                        document.getElementById("selectedMauSac").value = button.getAttribute("data-idMauSac");
-                        let idMauSac = document.getElementById("idMauSac");
-                        let idCTSP = document.getElementById("idCTSP");
-                        fetch(`/Sneakers_Nice/chitietsanpham?idCTSP=${idCTSP}&idMauSac=${idMauSac}`)
-                            .then(response => response.json())
-                            .then(data => {
-                                if (data && data.hinhAnh) {
-                                    document.getElementById("productImage").src = data.hinhAnh;
-                                }
-                            })
-                            .catch(error => notyf.error('Có lỗi xảy ra', error)
-                            );
-                    }
-                    document.addEventListener("DOMContentLoaded", function () {
-                        updateCartCount();
-
-                        var combinations = /*[[${lstCTSP}]]*/[];
-                        const colorButtons = document.querySelectorAll(".btn-mau-sac");
-                        const sizeButtons = document.querySelectorAll(".size-btn");
-                        let selectedColor = null;
-                        let selectedSize = null;
-
-                        function updateSizes() {
-                            sizeButtons.forEach((btn) => {
-                                const size = btn.getAttribute("data-idSize");
-                                const isAvailable = combinations.some(c => c.idMauSac.id == selectedColor && c.idSize.id == size);
-                                btn.disabled = !isAvailable;
-                                if (!isAvailable && btn.classList.contains("active")) {
-                                    btn.classList.remove("active");
-                                }
-                            });
-                        }
-
-                        function updateColors() {
-                            colorButtons.forEach((btn) => {
-                                const color = btn.getAttribute("data-idMauSac");
-                                const isAvailable = combinations.some(c => c.idSize.id == selectedSize && c.idMauSac.id == color);
-                                btn.disabled = !isAvailable;
-                                if (!isAvailable && btn.classList.contains("active")) {
-                                    btn.classList.remove("active");
-                                }
-                            });
-                        }
-
-                        colorButtons.forEach(btn => {
-                            btn.addEventListener("click", function () {
-                                selectedColor = this.getAttribute("data-idMauSac");
-                                updateSizes();
-                            });
-                        });
-
-                        sizeButtons.forEach(btn => {
-                            btn.addEventListener("click", function () {
-                                selectedSize = this.getAttribute("data-idSize");
-                                updateColors();
-                            });
-                        });
-                        document.addEventListener("click", function (event) {
-                            // Kiểm tra nếu phần tử được click không phải là các nút size hoặc màu sắc
-                            if (!event.target.classList.contains("btn-mau-sac") && !event.target.classList.contains("size-btn")) {
-                                selectedColor = null;
-                                selectedSize = null;
-
-                                // Bật lại tất cả các nút
-                                sizeButtons.forEach(btn => btn.disabled = false);
-                                colorButtons.forEach(btn => btn.disabled = false);
-                            }
-                        });
-
+                function selectSize(button) {
+                    // Xóa class active khỏi tất cả các nút size
+                    document.querySelectorAll('.size-btn').forEach(btn => {
+                        btn.classList.remove('active');
                     });
 
+                    // Đánh dấu nút được chọn
+                    button.classList.add('active');
 
+                    // Cập nhật giá trị size được chọn
+                    document.getElementById("selectedSize").value = button.getAttribute("data-id");
+                }
 
-                    $("#themVaoGioHang").click(async function themSanPhamVaoGioHang() {
-                        var idSize = $(".btn-mau-sac.active").attr("data-idMauSac");
-                        var idMauSac = $(".size-btn.active").attr("data-idSize");
-                        var soLuong = document.getElementById("quantity").value;
-                        var idSanPham = /*[[${chiTietSanPham != null && chiTietSanPham.idSanPham != null ? chiTietSanPham.idSanPham.id : ''}]]*/ "";
+                function selectMauSac(button) {
+                    // Xóa class active khỏi tất cả các nút màu sắc
+                    document.querySelectorAll('.btn-mau-sac').forEach(btn => {
+                        btn.classList.remove('active');
+                    });
 
-                        if (soLuong <= 0) {
-                            notyf.error('Số lượng phải lớn hơn 0');
-                        } else if (idSize == null) {
-                            notyf.error('Vui lòng chọn size');
-                        }
-                        else if (idMauSac == null) {
-                            notyf.error('Vui lòng chọn màu sắc');
-                        }
-                        else {
-                            let formData = {
-                                idSanPham: idSanPham,
-                                idSize: idSize,
-                                idMauSac: idMauSac,
-                                soLuong: soLuong
+                    // Đánh dấu nút được chọn
+                    button.classList.add('active');
+
+                    // Cập nhật giá trị màu sắc được chọn
+                    document.getElementById("selectedMauSac").value = button.getAttribute("data-idMauSac");
+                    let idMauSac = document.getElementById("idMauSac");
+                    let idCTSP = document.getElementById("idCTSP");
+                    fetch(`/Sneakers_Nice/chitietsanpham?idCTSP=${idCTSP}&idMauSac=${idMauSac}`)
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data && data.hinhAnh) {
+                                document.getElementById("productImage").src = data.hinhAnh;
                             }
+                        })
+                        .catch(error => notyf.error('Có lỗi xảy ra', error)
+                        );
+                }
+                document.addEventListener("DOMContentLoaded", function () {
+                    updateCartCount();
+
+                    var combinations = /*[[${lstCTSP}]]*/[];
+                    const colorButtons = document.querySelectorAll(".btn-mau-sac");
+                    const sizeButtons = document.querySelectorAll(".size-btn");
+                    let selectedColor = null;
+                    let selectedSize = null;
+
+                    function updateSizes() {
+                        sizeButtons.forEach((btn) => {
+                            const size = btn.getAttribute("data-idSize");
+                            const isAvailable = combinations.some(c => c.idMauSac.id == selectedColor && c.idSize.id == size);
+                            btn.disabled = !isAvailable;
+                            if (!isAvailable && btn.classList.contains("active")) {
+                                btn.classList.remove("active");
+                            }
+                        });
+                    }
+
+                    function updateColors() {
+                        colorButtons.forEach((btn) => {
+                            const color = btn.getAttribute("data-idMauSac");
+                            const isAvailable = combinations.some(c => c.idSize.id == selectedSize && c.idMauSac.id == color);
+                            btn.disabled = !isAvailable;
+                            if (!isAvailable && btn.classList.contains("active")) {
+                                btn.classList.remove("active");
+                            }
+                        });
+                    }
+
+                    colorButtons.forEach(btn => {
+                        btn.addEventListener("click", function () {
+                            selectedColor = this.getAttribute("data-idMauSac");
+                            updateSizes();
+                        });
+                    });
+
+                    sizeButtons.forEach(btn => {
+                        btn.addEventListener("click", function () {
+                            selectedSize = this.getAttribute("data-idSize");
+                            updateColors();
+                        });
+                    });
+                    document.addEventListener("click", function (event) {
+                        // Kiểm tra nếu phần tử được click không phải là các nút size hoặc màu sắc
+                        if (!event.target.classList.contains("btn-mau-sac") && !event.target.classList.contains("size-btn")) {
+                            selectedColor = null;
+                            selectedSize = null;
+
+                            // Bật lại tất cả các nút
+                            sizeButtons.forEach(btn => btn.disabled = false);
+                            colorButtons.forEach(btn => btn.disabled = false);
+                        }
+                    });
+
+                });
+
+
+
+                $("#themVaoGioHang").click(async function themSanPhamVaoGioHang() {
+                    var idSize = $(".btn-mau-sac.active").attr("data-idMauSac");
+                    var idMauSac = $(".size-btn.active").attr("data-idSize");
+                    var soLuong = document.getElementById("quantity").value;
+                    var idSanPham = /*[[${chiTietSanPham != null && chiTietSanPham.idSanPham != null ? chiTietSanPham.idSanPham.id : ''}]]*/ "";
+
+                    if (soLuong <= 0) {
+                        notyf.error('Số lượng phải lớn hơn 0');
+                    } else if (idSize == null) {
+                        notyf.error('Vui lòng chọn size');
+                    }
+                    else if (idMauSac == null) {
+                        notyf.error('Vui lòng chọn màu sắc');
+                    }
+                    else {
+
+                        let formData = {
+                            idSanPham: idSanPham,
+                            idSize: idSize,
+                            idMauSac: idMauSac,
+                            soLuong: soLuong
+                        }
+                        try {
                             let response = await fetch(`/gio-hang/them-vao-gio-hang`, {
                                 method: "POST",
                                 headers: { "Content-Type": "application/json" },
@@ -278,28 +280,38 @@
 
                                 if (response.status === 401) {
                                     notyf.error(errorData.message || 'Bạn chưa đăng nhập!');
-                                    setTimeout(function () {
+                                    setTimeout(() => {
                                         window.location.href = "/dang-nhap";
                                     }, 2000);
+
                                 } else if (response.status === 400) {
                                     notyf.error(errorData.message || 'Dữ liệu gửi lên không hợp lệ!');
-                                
+
                                 } else {
                                     notyf.error(errorData.message || 'Có lỗi xảy ra khi thêm sản phẩm vào giỏ hàng');
+
                                 }
+
                             } else {
                                 updateCartCount();
                                 notyf.success('Thêm sản phẩm vào giỏ hàng thành công');
-
+                                return;
                             }
+                        } catch (e) {
+                            notyf.error('Có lỗi xảy ra khi thêm sản phẩm vào giỏ hàng');
+
                         }
-                    })
 
-                </script>
-            </div>
 
-        </section>
-    </div>
+                    }
+
+                });
+
+            </script>
+        </div>
+
+    </section>
+</div>
 </body>
 
 </html>

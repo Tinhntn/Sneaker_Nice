@@ -11,6 +11,7 @@ import poly.edu.sneaker.Model.ChiTietSanPham;
 import java.util.ArrayList;
 import java.util.List;
 
+
 @Repository
 public interface ChiTietSanPhamRepository extends JpaRepository<ChiTietSanPham, Integer> {
 
@@ -19,8 +20,10 @@ public interface ChiTietSanPhamRepository extends JpaRepository<ChiTietSanPham, 
 
     // Lấy bản ghi mới nhất cho mỗi sản phẩm
     @Query("SELECT ctp FROM ChiTietSanPham ctp " +
-            "WHERE ctp.ngayTao = (SELECT MAX(ctp2.ngayTao) FROM ChiTietSanPham ctp2 WHERE ctp2.idSanPham.id = ctp.idSanPham.id and ctp.trangThai = true)")
+
+            "WHERE ctp.ngayTao = (SELECT MAX(ctp2.ngayTao) FROM ChiTietSanPham ctp2 WHERE ctp2.idSanPham.id = ctp.idSanPham.id and ctp.trangThai = true) ")
     Page<ChiTietSanPham> findFirstRecordForEachProduct(Pageable pageable);
+
 
     // Tìm chi tiết sản phẩm theo id sản phẩm và id màu sắc, với trạng thái đang hoạt động
     @Query("SELECT c FROM ChiTietSanPham c WHERE c.idSanPham.id = :idSanPham AND c.idMauSac.id = :idMauSac and c.trangThai = true")
@@ -75,4 +78,28 @@ public interface ChiTietSanPhamRepository extends JpaRepository<ChiTietSanPham, 
             "JOIN sp.idChatLieu cl " +
             "WHERE (:chatLieu IS NULL OR cl.tenChatLieu = :chatLieu)")
     List<String> findDistinctHangByChatLieu(@Param("chatLieu") String chatLieu);
+    // code quan
+    @Query(value = "SELECT * FROM chitietsanpham WHERE chitietsanpham.trang_thai = 1",
+            nativeQuery = true)
+    Page<ChiTietSanPham> getAllChiTieSanPhamDAO(Pageable pageable);
+
+    @Query(value = "SELECT * FROM chitietsanpham WHERE id = :id", nativeQuery = true)
+    ChiTietSanPham getChiTietSanPhamById(@Param("id") Integer id);
+
+    @Query("SELECT c FROM ChiTietSanPham c WHERE " +
+            "( c.idSanPham.tenSanPham LIKE CONCAT('%', :tenSanPham, '%')) OR " +
+            "(:idSize IS NOT NULL AND c.idSize.id = :idSize) OR " +
+            "(:idMauSac IS NOT NULL AND c.idMauSac.id = :idMauSac) OR " +
+            "(:idDanhMuc IS NOT NULL AND c.idSanPham.idDanhMuc.id = :idDanhMuc) OR " +
+            "(:idHang IS NOT NULL AND c.idSanPham.idHang.id = :idHang) OR " +
+            "(:idChatLieu IS NOT NULL AND c.idSanPham.idChatLieu.id = :idChatLieu)")
+    Page<ChiTietSanPham> timKiemSanPhamQuaCTSP(@Param("tenSanPham") String tenSanPham,
+                                               @Param("idSize") Integer idSize,
+                                               @Param("idMauSac") Integer idMauSac,
+                                               @Param("idDanhMuc") Integer idDanhMuc,
+                                               @Param("idHang") Integer idHang,
+                                               @Param("idChatLieu") Integer idChatLieu,
+                                               Pageable pageable);
+
+    //code quan end
 }

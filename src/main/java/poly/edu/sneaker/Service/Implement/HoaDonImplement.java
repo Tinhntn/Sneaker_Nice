@@ -7,6 +7,9 @@ import org.springframework.stereotype.Service;
 import poly.edu.sneaker.Model.HoaDon;
 import poly.edu.sneaker.Repository.HoaDonRepository;
 import poly.edu.sneaker.Service.HoaDonService;
+
+import java.util.Random;
+
 @Service
 
 public class HoaDonImplement implements HoaDonService {
@@ -35,5 +38,18 @@ public class HoaDonImplement implements HoaDonService {
     @Override
     public void deleteById(int id) {
         hoaDonRepository.deleteById(id);
+    }
+
+    @Override
+    public String taoMaHoaDon() {
+        Random random = new Random();
+        String maHoaDon = "HD"+1000+random.nextInt(9000);
+        for ( HoaDon hoaDon : hoaDonRepository.findAll()
+             ) {
+            if(hoaDon.getMaHoaDon().equals(maHoaDon)){
+                maHoaDon = "HD"+1000+random.nextInt(9000);            }
+
+        }
+        return maHoaDon;
     }
 }
