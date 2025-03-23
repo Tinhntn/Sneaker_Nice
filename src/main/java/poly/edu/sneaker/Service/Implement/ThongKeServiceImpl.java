@@ -12,7 +12,7 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 
 @Service
-public class ThongKeServiceImpl implements ThongKeService {
+    public class ThongKeServiceImpl implements ThongKeService {
 
     @Autowired
     private ThongKeResponsitory thongKeResponsitory;
@@ -23,6 +23,7 @@ public class ThongKeServiceImpl implements ThongKeService {
     public Map<String, Object> getDefaultThongKe() {
         Map<String, Object> stats = new HashMap<>();
         Date now = new Date();
+
 
         // Tính thời gian cho "Hôm nay"
         Date todayStart = getStartOfDay(now);
@@ -42,6 +43,7 @@ public class ThongKeServiceImpl implements ThongKeService {
         stats.put("soLuongSanPhamTrongNgay", tkNgay.getSoSanPham());
         stats.put("soLuongHoaDonThanhCongTrongNgay", tkNgay.getSoHoaDonThanhCong());
         stats.put("soluongHoaDonHuyTrongNgay", tkNgay.getSoHoaDonHuy());
+
 
         // Thống kê theo tuần
         Date weekStart = getStartOfWeek(now);
