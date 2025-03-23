@@ -65,6 +65,80 @@
                 </div>
             </div>
         </section>
+
+<!--        code hung-->
+        <section class="ftco-section bg-light">
+            <div class="container">
+                <div class="row justify-content-center mb-3 pb-3">
+                    <div class="col-md-12 heading-section text-center ftco-animate">
+                        <h2 class="mb-4">Top 10 sản phẩm bán chạy nhất</h2>
+                        <table>
+                            <thead>
+                            <tr>
+                                <th>Hình ảnh</th>
+                                <th>Tên sản phẩm</th>
+                                <th>Size</th>
+                                <th>Màu sắc</th>
+                                <th>Giá bán</th>
+                                <th>Số lượng đã bán</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr th:each="sp : ${bestSellingProducts}">
+                                <td>
+                                    <img th:src="@{${sp.hinhAnh}}" alt="Hình ảnh sản phẩm" style="width: 100px; height: auto;">
+                                </td>
+                                <td th:text="${sp.tenSanPham}"></td>
+                                <td th:text="${sp.size}"></td>
+                                <td th:text="${sp.mauSac}"></td>
+                                <td th:text="${sp.giaBan}"></td>
+                                <td th:text="${sp.soLuongDaBan}"></td>
+                            </tr>
+                            </tbody>
+                        </table>
+
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="ftco-section bg-light">
+            <div class="container">
+                <div class="row justify-content-center mb-3 pb-3">
+                    <div class="col-md-12 heading-section text-center ftco-animate">
+                        <h2 class="mb-4">Top 10 sản phẩm mới nhất</h2>
+                        <table>
+                            <thead>
+                            <tr>
+                                <th>Hình ảnh</th>
+                                <th>Tên sản phẩm</th>
+                                <th>Size</th>
+                                <th>Màu sắc</th>
+                                <th>Giá bán</th>
+                                <th>Ngày tạo</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr th:each="sp : ${newestProducts}">
+                                <td>
+                                    <img th:src="@{${sp.hinhAnh}}" alt="Hình ảnh sản phẩm" style="width: 100px; height: auto;">
+                                </td>
+                                <td th:text="${sp.tenSanPham}"></td>
+                                <td th:text="${sp.size}"></td>
+                                <td th:text="${sp.mauSac}"></td>
+                                <td th:text="${sp.giaBan}"></td>
+                                <td th:text="${#dates.format(sp.ngayTao, 'dd-MM-yyyy HH:mm')}"></td>
+                            </tr>
+                            </tbody>
+                        </table>
+
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!--        end code hung-->
+
         <section class="ftco-section bg-light">
             <div class="container">
                 <div class="row justify-content-center mb-3 pb-3">
@@ -104,7 +178,7 @@
                                 <div class="pricing">
                                     <p class="price"><span  th:text=" 'Giá bán: ' + ${#numbers.formatInteger(sanPham.giaBan,3,'COMMA')} +  ' VND'"></span>
                                     </p>
-                                   
+
                                 </div>
                                 <p class="bottom-area d-flex px-3">
                                     <a href="#" class="add-to-cart text-center py-2 mr-1">
@@ -139,7 +213,7 @@
 
 
                 </div>
-               
+
 
             </div>
         </section>

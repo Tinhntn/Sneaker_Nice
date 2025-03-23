@@ -6,6 +6,7 @@ import poly.edu.sneaker.Model.ChiTietSanPham;
 
 import java.util.List;
 import java.util.ArrayList;
+import java.util.Map;
 
 
 public interface ChiTietSanPhamService {
@@ -18,8 +19,10 @@ public interface ChiTietSanPhamService {
 //    ChiTietSanPham getCTSPByIdSP(Pageable pageable, int idSP);
     Page<ChiTietSanPham> findChiTietSanPhamJustOne(Pageable pageable);
 
-    //hung
+    // code hung
     List<ChiTietSanPham> getALl();
+    List<Map<String, Object>> getTop10NewestProducts();
+    //code hung end
 
     void capNhatSoLuongKhiHuyHoaDon(int idCTSP, int soLuong);
     ChiTietSanPham findCTSPByIDMauSac(int idCTSP, int idMauSac);

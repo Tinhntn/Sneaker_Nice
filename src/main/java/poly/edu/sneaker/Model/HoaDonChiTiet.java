@@ -33,5 +33,6 @@ public class HoaDonChiTiet {
     private String ghiChu;
     private Date ngayTao;
     private Date ngaySua;
-    private int trangThai;
+
+    private Integer trangThai;
 }

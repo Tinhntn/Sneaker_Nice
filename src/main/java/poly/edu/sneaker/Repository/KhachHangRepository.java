@@ -3,6 +3,7 @@ package poly.edu.sneaker.Repository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 import poly.edu.sneaker.Model.KhachHang;
 
@@ -16,4 +17,7 @@ public interface KhachHangRepository extends JpaRepository<KhachHang, Integer> {
     KhachHang findByEmail(String email);
     KhachHang findByEmailAndMatKhau(String email,String matKhau);
     boolean existsKhachHangByEmail(String email);
+
+    @Query("SELECT k FROM KhachHang k WHERE k.sdt = :sdt")
+    KhachHang TimKhachHangQuaSDT(String sdt);
 }

@@ -24,6 +24,7 @@
                 <div class="row">
                     <div class="col-md-6">
                         <div class="mb-3">
+<<<<<<< HEAD
                             <label class="form-label">Mã nhân viên</label>
                             <input type="text" class="form-control" name="manhanvien">
                         </div>
@@ -33,6 +34,17 @@
                         </div>
                         <div class="mb-3">
                             <label class="form-label">Chức vụ</label>
+=======
+                            <label class="form-label">Mã nhân viên<span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" name="manhanvien">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Tên nhân viên <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" name="hovaten">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Chức vụ<span class="text-danger">*</span></label>
+>>>>>>> d66a7f31bca1746027a1ced121d9722870050b5b
                             <select class="form-select" style="width: 100%" aria-label="Default select example" name="idcv">
                                 <option th:each="chucvu : ${listChucVu}" th:value="${chucvu.id}" th:text="${chucvu.tenChucVu}"></option>
                             </select>

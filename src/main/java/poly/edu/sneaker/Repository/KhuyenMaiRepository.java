@@ -25,4 +25,7 @@ public interface KhuyenMaiRepository extends JpaRepository<KhuyenMai, Integer> {
 
     Page<KhuyenMaiCustom> findKhuyenMaiByMaKhuyenMaiContainingOrTenKhuyenMaiContaining(String maKhuyenMai, String tenKhuyenMai, Pageable pageable);
     KhuyenMai findById(int id);
+    @Query("SELECT km FROM KhuyenMai km WHERE km.maKhuyenMai = :maKhuyenMai")
+    KhuyenMai TimKhuyenMaiQuaMa(String maKhuyenMai);
+
 }

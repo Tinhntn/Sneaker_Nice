@@ -2,15 +2,18 @@ package poly.edu.sneaker.Service.Implement;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import poly.edu.sneaker.Model.ChiTietSanPham;
 import poly.edu.sneaker.Repository.ChiTietSanPhamRepository;
 import poly.edu.sneaker.Service.ChiTietSanPhamService;
 
+import java.util.HashMap;
 import java.util.List;
 
 import java.util.ArrayList;
+import java.util.Map;
 
 @Service
 
@@ -56,6 +59,26 @@ public class ChiTietSanPhamImplement implements ChiTietSanPhamService {
     @Override
     public List<ChiTietSanPham> getALl() {
         return chiTietSanPhamRepository.getALl();
+    }
+
+    @Override
+    public List<Map<String, Object>> getTop10NewestProducts() {
+        List<ChiTietSanPham> results = chiTietSanPhamRepository.findTop10NewestProducts(PageRequest.of(0, 10));
+        List<Map<String, Object>> newestProducts = new ArrayList<>();
+
+        for (ChiTietSanPham chiTietSanPham : results) {
+            Map<String, Object> productData = new HashMap<>();
+            productData.put("tenSanPham", chiTietSanPham.getIdSanPham().getTenSanPham());
+            productData.put("size", chiTietSanPham.getIdSize().getTenSize());
+            productData.put("mauSac", chiTietSanPham.getIdMauSac().getTenMauSac());
+            productData.put("giaBan", chiTietSanPham.getGiaBan());
+            productData.put("hinhAnh", chiTietSanPham.getHinhAnh());
+            productData.put("ngayTao", chiTietSanPham.getNgayTao());
+
+            newestProducts.add(productData);
+        }
+
+        return newestProducts;
     }
 
     @Override

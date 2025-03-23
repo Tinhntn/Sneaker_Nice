@@ -2,10 +2,12 @@ package poly.edu.sneaker.Service;
 
 import org.springframework.data.repository.query.Param;
 import poly.edu.sneaker.DAO.HoaDonChiTietOnlCustom;
+import poly.edu.sneaker.Model.ChiTietSanPham;
 import poly.edu.sneaker.Model.HoaDon;
 import poly.edu.sneaker.Model.HoaDonChiTiet;
 
 import java.util.List;
+import java.util.Map;
 
 public interface HoaDonChiTietOnlService {
 
@@ -18,6 +20,8 @@ public interface HoaDonChiTietOnlService {
     boolean themSPCTVaoHDCT(HoaDonChiTiet hoaDonChiTiet);
 
     void xoaSPCTVaoHDCT(int idHoaDon, int idChiTietSanPham);
+
+    List<Map<String, Object>> getTop10BestSellingProducts();
 
 //    HoaDonChiTiet findHoaDonChiTietByIdHoaDon(int idHoaDon);
 

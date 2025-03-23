@@ -30,4 +30,35 @@ public interface ChiTietSanPhamRepository extends JpaRepository<ChiTietSanPham, 
     ChiTietSanPham findChiTietSanPhamByIdAndIdMauSacAndTrangThai(@Param("idSanPham") int idSanPham, @Param("idMauSac") int idMauSac,@Param("trangThai")boolean trangThai);
     public abstract ArrayList<ChiTietSanPham> findByIdSanPham_IdAndTrangThai(int idSanPham,boolean trangThai);
     ChiTietSanPham findChiTietSanPhamByIdSanPham_IdAndIdSize_IdAndIdMauSac_Id(int idSanPham,int idSize,int idMauSac);
+
+    // code quan
+    @Query(value = "SELECT * FROM chitietsanpham WHERE chitietsanpham.trang_thai = 1",
+            nativeQuery = true)
+    Page<ChiTietSanPham> getAllChiTieSanPhamDAO(Pageable pageable);
+
+    @Query(value = "SELECT * FROM chitietsanpham WHERE id = :id", nativeQuery = true)
+    ChiTietSanPham getChiTietSanPhamById(@Param("id") Integer id);
+
+    @Query("SELECT c FROM ChiTietSanPham c WHERE " +
+            "( c.idSanPham.tenSanPham LIKE CONCAT('%', :tenSanPham, '%')) OR " +
+            "(:idSize IS NOT NULL AND c.idSize.id = :idSize) OR " +
+            "(:idMauSac IS NOT NULL AND c.idMauSac.id = :idMauSac) OR " +
+            "(:idDanhMuc IS NOT NULL AND c.idSanPham.idDanhMuc.id = :idDanhMuc) OR " +
+            "(:idHang IS NOT NULL AND c.idSanPham.idHang.id = :idHang) OR " +
+            "(:idChatLieu IS NOT NULL AND c.idSanPham.idChatLieu.id = :idChatLieu)")
+    Page<ChiTietSanPham> timKiemSanPhamQuaCTSP(@Param("tenSanPham") String tenSanPham,
+                                               @Param("idSize") Integer idSize,
+                                               @Param("idMauSac") Integer idMauSac,
+                                               @Param("idDanhMuc") Integer idDanhMuc,
+                                               @Param("idHang") Integer idHang,
+                                               @Param("idChatLieu") Integer idChatLieu,
+                                               Pageable pageable);
+
+    //code quan end
+
+    //code hung
+    @Query("SELECT c FROM ChiTietSanPham c ORDER BY c.ngayTao DESC")
+    List<ChiTietSanPham> findTop10NewestProducts(Pageable pageable);
+    // code hung end
+
 }

@@ -1,5 +1,6 @@
 package poly.edu.sneaker.Repository;
 
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -32,6 +33,15 @@ public interface HoaDonChiTietOnlRepository extends JpaRepository<HoaDonChiTiet,
             "WHERE hct.id_hoa_don = :idHoaDon",
             nativeQuery = true)
     List<HoaDonChiTiet> findHoaDonChiTietByHoaDonId(@Param("idHoaDon") Integer idHoaDon);
+
+
+    @Query("SELECT h.idChiTietSanPham, SUM(h.soLuong) AS totalSold " +
+            "FROM HoaDonChiTiet h " +
+            "JOIN h.idHoaDon hd " +
+            "WHERE hd.trangThai = 1 " +  // Chỉ lấy hóa đơn đã hoàn thành
+            "GROUP BY h.idChiTietSanPham " +
+            "ORDER BY totalSold DESC")
+    List<Object[]> findTopBestSellingProducts(Pageable pageable);
 
 //    HoaDonChiTiet findHoaDonChiTietByIdHoaDon(int idHoaDon);
 
