@@ -112,11 +112,11 @@
             <div class="col-4">
                 <button type="button" class="btn btn-danger" id="huydon" data-bs-toggle="modal"
                     data-bs-target="#modalhuyhoadon" th:attr="disabled=${hoaDon.trangThai==6}"
-                    th:if="${hoaDon.trangThai != 5}">
+                    th:if="${hoaDon.trangThai != 4}">
                     Hủy đơn
                 </button>
                 <button class="btn btn-success" id="xacnhan" data-bs-toggle="modal" data-bs-target="#exampleModal"
-                    th:attr="disabled=${hoaDon.trangThai==6}" th:if="${hoaDon.trangThai!= 5}">Xác
+                    th:attr="disabled=${hoaDon.trangThai==6}" th:if="${hoaDon.trangThai!= 4}">Xác
                     Nhận</button>
                 <button class="btn btn-warning" id="inhoadon" th:attr="disabled=${hoaDon.trangThai == 2}">In hóa
                     đơn</button>
