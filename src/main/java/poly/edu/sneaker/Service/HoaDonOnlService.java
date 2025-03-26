@@ -23,4 +23,13 @@ public interface HoaDonOnlService {
     Optional<HoaDon> findHoaDonById(int id);
 
 
+    //Hóa đơn khách hàng
+    Page<HoaDonOnlCustom> getHoaDonCustomDHKH(Pageable pageable, Integer idKhachHang);
+    Page<HoaDonOnlCustom> getHoaDonOLChoxacnhanKH(Pageable pageable, Integer idKhachHang);
+    Page<HoaDonOnlCustom> getHoaDonOLCholayhangKH(Pageable pageable, Integer idKhachHang);
+    Page<HoaDonOnlCustom> getHoaDonCustomDGKH(Pageable pageable, Integer idKhachHang);
+    Page<HoaDonOnlCustom> getHoaDonCustomHTKH(Pageable pageable, Integer idKhachHang);
+    //End hóa đơn khách hàng
+
+
 }

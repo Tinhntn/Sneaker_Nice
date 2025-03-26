@@ -35,6 +35,8 @@ public class Home {
     private GioHangService gioHangService;
     @Autowired
     private GioHangChiTietService gioHangChiTietService;
+    @Autowired
+    HoaDonChiTietOnlService hoaDonChiTietOnlService;
 
     @GetMapping("/hienthi")
     public String hienthi(Model model, @RequestParam(defaultValue = "0") int page) {
@@ -76,6 +78,15 @@ public class Home {
         model.addAttribute("listSanPham", lstCTSP);
         model.addAttribute("currentPage", lstCTSP.getNumber());
         model.addAttribute("totalPages", lstCTSP.getTotalPages());
+
+        //code hung
+        List<Map<String, Object>> bestSellingProducts = hoaDonChiTietOnlService.getTop10BestSellingProducts();
+        model.addAttribute("bestSellingProducts", bestSellingProducts);
+
+        List<Map<String, Object>> newestProducts = chiTietSanPhamService.getTop10NewestProducts();
+        model.addAttribute("newestProducts", newestProducts);
+        //end code hung
+
         return "user/sanpham/trangchu";
     }
 
@@ -112,5 +123,6 @@ public class Home {
         }
         return ResponseEntity.notFound().build();
     }
+
 
 }

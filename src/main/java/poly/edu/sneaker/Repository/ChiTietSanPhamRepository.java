@@ -55,4 +55,10 @@ public interface ChiTietSanPhamRepository extends JpaRepository<ChiTietSanPham, 
                                                Pageable pageable);
 
     //code quan end
+
+    //code hung
+    @Query("SELECT c FROM ChiTietSanPham c ORDER BY c.ngayTao DESC")
+    List<ChiTietSanPham> findTop10NewestProducts(Pageable pageable);
+    // code hung end
+
 }

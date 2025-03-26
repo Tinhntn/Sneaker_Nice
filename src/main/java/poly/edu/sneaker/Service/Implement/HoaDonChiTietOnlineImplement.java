@@ -1,6 +1,7 @@
 package poly.edu.sneaker.Service.Implement;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import poly.edu.sneaker.DAO.HoaDonChiTietOnlCustom;
@@ -12,9 +13,7 @@ import poly.edu.sneaker.Repository.HoaDonChiTietOnlRepository;
 import poly.edu.sneaker.Service.HoaDonChiTietOnlService;
 import poly.edu.sneaker.Service.HoaDonOnlService;
 
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 public class HoaDonChiTietOnlineImplement implements HoaDonChiTietOnlService {
@@ -122,6 +121,29 @@ public class HoaDonChiTietOnlineImplement implements HoaDonChiTietOnlService {
     public void xoaSPCTVaoHDCT(int idHoaDon, int idChiTietSanPham) {
         hoaDonChiTietOnlRepository.xoaChiTietSanPhamTrongHoaDon(idHoaDon, idChiTietSanPham);
     }
+
+    @Override
+    public List<Map<String, Object>> getTop10BestSellingProducts() {
+        List<Object[]> results = hoaDonChiTietOnlRepository.findTopBestSellingProducts(PageRequest.of(0, 10));
+        List<Map<String, Object>> bestSellingProducts = new ArrayList<>();
+
+        for (Object[] row : results) {
+            ChiTietSanPham chiTietSanPham = (ChiTietSanPham) row[0];
+            Long totalSold = (Long) row[1]; // Lấy số lượng đã bán
+
+            Map<String, Object> productData = new HashMap<>();
+            productData.put("id",chiTietSanPham.getId());
+            productData.put("tenSanPham", chiTietSanPham.getIdSanPham().getTenSanPham());
+            productData.put("size", chiTietSanPham.getIdSize().getTenSize());
+            productData.put("mauSac", chiTietSanPham.getIdMauSac().getTenMauSac());
+            productData.put("giaBan", chiTietSanPham.getGiaBan());
+            productData.put("soLuongDaBan", totalSold); // Hiển thị số lượng đã bán
+            productData.put("hinhAnh", chiTietSanPham.getHinhAnh()); // Lấy hình ảnh
+            bestSellingProducts.add(productData);
+        }
+        return bestSellingProducts;
+    }
+
 
 //    @Override
 //    public HoaDonChiTiet findHoaDonChiTietByIdHoaDon(int idHoaDon) {

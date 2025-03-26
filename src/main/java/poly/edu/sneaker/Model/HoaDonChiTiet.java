@@ -33,4 +33,5 @@ public class HoaDonChiTiet {
     private Date ngaySua;
     private Integer trangThai;
 
+
 }

@@ -57,4 +57,29 @@ public class HoaDonOnlineImplement implements HoaDonOnlService {
     public Optional<HoaDon> findHoaDonById(int id) {
         return Optional.ofNullable(hoaDonOnlRepository.getAllHoaDonByid(id));
     }
+
+    @Override
+    public Page<HoaDonOnlCustom> getHoaDonCustomDHKH(Pageable pageable, Integer idKhachHang) {
+        return hoaDonOnlRepository.getHoaDonCustomDHKH(pageable, idKhachHang);
+    }
+
+    @Override
+    public Page<HoaDonOnlCustom> getHoaDonOLChoxacnhanKH(Pageable pageable, Integer idKhachHang) {
+        return hoaDonOnlRepository.getHoaDonCustomCXNKH(pageable, idKhachHang);
+    }
+
+    @Override
+    public Page<HoaDonOnlCustom> getHoaDonOLCholayhangKH(Pageable pageable, Integer idKhachHang) {
+        return hoaDonOnlRepository.getHoaDonCustomCLHKH(pageable, idKhachHang);
+    }
+
+    @Override
+    public Page<HoaDonOnlCustom> getHoaDonCustomDGKH(Pageable pageable, Integer idKhachHang) {
+        return hoaDonOnlRepository.getHoaDonCustomDGKH(pageable, idKhachHang);
+    }
+
+    @Override
+    public Page<HoaDonOnlCustom> getHoaDonCustomHTKH(Pageable pageable, Integer idKhachHang) {
+        return hoaDonOnlRepository.getHoaDonCustomHTKH(pageable, idKhachHang);
+    }
 }
