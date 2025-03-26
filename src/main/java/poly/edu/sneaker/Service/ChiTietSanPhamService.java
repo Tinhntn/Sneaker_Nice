@@ -8,6 +8,11 @@ import java.util.List;
 
 import java.util.ArrayList;
 
+import java.util.List;
+import java.util.ArrayList;
+import java.util.Map;
+
+
 public interface ChiTietSanPhamService {
     Page<ChiTietSanPham> findAll(Pageable pageable);
     void saveChiTietSanPham(ChiTietSanPham chiTietSanPham);
@@ -16,9 +21,6 @@ public interface ChiTietSanPhamService {
     void update(ChiTietSanPham chiTietSanPham);
     Page<ChiTietSanPham> findChiTietSanPhamByIDSanPham(int idSanPham, Pageable pageable);
     Page<ChiTietSanPham> findChiTietSanPhamJustOne(Pageable pageable);
-    ChiTietSanPham findCTSPByIDMauSac(int idCTSP, int idMauSac);
-    ArrayList<ChiTietSanPham> findByIdSanPham(int idSanPham);
-    ChiTietSanPham findCTSPByIdSPAndIdMauSacAndIdSize(int idSanPham, int idMauSac, int idSize);
     List<ChiTietSanPham> searchByMultipleFields(String keyword);
 
     // Lọc theo hãng, chất liệu và khoảng giá
@@ -27,4 +29,14 @@ public interface ChiTietSanPhamService {
     // Các phương thức hỗ trợ cascading filter
     List<String> findDistinctChatLieuByHang(String hang);
     List<String> findDistinctHangByChatLieu(String chatLieu);
+
+    // code hung
+    List<ChiTietSanPham> getALl();
+    List<Map<String, Object>> getTop10NewestProducts();
+    //code hung end
+
+    void capNhatSoLuongKhiHuyHoaDon(int idCTSP, int soLuong);
+    ChiTietSanPham findCTSPByIDMauSac(int idCTSP, int idMauSac);
+    ArrayList<ChiTietSanPham> findByIdSanPham(int idSanPham);
+    ChiTietSanPham findCTSPByIdSPAndIdMauSacAndIdSize(int idSanPham, int idMauSac, int idSize);
 }

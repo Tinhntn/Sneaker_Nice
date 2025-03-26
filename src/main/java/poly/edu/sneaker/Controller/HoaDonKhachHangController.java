@@ -16,13 +16,16 @@ import poly.edu.sneaker.DAO.HoaDonOnlCustom;
 import poly.edu.sneaker.Model.*;
 import poly.edu.sneaker.Service.*;
 
-import java.util.*;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @CrossOrigin(origins = "*")
 @Controller
-@RequestMapping("/hoadononline")
-public class HoaDonOnlController {
+@RequestMapping("/hoadononlinekhachhang")
+public class HoaDonKhachHangController {
 
     @Autowired
     HoaDonOnlService hoaDonOnlService;
@@ -43,54 +46,60 @@ public class HoaDonOnlController {
     LichSuTrnngThaiService lichSuTrnngThaiService;
 
     @GetMapping("/hienthi")
-    public String hienthi(Model model, @RequestParam(defaultValue = "0") int page) {
+    public String hienthi(
+//                            @PathVariable("id") int id,
+                            Model model, @RequestParam(defaultValue = "0") int page) {
         int size = 5;
+
+        int id = 1;
 
         Pageable pageable = PageRequest.of(page, size);
 
-        Page<HoaDonOnlCustom> listHoaDonDH = hoaDonOnlService.getHoaDonCustomDH(pageable);
-        Integer sizeDH = listHoaDonDH.getContent().size();
-        model.addAttribute("sizeDH", sizeDH);
+        Page<HoaDonOnlCustom> listHoaDonDHKH = hoaDonOnlService.getHoaDonCustomDHKH(pageable, id);
+        Integer sizeDHKH = listHoaDonDHKH.getContent().size();
+        model.addAttribute("sizeDHKH", sizeDHKH);
 
-        Page<HoaDonOnlCustom> listHoaDonCXN = hoaDonOnlService.getHoaDonOLChoxacnhan(pageable);
-        Integer sizecxn = listHoaDonCXN.getContent().size();
-        model.addAttribute("sizecxn", sizecxn);
+        Page<HoaDonOnlCustom> listHoaDonCXNKH = hoaDonOnlService.getHoaDonOLCholayhangKH(pageable, id);
+        Integer sizecxnKH = listHoaDonCXNKH.getContent().size();
+        model.addAttribute("sizecxnKH", sizecxnKH);
 
-        Page<HoaDonOnlCustom> listHoaDonCLH = hoaDonOnlService.getHoaDonOLCholayhang(pageable);
-        Integer sizeclh = listHoaDonCLH.getContent().size();
-        model.addAttribute("sizeclh", sizeclh);
+        Page<HoaDonOnlCustom> listHoaDonCLHKH = hoaDonOnlService.getHoaDonOLCholayhangKH(pageable, id);
+        Integer sizeclhKH = listHoaDonCLHKH.getContent().size();
+        model.addAttribute("sizeclhKH", sizeclhKH);
 
-        Page<HoaDonOnlCustom> listHoaDonDG = hoaDonOnlService.getHoaDonCustomDG(pageable);
-        Integer sizedg = listHoaDonDG.getContent().size();
-        model.addAttribute("sizedg", sizedg);
+        Page<HoaDonOnlCustom> listHoaDonDGKH = hoaDonOnlService.getHoaDonCustomDGKH(pageable, id);
+        Integer sizedgKH = listHoaDonDGKH.getContent().size();
+        model.addAttribute("sizedgKH", sizedgKH);
 
-        Page<HoaDonOnlCustom> listHoaDonHT = hoaDonOnlService.getHoaDonCustomHT(pageable);
-        Integer sizeht = listHoaDonHT.getContent().size();
-        model.addAttribute("sizeht", sizeht);
+        Page<HoaDonOnlCustom> listHoaDonHTKH = hoaDonOnlService.getHoaDonCustomHTKH(pageable, id);
+        Integer sizehtKH = listHoaDonHTKH.getContent().size();
+        model.addAttribute("sizehtKH", sizehtKH);
 
-        System.out.println("List hoa don dh: " + listHoaDonDH.getContent().size());
+        System.out.println("List hoa don cxn: " + listHoaDonCXNKH.getContent().size());
+        System.out.println("List hoa don clh: " + listHoaDonCLHKH.getContent().size());
+//        System.out.println("List hoa don dh: " + listHoaDonDHKH.getContent().size());
 
-        model.addAttribute("listHoaDonDH", listHoaDonDH.getContent());
-        model.addAttribute("currentPage", listHoaDonDH.getNumber());
-        model.addAttribute("totalPages", listHoaDonDH.getTotalPages());
+        model.addAttribute("listHoaDonDHKH", listHoaDonDHKH.getContent());
+        model.addAttribute("currentPage", listHoaDonDHKH.getNumber());
+        model.addAttribute("totalPages", listHoaDonDHKH.getTotalPages());
 
-        model.addAttribute("listHoaDonCXN", listHoaDonCXN.getContent());
-        model.addAttribute("currentPage", listHoaDonCXN.getNumber());
-        model.addAttribute("totalPages", listHoaDonCXN.getTotalPages());
+        model.addAttribute("listHoaDonCXNKH", listHoaDonCXNKH.getContent());
+        model.addAttribute("currentPage", listHoaDonCXNKH.getNumber());
+        model.addAttribute("totalPages", listHoaDonCXNKH.getTotalPages());
 
-        model.addAttribute("listHoaDonCLH", listHoaDonCLH.getContent());
-        model.addAttribute("currentPage", listHoaDonCLH.getNumber());
-        model.addAttribute("totalPages", listHoaDonCLH.getTotalPages());
+        model.addAttribute("listHoaDonCLHKH", listHoaDonCLHKH.getContent());
+        model.addAttribute("currentPage", listHoaDonCLHKH.getNumber());
+        model.addAttribute("totalPages", listHoaDonCLHKH.getTotalPages());
 
-        model.addAttribute("listHoaDonDG", listHoaDonDG.getContent());
-        model.addAttribute("currentPage", listHoaDonDG.getNumber());
-        model.addAttribute("totalPages", listHoaDonDG.getTotalPages());
+        model.addAttribute("listHoaDonDGKH", listHoaDonDGKH.getContent());
+        model.addAttribute("currentPage", listHoaDonDGKH.getNumber());
+        model.addAttribute("totalPages", listHoaDonDGKH.getTotalPages());
 
-        model.addAttribute("listHoaDonHT", listHoaDonHT.getContent());
-        model.addAttribute("currentPage", listHoaDonHT.getNumber());
-        model.addAttribute("totalPages", listHoaDonHT.getTotalPages());
+        model.addAttribute("listHoaDonHTKH", listHoaDonHTKH.getContent());
+        model.addAttribute("currentPage", listHoaDonHTKH.getNumber());
+        model.addAttribute("totalPages", listHoaDonHTKH.getTotalPages());
 
-        return "admin/hoa-don/hoadononline";
+        return "user/hoadon/listHoaDonKhachHang";
     }
 
     @PostMapping("/xacnhanhoadoncho/{id}")
@@ -102,7 +111,7 @@ public class HoaDonOnlController {
         hd.setTrangThai(2);
         hoaDonOnlService.updateHoaDon(hd, id);
         redirectAttributes.addFlashAttribute("thanhcong", "thành công");
-        return "redirect:/hoadononline/hienthi";
+        return "redirect:/hoadononlinekhachhang/hienthi";
     }
 
     @PostMapping("/xacnhanhoadondg/{id}")
@@ -120,7 +129,7 @@ public class HoaDonOnlController {
         hd.setTrangThai(3);
         hoaDonOnlService.updateHoaDon(hd, id);
         redirectAttributes.addFlashAttribute("thanhcong", "thành công");
-        return "redirect:/hoadononline/hienthi";
+        return "redirect:/hoadononlinekhachhang/hienthi";
     }
 
     @PostMapping("/xacnhanhoadonhoanthanh/{id}")
@@ -134,7 +143,7 @@ public class HoaDonOnlController {
         hd.setTrangThai(4);
         hoaDonOnlService.updateHoaDon(hd, id);
         redirectAttributes.addFlashAttribute("thanhcong", "thành công");
-        return "redirect:/hoadononline/hienthi";
+        return "redirect:/hoadononlinekhachhang/hienthi";
     }
 
     @PostMapping("/huydh/{id}")
@@ -155,7 +164,7 @@ public class HoaDonOnlController {
             chiTietSanPhamService.update(dt);
         }
         redirectAttributes.addFlashAttribute("thanhcong", "Hủy thành công");
-        return "redirect:/hoadononline/hienthi";
+        return "redirect:/hoadononlinekhachhang/hienthi";
     }
 
     @GetMapping("/detailhoadononlinect/{id}")
@@ -168,12 +177,12 @@ public class HoaDonOnlController {
         HoaDon hoaDon = hoaDonOnlService.detailHD(id);
         if (hoaDon == null) {
             System.out.println("Lỗi: Không tìm thấy hóa đơn với ID " + id);
-            return "redirect:/hoadononline/hienthi";
+            return "redirect:/hoadononlinekhachhang/hienthi";
         }
         List<HoaDonChiTiet> chiTietHoaDon = hoaDonChiTietOnlService.findHoaDonChiTietByHoaDonId(id);
         if (chiTietHoaDon == null || chiTietHoaDon.isEmpty()) {
             System.out.println("Lỗi: Không tìm thấy chi tiết hóa đơn cho ID " + id);
-            return "redirect:/hoadononline/hienthi";
+            return "redirect:/hoadononlinekhachhang/hienthi";
         }
         List<TrangThaiDonHang> lstTrangThaiDonHang = lichSuTrnngThaiService.getAllByIdHoaDon(id);
         HoaDon hoaDon1 = hoaDonService.findById(id);
@@ -198,7 +207,7 @@ public class HoaDonOnlController {
         model.addAttribute("sanPhamChiTiet", sanPhamChiTiet);
         model.addAttribute("currentPageCTSP", sanPhamChiTiet.getNumber());
         model.addAttribute("totalPagesCTSP", sanPhamChiTiet.getTotalPages());
-        return "admin/hoa-don/detailhoadononline";
+        return "user/hoadon/detailHoaDonKhachHang";
     }
 
     @GetMapping("/detailkhachhang/{id}")
@@ -420,4 +429,5 @@ public class HoaDonOnlController {
 
 
     }
+
 }

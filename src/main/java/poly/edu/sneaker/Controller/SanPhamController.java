@@ -19,10 +19,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Controller
 @RequestMapping("/sanpham")
@@ -41,6 +38,7 @@ public class SanPhamController {
     private SizeService sizeService;
     @Autowired
     private MauSacService mauSacService;
+
 
     @GetMapping("/hienthi")
     public String hienThi(Model model, RedirectAttributes redirectAttributes, @RequestParam(defaultValue = "0") int page, @RequestParam(required = false) String keyword) {
@@ -88,6 +86,7 @@ public class SanPhamController {
     }
 
     @PostMapping("/themsanpham")
+
     public String them(@ModelAttribute SanPham sanPham,
                        @RequestParam("hang") int idHang,
                        @RequestParam("danhMuc") int idDanhMuc,
@@ -97,14 +96,24 @@ public class SanPhamController {
         sanPham.setIdHang(hangService.getHangById(idHang));
         sanPham.setIdDanhMuc(danhMucService.findDanhMucById(idDanhMuc));
         sanPham.setIdChatLieu(chatLieuService.getChatLieuById(idChatLieu));
-        sanPham.setTrangThai(true);
-        sanPham.setNgaySua(new Date());
-        sanPham.setNgayTao(new Date());
-        // Lưu sản phẩm vào database
-        sanPhamService.save(sanPham);
-        // Thông báo thành công
-        redirectAttributes.addFlashAttribute("successMessage", "Thêm sản phẩm thành công!");
-        return "redirect:/sanpham/hienthi";
+        List<SanPham> lstSP = sanPhamService.getAllSanPhams();
+        for (SanPham sp : lstSP
+        ) {
+            if (sp.getTenSanPham().equals(sanPham.getTenSanPham())) {
+                redirectAttributes.addFlashAttribute("errorMessage", "Sản phẩm đã tồn tại!");
+                return "redirect:/sanpham/themsanpham"; // Điều hướng về trang thêm sản phẩm            }
+
+            }
+        }
+            sanPham.setTrangThai(true);
+            sanPham.setNgaySua(new Date());
+            sanPham.setNgayTao(new Date());
+            // Lưu sản phẩm vào database
+            sanPhamService.save(sanPham);
+            // Thông báo thành công
+            redirectAttributes.addFlashAttribute("successMessage", "Thêm sản phẩm thành công!");
+            return "redirect:/sanpham/hienthi";
+
     }
 
     @GetMapping("/chitietsanpham/{id}")
@@ -156,7 +165,8 @@ public class SanPhamController {
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("errorMessage", "Có lỗi xảy ra khi cập nhật sản phẩm!");
         }
-        return "redirect:/sanpham/chitietsanpham/"+id;
+
+        return "redirect:/sanpham/chitietsanpham/" + id;
     }
 
     @PostMapping("/addctsanpham/{id}")
@@ -229,7 +239,7 @@ public class SanPhamController {
                 ctsp.setIdSize(sizeService.findById(idSize));
                 Size size = sizeService.findById(idSize);
                 size.getMaSize();
-                System.out.println("ma size"+size.getMaSize());
+
             }
             if (idMauSac != null) {
                 ctsp.setIdMauSac(mauSacService.findById(idMauSac));
@@ -254,6 +264,25 @@ public class SanPhamController {
         }
     }
 
+
+    @GetMapping("/lay-combination")
+    @ResponseBody
+    public ResponseEntity<?> checkSoLuongSanPham(@RequestBody Map<String,Object> formData){
+        try{
+            int idSize = Integer.parseInt(formData.get("idSize").toString());
+            int idMau = Integer.parseInt(formData.get("idMauSac").toString());
+            int idSanPham = Integer.parseInt(formData.get("idSanPham").toString());
+            ChiTietSanPham chiTietSanPham = chiTietSanPhamService.findCTSPByIdSPAndIdMauSacAndIdSize(idSanPham,idMau,idSize);
+            if(chiTietSanPham==null){
+                return ResponseEntity.badRequest().body(Map.of("message","Không tồn tại sản phẩm"));
+            }
+            int soLuong = chiTietSanPham.getSoLuong();
+            return ResponseEntity.ok(soLuong);
+        }catch (Exception e){
+            System.out.println("Lỗi ở việc cập nhật số lương cho trang chi tiết sản phẩm"+e.getMessage());
+            return ResponseEntity.badRequest().body(Map.of("message","Thông tin không hợp lệ"));
+        }
+    }
     private int convertToInt(Object value) {
         try {
             if (value instanceof Number) {

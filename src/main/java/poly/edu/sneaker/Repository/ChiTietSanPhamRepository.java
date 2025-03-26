@@ -11,7 +11,6 @@ import poly.edu.sneaker.Model.ChiTietSanPham;
 import java.util.ArrayList;
 import java.util.List;
 
-
 @Repository
 public interface ChiTietSanPhamRepository extends JpaRepository<ChiTietSanPham, Integer> {
 
@@ -24,6 +23,21 @@ public interface ChiTietSanPhamRepository extends JpaRepository<ChiTietSanPham, 
             "WHERE ctp.ngayTao = (SELECT MAX(ctp2.ngayTao) FROM ChiTietSanPham ctp2 WHERE ctp2.idSanPham.id = ctp.idSanPham.id and ctp.trangThai = true) ")
     Page<ChiTietSanPham> findFirstRecordForEachProduct(Pageable pageable);
 
+    @Query(value = "select * from ChiTietSanPham", nativeQuery = true)
+    List<ChiTietSanPham> getALl();
+
+    ChiTietSanPham findById(int id);
+
+
+
+
+
+    //code quan end
+
+    //code hung
+    @Query("SELECT c FROM ChiTietSanPham c ORDER BY c.ngayTao DESC")
+    List<ChiTietSanPham> findTop10NewestProducts(Pageable pageable);
+    // code hung end
 
     // Tìm chi tiết sản phẩm theo id sản phẩm và id màu sắc, với trạng thái đang hoạt động
     @Query("SELECT c FROM ChiTietSanPham c WHERE c.idSanPham.id = :idSanPham AND c.idMauSac.id = :idMauSac and c.trangThai = true")

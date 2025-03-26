@@ -57,6 +57,25 @@ public class KhachHangImplement implements KhachHangService {
     }
 
     @Override
+    public void updateKhachHangHung(KhachHang khachHang, int id) {
+        khachHangRepository.save(khachHang);
+    }
+
+    @Override
+    public void updateKhachHangHoaDonOnl(KhachHang khachHang, int id) {
+        KhachHang existingKhachHang = khachHangRepository.findById(id).orElseThrow(() -> new RuntimeException("KhachHang not found"));
+        existingKhachHang.setMaKhachHang(khachHang.getMaKhachHang());
+        existingKhachHang.setTenKhachHang(khachHang.getTenKhachHang());
+        existingKhachHang.setTinhThanhPho(khachHang.getTinhThanhPho());
+        existingKhachHang.setQuanHuyen(khachHang.getQuanHuyen());
+        existingKhachHang.setPhuongXa(khachHang.getPhuongXa());
+        existingKhachHang.setEmail(khachHang.getEmail());
+        existingKhachHang.setSdt(khachHang.getSdt());
+        existingKhachHang.setTrangThai(khachHang.getTrangThai());
+        khachHangRepository.save(existingKhachHang);
+    }
+
+    @Override
     public void deleteById(int id) {
         khachHangRepository.deleteById(id);
     }
@@ -122,6 +141,7 @@ public class KhachHangImplement implements KhachHangService {
             return khachHangRepository.findAll(newPageable);
         }
     }
+
 
 
 }

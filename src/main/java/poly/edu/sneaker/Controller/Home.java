@@ -24,6 +24,13 @@ import poly.edu.sneaker.Service.*;
 
 import java.util.*;
 
+import poly.edu.sneaker.Model.*;
+import poly.edu.sneaker.Model.Interface.SanPhamInterface;
+import poly.edu.sneaker.Service.*;
+
+import java.lang.reflect.Array;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Controller
 @RequestMapping("/Sneakers_Nice")
@@ -43,11 +50,13 @@ public class Home {
     @Autowired
     private GioHangChiTietService gioHangChiTietService;
     @Autowired
-    private ChiTietSanPhamRepository chiTietSanPhamRepository;
+
+    HoaDonChiTietOnlService hoaDonChiTietOnlService;
 
     @GetMapping("/hienthi")
     public String hienthi(Model model, @RequestParam(defaultValue = "0") int page) {
         KhachHang khachHangSession = (KhachHang) httpSession.getAttribute("khachHangSession");
+
         int size = 12;
         Page<ChiTietSanPham> lstCTSP = chiTietSanPhamService.findChiTietSanPhamJustOne(PageRequest.of(page, size));
         for (ChiTietSanPham ctsp : lstCTSP
@@ -84,6 +93,16 @@ public class Home {
         model.addAttribute("listSanPham", lstCTSP);
         model.addAttribute("currentPage", lstCTSP.getNumber());
         model.addAttribute("totalPages", lstCTSP.getTotalPages());
+
+
+        //code hung
+        List<Map<String, Object>> bestSellingProducts = hoaDonChiTietOnlService.getTop10BestSellingProducts();
+        model.addAttribute("bestSellingProducts", bestSellingProducts);
+
+        List<Map<String, Object>> newestProducts = chiTietSanPhamService.getTop10NewestProducts();
+        model.addAttribute("newestProducts", newestProducts);
+        //end code hung
+
         return "user/sanpham/trangchu";
     }
 
@@ -160,4 +179,5 @@ public class Home {
 
         return "user/sanpham/trangchu";
     }
+
 }
