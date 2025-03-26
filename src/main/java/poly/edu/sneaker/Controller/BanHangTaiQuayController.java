@@ -1,6 +1,8 @@
 package poly.edu.sneaker.Controller;
 
 
+import com.itextpdf.layout.property.TextAlignment;
+import com.itextpdf.layout.property.UnitValue;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Controller;
@@ -10,6 +12,14 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import poly.edu.sneaker.Model.*;
 import poly.edu.sneaker.Service.BanHangTaiQuayService;
 import poly.edu.sneaker.Service.HoaDonService;
+
+import com.itextpdf.kernel.pdf.*;
+import com.itextpdf.layout.Document;
+import com.itextpdf.layout.element.*;
+import org.springframework.http.*;
+import org.springframework.web.bind.annotation.*;
+import java.io.*;
+
 
 import java.util.List;
 import java.util.Random;
@@ -23,7 +33,6 @@ public class BanHangTaiQuayController {
     HoaDonService hoaDonService;
     @GetMapping("/hienthi")
     public String bhtq(Model model, @RequestParam(defaultValue = "0") int page) {
-
         int size = 5;
         //list chitietsanpham phan trang
         Page<ChiTietSanPham> CTSP = banHangTaiQuayService.DanhSachSanPhamPhanTrang(page, size);
@@ -49,7 +58,6 @@ public class BanHangTaiQuayController {
 
     @GetMapping("/timkiemctsp")
     public String timkiemctsp(Model model,
-                              RedirectAttributes redirectAttributes, // Thêm RedirectAttributes để chuyển dữ liệu
                               @RequestParam(defaultValue = "0") int page,
                               @RequestParam(required = false) String tenSanPham,
                               @RequestParam(required = false) Integer idhd,
@@ -63,30 +71,35 @@ public class BanHangTaiQuayController {
         // Lấy danh sách sản phẩm theo bộ lọc
         Page<ChiTietSanPham> CTSP = banHangTaiQuayService.timKiemSanPham(page, size, tenSanPham, idSize, idMauSac, idDanhMuc, idHang, idChatLieu);
 
-        // Nếu không có idhd, chỉ hiển thị danh sách sản phẩm trên trang banhangtaiquay
-        if (idhd == null) {
-            model.addAttribute("CTSP", CTSP.getContent());
-            model.addAttribute("currentPage", page);
-            model.addAttribute("totalPages", CTSP.getTotalPages());
-            List<HoaDon> getAllhd = banHangTaiQuayService.getAllHoaDon();
-            model.addAttribute("listHoaDon", getAllhd);
+        // Truy vấn danh sách hóa đơn chờ
+        List<HoaDon> getAllhd = banHangTaiQuayService.getAllHoaDon();
+        model.addAttribute("listHoaDon", getAllhd);
 
-            model.addAttribute("lstSize", banHangTaiQuayService.getAllSizeTimKiem());
-            model.addAttribute("lstMauSac", banHangTaiQuayService.getAllMauSacTimKiem());
-            model.addAttribute("lstDanhMuc", banHangTaiQuayService.getAllDanhMucTimKiem());
-            model.addAttribute("lstHang", banHangTaiQuayService.getAllHangTimKiem());
-            model.addAttribute("lstChatLieu", banHangTaiQuayService.getAllChatLieuTimKiem());
-
-            return "admin/banhangtaiquay/banhangtaiquay";
+        // Truy vấn thông tin hóa đơn được chọn nếu có
+        if (idhd != null) {
+            HoaDon hd = hoaDonService.findById(idhd);
+            model.addAttribute("hoadonduocchon", hd);
+            List<HoaDonChiTiet> listHDCT = banHangTaiQuayService.danhSachChiTietHoaDonByIDHD(idhd);
+            model.addAttribute("listHDCT", listHDCT);
+            Double tongtiencthd = banHangTaiQuayService.tongTienCTHD(idhd);
+            model.addAttribute("tongtiencthd", tongtiencthd);
         }
 
-        // Nếu có idhd, chuyển dữ liệu sang trang showhoadoncho/{idhd}
-        redirectAttributes.addFlashAttribute("CTSP", CTSP.getContent());
-        redirectAttributes.addFlashAttribute("currentPage", page);
-        redirectAttributes.addFlashAttribute("totalPages", CTSP.getTotalPages());
+        // Truyền danh sách sản phẩm tìm kiếm vào model
+        model.addAttribute("CTSP", CTSP.getContent());
+        model.addAttribute("currentPage", page);
+        model.addAttribute("totalPages", CTSP.getTotalPages());
 
-        return "redirect:/banhangtaiquay/showhoadoncho/" + idhd;
+        // Truyền các danh sách danh mục lọc
+        model.addAttribute("lstSize", banHangTaiQuayService.getAllSizeTimKiem());
+        model.addAttribute("lstMauSac", banHangTaiQuayService.getAllMauSacTimKiem());
+        model.addAttribute("lstDanhMuc", banHangTaiQuayService.getAllDanhMucTimKiem());
+        model.addAttribute("lstHang", banHangTaiQuayService.getAllHangTimKiem());
+        model.addAttribute("lstChatLieu", banHangTaiQuayService.getAllChatLieuTimKiem());
+
+        return "admin/banhangtaiquay/banhangtaiquay";
     }
+
 
 
 
@@ -162,7 +175,7 @@ public class BanHangTaiQuayController {
             HoaDonChiTiet hdct = new HoaDonChiTiet();
             List<HoaDonChiTiet> listcthd = banHangTaiQuayService.ktratrunghdct(chiTietSanPham.getId(), idhd);
             if (listcthd.size() >= 1) {
-                redirectAttributes.addFlashAttribute("error", "Sản phẩm đã tồn tại trong giỏ hàng.");
+                redirectAttributes.addFlashAttribute("warning", "Sản phẩm đã tồn tại trong giỏ hàng.");
                 return "redirect:/banhangtaiquay/showhoadoncho/" + idhd;
             }
             hdct.setTrangThai(0);
@@ -179,7 +192,7 @@ public class BanHangTaiQuayController {
             }
             redirectAttributes.addFlashAttribute("success", "Thêm sản phẩm thành công!");
         } catch (Exception e) {
-            redirectAttributes.addFlashAttribute("error", "Có lỗi xảy ra khi thêm sản phẩm: " + e.getMessage());
+            redirectAttributes.addFlashAttribute("warning", "Có lỗi xảy ra khi thêm sản phẩm: " + e.getMessage());
         }
         // Chuyển hướng về trang hiển thị hóa đơn đang chọn
         return "redirect:/banhangtaiquay/showhoadoncho/" + idhd;
@@ -303,8 +316,6 @@ public class BanHangTaiQuayController {
                             @RequestParam(value = "tienThua", defaultValue = "0") float tienThua,
                                  @RequestParam("tongtiencthd") Float tongtiencthd) {
         // Kiểm tra nếu số lượng không hợp lệ (chứa chữ hoặc số âm)
-        System.out.println(tienKhachDua);
-        System.out.println(tienThua);
         if (tienKhachDua <= 0) {
             redirectAttributes.addFlashAttribute("error", "Vui lòng nhập tiền khách đưa!");
             return "redirect:/banhangtaiquay/showhoadoncho/" + idhd;
@@ -316,18 +327,26 @@ public class BanHangTaiQuayController {
             return "redirect:/banhangtaiquay/showhoadoncho/" + idhd;
         }
         // Tìm hóa đơn chi tiết theo ID
+
         HoaDon hd = banHangTaiQuayService.getHoaDonByID(idhd);
+        if(hd.getIdKhuyenMai()!= null){
+            KhuyenMai km = banHangTaiQuayService.timKhuyenMaiQuaMa(hd.getIdKhuyenMai().getMaKhuyenMai());
+            if(km.getDaSuDung()>= km.getSoLuong()){
+                redirectAttributes.addFlashAttribute("error", "Khuyến mãi này không đủ số lượng");
+                return "redirect:/banhangtaiquay/showhoadoncho/" + idhd;
+            }
+            km.setDaSuDung(km.getDaSuDung()+1);
+            banHangTaiQuayService.saveKM(km);
+        }
         hd.setTrangThai(1);
         hd.setThanhTien(tongtiencthd);
         if (tongtiencthd<=0){
             redirectAttributes.addFlashAttribute("error", "Chưa có sản phẩm!");
             return "redirect:/banhangtaiquay/showhoadoncho/" + idhd;
-
         }
         banHangTaiQuayService.saveHoaDon(hd);
         redirectAttributes.addFlashAttribute("success", "Thanh Toán Thành Công");
-
-        return "redirect:/banhangtaiquay/hienthi";
+        return "redirect:/banhangtaiquay/in-hoadon/" + idhd;
     }
     @PostMapping("/timkiemidquasdtkh")
     public String timsdtkh( Model model,@RequestParam("idHoaDon") Integer idhd,
@@ -370,7 +389,6 @@ public class BanHangTaiQuayController {
             }else if (km.getDieuKienApDung()>tongtiencthd){
                 redirectAttributes.addFlashAttribute("error", "Hóa đơn của bạn chưa đủ điều kiện để dùng");
                 return "redirect:/banhangtaiquay/showhoadoncho/" + idhd;
-
             }
             hd.setIdKhuyenMai(km);
             banHangTaiQuayService.saveHoaDon(hd);
@@ -414,6 +432,79 @@ public class BanHangTaiQuayController {
 
         // Điều hướng về trang bán hàng tại quầy
         return "redirect:/banhangtaiquay/showhoadoncho/" + idhd;
+    }
+
+    @GetMapping("/in-hoadon/{id}")
+    public String inHoaDon(@PathVariable Integer id, Model model, RedirectAttributes redirectAttributes) {
+        HoaDon hoaDon = banHangTaiQuayService.getHoaDonByID(id);
+        List<HoaDonChiTiet> hdct = banHangTaiQuayService.danhSachChiTietHoaDonByIDHD(id);
+
+        if (hoaDon == null) {
+            redirectAttributes.addFlashAttribute("error", "Hóa đơn không tồn tại!");
+            return "redirect:/banhangtaiquay/hienthi"; // Quay về trang bán hàng nếu không tìm thấy
+        }
+
+        model.addAttribute("hoaDon", hoaDon);
+        model.addAttribute("hdct", hdct);
+        return "admin/banhangtaiquay/inhoadon";
+    }
+
+
+    @GetMapping("/export/pdf/{id}")
+    public ResponseEntity<byte[]> exportHoaDonPDF(@PathVariable Integer id) throws IOException {
+        HoaDon hoaDon = banHangTaiQuayService.getHoaDonByID(id);
+        List<HoaDonChiTiet> hdct = banHangTaiQuayService.danhSachChiTietHoaDonByIDHD(id);
+
+        // Tạo file PDF tạm
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        PdfWriter writer = new PdfWriter(out);
+        PdfDocument pdfDoc = new PdfDocument(writer);
+        Document document = new Document(pdfDoc);
+
+        // Tiêu đề
+        document.add(new Paragraph("HÓA ĐƠN BÁN HÀNG")
+                .setBold()
+                .setFontSize(18)
+                .setTextAlignment(TextAlignment.CENTER)
+                .setMarginBottom(20));
+
+        // Thông tin hóa đơn
+        document.add(new Paragraph("Mã Hóa Đơn: " + hoaDon.getMaHoaDon()).setFontSize(12).setMarginBottom(5));
+//        document.add(new Paragraph("Nhân Viên Bán: " + hoaDon.getNhanVien().getTenNhanVien()).setFontSize(12).setMarginBottom(5));
+        document.add(new Paragraph("Tổng Tiền: " + hoaDon.getThanhTien() + " VND").setFontSize(12).setMarginBottom(5));
+        document.add(new Paragraph("Trạng Thái: " + (hoaDon.getTrangThai() == 1 ? "Đã thanh toán" : "Chưa thanh toán"))
+                .setFontSize(12).setMarginBottom(20));
+
+        // Tạo bảng chi tiết hóa đơn
+        Table table = new Table(4);
+        table.setWidth(UnitValue.createPercentValue(100));  // Cập nhật chiều rộng bảng thành 100%
+        table.addHeaderCell("Tên Sản Phẩm");
+        table.addHeaderCell("Số Lượng");
+        table.addHeaderCell("Đơn Giá");
+        table.addHeaderCell("Thành Tiền");
+
+        // Lặp qua các chi tiết hóa đơn và thêm vào bảng
+        for (HoaDonChiTiet ct : hdct) {
+            table.addCell(ct.getIdChiTietSanPham().getIdSanPham().getTenSanPham());
+            table.addCell(String.valueOf(ct.getSoLuong()));
+            table.addCell(String.valueOf(ct.getDonGia()));
+            table.addCell(String.valueOf(ct.getSoLuong() * ct.getDonGia()));
+        }
+
+        // Thêm bảng vào tài liệu PDF
+        document.add(table);
+
+        // Đóng tài liệu PDF
+        document.close();
+
+        // Trả về PDF
+        byte[] pdfBytes = out.toByteArray();
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_PDF);
+        headers.setContentDisposition(ContentDisposition.builder("inline")
+                .filename("hoadon_" + id + ".pdf").build());
+
+        return new ResponseEntity<>(pdfBytes, headers, HttpStatus.OK);
     }
 
 

@@ -52,4 +52,7 @@ public class HoaDonImplement implements HoaDonService {
         }
         return maHoaDon;
     }
+
+    //code quan
+
 }
