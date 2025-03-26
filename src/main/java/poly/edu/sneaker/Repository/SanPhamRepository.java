@@ -14,6 +14,4 @@ public interface SanPhamRepository extends JpaRepository<SanPham, Integer> {
 
     Page<SanPham> findByMaSanPhamContainingOrTenSanPhamContaining(String maSanPham, String tenSanPham, Pageable pageable);
 
-
-
 }

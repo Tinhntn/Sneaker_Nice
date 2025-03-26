@@ -4,7 +4,9 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import poly.edu.sneaker.Model.ChiTietSanPham;
 
+import java.util.List;
 import java.util.ArrayList;
+
 
 public interface ChiTietSanPhamService {
     Page<ChiTietSanPham> findAll(Pageable pageable);
@@ -15,6 +17,11 @@ public interface ChiTietSanPhamService {
     Page<ChiTietSanPham> findChiTietSanPhamByIDSanPham(int idSanPham, Pageable pageable);
 //    ChiTietSanPham getCTSPByIdSP(Pageable pageable, int idSP);
     Page<ChiTietSanPham> findChiTietSanPhamJustOne(Pageable pageable);
+
+    //hung
+    List<ChiTietSanPham> getALl();
+
+    void capNhatSoLuongKhiHuyHoaDon(int idCTSP, int soLuong);
     ChiTietSanPham findCTSPByIDMauSac(int idCTSP, int idMauSac);
     ArrayList<ChiTietSanPham> findByIdSanPham(int idSanPham);
     ChiTietSanPham findCTSPByIdSPAndIdMauSacAndIdSize(int idSanPham, int idMauSac, int idSize);

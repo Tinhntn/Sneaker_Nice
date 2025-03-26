@@ -50,8 +50,14 @@ public class KhuyenMaiController {
         model.addAttribute("listKhuyenMai", pageKhuyenMaiCustoms.getContent());
         model.addAttribute("currentPage", pageKhuyenMaiCustoms.getNumber());
         model.addAttribute("totalPages", pageKhuyenMaiCustoms.getTotalPages());
-        model.addAttribute("khuyenMai", new KhuyenMai());  // Thêm đối tượng mới để binding dữ liệu form
+//        model.addAttribute("khuyenMai", new KhuyenMai());  // Thêm đối tượng mới để binding dữ liệu form
 
+        return "admin/khuyenmai/listkhuyenmai";
+    }
+
+    @GetMapping("/addshow")
+    public String showAddNhanVienPage(Model model) {
+        model.addAttribute("khuyenMai", new KhuyenMai()); // Thêm object vào model
         return "admin/khuyenmai/addkhuyenmai";
     }
 
@@ -59,10 +65,10 @@ public class KhuyenMaiController {
     public String addKhuyenMai(@ModelAttribute KhuyenMai khuyenMai, RedirectAttributes redirectAttributes) {
 
         // Kiểm tra các trường bắt buộc
-        if (khuyenMai.getMaKhuyenMai() == null || khuyenMai.getMaKhuyenMai().isEmpty()) {
-            redirectAttributes.addFlashAttribute("errorMessage", "Mã khuyến mại không được để trống.");
-            return "redirect:/khuyenmai/hienthi";
-        }
+//        if (khuyenMai.getMaKhuyenMai() == null || khuyenMai.getMaKhuyenMai().isEmpty()) {
+//            redirectAttributes.addFlashAttribute("errorMessage", "Mã khuyến mại không được để trống.");
+//            return "redirect:/khuyenmai/hienthi";
+//        }
         if (khuyenMai.getTenKhuyenMai() == null || khuyenMai.getTenKhuyenMai().isEmpty()) {
             redirectAttributes.addFlashAttribute("errorMessage", "Tên khuyến mại không được để trống.");
             return "redirect:/khuyenmai/hienthi";
@@ -105,6 +111,7 @@ public class KhuyenMaiController {
         calendar.set(Calendar.SECOND, 59);
         Date endOfDay = calendar.getTime();
 
+        khuyenMai.setMaKhuyenMai(khuyenMaiService.taoMaoKhuyenMai());
         khuyenMai.setNgayTao(new Date());
         khuyenMai.setLoaiKhuyenMai(true);
         khuyenMai.setNgaySua(new Date());

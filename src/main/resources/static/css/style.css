@@ -5406,6 +5406,7 @@ input[type="button"].btn-block {
   background-clip: border-box;
   border: 1px solid rgba(0, 0, 0, 0.125);
   border-radius: 0.25rem;
+ 
 }
 
 .card>hr {
@@ -12447,7 +12448,16 @@ h5,
   top: -30px;
   z-index: 99;
 }
+#quantity::-webkit-inner-spin-button,
+#quantity::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
 
+#quantity {
+  -moz-appearance: textfield;
+  /* Ẩn trên Firefox */
+}
 .mouse-icon {
   width: 60px;
   height: 60px;
