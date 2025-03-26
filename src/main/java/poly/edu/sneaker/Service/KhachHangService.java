@@ -13,6 +13,10 @@ public interface KhachHangService {
 
     void updateKhachHang(KhachHang khachHang, int id);
 
+    void updateKhachHangHung(KhachHang khachHang, int id);
+
+    void updateKhachHangHoaDonOnl(KhachHang khachHang, int id);
+
     void deleteById(int id);
 
     Page<KhachHang> search(String keyword, Pageable pageable);
@@ -23,4 +27,8 @@ public interface KhachHangService {
     boolean exitsKhachHangByEmail(String email);
     String taoMaKhachHang();
     boolean layLaiKhachHang(KhachHang khachHang);
+    KhachHang findByMaKhachHang(String maKhachHang);
+    Page<KhachHang> filterAndSort(Boolean trangThai, String sortBy, String sortDir, Pageable pageable);
+
+
 }

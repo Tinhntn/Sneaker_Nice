@@ -1,42 +1,84 @@
 <!doctype html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="~{layout/main.html}">
-
 <head>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Danh Sách Khách Hàng</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <!-- Custom CSS -->
     <link rel="stylesheet" type="text/css" href="./styles/main.css">
 </head>
-
 <body>
 <div layout:fragment="content">
     <div class="container-fluid">
-        <h1>Danh Sách Khách Hàng</h1>
-        <a th:href="@{/khach_hang/add}" class="btn btn-primary">Thêm +</a>
-        <div class="float-end">
-            <form th:action="@{/khach_hang/hienthi}" method="get" style="width: 300px">
-                <div class="input-group mb-3">
-                    <input type="text" class="form-control" placeholder="Tìm kiếm Theo Tên, Email hoặc SĐT" name="keyword"
-                           th:value="${keyword}">
+        <h1 class="mb-4">Danh Sách Khách Hàng</h1>
+        <div class="row mb-3 align-items-center">
+            <!-- Cột chứa nút Thêm + -->
+            <div class="col-auto">
+                <a th:href="@{/khach_hang/add}" class="btn btn-primary">Thêm +</a>
+            </div>
+            <!-- Cột chứa form tìm kiếm, canh phải (ms-auto) -->
+            <div class="col-auto ms-auto">
+                <form th:action="@{/khach_hang/hienthi}" method="get" class="input-group" style="max-width: 300px;">
+                    <input type="text" class="form-control" placeholder="Tìm kiếm..." name="keyword" th:value="${keyword}">
                     <button class="btn btn-primary" type="submit">Tìm kiếm</button>
-                </div>
-            </form>
-            <br>
+                </form>
+            </div>
         </div>
 
+
+        <form th:action="@{/khach_hang/hienthi}" method="get" class="row g-3 align-items-end mb-4">
+            <!-- Bộ lọc theo trường sắp xếp -->
+            <div class="col-md-4">
+                <label for="sortBy" class="form-label"> <b>Sắp xếp theo:</b> </label>
+                <select class="form-select" id="sortBy" name="sortBy">
+                    <option value="maKhachHang" th:selected="${sortBy=='maKhachHang'}">Mã KH</option>
+                    <option value="tenKhachHang" th:selected="${sortBy=='tenKhachHang'}">Tên KH</option>
+                </select>
+            </div>
+            <!-- Bộ lọc thứ tự sắp xếp -->
+            <div class="col-md-4">
+                <label for="sortDir" class="form-label"><b> Thứ tự:</b></label>
+                <select class="form-select" id="sortDir" name="sortDir">
+                    <option value="asc" th:selected="${sortDir=='asc'}">Tăng dần (A-Z)</option>
+                    <option value="desc" th:selected="${sortDir=='desc'}">Giảm dần (Z-A)</option>
+                </select>
+            </div>
+            <!-- Bộ lọc theo trạng thái -->
+            <div class="col-md-4">
+                <label for="trangThai" class="form-label"> <b> Trạng Thái :</b></label>
+                <select class="form-select" id="trangThai" name="trangThai">
+                    <option value="" th:selected="${trangThai == null || trangThai == ''}">Tất cả</option>
+                    <option value="true" th:selected="${trangThai == 'true'}">Hoạt động</option>
+                    <option value="false" th:selected="${trangThai == 'false'}">Không hoạt động</option>
+                </select>
+            </div>
+            <!-- Nút lọc -->
+            <div class="col-12 text-end">
+                <button type="submit" class="btn btn-primary">Lọc</button>
+            </div>
+        </form>
+
+
+
+
+        <!-- Bảng hiển thị danh sách khách hàng -->
         <table class="table table-bordered">
             <thead>
             <tr>
-                <th scope="col">Mã Khách Hàng</th>
-                <th scope="col">Tên Khách Hàng</th>
-                <th scope="col">Email</th>
-                <th scope="col">SĐT</th>
-                <th scope="col">Hành Động</th>
+                <th>Mã Khách Hàng</th>
+                <th>Tên Khách Hàng</th>
+                <th>Email</th>
+                <th>SĐT</th>
+                <th>Trạng Thái</th>
+                <th>Hành Động</th>
             </tr>
             </thead>
             <tbody>
@@ -46,48 +88,53 @@
                 <td th:text="${kh.email}"></td>
                 <td th:text="${kh.sdt}"></td>
                 <td>
-                    <a th:href="@{/khach_hang/edit/{id}(id=${kh.id})}">
-                        <button type="button" class="btn btn-outline-warning">Sửa</button>
-                    </a>
-                    <a th:href="@{/khach_hang/delete/{id}(id=${kh.id})}">
-                        <button type="button" class="btn btn-outline-danger"
-                                onclick="return confirm('Bạn muốn xóa khách hàng này?')">Xóa</button>
-                    </a>
+                    <span th:text="${kh.trangThai ? 'Hoạt động' : 'Không hoạt động'}"></span>
+                </td>
+                <td>
+                    <!-- Nút "Chi tiết" -->
+                    <a th:href="@{/khach_hang/detail/{id}(id=${kh.id})}" class="btn btn-outline-info btn-sm">Chi tiết</a>
+                    <!-- Nút "Sửa" -->
+                    <a th:href="@{/khach_hang/edit/{id}(id=${kh.id})}" class="btn btn-outline-warning btn-sm">Sửa</a>
+                    <!-- Nút Toggle trạng thái -->
+                    <form th:action="@{/khach_hang/toggleStatus/{id}(id=${kh.id})}" method="post" style="display:inline;">
+                        <button type="submit" class="btn btn-outline-primary btn-sm"
+                                onclick="return confirm('Bạn muốn thay đổi trạng thái?')">
+                            <span th:text="${kh.trangThai ? 'Tắt' : 'Bật'}"></span>
+                        </button>
+                    </form>
                 </td>
             </tr>
             </tbody>
         </table>
 
+        <!-- Phân trang -->
         <nav aria-label="Page navigation">
             <ul class="pagination">
                 <li th:classappend="${currentPage == 0} ? 'disabled' : ''" class="page-item">
-                    <a th:href="@{/khach_hang/hienthi(page=${currentPage - 1}, size=${10})}"
-                       class="page-link"><<</a>
+                    <a th:href="@{/khach_hang/hienthi(page=${currentPage - 1}, size=${5}, keyword=${keyword})}" class="page-link">&laquo;</a>
                 </li>
                 <li th:each="i : ${#numbers.sequence(0, totalPages - 1)}"
                     th:classappend="${i == currentPage} ? 'active' : ''" class="page-item">
-                    <a th:href="@{/khach_hang/hienthi(page=${i}, size=${10})}" class="page-link"
-                       th:text="${i + 1}"></a>
+                    <a th:href="@{/khach_hang/hienthi(page=${i}, size=${5}, keyword=${keyword})}" class="page-link" th:text="${i + 1}"></a>
                 </li>
                 <li th:classappend="${currentPage + 1 == totalPages} ? 'disabled' : ''" class="page-item">
-                    <a th:href="@{/khach_hang/hienthi(page=${currentPage+1}, size=${10})}" class="page-link">>></a>
+                    <a th:href="@{/khach_hang/hienthi(page=${currentPage + 1}, size=${5}, keyword=${keyword})}" class="page-link">&raquo;</a>
                 </li>
             </ul>
         </nav>
 
-        <!-- Hiển thị thông báo thành công -->
+        <!-- Thông báo thành công -->
         <div th:if="${successMessage}">
             <script th:inline="javascript">
                 /*<![CDATA[*/
                 var successMessage = /*[[${successMessage}]]*/ 'null';
-                if (successMessage !== 'null') {
+                if(successMessage !== 'null'){
                     Swal.fire({
                         icon: 'success',
                         title: 'Thành công',
                         text: successMessage,
                         confirmButtonText: 'OK'
                     }).then(() => {
-                        // Xóa successMessage sau khi hiển thị thông báo
                         history.replaceState(null, '', location.pathname);
                     });
                 }
@@ -95,19 +142,18 @@
             </script>
         </div>
 
-        <!-- Hiển thị thông báo lỗi -->
+        <!-- Thông báo lỗi -->
         <div th:if="${errorMessage}">
             <script th:inline="javascript">
                 /*<![CDATA[*/
                 var errorMessage = /*[[${errorMessage}]]*/ 'null';
-                if (errorMessage !== 'null') {
+                if(errorMessage !== 'null'){
                     Swal.fire({
                         icon: 'error',
                         title: 'Lỗi',
                         text: errorMessage,
                         confirmButtonText: 'OK'
                     }).then(() => {
-                        // Xóa errorMessage sau khi hiển thị thông báo
                         history.replaceState(null, '', location.pathname);
                     });
                 }
@@ -117,6 +163,8 @@
     </div>
 </div>
 
+<!-- Bootstrap JS & jQuery -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 </body>
-
 </html>

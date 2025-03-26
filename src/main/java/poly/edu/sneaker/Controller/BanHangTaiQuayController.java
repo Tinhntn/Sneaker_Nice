@@ -340,6 +340,7 @@ public class BanHangTaiQuayController {
         }
         hd.setTrangThai(1);
         hd.setThanhTien(tongtiencthd);
+        hd.setTongTien(tongtiencthd); // Cập nhật tổng doanh thu cho hóa đơn
         if (tongtiencthd<=0){
             redirectAttributes.addFlashAttribute("error", "Chưa có sản phẩm!");
             return "redirect:/banhangtaiquay/showhoadoncho/" + idhd;

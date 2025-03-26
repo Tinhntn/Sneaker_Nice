@@ -1,8 +1,8 @@
-<header th:fragment="header">
+
+<div th:fragment="header">
     <!-- Modal Giỏ Hàng -->
     <!-- Overlay che nền khi mở modal -->
     <div id="cartOverlay" class="cart-overlay" onclick="closeCartModal()"></div>
-
     <!-- Modal Giỏ Hàng -->
     <div id="cartModal" class="cart-modal">
         <div class="cart-header">
@@ -23,21 +23,22 @@
         </div>
     </div>
 
-
     <div class="py-1 bg-black">
         <div class="container">
             <div class="row no-gutters d-flex align-items-start align-items-center px-md-0">
                 <div class="col-lg-12 d-block">
                     <div class="row d-flex">
                         <div class="col-md pr-4 d-flex topper align-items-center">
-                            <div class="icon mr-2 d-flex justify-content-center align-items-center"><span
-                                    class="icon-phone2"></span></div>
+                            <div class="icon mr-2 d-flex justify-content-center align-items-center">
+                                <span class="icon-phone2"></span>
+                            </div>
                             <span class="text">+ 1235 2355 98</span>
                         </div>
                         <div class="col-md pr-4 d-flex topper align-items-center">
+
                             <div class="icon mr-2 d-flex justify-content-center align-items-center"><span
                                     class="icon-paper-plane"></span></div>
-                            <span class="text">SneakersNice@gemail.com</span>
+                            <span class="text">SneakersNice@gmail.com</span>
                         </div>
                         <div class="col-md-5 pr-4 d-flex topper align-items-center text-lg-right">
                             <span class="text">Giao hàng nhanh chóng &amp; Miễn phí trả hàng</span>
@@ -47,11 +48,12 @@
             </div>
         </div>
     </div>
+
     <nav class="navbar navbar-expand-lg navbar-dark ftco_navbar bg-dark ftco-navbar-light" id="ftco-navbar">
         <div class="container">
             <a class="navbar-brand" href="/Sneakers_Nice/hienthi">Sneakers Nice</a>
             <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#ftco-nav"
-                aria-controls="ftco-nav" aria-expanded="false" aria-label="Toggle navigation">
+                    aria-controls="ftco-nav" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="oi oi-menu"></span> Menu
             </button>
             <div class="collapse navbar-collapse" id="ftco-nav">
@@ -71,6 +73,7 @@
                     <li class="nav-item"><a href="about.html" class="nav-link">Giới thiệu</a></li>
                     <li class="nav-item"><a href="blog.html" class="nav-link">Tin tức</a></li>
                     <li class="nav-item"><a href="contact.html" class="nav-link">Liên hệ</a></li>
+
                     <li class="nav-item cta cta-colored"><a class="nav-link" id="openModal"
                             onclick="openCartModal()"><span class="icon-shopping_cart" cart-count> </span>
                             <span id="cart-count">0</span>
@@ -81,28 +84,25 @@
         </div>
     </nav>
     <!-- END nav -->
+
     <section id="home-section" class="hero">
         <div class="home-slider owl-carousel">
             <div class="slider-item js-fullheight">
                 <div class="overlay"></div>
                 <div class="container-fluid p-0">
                     <div class="row d-md-flex no-gutters slider-text align-items-center justify-content-end"
-                        data-scrollax-parent="true">
+                         data-scrollax-parent="true">
                         <img class="one-third order-md-last img-fluid" src="/images/bg_1.png" alt="">
                         <div class="one-forth d-flex align-items-center ftco-animate"
-                            data-scrollax=" properties: { translateY: '70%' }">
+                             data-scrollax=" properties: { translateY: '70%' }">
                             <div class="text">
                                 <span class="subheading">#Sản phẩm mới</span>
                                 <div class="horizontal">
                                     <h1 class="mb-4 mt-3">Bộ sưu tập 2024</h1>
                                     <p class="mb-4">Nike tiếp tục ‘hút fan’ với bộ sưu tập mới ứng dụng công nghệ thông
-                                        minh
-                                        đột phá.
+                                        minh đột phá.
                                         Bộ sưu tập sản phẩm mới của Nike là sự kết hợp đột phá, đánh dấu một bước tiến
-                                        mới
-                                        khi ứng dụng công nghệ thông minh vào
-                                        sản xuất giày.
-                                    </p>
+                                        mới khi ứng dụng công nghệ thông minh vào sản xuất giày.</p>
                                     <p><a href="#" class="btn-custom">khám phá ngay</a></p>
                                 </div>
                             </div>
@@ -114,23 +114,20 @@
                 <div class="overlay"></div>
                 <div class="container-fluid p-0">
                     <div class="row d-flex no-gutters slider-text align-items-center justify-content-end"
+
                         data-scrollax-parent="true">
-                        <img class="one-third order-md-last img-fluid" src="/images/spmoi_1.png" alt="">
+                        <img class="one-third order-md-last img-fluid" src="/images/bg_2.png" alt="">
                         <div class="one-forth d-flex align-items-center ftco-animate"
-                            data-scrollax=" properties: { translateY: '70%' }">
+                             data-scrollax=" properties: { translateY: '70%' }">
                             <div class="text">
                                 <span class="subheading">#Sản phẩm mới</span>
                                 <div class="horizontal">
                                     <h1 class="mb-4 mt-3">Bộ sưu tập 2024</h1>
-                                    <p class="mb-4">Nike Hyperice Boot tối ưu hóa hiệu quả tập luyện
-                                        Nhằm tối ưu hóa hiệu quả luyện tập, mang lại trải nghiệm di chuyển vượt trội và
-                                        đẩy
-                                        nhanh quá trình phục hồi cho vận
-                                        động viên, thương hiệu Nike trình làng bộ sưu tập giày và áo khoác Nike
-                                        Hyperice.
-                                        Đây là bộ sản phẩm có sự kết hợp với
-                                        Hyperice - chuyên gia hàng đầu về công nghệ phục hồi vận động.</p>
-
+                                    <p class="mb-4">Nike Hyperice Boot tối ưu hóa hiệu quả tập luyện. Nhằm tối ưu hóa
+                                        hiệu quả luyện tập, mang lại trải nghiệm di chuyển vượt trội và đẩy nhanh quá
+                                        trình phục hồi cho vận động viên, thương hiệu Nike trình làng bộ sưu tập giày và
+                                        áo khoác Nike Hyperice. Đây là bộ sản phẩm có sự kết hợp với Hyperice - chuyên
+                                        gia hàng đầu về công nghệ phục hồi vận động.</p>
                                     <p><a href="#" class="btn-custom">Khám phá ngay</a></p>
                                 </div>
                             </div>
@@ -138,182 +135,181 @@
                     </div>
                 </div>
             </div>
-            <script>
-                var notyf = new Notyf({ ripple: true, position: { x: 'right', y: 'top' } });
-                // var message = /*[[${message}]]*/ null;
-                // if (message) {
-                //     notyf.error(message);
-                // }
 
-                function updateCartCount() {
-                    fetch('/gio-hang/so-luong')
-                        .then(response => {
-                            if (!response.ok) {
-                                throw new Error('Lỗi khi gọi API');
-                            }
-                            return response.json();
-                        })
-                        .then(data => {
-                            let cartCountElement = document.getElementById('cart-count');
-                            if (cartCountElement) {
-                                cartCountElement.textContent = data.soLuong || 0; // Đảm bảo luôn có giá trị hợp lệ
-                            }
-                        })
-                        .catch(error => {
-                            document.getElementById('cart-count').textContent = 0; // Hiển thị 0 nếu có lỗi
-                        });
-                }
-
-                // Gọi khi trang tải xong
-                document.addEventListener("DOMContentLoaded", updateCartCount());
-
-
-                document.getElementById("thanhToan").addEventListener("click", function () {
-                    loadCartItems();
-                    window.location.href = "/gio-hang/thanh-toan";
-                });
-
-
-
-
-
-                function openCartModal() {
-                    document.getElementById("cartModal").classList.add("open");
-                    document.getElementById("cartOverlay").classList.add("open");
-                    loadCartItems(); // Gọi API để lấy dữ liệu
-                }
-
-                function closeCartModal() {
-                    document.getElementById("cartModal").classList.remove("open");
-                    document.getElementById("cartOverlay").classList.remove("open");
-                }
-
-                function loadCartItems() {
-                    updateCartCount();
-                    var checkoutButton = document.getElementById("thanhToan");
-                    var cartList = document.getElementById("cart-items");
-                    var totalPriceElement = document.getElementById("total-price");
-
-                    fetch('/gio-hang')
-                        .then(response => response.json())
-                        .then(data => {
-                            if (!data || !Array.isArray(data.items)) {
-                                console.error("Lỗi: Dữ liệu giỏ hàng không hợp lệ", data);
-                                cartList.innerHTML = "<p>Lỗi tải giỏ hàng. Vui lòng thử lại.</p>";
-                                totalPriceElement.innerText = "0đ";
-                                checkoutButton.disabled = true;
-                                checkoutButton.classList.add("disabled");
-                                return;
-                            }
-
-                            let items = data.items;
-                            let totalPrice = data.totalPrice || 0;
-                            let hasOutOfStock = false;
-
-                            if (items.length === 0) {
-                                cartList.innerHTML = "<p>Chưa có sản phẩm nào trong giỏ hàng</p>";
-                                totalPriceElement.innerText = "0đ";
-                                checkoutButton.disabled = true;
-                                checkoutButton.classList.add("disabled");
-                                return;
-                            }
-
-                            checkoutButton.disabled = false;
-                            checkoutButton.classList.remove("disabled");
-                            cartList.innerHTML = "";
-
-                            items.forEach(item => {
-                                let li = document.createElement("li");
-                                li.classList.add("cart-item");
-
-                                let outOfStockWarning = item.isOutOfStock ? `<p class="out-of-stock-warning">Hết hàng</p>` : "";
-                                let disableIncreaseButton = item.isOutOfStock ? "disabled" : "";
-
-                                if (item.isOutOfStock) {
-                                    hasOutOfStock = true;
-                                }
-
-                                li.innerHTML = `
-                    <img src="${item.hinhAnh}" alt="">
-                    <div class="item-details">
-                        <h4>${item.tenSanPham}</h4>
-                        <p>Size: ${item.size}</p>
-                        <p>Màu: ${item.mauSac}</p>
-                        <p>${(item.gia || 0).toLocaleString()}đ</p>
-                        <div class="quantity-controls">
-                            <button ${item.soLuong <= 1 ? "disabled" : ""} ${disableIncreaseButton}  onclick="updateQuantity(${item.idGioHangChiTiet}, -1)">-</button>
-                            <span  id="quantity-${item.idGioHangChiTiet}">${item.soLuong || 0}</span>
-                            <button ${disableIncreaseButton} onclick="updateQuantity(${item.idGioHangChiTiet}, 1)">+</button>
-                        </div>
-                        ${outOfStockWarning}
-                    </div>
-                    <button class="remove-item" onclick="removeFromCart(${item.idGioHangChiTiet})">✕</button>
-                `;
-
-                                cartList.appendChild(li);
-                            });
-
-                            totalPriceElement.innerText = totalPrice.toLocaleString() + "đ";
-
-                            // Nếu có sản phẩm hết hàng, disable nút thanh toán
-                            if (hasOutOfStock) {
-                                checkoutButton.disabled = true;
-                                checkoutButton.classList.add("disabled");
-                                notyf.error("Có sản phẩm hết hàng, vui lòng kiểm tra lại!");
-                            }
-                        })
-                        .catch(error => {
-                            console.error("Lỗi khi tải giỏ hàng:", error);
-                            cartList.innerHTML = "<p>Lỗi kết nối đến server</p>";
-                            totalPriceElement.innerText = "0đ";
-                            checkoutButton.disabled = true;
-                            checkoutButton.classList.add("disabled");
-                            notyf.error("Lỗi tải giỏ hàng!");
-                        });
-                }
-
-
-
-
-                function removeFromCart(productId) {
-                    fetch(`/gio-hang/remove/${productId}`, { method: "DELETE" })
-                        .then(() => loadCartItems());
-                }
-
-
-                function updateQuantity(idGHCT, change) {
-                    let quantityElement = document.getElementById(`quantity-${idGHCT}`);
-                    let newQuantity = parseInt(quantityElement.innerText) + change;
-
-                    if (newQuantity < 1) {
-
-
-                    }
-
-                    fetch(`/gio-hang/capNhatSoLuongGioHang/${idGHCT}?soLuong=${newQuantity}`, { method: "PUT" })
-                        .then(response => {
-                            if (!response.ok) {
-                                return response.json().then(err => {
-                                    throw new Error(notyf.error(err.message || "Cập nhật sản phẩm thất bại"));
-                                    return;
-                                });
-                            }
-                            return response.json();
-                        })
-                        .then(data => {
-                            if (data.success) {
-                                loadCartItems();
-                            } else if (data.message) {
-                                notyf.error(message + "cập nhật số lượng thất bại")
-                            }
-                        })
-                        .catch(error => console.error("Lỗi cập nhật số lượng:", error));
-                }
-
-            </script>
-
-
-
+            
         </div>
     </section>
-</header>
+    <script>
+        var notyf = new Notyf({ ripple: true, position: { x: 'right', y: 'top' } });
+        // var message = /*[[${message}]]*/ null;
+        // if (message) {
+        //     notyf.error(message);
+        // }
+
+        function updateCartCount() {
+            fetch('/gio-hang/so-luong')
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Lỗi khi gọi API');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    let cartCountElement = document.getElementById('cart-count');
+                    if (cartCountElement) {
+                        cartCountElement.textContent = data.soLuong || 0; // Đảm bảo luôn có giá trị hợp lệ
+                    }
+                })
+                .catch(error => {
+                    document.getElementById('cart-count').textContent = 0; // Hiển thị 0 nếu có lỗi
+                });
+        }
+
+        // Gọi khi trang tải xong
+        document.addEventListener("DOMContentLoaded", updateCartCount());
+
+
+        document.getElementById("thanhToan").addEventListener("click", function () {
+            loadCartItems();
+            window.location.href = "/gio-hang/thanh-toan";
+        });
+
+
+
+
+
+        function openCartModal() {
+            document.getElementById("cartModal").classList.add("open");
+            document.getElementById("cartOverlay").classList.add("open");
+            loadCartItems(); // Gọi API để lấy dữ liệu
+        }
+
+        function closeCartModal() {
+            document.getElementById("cartModal").classList.remove("open");
+            document.getElementById("cartOverlay").classList.remove("open");
+        }
+
+        function loadCartItems() {
+            updateCartCount();
+            var checkoutButton = document.getElementById("thanhToan");
+            var cartList = document.getElementById("cart-items");
+            var totalPriceElement = document.getElementById("total-price");
+
+            fetch('/gio-hang')
+                .then(response => response.json())
+                .then(data => {
+                    if (!data || !Array.isArray(data.items)) {
+                        console.error("Lỗi: Dữ liệu giỏ hàng không hợp lệ", data);
+                        cartList.innerHTML = "<p>Lỗi tải giỏ hàng. Vui lòng thử lại.</p>";
+                        totalPriceElement.innerText = "0đ";
+                        checkoutButton.disabled = true;
+                        checkoutButton.classList.add("disabled");
+                        return;
+                    }
+
+                    let items = data.items;
+                    let totalPrice = data.totalPrice || 0;
+                    let hasOutOfStock = false;
+
+                    if (items.length === 0) {
+                        cartList.innerHTML = "<p>Chưa có sản phẩm nào trong giỏ hàng</p>";
+                        totalPriceElement.innerText = "0đ";
+                        checkoutButton.disabled = true;
+                        checkoutButton.classList.add("disabled");
+                        return;
+                    }
+
+                    checkoutButton.disabled = false;
+                    checkoutButton.classList.remove("disabled");
+                    cartList.innerHTML = "";
+
+                    items.forEach(item => {
+                        let li = document.createElement("li");
+                        li.classList.add("cart-item");
+
+                        let outOfStockWarning = item.isOutOfStock ? `<p class="out-of-stock-warning">Hết hàng</p>` : "";
+                        let disableIncreaseButton = item.isOutOfStock ? "disabled" : "";
+
+                        if (item.isOutOfStock) {
+                            hasOutOfStock = true;
+                        }
+
+                        li.innerHTML = `
+                        <img src="${item.hinhAnh}" alt="">
+                        <div class="item-details">
+                            <h4>${item.tenSanPham}</h4>
+                            <p>Size: ${item.size}</p>
+                            <p>Màu: ${item.mauSac}</p>
+                            <p>${(item.gia || 0).toLocaleString()}đ</p>
+                            <div class="quantity-controls">
+                                <button ${item.soLuong <= 1 ? "disabled" : ""} ${disableIncreaseButton}  onclick="updateQuantity(${item.idGioHangChiTiet}, -1)">-</button>
+                                <span  id="quantity-${item.idGioHangChiTiet}">${item.soLuong || 0}</span>
+                                <button ${disableIncreaseButton} onclick="updateQuantity(${item.idGioHangChiTiet}, 1)">+</button>
+                            </div>
+                            ${outOfStockWarning}
+                        </div>
+                        <button class="remove-item" onclick="removeFromCart(${item.idGioHangChiTiet})">✕</button>
+                    `;
+
+                        cartList.appendChild(li);
+                    });
+
+                    totalPriceElement.innerText = totalPrice.toLocaleString() + "đ";
+
+                    // Nếu có sản phẩm hết hàng, disable nút thanh toán
+                    if (hasOutOfStock) {
+                        checkoutButton.disabled = true;
+                        checkoutButton.classList.add("disabled");
+                        notyf.error("Có sản phẩm hết hàng, vui lòng kiểm tra lại!");
+                    }
+                })
+                .catch(error => {
+                    console.error("Lỗi khi tải giỏ hàng:", error);
+                    cartList.innerHTML = "<p>Lỗi kết nối đến server</p>";
+                    totalPriceElement.innerText = "0đ";
+                    checkoutButton.disabled = true;
+                    checkoutButton.classList.add("disabled");
+                    notyf.error("Lỗi tải giỏ hàng!");
+                });
+        }
+
+
+
+
+        function removeFromCart(productId) {
+            fetch(`/gio-hang/remove/${productId}`, { method: "DELETE" })
+                .then(() => loadCartItems());
+        }
+
+
+        function updateQuantity(idGHCT, change) {
+            let quantityElement = document.getElementById(`quantity-${idGHCT}`);
+            let newQuantity = parseInt(quantityElement.innerText) + change;
+
+            if (newQuantity < 1) {
+
+
+            }
+
+            fetch(`/gio-hang/capNhatSoLuongGioHang/${idGHCT}?soLuong=${newQuantity}`, { method: "PUT" })
+                .then(response => {
+                    if (!response.ok) {
+                        return response.json().then(err => {
+                            throw new Error(notyf.error(err.message || "Cập nhật sản phẩm thất bại"));
+                            return;
+                        });
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    if (data.success) {
+                        loadCartItems();
+                    } else if (data.message) {
+                        notyf.error(message + "cập nhật số lượng thất bại")
+                    }
+                })
+                .catch(error => console.error("Lỗi cập nhật số lượng:", error));
+        }
+
+    </script>
+</div>

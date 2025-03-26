@@ -2,7 +2,9 @@ package poly.edu.sneaker.Service.Implement;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import poly.edu.sneaker.Model.KhachHang;
 import poly.edu.sneaker.Repository.KhachHangRepository;
@@ -55,13 +57,32 @@ public class KhachHangImplement implements KhachHangService {
     }
 
     @Override
+    public void updateKhachHangHung(KhachHang khachHang, int id) {
+        khachHangRepository.save(khachHang);
+    }
+
+    @Override
+    public void updateKhachHangHoaDonOnl(KhachHang khachHang, int id) {
+        KhachHang existingKhachHang = khachHangRepository.findById(id).orElseThrow(() -> new RuntimeException("KhachHang not found"));
+        existingKhachHang.setMaKhachHang(khachHang.getMaKhachHang());
+        existingKhachHang.setTenKhachHang(khachHang.getTenKhachHang());
+        existingKhachHang.setTinhThanhPho(khachHang.getTinhThanhPho());
+        existingKhachHang.setQuanHuyen(khachHang.getQuanHuyen());
+        existingKhachHang.setPhuongXa(khachHang.getPhuongXa());
+        existingKhachHang.setEmail(khachHang.getEmail());
+        existingKhachHang.setSdt(khachHang.getSdt());
+        existingKhachHang.setTrangThai(khachHang.getTrangThai());
+        khachHangRepository.save(existingKhachHang);
+    }
+
+    @Override
     public void deleteById(int id) {
         khachHangRepository.deleteById(id);
     }
 
     @Override
     public Page<KhachHang> search(String keyword, Pageable pageable) {
-        return khachHangRepository.findByMaKhachHangContainingOrTenKhachHangContaining(keyword, keyword, pageable);
+        return khachHangRepository.findByMaKhachHangContainingOrTenKhachHangContaining(keyword , keyword, pageable);
     }
 
     @Override
@@ -100,4 +121,27 @@ public class KhachHangImplement implements KhachHangService {
         khachHangRepository.save(khachHang);
         return true;
     }
+    @Override
+    public KhachHang findByMaKhachHang(String maKhachHang) {
+        return khachHangRepository.findByMaKhachHang(maKhachHang);
+    }
+    @Override
+    public Page<KhachHang> filterAndSort(Boolean trangThai, String sortBy, String sortDir, Pageable pageable) {
+        Sort sort;
+        if (sortBy != null && sortDir != null) {
+            sort = Sort.by(sortBy);
+            sort = sortDir.equalsIgnoreCase("asc") ? sort.ascending() : sort.descending();
+        } else {
+            sort = Sort.by("maKhachHang").ascending();
+        }
+        Pageable newPageable = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), sort);
+        if (trangThai != null) {
+            return khachHangRepository.findByTrangThai(trangThai, newPageable);
+        } else {
+            return khachHangRepository.findAll(newPageable);
+        }
+    }
+
+
+
 }

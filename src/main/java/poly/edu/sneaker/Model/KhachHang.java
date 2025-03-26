@@ -1,10 +1,14 @@
 package poly.edu.sneaker.Model;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.*;
+
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.PastOrPresent;
+import jakarta.validation.constraints.Pattern;
 import lombok.*;
 import org.springframework.format.annotation.DateTimeFormat;
-
+import jakarta.validation.constraints.Size;
 import java.util.Date;
 
 @Table(name = "khachhang")
@@ -20,11 +24,13 @@ public class KhachHang {
     private int id;
 
     @Column(name = "ma_khach_hang", unique = true, nullable = false)
-    @NotBlank(message = "Mã khách hàng không được để trống")
+    @NotBlank(message = "Mã KH không được để trống")
+    @Size(min = 2, max = 50, message = "Mã KH phải từ 2-50 ký tự")
     private String maKhachHang;
 
     @Column(name = "ten_khach_hang", nullable = false)
-    @NotBlank(message = "Tên khách hàng không được để trống")
+    @NotBlank(message = "Tên KH không được để trống")
+    @Size(min = 2, max = 100, message = "Tên KH phải từ 2-100 ký tự")
     private String tenKhachHang;
 
     @Column(name = "tinh_thanh_pho")
@@ -39,30 +45,30 @@ public class KhachHang {
     @Column(name = "gioi_tinh")
     private Boolean gioiTinh;
 
-    @Email(message = "Email không hợp lệ")
     @Column(name = "email", unique = true)
+    @NotBlank(message = "Email không được để trống")
+    @Email(message = "Email không đúng định dạng")
     private String email;
 
-    @Pattern(regexp = "^\\d{10}$", message = "Số điện thoại phải có 10 chữ số và không chứa chữ cái")
     @Column(name = "sdt")
+    @NotBlank(message = "Số điện thoại không được để trống")
+    @Pattern(regexp = "\\d+", message = "SĐT chỉ chứa chữ số")
+    @Size(min = 10, max = 15, message = "SĐT phải từ 10-15 ký tự số")
     private String sdt;
 
-    @Past(message = "Ngày sinh phải là một ngày trong quá khứ")
     @DateTimeFormat(pattern = "yyyy-MM-dd")
-    @Column(name = "ngay_sinh")
+    @PastOrPresent(message = "Ngày sinh không được lớn hơn hiện tại")
     private Date ngaySinh;
 
-    @Column(name = "ngay_tao", nullable = false)
     @Temporal(TemporalType.TIMESTAMP)
     private Date ngayTao = new Date();
 
-    @Column(name = "ngay_sua", nullable = false)
     @Temporal(TemporalType.TIMESTAMP)
     private Date ngaySua = new Date();
 
-    @NotBlank(message = "Mật khẩu không được để trống")
-    @Pattern(regexp = "^(?=.*[A-Z]).{6,}$", message = "Mật khẩu phải có ít nhất 6 ký tự và chứa ít nhất một chữ cái in hoa")
     @Column(name = "mat_khau", nullable = false)
+    @NotBlank(message = "Mật khẩu không được để trống")
+    @Size(min = 6, message = "Mật khẩu phải ít nhất 6 ký tự")
     private String matKhau;
 
     @Column(name = "hinh_anh")

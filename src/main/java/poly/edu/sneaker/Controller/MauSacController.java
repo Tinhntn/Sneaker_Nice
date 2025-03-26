@@ -48,17 +48,9 @@ public class MauSacController {
             return "admin/mau_sac/add";
         }
         try {
-            String maMauSac =mauSacService.taoMaMauSac();
-            ArrayList<MauSac> lstMauSac = mauSacService.findAll();
-            for ( MauSac h : lstMauSac
-            ) {
-                if(h.getMaMauSac().equals(maMauSac)){
-                    maMauSac =mauSacService.taoMaMauSac();                }
-
-            }
-            if (mauSacService.findByMaMauSac(mauSac.getMaMauSac()) != null) {
-                redirectAttributes.addFlashAttribute("errorMessage", "Mã màu sắc đã tồn tại!");
-                return "redirect:/mau_sac/add";
+            String maMauSac = mauSacService.taoMaMauSac();
+            while (mauSacService.findByMaMauSac(maMauSac) != null) {
+                maMauSac = mauSacService.taoMaMauSac();
             }
             mauSac.setMaMauSac(maMauSac);
             mauSacService.save(mauSac);
@@ -101,20 +93,32 @@ public class MauSacController {
         return "redirect:/mau_sac/hienthi";
     }
 
-    @GetMapping("/delete/{id}")
-    public String deleteMauSac(@PathVariable("id") Integer id, RedirectAttributes redirectAttributes) {
+    @PostMapping("/toggleStatus/{id}")
+    public String toggleStatus(@PathVariable("id") Integer id, RedirectAttributes redirectAttributes) {
         try {
-            mauSacService.deleteById(id);
-            redirectAttributes.addFlashAttribute("successMessage", "Xóa màu sắc thành công!");
+            MauSac mauSac = mauSacService.findMauSacById(id);
+            if (mauSac != null) {
+                mauSac.setTrangThai(!mauSac.getTrangThai());
+                mauSacService.save(mauSac);
+                redirectAttributes.addFlashAttribute("successMessage", "Thay đổi trạng thái thành công!");
+            } else {
+                redirectAttributes.addFlashAttribute("errorMessage", "Màu sắc không tồn tại!");
+            }
         } catch (Exception e) {
-            redirectAttributes.addFlashAttribute("errorMessage", "Lỗi khi xóa màu sắc!");
+            redirectAttributes.addFlashAttribute("errorMessage", "Lỗi khi thay đổi trạng thái màu sắc!");
         }
         return "redirect:/mau_sac/hienthi";
     }
 
     @GetMapping("/add")
     public String showAddForm(Model model) {
-        model.addAttribute("mauSac", new MauSac());
+        MauSac mauSac = new MauSac();
+        String maMauSac = mauSacService.taoMaMauSac();
+        while (mauSacService.findByMaMauSac(maMauSac) != null) {
+            maMauSac = mauSacService.taoMaMauSac();
+        }
+        mauSac.setMaMauSac(maMauSac);
+        model.addAttribute("mauSac", mauSac);
         return "admin/mau_sac/add";
     }
 }

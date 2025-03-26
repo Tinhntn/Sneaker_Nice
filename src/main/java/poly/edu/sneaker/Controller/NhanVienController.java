@@ -57,6 +57,13 @@ public class NhanVienController {
         return "admin/nhanVien/ListNhanVien";
     }
 
+    @GetMapping("/addshow")
+    public String showAddNhanVienPage(Model model) {
+        model.addAttribute("listChucVu", chucVuService.getAll());
+        return "admin/nhanVien/AddNhanVien";
+    }
+
+
     @PostMapping("/add")
     public String add(@RequestParam("manhanvien") String maNhanVien,
                       @RequestParam("hovaten") String hoVaTen,

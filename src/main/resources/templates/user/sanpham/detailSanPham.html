@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-    layout:decorate="~{layout/mainUser.html}">
+      layout:decorate="~{layout/mainUser.html}">
 
 <head>
     <meta charset="UTF-8">
@@ -18,6 +18,7 @@
 </head>
 
 <body>
+
     <div layout:fragment="content">
         <!-- Thông báo thành công -->
 
@@ -71,21 +72,27 @@
                                 <i class="fas fa-star"></i>
                             </p>
 
-                            <p class="text-left mr-4">
-                                <a href="#" class="mr-2" style="color: #000;">100 <span
-                                        style="color: #bbb;">Rating</span></a>
-                            </p>
-                            <p class="text-left">
-                                <a href="#" class="mr-2" style="color: #000;">500 <span
-                                        style="color: #bbb;">Sold</span></a>
-                            </p>
+                    <h4 class="price mb-3" th:text="'Giá: ' + ${chiTietSanPham.giaBan} + ' VND'"></h4>
+                    <h4 class="mb-4"
+                        th:text="${chiTietSanPham.soLuong != null ? 'Còn hàng: ' + chiTietSanPham.soLuong : 'Hết hàng'}">
+                    </h4>
+
+
+                    <!-- Các button chọn Size -->
+                    <div id="sizeButtons" class="mb-4">
+                        <div>
+                            <button type="button" th:each="size : ${lstSize}" th:data-idSize="${size.id}"
+                                    th:text="${size.tenSize}"
+                                    th:class="${(chiTietSanPham != null and size.id == chiTietSanPham.idSize.id) ? 'btn btn-secondary size-btn active' : 'btn btn-outline-secondary size-btn'}"
+                                    onclick="selectSize(this)">
+                            </button>
                         </div>
                         <h4 class="mb-3"
                             th:text="${chiTietSanPham.idSanPham.tenSanPham + ' ' + chiTietSanPham.idSanPham.idHang.tenHang + ' ' + chiTietSanPham.idSanPham.idDanhMuc.tenDanhMuc + ' ' + chiTietSanPham.idSanPham.idChatLieu.tenChatLieu}">
                         </h4>
 
                         <h4 class="price mb-3" th:text="'Giá: ' + ${chiTietSanPham.giaBan} + ' VND'"></h4>
-                        <h4 class="mb-4"
+                        <h4 class="mb-4" id="soLuong"
                             th:text="${chiTietSanPham.soLuong != null ? 'Còn hàng: ' + chiTietSanPham.soLuong : 'Hết hàng'}">
                         </h4>
 
@@ -93,7 +100,7 @@
                         <!-- Các button chọn Size -->
                         <div id="sizeButtons" class="mb-4">
                             <div>
-                                <button type="button" th:each="size : ${lstSize}" th:data-idSize="${size.id}"
+                                <button type="button"  id="selectedSize" th:each="size : ${lstSize}" th:data-idSize="${size.id}"
                                     th:text="${size.tenSize}"
                                     th:class="${(chiTietSanPham != null and size.id == chiTietSanPham.idSize.id) ? 'btn btn-secondary size-btn active' : 'btn btn-outline-secondary size-btn'}"
                                     onclick="selectSize(this)">
@@ -103,7 +110,7 @@
                         <!-- Các button chọn Màu sắc -->
                         <div id="mauSacButtons" class="mb-4">
                             <div>
-                                <button type="button" th:each="ms : ${lstMauSac}" th:data-idMauSac="${ms.id}"
+                                <button type="button"   id="selectedMauSac"th:each="ms : ${lstMauSac}" th:data-idMauSac="${ms.id}"
                                     th:text="${ms.tenMauSac}" th:data-idCTSP="${chiTietSanPham.id}"
                                     th:class="${(chiTietSanPham != null and ms.id == chiTietSanPham.idMauSac.id) ? 'btn btn-secondary btn-mau-sac active' : 'btn btn-outline-secondary btn-mau-sac'}"
                                     onclick="selectMauSac(this)">
@@ -118,15 +125,14 @@
                                     <i class="ion-ios-remove"></i>
                                 </button>
                             </span>
-                            <input type="text" id="quantity" name="quantity" class="quantity form-control input-number"
-                                value="1" min="1" max="25" disabled>
+
+                            <input type="number" id="quantity" name="quantity"
+                                class="quantity form-control input-number" value="1" min="1">
                             <span class="input-group-btn ml-2">
                                 <button type="button" class="quantity-right-plus btn" data-type="plus" data-field="">
                                     <i class="ion-ios-add"></i>
                                 </button>
                             </span>
-
-
 
                         </div>
                         <!-- Các button Thanh toán và Thêm vào giỏ hàng -->
@@ -143,11 +149,29 @@
                     </div>
                 </div>
                 <script th:inline="javascript">
+                    $(document).ready(function () {
+                        $(".quantity-right-plus").click(function () {
+                            var quantityInput = $("#quantity");
+                            var quantity = parseInt(quantityInput.val());
+                            quantityInput.val(quantity + 1);
 
+                        });
+
+                        $(".quantity-left-minus").click(function () {
+                            var quantityInput = $("#quantity");
+                            var quantity = parseInt(quantityInput.val());
+                            var min = parseInt(quantityInput.attr("min"));
+
+                            if (quantity > min) {
+                                quantityInput.val(quantity - 1);
+                            }
+                        });
+                    });
                     var notyf = new Notyf({ ripple: true });
-
+                
                     function selectSize(button) {
                         // Xóa class active khỏi tất cả các nút size
+                    
                         document.querySelectorAll('.size-btn').forEach(btn => {
                             btn.classList.remove('active');
                         });
@@ -156,7 +180,8 @@
                         button.classList.add('active');
 
                         // Cập nhật giá trị size được chọn
-                        document.getElementById("selectedSize").value = button.getAttribute("data-id");
+                        document.getElementById("selectedSize").value = button.getAttribute("data-idSize");
+                        
                     }
 
                     function selectMauSac(button) {
@@ -188,8 +213,35 @@
                         var combinations = /*[[${lstCTSP}]]*/[];
                         const colorButtons = document.querySelectorAll(".btn-mau-sac");
                         const sizeButtons = document.querySelectorAll(".size-btn");
+                        const quantityText = document.getElementById("soLuong");
+
                         let selectedColor = null;
                         let selectedSize = null;
+                        function updateQuantity() {
+                            let idMauSac = document.querySelector(".btn-mau-sac.active")?.getAttribute("data-idMauSac") || "";
+                            let idSize = document.querySelector(".size-btn.active")?.getAttribute("data-idSize") || "";
+                            let idSanPham = /*[[${chiTietSanPham != null && chiTietSanPham.idSanPham != null ? chiTietSanPham.idSanPham.id : ''}]]*/ "";
+                            let formData = { idSanPham, idSize, idMauSac };
+                            
+                            fetch(`/sanpham/lay-combination`, {
+                                method: "GET",
+                                headers: { "Content-Type": "application/json" },
+                                URL: JSON.stringify(formData)
+                            })
+                                .then(response => response.json())
+                                .then(data => {
+                                    if (data && data.soLuong !== undefined) {
+                                        quantityText.innerText = `Còn hàng: ${data.soLuong}`;
+                                    } else {
+                                        quantityText.innerText = "Hết hàng";
+                                    }
+                                })
+                                .catch(error => {
+                                    console.error("Lỗi:", error);
+                                    notyf.error("Có lỗi xảy ra");
+                                });
+                        }
+
 
                         function updateSizes() {
                             sizeButtons.forEach((btn) => {
@@ -247,9 +299,10 @@
                         var idMauSac = $(".size-btn.active").attr("data-idSize");
                         var soLuong = document.getElementById("quantity").value;
                         var idSanPham = /*[[${chiTietSanPham != null && chiTietSanPham.idSanPham != null ? chiTietSanPham.idSanPham.id : ''}]]*/ "";
-                 
+
                         if (soLuong <= 0) {
                             notyf.error('Số lượng phải lớn hơn 0');
+                            location.reload();
                         } else if (idSize == null) {
                             notyf.error('Vui lòng chọn size');
                         }
@@ -286,10 +339,10 @@
 
                                     } else if (response.status === 400) {
                                         notyf.error(errorData.message || 'Dữ liệu gửi lên không hợp lệ!');
-                                      
+
                                     } else {
                                         notyf.error(errorData.message || 'Có lỗi xảy ra khi thêm sản phẩm vào giỏ hàng');
-                                       
+
                                     }
 
                                 } else {
@@ -304,11 +357,13 @@
 
 
                         }
-                  
+
                     });
+                    updateQuantity();
 
                 </script>
             </div>
+
 
         </section>
     </div>

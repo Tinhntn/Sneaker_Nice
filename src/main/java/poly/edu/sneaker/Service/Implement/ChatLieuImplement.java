@@ -14,7 +14,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-
 @Service
 public class ChatLieuImplement implements ChatLieuService {
 
@@ -38,7 +37,6 @@ public class ChatLieuImplement implements ChatLieuService {
     public ChatLieu getChatLieuById(int id) {
         return chatLieuRepository.findById(id);
     }
-
 
     @Override
     public void save(ChatLieu chatLieu) {
@@ -69,8 +67,6 @@ public class ChatLieuImplement implements ChatLieuService {
         return (ArrayList<ChatLieu>) chatLieuRepository.findAll();
     }
 
-
-
     public Page<ChatLieu> search(String keyword, Pageable pageable) {
         return chatLieuRepository.findByMaChatLieuContainingOrTenChatLieuContaining(keyword, keyword, pageable);
     }
@@ -83,7 +79,7 @@ public class ChatLieuImplement implements ChatLieuService {
     @Override
     public String taoMaChatLieu() {
         Random random = new Random();
-        String maCL = "CL"+1000+random.nextInt(9000);
+        String maCL = "CL" + 1000 + random.nextInt(9000);
         return maCL;
     }
 }

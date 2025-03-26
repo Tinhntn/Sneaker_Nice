@@ -15,6 +15,7 @@ import java.util.Date;
 @AllArgsConstructor
 @NoArgsConstructor
 public class HoaDon {
+
     @Id
     @GeneratedValue (strategy = GenerationType.IDENTITY)
     private int id;
