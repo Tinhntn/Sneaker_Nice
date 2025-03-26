@@ -127,6 +127,11 @@ public class BanHangTaiQuayImplement implements BanHangTaiQuayService {
     }
 
     @Override
+    public KhuyenMai saveKM(KhuyenMai km) {
+        return khuyenMaiRepository.save(km);
+    }
+
+    @Override
     public List<ChatLieu> getAllChatLieuTimKiem() {
         return chatLieuRepository.getAllChatLieuTimKiem();
     }
