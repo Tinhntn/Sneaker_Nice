@@ -330,9 +330,20 @@ public class HoaDonOnlController {
     @DeleteMapping("/xoa-chi-tiet/{idHoaDon}/{idChiTietSanPham}")
     public ResponseEntity<Map<String, Object>> xoaChiTiet(@PathVariable int idHoaDon, @PathVariable int idChiTietSanPham) {
         Map<String, Object> response = new HashMap<>();
+
+        ChiTietSanPham chiTietSanPham;
+        HoaDonChiTiet hoaDonChiTiet;
+
         try {
+            chiTietSanPham = chiTietSanPhamService.findById(idChiTietSanPham);
+            hoaDonChiTiet = hoaDonChiTietOnlService.findByIdHoaDonAndIdChiTietSanPham(idHoaDon, idChiTietSanPham);
+
             hoaDonChiTietOnlService.xoaSPCTVaoHDCT(idHoaDon, idChiTietSanPham);
+            chiTietSanPham.setSoLuong(chiTietSanPham.getSoLuong() + hoaDonChiTiet.getSoLuong());
+
+            chiTietSanPhamService.update(chiTietSanPham);
             response.put("success", true);
+
             return ResponseEntity.ok(response);
         } catch (Exception e) {
             response.put("success", false);

@@ -317,7 +317,7 @@
                             <input type="number" class="form-control soLuongInput"
                                    style="width: 80px; display: inline-block;" th:value="${chiTietHoaDon.soLuong}"
                                    min="1"
-                                   th:attr="disabled=${hoaDon == null or hoaDon.trangThai != 2 ? 'disabled' : null}" />
+                                   th:attr="disabled=${hoaDon == null or hoaDon.trangThai != 2 or hoaDon.trangThai != 3 or hoaDon.trangThai != 4  or hoaDon.trangThai != 5 ? 'disabled' : null}" />
                         </td>
                         <td style="text-align: center;">
                             <span th:text="${chiTietHoaDon.idChiTietSanPham.idSize.tenSize}"></span>
@@ -615,7 +615,7 @@
                         return;
                     }
 
-                    fetch("/hoadononline/them-chi-tiet", {
+                    fetch("/hoadononlinekhachhang/them-chi-tiet", {
                         method: "POST",
                         headers: { "Content-Type": "application/json" },
                         body: JSON.stringify({
@@ -646,7 +646,7 @@
                                     <td>${tenSanPham}</td>
                                     <td>${giaBan.toLocaleString()} VNĐ</td>
                                     <td>
-                                        <input type="number" class="form-control soLuongInput" style="width: 80px;" value="1" min="1"/>
+                                        <input type="number" class="form-control soLuongInput" style="width: 80px;" value="1" min="1" />
                                     </td>
                                     <td>
                                         <button class="btn btn-danger btnXoaSanPham">Xóa</button>
@@ -685,7 +685,7 @@
                 $.ajax({
                     type: 'POST',
                     contentType: 'application/json',
-                    url: '/hoadononline/doi-trang-thai', // Đường dẫn đến endpoint của controller Spring
+                    url: '/hoadononlinekhachhang/doi-trang-thai', // Đường dẫn đến endpoint của controller Spring
                     data: JSON.stringify(formData), // Chuyển đổi đối tượng thành JSON
                     success: function (response) {
                         console.log(response.message)
@@ -696,7 +696,7 @@
                             document.getElementById("note").value = "";
                         });
                         // Chuyển hướng trang
-                        window.location.href = '/hoadononline/detailhoadononlinect/' + idHD;
+                        window.location.href = '/hoadononlinekhachhang/detailhoadononlinect/' + idHD;
                         // Thực hiện các thao tác khác nếu cần
                     },
                     error: function (error) {
@@ -709,7 +709,7 @@
                         }; document.getElementById("confirmCancel").addEventListener("click", function () {
                             document.getElementById("note").value = "";
                         });
-                        window.location.href = '/hoadononline/detailhoadononlinect/' + idHD;
+                        window.location.href = '/hoadononlinekhachhang/detailhoadononlinect/' + idHD;
                         // Đăng ký sự kiện chỉ 1 lần ngoài Ajax
                     }
                 });
@@ -817,7 +817,7 @@
                 donViGiaoHang: donViGiaoHang
             };
 
-            fetch('/hoadononline/updatehoadon', {
+            fetch('/hoadononlinekhachhang/updatehoadon', {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json"
@@ -864,7 +864,7 @@
                         return;
                     }
 
-                    fetch(`/hoadononline/xoa-chi-tiet/${idHoaDon}/${idChiTietSanPham}`, {
+                    fetch(`/hoadononlinekhachhang/xoa-chi-tiet/${idHoaDon}/${idChiTietSanPham}`, {
                         method: "DELETE"
                     })
                         .then(response => response.json())
@@ -885,11 +885,6 @@
         });
 
     </script>
-
-
-
-
-
 
 
 </div>

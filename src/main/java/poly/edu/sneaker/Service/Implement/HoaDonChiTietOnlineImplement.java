@@ -144,6 +144,11 @@ public class HoaDonChiTietOnlineImplement implements HoaDonChiTietOnlService {
         return bestSellingProducts;
     }
 
+    @Override
+    public HoaDonChiTiet findByIdHoaDonAndIdChiTietSanPham(int idHoaDon, int idChiTietSanPham) {
+        return hoaDonChiTietOnlRepository.findByIdHoaDonAndIdChiTietSanPham(idHoaDon, idChiTietSanPham);
+    }
+
 
 //    @Override
 //    public HoaDonChiTiet findHoaDonChiTietByIdHoaDon(int idHoaDon) {
