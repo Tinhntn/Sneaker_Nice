@@ -5,6 +5,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -47,6 +48,12 @@ public class HoaDonOnlController {
         int size = 5;
 
         Pageable pageable = PageRequest.of(page, size);
+
+        Page<HoaDonOnlCustom> listHoaDonTatCa = hoaDonOnlService.getHoaDonCustomTatCa(pageable);
+        Integer sizeTatCa = listHoaDonTatCa.getContent().size();
+        model.addAttribute("sizeTatCa", sizeTatCa);
+
+        System.out.println("List hoa don tat ca: " + listHoaDonTatCa.getContent().size());
 
         Page<HoaDonOnlCustom> listHoaDonDH = hoaDonOnlService.getHoaDonCustomDH(pageable);
         Integer sizeDH = listHoaDonDH.getContent().size();
@@ -429,6 +436,32 @@ public class HoaDonOnlController {
             return ResponseEntity.ok(Map.of("message", "Lỗi khi cập nhật thông tin đơn hàng"));
         }
 
-
     }
+
+    // tìm kiếm hóa đơn
+    // API tìm kiếm hóa đơn theo ID hoặc tên khách hàng
+    @GetMapping("/search")
+    public ResponseEntity<Page<HoaDon>> searchHoaDon(
+            @RequestParam(required = false) Integer idHoaDon,
+            @RequestParam(required = false) String tenKhachHang,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+
+        Page<HoaDon> result = hoaDonOnlService.searchHoaDon(idHoaDon, tenKhachHang, page, size);
+        return ResponseEntity.ok(result);
+    }
+
+    // API lọc hóa đơn theo khoảng ngày
+    @GetMapping("/filter")
+    public ResponseEntity<Page<HoaDon>> filterHoaDonByDate(
+            @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") Date startDate,
+            @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") Date endDate,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+
+        Page<HoaDon> result = hoaDonOnlService.filterHoaDonByDate(startDate, endDate, page, size);
+        return ResponseEntity.ok(result);
+    }
+    //end tìm kiếm hóa đơn
+
 }

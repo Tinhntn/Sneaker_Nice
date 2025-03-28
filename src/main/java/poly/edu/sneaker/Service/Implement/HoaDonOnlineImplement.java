@@ -2,7 +2,9 @@ package poly.edu.sneaker.Service.Implement;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import poly.edu.sneaker.DAO.HoaDonChiTietOnlCustom;
 import poly.edu.sneaker.DAO.HoaDonOnlCustom;
@@ -10,6 +12,7 @@ import poly.edu.sneaker.Model.HoaDon;
 import poly.edu.sneaker.Repository.HoaDonOnlRepository;
 import poly.edu.sneaker.Service.HoaDonOnlService;
 
+import java.util.Date;
 import java.util.Optional;
 
 @Service
@@ -17,6 +20,11 @@ public class HoaDonOnlineImplement implements HoaDonOnlService {
 
     @Autowired
     HoaDonOnlRepository hoaDonOnlRepository;
+
+    @Override
+    public Page<HoaDonOnlCustom> getHoaDonCustomTatCa(Pageable pageable) {
+        return hoaDonOnlRepository.getHoaDonCustomTatCa(pageable);
+    }
 
     @Override
     public Page<HoaDonOnlCustom> getHoaDonCustomDH(Pageable pageable) {
@@ -82,4 +90,18 @@ public class HoaDonOnlineImplement implements HoaDonOnlService {
     public Page<HoaDonOnlCustom> getHoaDonCustomHTKH(Pageable pageable, Integer idKhachHang) {
         return hoaDonOnlRepository.getHoaDonCustomHTKH(pageable, idKhachHang);
     }
+
+    @Override
+    public Page<HoaDon> searchHoaDon(Integer idHoaDon, String tenKhachHang, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by("ngayTao").descending());
+        return hoaDonOnlRepository.searchHoaDon(idHoaDon, tenKhachHang, pageable);
+    }
+
+    @Override
+    public Page<HoaDon> filterHoaDonByDate(Date startDate, Date endDate, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by("ngayTao").descending());
+        return hoaDonOnlRepository.filterHoaDonByDate(startDate, endDate, pageable);
+    }
+
+
 }
