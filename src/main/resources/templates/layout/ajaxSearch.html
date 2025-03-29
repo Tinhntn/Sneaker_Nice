@@ -1,0 +1,31 @@
+<div th:fragment="ajaxSearchResultsFragment">
+    <style>
+        .list-group-item a {
+            text-decoration: none;
+        }
+        .list-group-item a:hover {
+            text-decoration: none;
+        }
+    </style>
+
+    <div th:if="${#lists.isEmpty(results)}">
+        <p>Không tìm thấy sản phẩm.</p>
+    </div>
+    <div th:if="${!#lists.isEmpty(results)}">
+        <ul class="list-group">
+            <li class="list-group-item" th:each="ct : ${results}">
+                <a th:href="@{/Sneakers_Nice/chitietsanpham/{id}(id=${ct.id})}"
+                   style="display: flex; align-items: center;">
+                    <!-- Ảnh -->
+                    <img th:src="${ct.hinhAnh}"
+                         style="width: 50px; height: 50px; object-fit: cover; margin-right: 10px;" />
+                    <!-- Tên + Giá -->
+                    <div>
+                        <strong th:text="${ct.idSanPham.tenSanPham}"></strong><br/>
+                        <span th:text="${#numbers.formatDecimal(ct.giaBan, 0, 3)} + ' VND'"></span>
+                    </div>
+                </a>
+            </li>
+        </ul>
+    </div>
+</div>
