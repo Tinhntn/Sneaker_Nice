@@ -253,12 +253,12 @@ public class GioHangController {
             hoaDon.setDonViGiaoHang("Giao hàng tiết kiệm");
             hoaDon.setLoaiHoaDon(true);
             hoaDon.setLoaiThanhToan(false);
-            hoaDon.setTrangThai(6);
+            hoaDon.setTrangThai(10);
             hoaDonService.save(hoaDon);
 
             // Lưu lịch sử trạng thái đơn hàng
             TrangThaiDonHang trangThaiDonHang = new TrangThaiDonHang();
-            trangThaiDonHang.setTrangThai(2);
+            trangThaiDonHang.setTrangThai(10);
             trangThaiDonHang.setGhiChu("Đã thanh toán VNPay - chờ xác nhận");
             trangThaiDonHang.setIdHoaDon(hoaDon);
             trangThaiDonHang.setNgayCapNhat(new Date());
