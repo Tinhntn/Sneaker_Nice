@@ -24,6 +24,7 @@ public interface HoaDonChiTietOnlRepository extends JpaRepository<HoaDonChiTiet,
 
 
 
+
     List<HoaDonChiTietOnlCustom> findByIdHoaDon(HoaDon idHoaDon);
 
     @Query("SELECT h FROM HoaDonChiTiet h WHERE h.idHoaDon.id = :idHoaDon AND h.idChiTietSanPham.id = :idChiTietSanPham")
