@@ -7,14 +7,13 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import poly.edu.sneaker.Model.ChucVu;
 import poly.edu.sneaker.Service.ChucVuService;
 
 import jakarta.validation.Valid;
-
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 
 @Controller
@@ -44,25 +43,19 @@ public class ChucVuController {
     }
 
     @PostMapping("/add")
-    public String addChucVu(@Valid @ModelAttribute("chucVu") ChucVu chucVu, BindingResult bindingResult, RedirectAttributes redirectAttributes) {
+    public String addChucVu(@ModelAttribute("chucVu") ChucVu chucVu, BindingResult bindingResult, RedirectAttributes redirectAttributes) {
+        validateChucVu(chucVu, bindingResult);
         if (bindingResult.hasErrors()) {
             return "admin/chuc_vu/add";
         }
         try {
-            ArrayList<ChucVu> lstCV = chucVuService.getAll();
+            // Tạo mã chức vụ tự động
             String maCV = chucVuService.taoMaChucVu();
-            for ( ChucVu cv :lstCV
-                 ) {
-                if(cv.getMaChucVu().equals(maCV)){
-                    maCV= chucVuService.taoMaChucVu();
-                }
-
-            }
-            if (chucVuService.findByMaChucVu(chucVu.getMaChucVu()) != null) {
-                redirectAttributes.addFlashAttribute("errorMessage", "Mã chức vụ đã tồn tại!");
-                return "redirect:/chuc_vu/add";
+            while (chucVuService.findByMaChucVu(maCV) != null) {
+                maCV = chucVuService.taoMaChucVu();
             }
             chucVu.setMaChucVu(maCV);
+
             chucVuService.save(chucVu);
             redirectAttributes.addFlashAttribute("successMessage", "Chức vụ được thêm thành công!");
         } catch (Exception e) {
@@ -83,7 +76,8 @@ public class ChucVuController {
     }
 
     @PostMapping("/update/{id}")
-    public String editChucVu(@PathVariable("id") Integer id, @Valid @ModelAttribute("chucVu") ChucVu chucVu, BindingResult bindingResult, RedirectAttributes redirectAttributes) {
+    public String editChucVu(@PathVariable("id") Integer id, @ModelAttribute("chucVu") ChucVu chucVu, BindingResult bindingResult, RedirectAttributes redirectAttributes) {
+        validateChucVu(chucVu, bindingResult);
         if (bindingResult.hasErrors()) {
             return "admin/chuc_vu/update";
         }
@@ -117,5 +111,12 @@ public class ChucVuController {
     public String showAddForm(Model model) {
         model.addAttribute("chucVu", new ChucVu());
         return "admin/chuc_vu/add";
+    }
+
+    private void validateChucVu(ChucVu chucVu, BindingResult bindingResult) {
+
+        if (chucVu.getTenChucVu() == null || chucVu.getTenChucVu().isEmpty()) {
+            bindingResult.addError(new FieldError("chucVu", "tenChucVu", "Tên chức vụ không được để trống"));
+        }
     }
 }

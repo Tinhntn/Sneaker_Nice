@@ -17,6 +17,7 @@ public interface KhachHangRepository extends JpaRepository<KhachHang, Integer> {
     KhachHang findByEmail(String email);
     KhachHang findByEmailAndMatKhau(String email,String matKhau);
     boolean existsKhachHangByEmail(String email);
+    Page<KhachHang> findByTrangThai(Boolean trangThai, Pageable pageable);
 
     @Query("SELECT k FROM KhachHang k WHERE k.sdt = :sdt")
     KhachHang TimKhachHangQuaSDT(String sdt);

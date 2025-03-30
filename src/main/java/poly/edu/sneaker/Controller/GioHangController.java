@@ -1,5 +1,6 @@
 package poly.edu.sneaker.Controller;
 
+
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,6 +10,12 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import poly.edu.sneaker.Model.*;
+import poly.edu.sneaker.Service.*;
+
+import java.lang.reflect.Array;
+
 import org.springframework.web.servlet.config.annotation.RedirectViewControllerRegistration;
 import org.springframework.web.servlet.view.RedirectView;
 import poly.edu.sneaker.Config.VnPayConfig;
@@ -37,12 +44,14 @@ public class GioHangController {
     HoaDonChiTietService hoaDonChiTietService;
     @Autowired
     HttpSession httpSession;
+
     @Autowired
     LichSuTrnngThaiService lichSuTrnngThaiService;
     @Autowired
     KhuyenMaiService khuyenMaiService;
     @Autowired
     private VnPay vnPay;
+
     @PostMapping("/ma-giam-gia")
     @ResponseBody
     public ResponseEntity<Map<String, Object>> layMaGiamGia(@RequestBody Map<String, String> request) {
@@ -85,21 +94,23 @@ public class GioHangController {
     @ResponseBody
     public ResponseEntity<?> thanhToanOnline(@RequestBody Map<String, Object> sanPhamThanhToan) {
 
+
         KhachHang khachHang = (KhachHang) httpSession.getAttribute("khachHangSession");
         try {
-            if(sanPhamThanhToan==null){
-                return ResponseEntity.badRequest().body(Collections.singletonMap("message","Dữ liệu không hợp lệ"));
+            if (sanPhamThanhToan == null) {
+                return ResponseEntity.badRequest().body(Collections.singletonMap("message", "Dữ liệu không hợp lệ"));
             }
-            if(sanPhamThanhToan.containsKey("selectedItems")){
-                return ResponseEntity.badRequest().body(Collections.singletonMap("message","Sản phẩm không hợp lê"));
+
+            if (sanPhamThanhToan.containsKey("selectedItems")) {
+                return ResponseEntity.badRequest().body(Collections.singletonMap("message", "Sản phẩm không hợp lê"));
             }
             KhuyenMai khuyenMai = khuyenMaiService.findById(1);
             float tongTienGiam = 0;
             //Nếu true thì là giảm tiền mặt, false là giảm bằng phần trăm
-            if(khuyenMai.getLoaiKhuyenMai()){
-                tongTienGiam = tongTienGiam+khuyenMai.getGiaTriGiam();
-            }else{
-                tongTienGiam =( Float.parseFloat(sanPhamThanhToan.get("tongTien").toString())*khuyenMai.getGiaTriGiam())/100;
+            if (khuyenMai.getLoaiKhuyenMai()) {
+                tongTienGiam = tongTienGiam + khuyenMai.getGiaTriGiam();
+            } else {
+                tongTienGiam = (Float.parseFloat(sanPhamThanhToan.get("tongTien").toString()) * khuyenMai.getGiaTriGiam()) / 100;
             }
             // Tạo hóa đơn mới
             HoaDon hoaDon = new HoaDon();
@@ -115,6 +126,7 @@ public class GioHangController {
             hoaDon.setDiaChiChiTiet((String) sanPhamThanhToan.get("diaChiCuThe"));
             hoaDon.setGhiChu((String) sanPhamThanhToan.get("ghiChu"));
             hoaDon.setTienKhachDua(0);
+
             hoaDon.setLoaiHoaDon(true);
             hoaDon.setTienThua(0);
             hoaDon.setTongTienGiam(tongTienGiam);
@@ -124,7 +136,8 @@ public class GioHangController {
             try {
                 hoaDon.setPhiShip(Float.parseFloat(sanPhamThanhToan.get("tienShip").toString()));
                 hoaDon.setTongTien(Float.parseFloat(sanPhamThanhToan.get("tongTien").toString()));
-                hoaDon.setThanhTien(Float.parseFloat(sanPhamThanhToan.get("tongTien").toString())-tongTienGiam);
+
+                hoaDon.setThanhTien(Float.parseFloat(sanPhamThanhToan.get("tongTien").toString()) - tongTienGiam);
 
             } catch (NumberFormatException e) {
                 return ResponseEntity.badRequest().body("Lỗi định dạng số tiền");
@@ -134,6 +147,7 @@ public class GioHangController {
             hoaDon.setDonViGiaoHang("Giao hàng tiết kiệm");
             hoaDon.setLoaiHoaDon(true);
             hoaDon.setLoaiThanhToan(true);
+
             hoaDon.setTrangThai(2);
 
             // Lưu hóa đơn vào database
@@ -171,23 +185,25 @@ public class GioHangController {
 
                 //Cap nhat số lượng sản phẩm chi tiết
                 ChiTietSanPham chiTietSanPham = chiTietSanPhamService.findById(ghct.getIdChiTietSanPham().getId());
-                if(chiTietSanPham==null){
+                if (chiTietSanPham == null) {
                     return ResponseEntity.badRequest().body("Không tìm thấy chi tiết sản phẩm");
                 }
-                chiTietSanPham.setSoLuong(chiTietSanPham.getSoLuong()-ghct.getSoLuong());
+                chiTietSanPham.setSoLuong(chiTietSanPham.getSoLuong() - ghct.getSoLuong());
                 chiTietSanPhamService.saveChiTietSanPham(chiTietSanPham);
                 // Xóa sản phẩm khỏi giỏ hàng
                 gioHangChiTietService.deleteGioHangChitiet(ghct.getId());
 
             }
 
-            return ResponseEntity.ok(Collections.singletonMap("Thanh toán thành công",true));
+            return ResponseEntity.ok(Collections.singletonMap("Thanh toán thành công", true));
 
         } catch (Exception e) {
             System.out.println(e.getMessage());
             return ResponseEntity.badRequest().body("Lỗi khi thanh toán: " + e.getMessage());
         }
     }
+
+
 
     @GetMapping("/vnpay-return")
     public RedirectView vnpayReturn(HttpServletRequest request) {
@@ -303,13 +319,14 @@ public class GioHangController {
     }
 
     @GetMapping("/checkout-success")
-    public String checkoutSuccess(){
+    public String checkoutSuccess() {
         return "/user/sanpham/checkoutSuccess";
     }
+
     @PostMapping("/vnpay-payment")
     @ResponseBody
     public ResponseEntity<?> ThanhToanVNPay(@RequestBody Map<String, Object> sanPhamThanhToan,
-            HttpServletRequest request) {
+                                            HttpServletRequest request) {
         KhachHang khachHangSession = (KhachHang) httpSession.getAttribute("khachHangSession");
 
         // Kiểm tra đăng nhập
@@ -343,16 +360,16 @@ public class GioHangController {
             // Lưu tạm thông tin giao dịch vào session (hoặc Redis, DB nếu cần)
             Map<String, Object> giaoDichTam = new HashMap<>(sanPhamThanhToan);
             giaoDichTam.put("idKhachHang", khachHangSession.getId());
-            giaoDichTam.put("maHoaDon",maHoaDon);
-            giaoDichTam.put("idKhuyenMai",khuyenMai.getId());
+            giaoDichTam.put("maHoaDon", maHoaDon);
+            giaoDichTam.put("idKhuyenMai", khuyenMai.getId());
             giaoDichTam.put("tongTienGiam", tongTienGiam);
-            giaoDichTam.put("thanhTien",thanhTien);
+            giaoDichTam.put("thanhTien", thanhTien);
             httpSession.setAttribute("giaoDichTam", giaoDichTam);
-            String orderInfo = URLEncoder.encode("Thanh toan don hang" +maHoaDon, StandardCharsets.UTF_8.toString());
+            String orderInfo = URLEncoder.encode("Thanh toan don hang" + maHoaDon, StandardCharsets.UTF_8.toString());
             String baseUrl = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort();
 
             // Tạo URL thanh toán
-            String vnpayUrl = vnPay.createOrder(thanhTien, orderInfo, baseUrl,request);
+            String vnpayUrl = vnPay.createOrder(thanhTien, orderInfo, baseUrl, request);
             return ResponseEntity.ok(Map.of("redirectUrl", vnpayUrl));
         } catch (Exception e) {
             e.printStackTrace();
@@ -362,6 +379,7 @@ public class GioHangController {
     }
 
     @GetMapping("/thanh-toan")
+
     public String thanhToan(Model model) {
         KhachHang khachHangSessiong = (KhachHang) httpSession.getAttribute("khachHangSession");
         if (khachHangSessiong == null) {
@@ -380,27 +398,27 @@ public class GioHangController {
         }
 
         double tien = 0;
-        for ( GioHangChiTiet ghct : lstGioHangChiTiet
-             ) {
-            tien= tien+ghct.getTongTien();
+        for (GioHangChiTiet ghct : lstGioHangChiTiet
+        ) {
+            tien = tien + ghct.getTongTien();
         }
         double shippingFee = 65000; // Giả sử phí ship cố định
-        double tongTien = tien+shippingFee;
+        double tongTien = tien + shippingFee;
         double tongTienGiam = 0;
         KhuyenMai bestKhuyenMai = null;
         ArrayList<KhuyenMai> khuyenMais = khuyenMaiService.getAllKhuyenMai();
         for (KhuyenMai km : khuyenMais
         ) {
-            if(km.getDieuKienApDung()<=tongTien){
+            if (km.getDieuKienApDung() <= tongTien) {
                 float tienGiam = 0;
-                if(km.getLoaiKhuyenMai()){
+                if (km.getLoaiKhuyenMai()) {
                     tongTienGiam = km.getGiaTriGiam();
 
-                }else{
-                    if((tongTien* km.getGiaTriGiam())/100>km.getMucGiamGiaToiDa()){
+                } else {
+                    if ((tongTien * km.getGiaTriGiam()) / 100 > km.getMucGiamGiaToiDa()) {
                         tongTienGiam = km.getMucGiamGiaToiDa();
-                    }else{
-                        tongTienGiam = (tongTien* km.getGiaTriGiam())/100;
+                    } else {
+                        tongTienGiam = (tongTien * km.getGiaTriGiam()) / 100;
                     }
                 }
                 if (tienGiam > tongTienGiam) {
@@ -410,27 +428,27 @@ public class GioHangController {
             }
 
         }
-        if(bestKhuyenMai!=null){
+        if (bestKhuyenMai != null) {
             gioHang.setIdKhuyenMai(bestKhuyenMai);
         }
-        if(gioHang.getIdKhuyenMai()!=null){
+        if (gioHang.getIdKhuyenMai() != null) {
             KhuyenMai khuyenMai = gioHang.getIdKhuyenMai();
-            if(khuyenMai.getLoaiKhuyenMai()){
+            if (khuyenMai.getLoaiKhuyenMai()) {
                 tongTienGiam = khuyenMai.getGiaTriGiam();
-            }else{
-                if((tongTien*khuyenMai.getGiaTriGiam())/100>khuyenMai.getMucGiamGiaToiDa()){
+            } else {
+                if ((tongTien * khuyenMai.getGiaTriGiam()) / 100 > khuyenMai.getMucGiamGiaToiDa()) {
                     tongTienGiam = khuyenMai.getMucGiamGiaToiDa();
-                }else {
-                    tongTienGiam = (tongTien*khuyenMai.getGiaTriGiam())/100;
+                } else {
+                    tongTienGiam = (tongTien * khuyenMai.getGiaTriGiam()) / 100;
 
                 }
 
             }
         }
-        model.addAttribute("giamGia",tongTienGiam);
-        model.addAttribute("khachHang",khachHangSessiong);
-        model.addAttribute("shippingFee",shippingFee);
-        model.addAttribute("totalPrice",tongTien);
+        model.addAttribute("giamGia", tongTienGiam);
+        model.addAttribute("khachHang", khachHangSessiong);
+        model.addAttribute("shippingFee", shippingFee);
+        model.addAttribute("totalPrice", tongTien);
         model.addAttribute("lstGioHangChiTiet", lstGioHangChiTiet);
         return "/user/sanpham/checkout";
     }
@@ -459,12 +477,12 @@ public class GioHangController {
                     Map<String, Object> map = new HashMap<>();
                     ChiTietSanPham chiTietSanPham = ghct.getIdChiTietSanPham();
                     if (chiTietSanPham == null) return map; // Trả về Map rỗng nếu dữ liệu bị thiếu
-                    boolean isOutOfStock = chiTietSanPham.getSoLuong() < ghct.getSoLuong()&&chiTietSanPham.getSoLuong()>0;
-                    if(isOutOfStock){
+                    boolean isOutOfStock = chiTietSanPham.getSoLuong() < ghct.getSoLuong() && chiTietSanPham.getSoLuong() > 0;
+                    if (isOutOfStock) {
                         ghct.setSoLuong(chiTietSanPham.getSoLuong());
                         gioHangChiTietService.saveGioHangChitiet(ghct);
                     }
-                    boolean hetHang = chiTietSanPham.getSoLuong()<0;
+                    boolean hetHang = chiTietSanPham.getSoLuong() < 0;
                     map.put("tenSanPham", Optional.ofNullable(ghct.getIdChiTietSanPham().getIdSanPham())
                             .map(SanPham::getTenSanPham).orElse("N/A"));
                     map.put("mauSac", Optional.ofNullable(ghct.getIdChiTietSanPham().getIdMauSac())
@@ -489,9 +507,9 @@ public class GioHangController {
         return ResponseEntity.ok(Map.of("items", items, "totalPrice", totalPrice));
     }
 
-
     @GetMapping("/so-luong")
     @ResponseBody
+
     public ResponseEntity<Map<String, Integer>> getSoLuongGioHang() {
         KhachHang khachHang = (KhachHang) httpSession.getAttribute("khachHangSession");
         int soLuongSanPham = 0;
@@ -513,6 +531,7 @@ public class GioHangController {
     }
 
     @PostMapping("/them-vao-gio-hang")
+
     public ResponseEntity<?> themSanPhamVaoGioHang(@RequestBody Map<String, Object> sanPhamChon) {
 
         KhachHang khachHang = (KhachHang) httpSession.getAttribute("khachHangSession");
@@ -543,45 +562,50 @@ public class GioHangController {
                         return ResponseEntity.badRequest()
                                 .body(Collections.singletonMap("message", "Số lượng sản phẩm trong kho không đủ"));
                     }
-                    float tongTien =  0;
+
+                    float tongTien = 0;
                     ArrayList<GioHangChiTiet> lstGHCT = gioHangChiTietService.findByIdGioHang(gioHangService.findGioHangByIDKH(khachHang.getId()).getId());
                     for (GioHangChiTiet gh : lstGHCT
-                         ) {
-                        tongTien = tongTien+gh.getTongTien();
+                    ) {
+                        tongTien = tongTien + gh.getTongTien();
 
-                    }
 
-                    if(tongTien+chiTietSanPham.getGiaBan()*soLuong>20000000){
-                        return ResponseEntity.badRequest().body(Collections.singletonMap("message","Đơn hàng vượt quá 20 triệu vui lòng liên hệ để được hỗ trợ"));
-                    }
-                    ghct.setSoLuong(ghct.getSoLuong() + soLuong);
-
-                    gioHangChiTietService.saveGioHangChitiet(ghct);
-                    return ResponseEntity.ok()
-                            .body(Collections.singletonMap("Thêm sản phẩm vào giỏ hàng thành công", true));
                 }
-                GioHangChiTiet gioHangChiTiet = new GioHangChiTiet();
-                gioHangChiTiet.setIdGioHang(gioHangService.findGioHangByIDKH(khachHang.getId()));
-                gioHangChiTiet.setIdChiTietSanPham(chiTietSanPham);
-                gioHangChiTiet.setSoLuong(soLuong);
-                gioHangChiTiet.setDonGia(chiTietSanPham.getGiaBan());
-                gioHangChiTiet.setTongTien(gioHangChiTiet.getDonGia() * soLuong);
-                gioHangChiTiet.setTongTrongLuong(chiTietSanPham.getSoLuong()*chiTietSanPham.getSoLuong());
-                gioHangChiTiet.setNgayTao(new Date());
-                gioHangChiTiet.setTrangThai(true);
-                gioHangChiTietService.saveGioHangChitiet(gioHangChiTiet);
-                return ResponseEntity.ok(Collections.singletonMap("Thêm sản phẩm vào giỏ hàng thành công", true));
 
-            } catch (Exception e) {
-                e.printStackTrace();
-                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                        .body(Collections.singletonMap("message", "Lỗi khi cập nhật sản phẩm!"));
+                if (tongTien + chiTietSanPham.getGiaBan() * soLuong > 20000000) {
+                    return ResponseEntity.badRequest().body(Collections.singletonMap("message", "Đơn hàng vượt quá 20 triệu vui lòng liên hệ để được hỗ trợ"));
+                }
+                ghct.setSoLuong(ghct.getSoLuong() + soLuong);
+
+                gioHangChiTietService.saveGioHangChitiet(ghct);
+                return ResponseEntity.ok()
+                        .body(Collections.singletonMap("Thêm sản phẩm vào giỏ hàng thành công", true));
             }
-        } else {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("message", "Bạn cần đăng nhập để mua sắm"));
-        }
+            GioHangChiTiet gioHangChiTiet = new GioHangChiTiet();
+            gioHangChiTiet.setIdGioHang(gioHangService.findGioHangByIDKH(khachHang.getId()));
+            gioHangChiTiet.setIdChiTietSanPham(chiTietSanPham);
+            gioHangChiTiet.setSoLuong(soLuong);
+            gioHangChiTiet.setDonGia(chiTietSanPham.getGiaBan());
+            gioHangChiTiet.setTongTien(gioHangChiTiet.getDonGia() * soLuong);
+            gioHangChiTiet.setTongTrongLuong(chiTietSanPham.getSoLuong() * chiTietSanPham.getSoLuong());
+            gioHangChiTiet.setNgayTao(new Date());
+            gioHangChiTiet.setTrangThai(true);
+            gioHangChiTietService.saveGioHangChitiet(gioHangChiTiet);
+            return ResponseEntity.ok(Collections.singletonMap("Thêm sản phẩm vào giỏ hàng thành công", true));
 
+        } catch(Exception e){
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Collections.singletonMap("message", "Lỗi khi cập nhật sản phẩm!"));
+        }
+    } else
+
+    {
+
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("message", "Bạn cần đăng nhập để mua sắm"));
     }
+
+}
 
     @DeleteMapping("/remove/{id}")
     public ResponseEntity<?> removeSanPham(@PathVariable int id) {
@@ -595,9 +619,9 @@ public class GioHangController {
         GioHangChiTiet gioHangChiTiet = gioHangChiTietService.findById(idGHCT);
         ArrayList<GioHangChiTiet> lstGHCT = gioHangChiTietService.findByIdGioHang(idGHCT);
         float tongTien = 0;
-        for ( GioHangChiTiet ghct : lstGHCT
-             ) {
-            tongTien =tongTien+ghct.getTongTien();
+        for (GioHangChiTiet ghct : lstGHCT
+        ) {
+            tongTien = tongTien + ghct.getTongTien();
         }
         if (gioHangChiTiet != null) {
             ChiTietSanPham chiTietSanPham = chiTietSanPhamService
@@ -606,10 +630,9 @@ public class GioHangController {
             if (chiTietSanPham.getSoLuong() < soLuong) {
                 return ResponseEntity.badRequest()
                         .body(Collections.singletonMap("message", "Số lượng sản phẩm trong kho không đủ"));
-            }else if(chiTietSanPham.getGiaBan()*soLuong+tongTien>20000000){
-                return ResponseEntity.badRequest().body(Collections.singletonMap("message","Đơn hàng vượt quá 20 triệu, liên hệ để được hỗ trợ"));
-            }
-            else {
+            } else if (chiTietSanPham.getGiaBan() * soLuong + tongTien > 20000000) {
+                return ResponseEntity.badRequest().body(Collections.singletonMap("message", "Đơn hàng vượt quá 20 triệu, liên hệ để được hỗ trợ"));
+            } else {
                 gioHangChiTiet.setSoLuong(soLuong);
                 gioHangChiTietService.saveGioHangChitiet(gioHangChiTiet);
                 return ResponseEntity.ok(Collections.singletonMap("success", true));

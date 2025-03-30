@@ -2,7 +2,9 @@ package poly.edu.sneaker.Service.Implement;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import poly.edu.sneaker.Model.KhachHang;
 import poly.edu.sneaker.Repository.KhachHangRepository;
@@ -80,7 +82,7 @@ public class KhachHangImplement implements KhachHangService {
 
     @Override
     public Page<KhachHang> search(String keyword, Pageable pageable) {
-        return khachHangRepository.findByMaKhachHangContainingOrTenKhachHangContaining(keyword, keyword, pageable);
+        return khachHangRepository.findByMaKhachHangContainingOrTenKhachHangContaining(keyword , keyword, pageable);
     }
 
     @Override
@@ -119,4 +121,27 @@ public class KhachHangImplement implements KhachHangService {
         khachHangRepository.save(khachHang);
         return true;
     }
+    @Override
+    public KhachHang findByMaKhachHang(String maKhachHang) {
+        return khachHangRepository.findByMaKhachHang(maKhachHang);
+    }
+    @Override
+    public Page<KhachHang> filterAndSort(Boolean trangThai, String sortBy, String sortDir, Pageable pageable) {
+        Sort sort;
+        if (sortBy != null && sortDir != null) {
+            sort = Sort.by(sortBy);
+            sort = sortDir.equalsIgnoreCase("asc") ? sort.ascending() : sort.descending();
+        } else {
+            sort = Sort.by("maKhachHang").ascending();
+        }
+        Pageable newPageable = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), sort);
+        if (trangThai != null) {
+            return khachHangRepository.findByTrangThai(trangThai, newPageable);
+        } else {
+            return khachHangRepository.findAll(newPageable);
+        }
+    }
+
+
+
 }

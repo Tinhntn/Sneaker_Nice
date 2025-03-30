@@ -10,6 +10,7 @@ import poly.edu.sneaker.Model.HoaDon;
 import poly.edu.sneaker.Model.HoaDonChiTiet;
 import poly.edu.sneaker.Repository.ChiTietSanPhamRepository;
 import poly.edu.sneaker.Repository.HoaDonChiTietOnlRepository;
+import poly.edu.sneaker.Repository.HoaDonOnlRepository;
 import poly.edu.sneaker.Service.HoaDonChiTietOnlService;
 import poly.edu.sneaker.Service.HoaDonOnlService;
 
@@ -27,10 +28,14 @@ public class HoaDonChiTietOnlineImplement implements HoaDonChiTietOnlService {
     @Autowired
     ChiTietSanPhamRepository chiTietSanPhamRepository;
 
+    @Autowired
+    HoaDonOnlRepository hoaDonOnlRepository;
+
     @Override
     public List<HoaDonChiTietOnlCustom> findByHoaDonId(HoaDon idhoadon) {
         return hoaDonChiTietOnlRepository.findByIdHoaDon(idhoadon);
     }
+
 
     @Override
     public List<HoaDonChiTiet> findHoaDonChiTietByHoaDonId(Integer idHoaDon) {
@@ -147,6 +152,39 @@ public class HoaDonChiTietOnlineImplement implements HoaDonChiTietOnlService {
     @Override
     public HoaDonChiTiet findByIdHoaDonAndIdChiTietSanPham(int idHoaDon, int idChiTietSanPham) {
         return hoaDonChiTietOnlRepository.findByIdHoaDonAndIdChiTietSanPham(idHoaDon, idChiTietSanPham);
+    }
+
+    @Override
+    @Transactional
+    public void xacNhanHoaDon(int hoaDonId) {
+        HoaDon hoaDon = hoaDonOnlRepository.findById(hoaDonId)
+                .orElseThrow(() -> new RuntimeException("Không tìm thấy hóa đơn"));
+
+        if (hoaDon.getTrangThai() == 6) {
+            throw new RuntimeException("Hóa đơn này đã được xác nhận trước đó.");
+        }
+
+        // Lấy danh sách chi tiết hóa đơn
+        List<HoaDonChiTiet> chiTietList = hoaDonChiTietOnlRepository.findHoaDonChiTietByHoaDonId(hoaDonId);
+
+        for (HoaDonChiTiet chiTiet : chiTietList) {
+            ChiTietSanPham sanPham = chiTietSanPhamRepository.findById(chiTiet.getIdChiTietSanPham().getId());
+            if (sanPham == null) {
+                throw new RuntimeException("Không tìm thấy sản phẩm");
+            }
+
+            if (sanPham.getSoLuong() < chiTiet.getSoLuong()) {
+                throw new RuntimeException("Không đủ số lượng trong kho cho sản phẩm: " + sanPham.getIdSanPham().getTenSanPham());
+            }
+
+            // Trừ số lượng sản phẩm
+            sanPham.setSoLuong(sanPham.getSoLuong() - chiTiet.getSoLuong());
+            chiTietSanPhamRepository.save(sanPham);
+        }
+
+        // Cập nhật trạng thái hóa đơn
+//        hoaDon.setTrangThai(6); // Trạng thái đã xác nhận
+        hoaDonOnlRepository.save(hoaDon);
     }
 
 

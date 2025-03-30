@@ -17,6 +17,7 @@ public interface SizeRepository extends JpaRepository<Size, Integer> {
     Page<Size> getAll(Pageable pageable);
 
     Size findByMaSize(String maSize);
+
     @Query(value = "SELECT * FROM Size s " +
             "WHERE s.trang_thai = 1;",
             nativeQuery = true)

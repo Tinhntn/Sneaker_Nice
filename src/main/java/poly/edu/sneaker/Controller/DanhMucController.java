@@ -28,7 +28,7 @@ public class DanhMucController {
         Page<DanhMuc> danhMucPage;
 
         if (keyword != null && !keyword.isEmpty()) {
-            danhMucPage = danhMucService.search(keyword,pageable);
+            danhMucPage = danhMucService.search(keyword, pageable);
             model.addAttribute("keyword", keyword);
         } else {
             danhMucPage = danhMucService.getAll(pageable);
@@ -46,11 +46,12 @@ public class DanhMucController {
             return "admin/danh_muc/add";
         }
         try {
-            if (danhMucService.findByMaDanhMuc(danhMuc.getMaDanhMuc()) != null) {
-                redirectAttributes.addFlashAttribute("errorMessage", "Mã danh mục đã tồn tại!");
-                return "redirect:/danh_muc/add";
+            String maDanhMuc = danhMucService.taoMaDanhMuc();
+            while (danhMucService.findByMaDanhMuc(maDanhMuc) != null) {
+                maDanhMuc = danhMucService.taoMaDanhMuc();
             }
-            danhMucService.saveDanhMuc(danhMuc);
+            danhMuc.setMaDanhMuc(maDanhMuc);
+            danhMucService.save(danhMuc);
             redirectAttributes.addFlashAttribute("successMessage", "Danh mục được thêm thành công!");
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("errorMessage", "Lỗi khi thêm danh mục!");
@@ -79,13 +80,30 @@ public class DanhMucController {
             if (existingDanhMuc != null) {
                 danhMuc.setId(id);
                 danhMuc.setNgayTao(existingDanhMuc.getNgayTao());
-                danhMucService.updateDanhMuc(danhMuc, id);
+                danhMucService.update(danhMuc, id);
                 redirectAttributes.addFlashAttribute("successMessage", "Cập nhật danh mục thành công!");
             } else {
                 redirectAttributes.addFlashAttribute("errorMessage", "Danh mục không tồn tại!");
             }
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("errorMessage", "Lỗi khi cập nhật danh mục!");
+        }
+        return "redirect:/danh_muc/hienthi";
+    }
+
+    @PostMapping("/toggleStatus/{id}")
+    public String toggleStatus(@PathVariable("id") Integer id, RedirectAttributes redirectAttributes) {
+        try {
+            DanhMuc danhMuc = danhMucService.findDanhMucById(id);
+            if (danhMuc != null) {
+                danhMuc.setTrangThai(!danhMuc.getTrangThai());
+                danhMucService.save(danhMuc);
+                redirectAttributes.addFlashAttribute("successMessage", "Thay đổi trạng thái thành công!");
+            } else {
+                redirectAttributes.addFlashAttribute("errorMessage", "Danh mục không tồn tại!");
+            }
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Lỗi khi thay đổi trạng thái danh mục!");
         }
         return "redirect:/danh_muc/hienthi";
     }
@@ -103,7 +121,13 @@ public class DanhMucController {
 
     @GetMapping("/add")
     public String showAddForm(Model model) {
-        model.addAttribute("danhMuc", new DanhMuc());
+        DanhMuc danhMuc = new DanhMuc();
+        String maDanhMuc = danhMucService.taoMaDanhMuc();
+        while (danhMucService.findByMaDanhMuc(maDanhMuc) != null) {
+            maDanhMuc = danhMucService.taoMaDanhMuc();
+        }
+        danhMuc.setMaDanhMuc(maDanhMuc);
+        model.addAttribute("danhMuc", danhMuc);
         return "admin/danh_muc/add";
     }
 }

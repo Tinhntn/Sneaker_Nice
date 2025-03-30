@@ -25,6 +25,7 @@ public interface HoaDonChiTietOnlService {
 
     HoaDonChiTiet findByIdHoaDonAndIdChiTietSanPham(@Param("idHoaDon") int idHoaDon, @Param("idChiTietSanPham") int idChiTietSanPham);
 
+    void xacNhanHoaDon(int hoaDonId);
 //    HoaDonChiTiet findHoaDonChiTietByIdHoaDon(int idHoaDon);
 
 

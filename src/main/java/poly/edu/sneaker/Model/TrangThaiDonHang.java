@@ -15,11 +15,12 @@ import java.util.Date;
 
 public class TrangThaiDonHang {
     @Id
-    @GeneratedValue (strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
     @ManyToOne
     @JoinColumn(name = "idHoaDon")
     private HoaDon idHoaDon;
+
     private Date ngayCapNhat;
     private int trangThai;
     private String ghiChu;

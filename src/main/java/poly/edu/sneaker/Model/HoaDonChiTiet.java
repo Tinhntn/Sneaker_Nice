@@ -23,7 +23,7 @@ public class HoaDonChiTiet {
     @JoinColumn(name = "idHoaDon")
     private HoaDon idHoaDon;
     @ManyToOne
-    @JoinColumn(name = "idChiTietSanPham")
+    @JoinColumn(name = "id_chi_tiet_san_pham")
     private ChiTietSanPham idChiTietSanPham;
     private int soLuong;
     private float tongTrongLuong;
@@ -32,6 +32,5 @@ public class HoaDonChiTiet {
     private Date ngayTao;
     private Date ngaySua;
     private Integer trangThai;
-
 
 }

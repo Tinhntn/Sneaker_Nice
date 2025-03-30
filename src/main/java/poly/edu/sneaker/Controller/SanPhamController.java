@@ -1,11 +1,10 @@
 package poly.edu.sneaker.Controller;
 
-import org.hibernate.annotations.Array;
-import org.hibernate.type.descriptor.java.ObjectJavaType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -166,6 +165,7 @@ public class SanPhamController {
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("errorMessage", "Có lỗi xảy ra khi cập nhật sản phẩm!");
         }
+
         return "redirect:/sanpham/chitietsanpham/" + id;
     }
 
@@ -239,7 +239,7 @@ public class SanPhamController {
                 ctsp.setIdSize(sizeService.findById(idSize));
                 Size size = sizeService.findById(idSize);
                 size.getMaSize();
-                System.out.println("ma size" + size.getMaSize());
+
             }
             if (idMauSac != null) {
                 ctsp.setIdMauSac(mauSacService.findById(idMauSac));
@@ -263,6 +263,7 @@ public class SanPhamController {
                     .body(Collections.singletonMap("message", "Lỗi khi cập nhật sản phẩm!"));
         }
     }
+
 
     @GetMapping("/lay-combination")
     @ResponseBody
@@ -308,5 +309,8 @@ public class SanPhamController {
         }
 
     }
+
+
+
 
 }

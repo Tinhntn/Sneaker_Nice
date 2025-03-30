@@ -126,6 +126,7 @@
                 <div class="container">
                     <div class="row" style="margin-top: 15px">
                         <div class="col-md-12">
+                            <p>Tab này đang được active</p>
                             <table class="table table-header">
                                 <thead>
                                 <tr>
@@ -139,6 +140,8 @@
                                 </thead>
                                 <tbody>
                                 <tr th:each="hdtatca : ${listHoaDonTatCa}">
+                                    <td> test</td>
+                                    <td th:text="${hdtatca}"></td>
                                     <td th:text="${hdtatca.maHoaDon}"></td>
                                     <td th:text="${hdtatca.tenKhachHang}"></td>
                                     <td th:text="${#numbers.formatInteger(hdtatca.tongTien,3,'COMMA')} +  ' VND'"></td>

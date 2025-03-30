@@ -464,4 +464,18 @@ public class HoaDonOnlController {
     }
     //end tìm kiếm hóa đơn
 
+
+    //Xác nhận hóa đơn chi tiết
+    @PostMapping("/xacnhan/{id}")
+    @ResponseBody
+    public ResponseEntity<?> xacNhanHoaDon(@PathVariable int id) {
+        try {
+            hoaDonChiTietOnlService.xacNhanHoaDon(id);
+            return ResponseEntity.ok(Map.of("success", true));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(Map.of("success", false, "message", e.getMessage()));
+        }
+    }
+
+
 }

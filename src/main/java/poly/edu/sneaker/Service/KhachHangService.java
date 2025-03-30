@@ -27,4 +27,8 @@ public interface KhachHangService {
     boolean exitsKhachHangByEmail(String email);
     String taoMaKhachHang();
     boolean layLaiKhachHang(KhachHang khachHang);
+    KhachHang findByMaKhachHang(String maKhachHang);
+    Page<KhachHang> filterAndSort(Boolean trangThai, String sortBy, String sortDir, Pageable pageable);
+
+
 }
