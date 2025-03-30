@@ -112,11 +112,7 @@
                         }
 
                         notyf.success('Đăng nhập thành công!');
-                        // Xác định trang đích dựa trên phản hồi từ server
-                        var redirectUrl = response.redirectUrl || '/';
-                        setTimeout(function () {
-                            window.location.href = "/Sneakers_Nice/hienthi";
-                        }, 2000);
+                        // Xác định trang đích dựa trên phản hồi từ server                    
                     },
                     error: function (xhr) {
                         try {

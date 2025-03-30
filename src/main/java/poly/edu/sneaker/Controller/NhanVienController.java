@@ -5,6 +5,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -77,8 +79,7 @@ public class NhanVienController {
                       RedirectAttributes redirectAttributes
     ){
 
-        System.out.println("hoten: " + hoVaTen);
-        System.out.println("idcv: " + idcv);
+
 
         if (maNhanVien == null || maNhanVien.trim().isEmpty()) {
             redirectAttributes.addFlashAttribute("errorMessage", "Mã nhân viên không được để trống.");
@@ -128,11 +129,10 @@ public class NhanVienController {
             return "redirect:/nhanvien/hienthi";
         }
 
-        Integer idchucVu = Integer.parseInt(idcv);
 
+        Integer idchucVu = Integer.parseInt(idcv);
         ChucVu chucVu = new ChucVu();
         chucVu.setId(idchucVu);
-
         NhanVien nhanVien = new NhanVien();
         nhanVien.setMaNhanVien(maNhanVien);
         nhanVien.setHoVaTen(hoVaTen);
@@ -142,7 +142,8 @@ public class NhanVienController {
         nhanVien.setDiaChi(diaChi);
         nhanVien.setSdt(sdt);
         nhanVien.setEmail(email);
-        nhanVien.setMatKhau(matKhau);
+        PasswordEncoder passwordEncoder = new BCryptPasswordEncoder(15);
+        nhanVien.setMatKhau(passwordEncoder.encode(matKhau));
         nhanVien.setNgayTao(new Date());
         nhanVien.setTrangThai(true);
 
@@ -248,7 +249,8 @@ public class NhanVienController {
         nhanVien.setDiaChi(diaChi);
         nhanVien.setSdt(sdt);
         nhanVien.setEmail(email);
-        nhanVien.setMatKhau(matKhau);
+        PasswordEncoder passwordEncoder = new BCryptPasswordEncoder(15);
+        nhanVien.setMatKhau(passwordEncoder.encode(matKhau));
         nhanVien.setNgaySua(new Date());
         nhanVien.setTrangThai(trangThai);
 

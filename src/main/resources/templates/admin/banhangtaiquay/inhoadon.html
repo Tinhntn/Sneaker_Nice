@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/main.html}">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>In Hóa Đơn</title>
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/js/all.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+
+<body>
+<div layout:fragment="content">
+    <!-- Hiển thị thông báo thành công -->
+    <script th:if="${success != null}" th:inline="javascript">
+        Swal.fire({
+            icon: 'success',
+            title: 'Thành công',
+            text: '[[${success}]]',
+            position: 'center',
+            timer: 3000,
+            timerProgressBar: true,
+            showConfirmButton: false
+        });
+    </script>
+
+    <!-- Hiển thị thông báo lỗi -->
+    <script th:if="${error != null}" th:inline="javascript">
+        Swal.fire({
+            icon: 'error',
+            title: 'Lỗi!',
+            text: '[[${error}]]',
+            position: 'center',
+            timer: 3000,
+            timerProgressBar: true,
+            showConfirmButton: false
+        });
+    </script>
+
+    <div class="container">
+        <div class="container mt-5">
+            <div class="card shadow-lg p-4 mb-4">
+                <h2 class="text-center mb-4">Thông Tin Hóa Đơn</h2>
+
+                <!-- Thông tin hóa đơn (không dùng bảng) -->
+                <div class="mb-3">
+                    <strong>Mã Hóa Đơn:</strong> <span th:text="${hoaDon.maHoaDon}"></span>
+                </div>
+                <div class="mb-3">
+                    <strong>Nhân Viên Bán:</strong>
+<!--                    <span th:text="${hoaDon.nhanVien.tenNhanVien}"></span>-->
+                </div>
+                <div class="mb-3">
+                    <strong>Tổng Tiền:</strong> <span th:text="${hoaDon.thanhTien}"></span>
+                </div>
+                <div class="mb-3">
+                    <strong>Trạng Thái:</strong>
+                    <span th:text="${hoaDon.trangThai == 1 ? 'Đã thanh toán' : 'Chưa thanh toán'}"></span>
+                </div>
+
+
+                <!-- Bảng chi tiết hóa đơn -->
+                <table class="table table-bordered table-striped">
+                    <thead class="thead-dark">
+                    <tr>
+                        <th scope="col">Tên Sản Phẩm</th>
+                        <th scope="col">Số Lượng</th>
+                        <th scope="col">Đơn Giá</th>
+                        <th scope="col">Thành Tiền</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <!-- Lặp qua danh sách chi tiết hóa đơn -->
+                    <tr th:each="ct : ${hdct}">
+                        <td th:text="${ct.idChiTietSanPham.idSanPham.tenSanPham}"></td> <!-- Tên sản phẩm -->
+                        <td th:text="${ct.soLuong}"></td> <!-- Số lượng -->
+                        <td th:text="${ct.donGia}"></td> <!-- Đơn giá -->
+                        <td th:text="${ct.soLuong * ct.donGia}"></td> <!-- Thành tiền (số lượng * đơn giá) -->
+                    </tr>
+                    </tbody>
+                </table>
+
+                <!-- Nút điều hướng -->
+                <div class="d-flex justify-content-between mt-4">
+                    <a href="/banhangtaiquay/hienthi" class="btn btn-outline-secondary">
+                        🔙 Trở Lại Bán Hàng
+                    </a>
+                    <a th:href="@{'/banhangtaiquay/export/pdf/' + ${hoaDon.id}}"
+                       class="btn btn-primary"
+                       target="_blank">
+                        📄 In Hóa Đơn (PDF)
+                    </a>
+                </div>
+            </div>
+        </div>
+
+
+</div> <!-- Kết thúc layout fragment -->
+</div>
+
+</body>
+</html>
