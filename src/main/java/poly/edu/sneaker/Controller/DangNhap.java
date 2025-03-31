@@ -104,8 +104,6 @@ public class DangNhap {
 
         if(nhanVien!=null){
             session.setAttribute("nhanVienSession",nhanVien);
-
-
             return ResponseEntity.ok().body(Map.of("message","Đăng nhập thành công"));
         }else if(khachHang!=null){
             session.setAttribute("khachHangSession",khachHang);
