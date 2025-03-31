@@ -51,16 +51,16 @@ public class ExcelController {
         if (stats.containsKey("doanhThuTrongNgay")) {
             // Khi dùng getDefaultThongKe() – dữ liệu được đặt tên theo "Hôm nay"
             Double doanhThu = (Double) stats.get("doanhThuTrongNgay");
-            Integer soSanPham = (Integer) stats.get("soLuongSanPhamTrongNgay");
-            Integer soHoaDonThanhCong = (Integer) stats.get("soLuongHoaDonThanhCongTrongNgay");
-            Integer soHoaDonHuy = (Integer) stats.get("soluongHoaDonHuyTrongNgay");
+            Integer soSanPham = ((Number) stats.get("soLuongSanPhamTrongNgay")).intValue();
+            Integer soHoaDonThanhCong = ((Number) stats.get("soLuongHoaDonThanhCongTrongNgay")).intValue();
+            Integer soHoaDonHuy = ((Number) stats.get("soluongHoaDonHuyTrongNgay")).intValue();
             tk = new ThongKeDTO(doanhThu, soSanPham, soHoaDonThanhCong, soHoaDonHuy);
         } else {
             // Khi dùng bộ lọc theo ngày/tuần/tháng/năm hoặc theo khoảng ngày
             Double doanhThu = (Double) stats.get("doanhThu");
-            Integer soSanPham = (Integer) stats.get("soLuongSanPham");
-            Integer soHoaDonThanhCong = (Integer) stats.get("soLuongHoaDonThanhCong");
-            Integer soHoaDonHuy = (Integer) stats.get("soluongHoaDonHuy");
+            Integer soSanPham = ((Number) stats.get("soLuongSanPham")).intValue();
+            Integer soHoaDonThanhCong = ((Number) stats.get("soLuongHoaDonThanhCong")).intValue();
+            Integer soHoaDonHuy = ((Number) stats.get("soluongHoaDonHuy")).intValue();
             tk = new ThongKeDTO(doanhThu, soSanPham, soHoaDonThanhCong, soHoaDonHuy);
             // Nếu service có trả về map chi tiết trạng thái (hd) thì có thể set:
             tk.setHd((Map<String, Integer>) stats.get("hd"));

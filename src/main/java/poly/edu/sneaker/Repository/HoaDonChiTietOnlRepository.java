@@ -36,18 +36,21 @@ public interface HoaDonChiTietOnlRepository extends JpaRepository<HoaDonChiTiet,
             "WHERE hct.id_hoa_don = :idHoaDon",
             nativeQuery = true)
     List<HoaDonChiTiet> findHoaDonChiTietByHoaDonId(@Param("idHoaDon") Integer idHoaDon);
-
-    @Query(value = "SELECT TOP 5 sp.ten_san_pham AS tenSanPham, " +
-            "cts.hinh_anh AS hinhAnh, " +
-            "cts.gia_ban AS giaBan, " +
-            "CAST(SUM(ct.so_luong) AS BIGINT) AS soLuongBan " +
-            "FROM hoadonchitiet ct " +
-            "JOIN chitietsanpham cts ON ct.id_chi_tiet_san_pham = cts.id " +
-            "JOIN sanpham sp ON cts.id_san_pham = sp.id " +
-            "GROUP BY sp.ten_san_pham, cts.hinh_anh, cts.gia_ban " +
-            "ORDER BY soLuongBan DESC", nativeQuery = true)
-    List<SanPhamBanChayResponse> findTop5SanPhamBanChay();
-
+// thay đổi câu truy vấn cũ
+    @Query("SELECT new poly.edu.sneaker.DAO.SanPhamBanChayResponse(sp.tenSanPham, ctsp.hinhAnh, ctsp.giaBan, SUM(hdct.soLuong)) " +
+            "FROM HoaDonChiTiet hdct " +
+            "JOIN hdct.idHoaDon hd " +
+            "JOIN hdct.idChiTietSanPham ctsp " +
+            "JOIN ctsp.idSanPham sp " +
+            "WHERE hd.trangThai = 1 " +
+            "AND hd.ngayTao BETWEEN :startDate AND :endDate " +
+            "AND (:loaiSanPham IS NULL OR sp.idDanhMuc.id = :loaiSanPham) " +
+            "GROUP BY sp.tenSanPham, ctsp.hinhAnh, ctsp.giaBan " +
+            "ORDER BY SUM(hdct.soLuong) DESC")
+    List<SanPhamBanChayResponse> getTop5SanPhamBanChay(@Param("startDate") Date startDate,
+                                                       @Param("endDate") Date endDate,
+                                                       @Param("loaiSanPham") Long loaiSanPham);
+    //an
 
     @Query(value = "SELECT COALESCE(SUM(ct.so_luong), 0) FROM hoadonchitiet ct " +
             "JOIN hoadon h ON ct.id_hoa_don = h.id " +
