@@ -160,8 +160,15 @@ import java.util.*;
             Date start = sdf.parse(startDateStr);
             Date end = sdf.parse(endDateStr);
 
+            // Đặt thời gian của start là 00:00:00
+            start = getStartOfDay(start);
+
+            // Đặt thời gian của end là 23:59:59
+            end = getEndOfDay(end);
+
             // Lấy doanh thu tổng hợp
             Double doanhThu = thongKeResponsitory.getRevenueBetweenDates(start, end);
+            Long soDonHang = thongKeResponsitory.getOrderCountBetweenDates(start, end);
             Long soDonHangThanhCong = thongKeResponsitory.getSuccessfulOrderCountBetweenDates(start, end);
             Long soDonHangHuy = thongKeResponsitory.getCancelledOrderCountBetweenDates(start, end);
             Long totalProducts = hoaDonChiTietOnlRepository.getTotalProductSoldBetweenDates(start, end);
@@ -197,7 +204,6 @@ import java.util.*;
             return stats;
         }
     }
-
 
 
     private Map<String, Object> getStatisticsBetweenDates(Date start, Date end) {
