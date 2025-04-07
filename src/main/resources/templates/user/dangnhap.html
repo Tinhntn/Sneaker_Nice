@@ -93,16 +93,17 @@
                     return;
                 }
 
-                let formData = {
-                    email: email,
-                    matKhau: matKhau
-                };
+
                 $.ajax({
                     url: '/dang-nhap',
                     type: 'POST',
-                    contentType: 'application/json',
-                    data: JSON.stringify(formData),
-                    xhrFields: { withCredentials: true }, // QUAN TRỌNG: Giữ cookie session
+                    contentType: "application/x-www-form-urlencoded",
+                    data: {
+                        username: email,
+                        password: matKhau
+                    },
+                    xhrFields: { withCredentials: true }, // QUAN TRỌNG: Giữ session cookie
+
                     success: function (response) {
                         // Lưu thông tin đăng nhập nếu chọn "Remember me"
                         if (rememberMe) {
@@ -110,13 +111,11 @@
                         } else {
                             localStorage.removeItem('email');
                         }
+                        notyf.success(response.message);
+                        setTimeout(function(){
+                            window.location.href = response.redirectUrl;
+                        },1500);
 
-                        notyf.success('Đăng nhập thành công!');
-                        // Xác định trang đích dựa trên phản hồi từ server
-                        var redirectUrl = response.redirectUrl || '/';
-                        setTimeout(function () {
-                            window.location.href = "/Sneakers_Nice/hienthi";
-                        }, 2000);
                     },
                     error: function (xhr) {
                         try {
@@ -128,7 +127,6 @@
                     }
                 });
             }
-
             $(document).ready(function () {
                 var savedEmail = localStorage.getItem('email');
                 if (savedEmail) {

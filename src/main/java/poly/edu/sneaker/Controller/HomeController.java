@@ -34,7 +34,7 @@ import java.util.stream.Collectors;
 
 @Controller
 @RequestMapping("/Sneakers_Nice")
-public class Home {
+public class HomeController {
     @Autowired
     private ChiTietSanPhamService chiTietSanPhamService;
     @Autowired

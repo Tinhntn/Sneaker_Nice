@@ -30,6 +30,7 @@ public class GioHangImplement implements GioHangService {
 
     @Override
     public GioHang save(GioHang gioHang) {
+        System.out.println(gioHang.getIdKhachHang().getTenKhachHang());
         return gioHangRepository.save(gioHang);
     }
 
