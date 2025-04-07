@@ -29,6 +29,7 @@ public class NhanVienImplement implements NhanVienService {
 
     @Autowired
     NhanVienRepository nhanVienRepository;
+    private String matKhauMoi;
 
     @Override
     public Page<NhanVienCustom> getAll(Pageable pageable) {
@@ -83,13 +84,8 @@ public class NhanVienImplement implements NhanVienService {
         nhanVien.setMatKhau(matKhauHash);
         nhanVienRepository.save(nhanVien);
         boolean emailSent = sendEmail(nhanVien.getEmail(), "Mật khẩu mới", nhanVien.getMatKhau());
-        if (emailSent) {
-            return true; // Email đã được gửi thành công
-        } else {
-            // Thực hiện xử lý khi email không gửi được, ví dụ: trả về thông báo lỗi
-            // Đây là ví dụ về cách bạn có thể xử lý điều đó, tùy thuộc vào yêu cầu của ứng dụng.
-            return false; // Email không gửi thành công
-        }
+       return emailSent;
+
     }
     public static boolean sendEmail(String emailNguoiNhan, String tieuDe, String body) {
         // Địa chỉ email và mật khẩu của tài khoản Gmail để gửi email

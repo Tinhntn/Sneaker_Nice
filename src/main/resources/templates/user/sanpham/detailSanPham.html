@@ -328,10 +328,14 @@
 
                                             }
 
-                                        } else {
-                                            updateCartCount();
-                                            notyf.success('Thêm sản phẩm vào giỏ hàng thành công');
-                                            return;
+                                        }else if(response.status === 200) {
+                                            let data = await response.json();
+                                            if (data && data.message) {
+                                                notyf.success(data.message);
+                                            } else {
+                                                notyf.success('Thêm sản phẩm vào giỏ hàng thành công');
+                                                return
+                                            }
                                         }
                                     } catch (e) {
                                         notyf.error('Có lỗi xảy ra khi thêm sản phẩm vào giỏ hàng');

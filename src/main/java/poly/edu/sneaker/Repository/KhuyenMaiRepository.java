@@ -4,9 +4,13 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import poly.edu.sneaker.DAO.KhuyenMaiCustom;
 import poly.edu.sneaker.Model.KhuyenMai;
+
+import java.util.Date;
+import java.util.List;
 
 @Repository
 public interface KhuyenMaiRepository extends JpaRepository<KhuyenMai, Integer> {
@@ -28,5 +32,8 @@ public interface KhuyenMaiRepository extends JpaRepository<KhuyenMai, Integer> {
     KhuyenMai TimKhuyenMaiQuaMa(String maKhuyenMai);
 
     KhuyenMai findById(int id);
+    @Query("SELECT k FROM KhuyenMai k WHERE k.ngayBatDau <= :ngayMua AND k.ngayKetThuc >= :ngayMua AND k.dieuKienApDung <= :tongTien AND k.trangThai = true")
+
+    List<KhuyenMai> findByNgayBatDauAndNgayKetThucAndDieuKienApDungAndTrangThai(@Param("ngayMua") Date ngayMua, @Param("tongTien") float tongTien);
 
 }

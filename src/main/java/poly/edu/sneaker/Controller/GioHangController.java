@@ -7,6 +7,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -51,7 +53,28 @@ public class GioHangController {
     KhuyenMaiService khuyenMaiService;
     @Autowired
     private VnPay vnPay;
+    @Autowired
+    KhachHangService khachHangService;
+    public String getCurrentUserEmail() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication != null && authentication.isAuthenticated()) {
+            return authentication.getName(); // Trả về email của người dùng đã đăng nhập
+        }
+        return null; // Nếu chưa đăng nhập, trả về null hoặc giá trị mặc định
+    }
 
+    @GetMapping("/tim-giam-gia")
+    @ResponseBody
+    public ResponseEntity<Map<String,Object>> timGiamGia(@RequestParam("maKhuyenMai")String maKhuyenMai){
+        Map<String,Object> response = new HashMap<>();
+        KhuyenMai khuyenMai = khuyenMaiService.findByMaKhuyenMai(maKhuyenMai);
+        if(khuyenMai!=null){
+            response.put("khuyenMai",khuyenMai);
+            return ResponseEntity.ok(response);
+        }
+        response.put("message","Mã giảm giá không tồn tại");
+        return ResponseEntity.badRequest().body(response);
+    }
     @PostMapping("/ma-giam-gia")
     @ResponseBody
     public ResponseEntity<Map<String, Object>> layMaGiamGia(@RequestBody Map<String, String> request) {
@@ -73,6 +96,10 @@ public class GioHangController {
 
         KhuyenMai khuyenMai = khuyenMaiService.findByMaKm(maKm);
         if (khuyenMai != null) {
+            if(khuyenMai.getDieuKienApDung()>tongTien){
+                response.put("message","Đơn hàng chưa đủ điều kiện dùng mã giảm giá");
+                return ResponseEntity.badRequest().body(response);
+            }
             double giaGiam;
             if (khuyenMai.getLoaiKhuyenMai()) { // Giảm giá theo số tiền
                 giaGiam = khuyenMai.getGiaTriGiam();
@@ -95,7 +122,7 @@ public class GioHangController {
     public ResponseEntity<?> thanhToanOnline(@RequestBody Map<String, Object> sanPhamThanhToan) {
 
 
-        KhachHang khachHang = (KhachHang) httpSession.getAttribute("khachHangSession");
+        KhachHang khachHang = khachHangService.findByEmail(getCurrentUserEmail());
         try {
             if (sanPhamThanhToan == null) {
                 return ResponseEntity.badRequest().body(Collections.singletonMap("message", "Dữ liệu không hợp lệ"));
@@ -218,7 +245,7 @@ public class GioHangController {
             }
 
             // Lấy thông tin khách hàng
-            KhachHang khachHang = (KhachHang) httpSession.getAttribute("khachHangSession");
+            KhachHang khachHang = khachHangService.findByEmail(getCurrentUserEmail());
 
             // Lấy ID khuyến mãi an toàn
             Object idKhuyenMaiObj = giaoDich.get("idKhuyenMai");
@@ -255,7 +282,8 @@ public class GioHangController {
             hoaDon.setLoaiThanhToan(false);
             hoaDon.setTrangThai(10);
             hoaDonService.save(hoaDon);
-
+            khuyenMai.setDaSuDung(khuyenMai.getDaSuDung()+1);
+            khuyenMaiService.updateKhuyenMai(khuyenMai,khuyenMai.getId());
             // Lưu lịch sử trạng thái đơn hàng
             TrangThaiDonHang trangThaiDonHang = new TrangThaiDonHang();
             trangThaiDonHang.setTrangThai(10);
@@ -327,7 +355,7 @@ public class GioHangController {
     @ResponseBody
     public ResponseEntity<?> ThanhToanVNPay(@RequestBody Map<String, Object> sanPhamThanhToan,
                                             HttpServletRequest request) {
-        KhachHang khachHangSession = (KhachHang) httpSession.getAttribute("khachHangSession");
+        KhachHang khachHangSession = khachHangService.findByEmail(getCurrentUserEmail());
 
         // Kiểm tra đăng nhập
         if (khachHangSession == null) {
@@ -379,9 +407,8 @@ public class GioHangController {
     }
 
     @GetMapping("/thanh-toan")
-
     public String thanhToan(Model model) {
-        KhachHang khachHangSessiong = (KhachHang) httpSession.getAttribute("khachHangSession");
+        KhachHang khachHangSessiong = khachHangService.findByEmail(getCurrentUserEmail());
         if (khachHangSessiong == null) {
             model.addAttribute("message", "Bạn chưa đăng nhập!");
             return "redirect:/dang-nhap";
@@ -400,64 +427,125 @@ public class GioHangController {
         double tien = 0;
         for (GioHangChiTiet ghct : lstGioHangChiTiet
         ) {
-            tien = tien + ghct.getTongTien();
+          tien += ghct.getTongTien();
         }
         double shippingFee = 65000; // Giả sử phí ship cố định
         double tongTien = tien + shippingFee;
-        double tongTienGiam = 0;
-        KhuyenMai bestKhuyenMai = null;
-        ArrayList<KhuyenMai> khuyenMais = khuyenMaiService.getAllKhuyenMai();
-        for (KhuyenMai km : khuyenMais
-        ) {
-            if (km.getDieuKienApDung() <= tongTien) {
-                float tienGiam = 0;
-                if (km.getLoaiKhuyenMai()) {
-                    tongTienGiam = km.getGiaTriGiam();
-
-                } else {
-                    if ((tongTien * km.getGiaTriGiam()) / 100 > km.getMucGiamGiaToiDa()) {
-                        tongTienGiam = km.getMucGiamGiaToiDa();
+        System.out.println((int)tongTien);
+        List<KhuyenMai> lstKhuyenMai = khuyenMaiService.getKhuyenMaiByDieuKienGiam((float) tongTien);
+        List<KhuyenMai> filterKhuyenMai = lstKhuyenMai.stream()
+                .filter(Objects::nonNull) // Lọc các phần tử null
+                .sorted(Comparator.comparingDouble((KhuyenMai km) -> {
+                    if (km.getLoaiKhuyenMai()) { // Tránh lỗi null
+                        return  km.getGiaTriGiam() ;
                     } else {
-                        tongTienGiam = (tongTien * km.getGiaTriGiam()) / 100;
+                        double giamTheoPhanTram =  km.getGiaTriGiam() * tongTien / 100;
+                        double mucGiamToiDa = km.getMucGiamGiaToiDa() ;
+                        return Math.min(giamTheoPhanTram, mucGiamToiDa);
                     }
+                }).reversed())
+                .collect(Collectors.toList());
+        float tongTienGiam;
+        if(filterKhuyenMai.isEmpty()){
+            tongTienGiam =0;
+        }else{
+            KhuyenMai km = filterKhuyenMai.get(0);
+            if(km!=null){
+                if(km.getLoaiKhuyenMai()){
+                    tongTienGiam = km.getGiaTriGiam();
+                }else{
+                    double t1 = km.getMucGiamGiaToiDa();
+                    double t2 = tongTien*km.getGiaTriGiam()/100;
+                    tongTienGiam =(float) Math.min(t1,t2);
                 }
-                if (tienGiam > tongTienGiam) {
-                    tongTienGiam = tienGiam;
-                    bestKhuyenMai = km;
-                }
+            }else{
+                tongTienGiam = 0;
             }
 
         }
-        if (bestKhuyenMai != null) {
-            gioHang.setIdKhuyenMai(bestKhuyenMai);
-        }
-        if (gioHang.getIdKhuyenMai() != null) {
-            KhuyenMai khuyenMai = gioHang.getIdKhuyenMai();
-            if (khuyenMai.getLoaiKhuyenMai()) {
-                tongTienGiam = khuyenMai.getGiaTriGiam();
-            } else {
-                if ((tongTien * khuyenMai.getGiaTriGiam()) / 100 > khuyenMai.getMucGiamGiaToiDa()) {
-                    tongTienGiam = khuyenMai.getMucGiamGiaToiDa();
-                } else {
-                    tongTienGiam = (tongTien * khuyenMai.getGiaTriGiam()) / 100;
 
-                }
-
-            }
-        }
+        model.addAttribute("lstKhuyenMai", filterKhuyenMai);
         model.addAttribute("giamGia", tongTienGiam);
         model.addAttribute("khachHang", khachHangSessiong);
         model.addAttribute("shippingFee", shippingFee);
+        System.out.println((int)tongTien);
         model.addAttribute("totalPrice", tongTien);
         model.addAttribute("lstGioHangChiTiet", lstGioHangChiTiet);
         return "/user/sanpham/checkout";
     }
+    @GetMapping("/changeChoice")
+    @ResponseBody
+    public ResponseEntity<?> changeChoice(@RequestParam("tongTien") int tongTien, Model model){
+            List<KhuyenMai> lstKhuyenMai = khuyenMaiService.getKhuyenMaiByDieuKienGiam((float) tongTien);
+            List<KhuyenMai> filterKhuyenMai = lstKhuyenMai.stream()
+                    .filter(Objects::nonNull) // Lọc các phần tử null
+                    .sorted(Comparator.comparingDouble((KhuyenMai km) -> {
+                        if (km.getLoaiKhuyenMai()) { // Tránh lỗi null
+                            return  km.getGiaTriGiam() ;
+                        } else {
+                            double giamTheoPhanTram =  km.getGiaTriGiam() * tongTien / 100;
+                            double mucGiamToiDa = km.getMucGiamGiaToiDa() ;
+                            return Math.min(giamTheoPhanTram, mucGiamToiDa);
+                        }
+                    }).reversed())
+                    .collect(Collectors.toList());
+            float tongTienGiam;
 
+            if(filterKhuyenMai.isEmpty()){
+                tongTienGiam =0;
+            }else{
+
+                KhuyenMai km = filterKhuyenMai.get(0);
+                if(km!=null){
+                    if(km.getLoaiKhuyenMai()){
+                        tongTienGiam = km.getGiaTriGiam();
+                    }else{
+                        double t1 = km.getMucGiamGiaToiDa();
+                        double t2 = tongTien*km.getGiaTriGiam()/100;
+                        tongTienGiam =(float) Math.min(t1,t2);
+                    }
+                }else{
+                    tongTienGiam = 0;
+                }
+
+            }
+        model.addAttribute("lstKhuyenMai", filterKhuyenMai);
+        return ResponseEntity.ok(Map.of(
+                "tongTienGiam", tongTienGiam,
+                "filterKhuyenMai", filterKhuyenMai
+        ));
+    }
+    @PostMapping("/addVoucher")
+    @ResponseBody
+    public ResponseEntity<?> addVoucher(@RequestBody Map<String,String> Object ){
+        KhuyenMai khuyenMai = khuyenMaiService.findById(Integer.parseInt(String.valueOf(Object.get("idKhuyenMai"))));
+        if(khuyenMai==null){
+            return ResponseEntity.badRequest().body(Map.of("message","Mã khuyến mãi đã hết"));
+        }
+        try{
+            float tongTien = Float.parseFloat(Object.get("tongTien").toString());
+            float tongTienGiam;
+            if(khuyenMai.getLoaiKhuyenMai()){
+                tongTienGiam = khuyenMai.getGiaTriGiam();
+            }else{
+                double t1 = khuyenMai.getMucGiamGiaToiDa();
+                double t2 = tongTien*khuyenMai.getGiaTriGiam()/100;
+                tongTienGiam =(float) Math.min(t1,t2);
+            }
+            GioHang gioHang = gioHangService.findGioHangByIDKH(khachHangService.findByEmail(getCurrentUserEmail()).getId());
+            gioHang.setIdKhuyenMai(khuyenMai);
+            gioHangService.save(gioHang);
+            return ResponseEntity.ok(Map.of("tongTienGiam",tongTienGiam));
+
+        }catch (Exception e){
+             e.printStackTrace();
+        }
+      return ResponseEntity.badRequest().body(Map.of("message","Lỗi khi dùng voucher"));
+    }
     @GetMapping()
     @ResponseBody
     public ResponseEntity<Map<String, Object>> getGioHang(Model model) {
-        KhachHang khachHangSession = (KhachHang) httpSession.getAttribute("khachHangSession");
-
+        KhachHang khachHangSession = khachHangService.findByEmail(getCurrentUserEmail());
         if (khachHangSession == null) {
             return ResponseEntity.badRequest().body(Map.of("message", "Bạn chưa đăng nhập!"));
         }
@@ -509,9 +597,8 @@ public class GioHangController {
 
     @GetMapping("/so-luong")
     @ResponseBody
-
     public ResponseEntity<Map<String, Integer>> getSoLuongGioHang() {
-        KhachHang khachHang = (KhachHang) httpSession.getAttribute("khachHangSession");
+        KhachHang khachHang = khachHangService.findByEmail(getCurrentUserEmail());
         int soLuongSanPham = 0;
         if (khachHang != null) {
             GioHang gh = gioHangService.findGioHangByIDKH(khachHang.getId());
@@ -522,7 +609,6 @@ public class GioHangController {
                 }
             }
         }
-
         Map<String, Integer> response = new HashMap<>();
         response.put("soLuong", soLuongSanPham);
         return ResponseEntity.ok()
@@ -531,10 +617,8 @@ public class GioHangController {
     }
 
     @PostMapping("/them-vao-gio-hang")
-
     public ResponseEntity<?> themSanPhamVaoGioHang(@RequestBody Map<String, Object> sanPhamChon) {
-
-        KhachHang khachHang = (KhachHang) httpSession.getAttribute("khachHangSession");
+        KhachHang khachHang = khachHangService.findByEmail(getCurrentUserEmail());
         if (khachHang != null) {
             try {
                 int soLuong = converToInt(sanPhamChon.get("soLuong"));
@@ -562,25 +646,34 @@ public class GioHangController {
                         return ResponseEntity.badRequest()
                                 .body(Collections.singletonMap("message", "Số lượng sản phẩm trong kho không đủ"));
                     }
-
                     float tongTien = 0;
-                    ArrayList<GioHangChiTiet> lstGHCT = gioHangChiTietService.findByIdGioHang(gioHangService.findGioHangByIDKH(khachHang.getId()).getId());
+                    ArrayList<GioHangChiTiet> lstGHCT = gioHangChiTietService.findByIdGioHang(ghct.getIdGioHang().getId());
                     for (GioHangChiTiet gh : lstGHCT
                     ) {
-                        tongTien = tongTien + gh.getTongTien();
-
-
+                        tongTien += gh.getTongTien();
                 }
 
                 if (tongTien + chiTietSanPham.getGiaBan() * soLuong > 20000000) {
                     return ResponseEntity.badRequest().body(Collections.singletonMap("message", "Đơn hàng vượt quá 20 triệu vui lòng liên hệ để được hỗ trợ"));
                 }
                 ghct.setSoLuong(ghct.getSoLuong() + soLuong);
-
+                ghct.setTongTrongLuong((int)chiTietSanPham.getTrongLuong()*ghct.getSoLuong());
+                ghct.setTongTien(ghct.getDonGia()*ghct.getSoLuong());
                 gioHangChiTietService.saveGioHangChitiet(ghct);
                 return ResponseEntity.ok()
                         .body(Collections.singletonMap("Thêm sản phẩm vào giỏ hàng thành công", true));
             }
+                float tongTien = chiTietSanPham.getGiaBan()*soLuong;
+                ArrayList<GioHangChiTiet> lstGHCT = gioHangChiTietService.findByIdGioHang(gioHangService.findGioHangByIDKH(khachHang.getId()).getId());
+                if(lstGHCT!=null) {
+                    for (GioHangChiTiet gh : lstGHCT
+                    ) {
+                        tongTien += gh.getTongTien();
+                    }
+                    if (tongTien > 20000000) {
+                        return ResponseEntity.badRequest().body(Collections.singletonMap("message", "Đơn hàng vượt quá 20 triệu vui lòng liên hệ để được hỗ trợ"));
+                    }
+                }
             GioHangChiTiet gioHangChiTiet = new GioHangChiTiet();
             gioHangChiTiet.setIdGioHang(gioHangService.findGioHangByIDKH(khachHang.getId()));
             gioHangChiTiet.setIdChiTietSanPham(chiTietSanPham);
@@ -598,10 +691,7 @@ public class GioHangController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(Collections.singletonMap("message", "Lỗi khi cập nhật sản phẩm!"));
         }
-    } else
-
-    {
-
+    } else {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("message", "Bạn cần đăng nhập để mua sắm"));
     }
 
@@ -617,20 +707,13 @@ public class GioHangController {
     @PutMapping("/capNhatSoLuongGioHang/{idGHCT}")
     public ResponseEntity<?> capNhatSoLuongGioHang(@PathVariable int idGHCT, @RequestParam int soLuong) {
         GioHangChiTiet gioHangChiTiet = gioHangChiTietService.findById(idGHCT);
-        ArrayList<GioHangChiTiet> lstGHCT = gioHangChiTietService.findByIdGioHang(idGHCT);
-        float tongTien = 0;
-        for (GioHangChiTiet ghct : lstGHCT
-        ) {
-            tongTien = tongTien + ghct.getTongTien();
-        }
         if (gioHangChiTiet != null) {
             ChiTietSanPham chiTietSanPham = chiTietSanPhamService
                     .findById(gioHangChiTiet.getIdChiTietSanPham().getId());
-
             if (chiTietSanPham.getSoLuong() < soLuong) {
                 return ResponseEntity.badRequest()
                         .body(Collections.singletonMap("message", "Số lượng sản phẩm trong kho không đủ"));
-            } else if (chiTietSanPham.getGiaBan() * soLuong + tongTien > 20000000) {
+            } else if (chiTietSanPham.getGiaBan() * soLuong > 20000000) {
                 return ResponseEntity.badRequest().body(Collections.singletonMap("message", "Đơn hàng vượt quá 20 triệu, liên hệ để được hỗ trợ"));
             } else {
                 gioHangChiTiet.setSoLuong(soLuong);
@@ -641,21 +724,6 @@ public class GioHangController {
         return ResponseEntity.badRequest().body(Collections.singletonMap("message", "Cập nhật sản phẩm thất bại"));
     }
 
-    @PutMapping("/update/{id}")
-    public ResponseEntity<?> updateSoLuongSanPham(@PathVariable int id, @RequestParam int soLuong) {
-        GioHangChiTiet ghct = gioHangChiTietService.findById(id);
-        if (ghct == null) {
-            return ResponseEntity.badRequest().body(Collections.singletonMap("message", "Sản phẩm không tồn tại"));
-        }
-        if (soLuong <= 0) {
-            gioHangChiTietService.deleteGioHangChitiet(id);
-            return ResponseEntity.ok(Collections.singletonMap("message", "Sản phẩm đã bị xóa khỏi giỏ hàng"));
-        }
-        ghct.setSoLuong(soLuong);
-        ghct.setTongTien(ghct.getDonGia() * soLuong);
-        gioHangChiTietService.saveGioHangChitiet(ghct);
-        return ResponseEntity.ok(Collections.singletonMap("message", "Cập nhật số lượng thành công"));
-    }
 
     private int converToInt(Object object) {
         if (object instanceof Integer) {

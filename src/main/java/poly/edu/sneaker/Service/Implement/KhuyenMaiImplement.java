@@ -72,6 +72,19 @@ public class KhuyenMaiImplement implements KhuyenMaiService {
         return khuyenMaiRepository.findByMaKhuyenMai(maKM);
     }
 
+    @Override
+    public List<KhuyenMai> getKhuyenMaiByDieuKienGiam(float dieuKienGiam) {
+        Date today = new Date();
+        List<KhuyenMai> khuyenMaiList = khuyenMaiRepository.findByNgayBatDauAndNgayKetThucAndDieuKienApDungAndTrangThai(today,dieuKienGiam);
+        return khuyenMaiList;
+    }
+
+    @Override
+    public KhuyenMai findByMaKhuyenMai(String maKM) {
+
+        return khuyenMaiRepository.findByMaKhuyenMai(maKM);
+    }
+
 
     private void updateTrangThai(List<KhuyenMai> khuyenMaiList) {
         Date today = new Date();

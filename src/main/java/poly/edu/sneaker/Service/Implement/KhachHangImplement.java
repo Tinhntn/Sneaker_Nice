@@ -5,12 +5,21 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import poly.edu.sneaker.Model.KhachHang;
 import poly.edu.sneaker.Repository.KhachHangRepository;
 import poly.edu.sneaker.Service.KhachHangService;
 
+import javax.mail.Message;
+import javax.mail.MessagingException;
+import javax.mail.Session;
+import javax.mail.Transport;
+import javax.mail.internet.InternetAddress;
+import javax.mail.internet.MimeMessage;
 import java.util.ArrayList;
+import java.util.Properties;
 import java.util.Random;
 
 @Service
@@ -117,9 +126,11 @@ public class KhachHangImplement implements KhachHangService {
     public boolean layLaiKhachHang(KhachHang khachHang) {
         Random r = new Random();
         String matKhau = String.valueOf(r.nextInt(9000));
-        khachHang.setMatKhau(matKhau);
+        PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+        khachHang.setMatKhau(passwordEncoder.encode(matKhau));
         khachHangRepository.save(khachHang);
-        return true;
+        boolean sendMail = sendEmail(khachHang.getEmail(),"Mật khẩu mới của bạn là",matKhau);
+        return sendMail;
     }
     @Override
     public KhachHang findByMaKhachHang(String maKhachHang) {
@@ -142,6 +153,42 @@ public class KhachHangImplement implements KhachHangService {
         }
     }
 
+    public static boolean sendEmail(String emailNguoiNhan, String tieuDe, String body) {
+        // Địa chỉ email và mật khẩu của tài khoản Gmail để gửi email
+        String senderEmail = "ntinh4939@gmail.com";
+        String senderPassword = "izygkdjtuqeouoet";
 
+        // Thiết lập thuộc tính của phiên gửi email
+        Properties properties = new Properties();
+        properties.put("mail.smtp.host", "smtp.gmail.com");
+        properties.put("mail.smtp.port", "587");
+        properties.put("mail.smtp.auth", "true");
+        properties.put("mail.smtp.starttls.enable", "true");
+
+        // Tạo phiên gửi email với thông tin xác thực
+        Session session = Session.getInstance(properties, new javax.mail.Authenticator() {
+            protected javax.mail.PasswordAuthentication getPasswordAuthentication() {
+                return new javax.mail.PasswordAuthentication(senderEmail, senderPassword);
+            }
+        });
+
+        try {
+            // Tạo một email
+            Message message = new MimeMessage(session);
+            message.setFrom(new InternetAddress(senderEmail));
+            message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(emailNguoiNhan));
+            message.setSubject(tieuDe);
+            message.setText(body);
+
+            // Gửi email
+            Transport.send(message);
+            System.out.println("Email sent successfully!");
+            return true;
+
+        } catch (MessagingException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
 
 }
