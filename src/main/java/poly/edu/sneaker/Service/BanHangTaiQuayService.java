@@ -24,6 +24,7 @@ public interface BanHangTaiQuayService {
     Void xoaHDCT(Integer id);
     KhachHang timIDQuaSDTKH(String sdt);
     KhuyenMai timKhuyenMaiQuaMa(String maKM);
+    KhuyenMai saveKM(KhuyenMai km);
     List<ChatLieu> getAllChatLieuTimKiem();
     List<DanhMuc> getAllDanhMucTimKiem();
     List<Hang> getAllHangTimKiem();
