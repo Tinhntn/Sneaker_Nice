@@ -41,7 +41,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.POST, "/dang-nhap", "/quen_mat_khau", "/dang-ky").permitAll()
                         .requestMatchers("/sanpham/**", "/hoadon/**","/hoadononlinekhachhang/**","/hoadononline/**",  "/danh_muc/**","/hang/**",
                                 "/mau_sac/**","/size/**","/chat_lieu/**","/banhangtaiquay/**").hasAnyRole("EMPLOYEE", "ADMIN")
-                        .requestMatchers("/nhanvien/**","/khach_hang/**","/khachhangonline/**","/chuc_vu/**","/thongke/**", "/khuyenmai/**").hasRole("ADMIN")
+                        .requestMatchers("/nhanvien/**","/khach_hang/**","/khachhangonline/**","/chuc_vu/**","/thongke/**", "/khuyenmai/**").hasAnyRole("ADMIN")
                 )
                 .formLogin(form -> form
                         .loginPage("/dang-nhap") // Trang đăng nhập tùy chỉnh
