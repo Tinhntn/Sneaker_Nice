@@ -246,3 +246,11 @@ CREATE TABLE TrangThaiDonHang(
     trang_thai TINYINT NOT NULL,
     ghi_chu NVARCHAR(MAX),
 );
+
+
+INSERT INTO HoaDonChiTiet (id_hoa_don, id_chi_tiet_san_pham, so_luong, tong_trong_luong, don_gia) 
+VALUES
+(21, 23, 2, 1.6, 750000),  
+(22, 24, 1, 0.9, 1530000);
+
+select *from HoaDonChiTiet

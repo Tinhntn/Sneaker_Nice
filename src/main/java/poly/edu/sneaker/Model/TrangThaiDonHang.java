@@ -5,7 +5,7 @@ import lombok.*;
 
 import java.util.Date;
 
-@Table(name = "lichsutrangthai")
+@Table(name = "trangthaidonhang")
 @Entity
 @Data
 @Getter
@@ -15,12 +15,15 @@ import java.util.Date;
 
 public class TrangThaiDonHang {
     @Id
-    @GeneratedValue (strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
     @ManyToOne
     @JoinColumn(name = "idHoaDon")
     private HoaDon idHoaDon;
-    private Date thoiGian;
-    private Byte trangThai;
+
+    private Date ngayCapNhat;
+    private int trangThai;
     private String ghiChu;
+
+
 }

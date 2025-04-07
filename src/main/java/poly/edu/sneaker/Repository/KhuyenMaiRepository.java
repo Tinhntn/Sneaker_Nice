@@ -8,6 +8,9 @@ import org.springframework.stereotype.Repository;
 import poly.edu.sneaker.DAO.KhuyenMaiCustom;
 import poly.edu.sneaker.Model.KhuyenMai;
 
+import java.util.Date;
+import java.util.List;
+
 @Repository
 public interface KhuyenMaiRepository extends JpaRepository<KhuyenMai, Integer> {
 
@@ -24,5 +27,11 @@ public interface KhuyenMaiRepository extends JpaRepository<KhuyenMai, Integer> {
     KhuyenMai findByMaKhuyenMai(String maKhuyenMai);
 
     Page<KhuyenMaiCustom> findKhuyenMaiByMaKhuyenMaiContainingOrTenKhuyenMaiContaining(String maKhuyenMai, String tenKhuyenMai, Pageable pageable);
+    @Query("SELECT km FROM KhuyenMai km WHERE km.maKhuyenMai = :maKhuyenMai")
+    KhuyenMai TimKhuyenMaiQuaMa(String maKhuyenMai);
+
+    KhuyenMai findById(int id);
+
+
 
 }

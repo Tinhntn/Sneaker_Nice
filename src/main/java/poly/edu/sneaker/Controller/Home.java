@@ -10,6 +10,20 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import org.springframework.http.ResponseEntity;
+import poly.edu.sneaker.Model.ChiTietSanPham;
+import poly.edu.sneaker.Model.MauSac;
+import poly.edu.sneaker.Model.Size;
+import poly.edu.sneaker.Repository.ChiTietSanPhamRepository;
+import poly.edu.sneaker.Service.ChiTietSanPhamService;
+import poly.edu.sneaker.Service.MauSacService;
+import poly.edu.sneaker.Service.SanPhamService;
+import poly.edu.sneaker.Service.SizeService;
+import poly.edu.sneaker.Model.*;
+import poly.edu.sneaker.Service.*;
+
+import java.util.*;
+
 import poly.edu.sneaker.Model.*;
 import poly.edu.sneaker.Model.Interface.SanPhamInterface;
 import poly.edu.sneaker.Service.*;
@@ -35,6 +49,9 @@ public class Home {
     private GioHangService gioHangService;
     @Autowired
     private GioHangChiTietService gioHangChiTietService;
+    @Autowired
+
+    HoaDonChiTietOnlService hoaDonChiTietOnlService;
 
     @GetMapping("/hienthi")
     public String hienthi(Model model, @RequestParam(defaultValue = "0") int page) {
@@ -42,12 +59,28 @@ public class Home {
 
         int size = 12;
         Page<ChiTietSanPham> lstCTSP = chiTietSanPhamService.findChiTietSanPhamJustOne(PageRequest.of(page, size));
+        for (ChiTietSanPham ctsp : lstCTSP
+             ) {
+            if(ctsp.getSoLuong()<=0){
+                ctsp.setTrangThai(false);
+                chiTietSanPhamService.saveChiTietSanPham(ctsp);
+            }
+        }
         int soLuongSanPhamTrongGioHang = 0;
 
         if (khachHangSession != null) {
             model.addAttribute("khachHang", khachHangSession);
             GioHang gioHang = gioHangService.findGioHangByIDKH(khachHangSession.getId());
             ArrayList<GioHangChiTiet> lstGioHangChiTiet = gioHangChiTietService.findByIdGioHang(gioHang.getId());
+            for ( GioHangChiTiet ghct : lstGioHangChiTiet
+                 ) {
+                ChiTietSanPham chiTietSanPham =ghct.getIdChiTietSanPham();
+                boolean checkSoLuong = chiTietSanPham.getSoLuong()>0&&chiTietSanPham.getSoLuong()<ghct.getSoLuong();
+                if(checkSoLuong){
+                    ghct.setSoLuong(chiTietSanPham.getSoLuong());
+                    gioHangChiTietService.saveGioHangChitiet(ghct);
+                }
+            }
             model.addAttribute("lstGioHangChiTiet", lstGioHangChiTiet);
             for (GioHangChiTiet ghct
                     : lstGioHangChiTiet
@@ -60,6 +93,16 @@ public class Home {
         model.addAttribute("listSanPham", lstCTSP);
         model.addAttribute("currentPage", lstCTSP.getNumber());
         model.addAttribute("totalPages", lstCTSP.getTotalPages());
+
+
+        //code hung
+        List<Map<String, Object>> bestSellingProducts = hoaDonChiTietOnlService.getTop10BestSellingProducts();
+        model.addAttribute("bestSellingProducts", bestSellingProducts);
+
+        List<Map<String, Object>> newestProducts = chiTietSanPhamService.getTop10NewestProducts();
+        model.addAttribute("newestProducts", newestProducts);
+        //end code hung
+
         return "user/sanpham/trangchu";
     }
 
@@ -68,7 +111,7 @@ public class Home {
         ChiTietSanPham chiTietSanPhams = chiTietSanPhamService.findById(id);
         if (chiTietSanPhams == null) {
             redirectAttributes.addFlashAttribute("error", "Sản phẩm không tồn tại!");
-            return "redirect:/Sneakers/hienthi"; // Điều hướng về trang chủ hoặc trang danh sách sản phẩm
+            return "redirect:/Sneakers/hienthi";
         }
         ArrayList<ChiTietSanPham> lstCTSP = chiTietSanPhamService.findByIdSanPham(chiTietSanPhams.getIdSanPham().getId());
 
@@ -95,6 +138,46 @@ public class Home {
             return ResponseEntity.ok(ct);
         }
         return ResponseEntity.notFound().build();
+    }
+
+    @GetMapping("/ajax-search")
+    public String ajaxSearch(@RequestParam("keyword") String keyword, Model model) {
+        List<ChiTietSanPham> results = chiTietSanPhamService.searchByMultipleFields(keyword);
+        model.addAttribute("results", results);
+        model.addAttribute("keyword", keyword);
+        return "layout/ajaxSearch :: ajaxSearchResultsFragment";
+    }
+
+    @GetMapping("/filter")
+    public String filterProducts(
+            Model model,
+            @RequestParam(required = false) String hang,
+            @RequestParam(required = false) String chatLieu,
+            @RequestParam(required = false) String priceRange,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "8") int size
+    ) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<ChiTietSanPham> result = chiTietSanPhamService.filterByHangAndPrice(hang, chatLieu, priceRange, pageable);
+
+        model.addAttribute("filteredProducts", result.getContent());
+        model.addAttribute("currentPage", result.getNumber());
+        model.addAttribute("totalPages", result.getTotalPages());
+        model.addAttribute("hang", hang);
+        model.addAttribute("chatLieu", chatLieu);
+        model.addAttribute("priceRange", priceRange);
+
+        // Lấy các giá trị bộ lọc phụ theo cascading
+        List<String> availableChatLieu = chiTietSanPhamService.findDistinctChatLieuByHang(hang);
+        List<String> availableHang = chiTietSanPhamService.findDistinctHangByChatLieu(chatLieu);
+        model.addAttribute("availableChatLieu", availableChatLieu);
+        model.addAttribute("availableHang", availableHang);
+
+        // Thêm danh sách sản phẩm mới
+        Page<ChiTietSanPham> newProducts = chiTietSanPhamService.findChiTietSanPhamJustOne(PageRequest.of(0, 12));
+        model.addAttribute("listSanPham", newProducts);
+
+        return "user/sanpham/trangchu";
     }
 
 }

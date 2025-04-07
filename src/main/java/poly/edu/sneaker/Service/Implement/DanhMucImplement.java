@@ -7,9 +7,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import poly.edu.sneaker.Model.DanhMuc;
 import poly.edu.sneaker.Repository.DanhMucRepository;
-import poly.edu.sneaker.Repository.SanPhamRepository;
 import poly.edu.sneaker.Service.DanhMucService;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
@@ -18,9 +18,6 @@ public class DanhMucImplement implements DanhMucService {
 
     @Autowired
     private DanhMucRepository danhMucRepository;
-
-    @Autowired
-    private SanPhamRepository sanPhamRepository;
 
     @Override
     public Page<DanhMuc> getAll(Pageable pageable) {
@@ -33,31 +30,12 @@ public class DanhMucImplement implements DanhMucService {
     }
 
     @Override
-    public DanhMuc save(DanhMuc danhMuc) {
-        return danhMucRepository.save(danhMuc);
-    }
-
-    @Override
-    public void delete(DanhMuc danhMuc) {
-        danhMucRepository.delete(danhMuc);
-    }
-
-    @Override
-    public void updateDanhMuc(DanhMuc danhMuc) {
+    public void save(DanhMuc danhMuc) {
         danhMucRepository.save(danhMuc);
     }
 
     @Override
-    public void saveDanhMuc(DanhMuc danhMuc) {
-        danhMucRepository.save(danhMuc);
-    }
-
-    @Override
-    public List<DanhMuc> getAllDanhMucs() {
-        return danhMucRepository.findAll();
-    }
-
-    public void updateDanhMuc(DanhMuc danhMuc, int id) {
+    public void update(DanhMuc danhMuc, int id) {
         DanhMuc existingDanhMuc = danhMucRepository.findById(id).orElseThrow(() -> new RuntimeException("DanhMuc not found"));
         existingDanhMuc.setMaDanhMuc(danhMuc.getMaDanhMuc());
         existingDanhMuc.setTenDanhMuc(danhMuc.getTenDanhMuc());
@@ -89,7 +67,12 @@ public class DanhMucImplement implements DanhMucService {
     @Override
     public String taoMaDanhMuc() {
         Random random = new Random();
-        String maDanhMuc = "MDM"+1000+random.nextInt(9000);
+        String maDanhMuc = "DM" + 1000 + random.nextInt(9000);
         return maDanhMuc;
+    }
+
+    @Override
+    public ArrayList<DanhMuc> getAllDanhMucs() {
+        return (ArrayList<DanhMuc>) danhMucRepository.findAll();
     }
 }

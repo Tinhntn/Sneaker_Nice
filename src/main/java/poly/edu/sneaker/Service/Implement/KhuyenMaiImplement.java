@@ -42,7 +42,7 @@ public class KhuyenMaiImplement implements KhuyenMaiService {
 
     @Override
     public KhuyenMai detailKhuyenMai(int id) {
-        return khuyenMaiRepository.findById(id).orElse(null);
+        return khuyenMaiRepository.findById(id);
     }
 
     @Override
@@ -61,6 +61,17 @@ public class KhuyenMaiImplement implements KhuyenMaiService {
     public ArrayList<KhuyenMai> getAllKhuyenMai() {
         return (ArrayList<KhuyenMai>) khuyenMaiRepository.findAll();
     }
+
+    @Override
+    public KhuyenMai findById(int idKM) {
+        return khuyenMaiRepository.findById(idKM);
+    }
+
+    @Override
+    public KhuyenMai findByMaKm(String maKM) {
+        return khuyenMaiRepository.findByMaKhuyenMai(maKM);
+    }
+
 
 
     private void updateTrangThai(List<KhuyenMai> khuyenMaiList) {

@@ -22,16 +22,15 @@ public class HoaDonChiTiet {
     @ManyToOne
     @JoinColumn(name = "idHoaDon")
     private HoaDon idHoaDon;
-
     @ManyToOne
-    @JoinColumn(name = "idChiTietSanPham")
+    @JoinColumn(name = "id_chi_tiet_san_pham")
     private ChiTietSanPham idChiTietSanPham;
-
     private int soLuong;
     private float tongTrongLuong;
     private float donGia;
     private String ghiChu;
     private Date ngayTao;
     private Date ngaySua;
-    private Boolean trangThai;
+    private Integer trangThai;
+
 }

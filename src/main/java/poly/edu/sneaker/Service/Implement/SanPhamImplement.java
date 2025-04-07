@@ -13,10 +13,10 @@ import java.util.List;
 import java.util.Random;
 
 @Service
-
 public class SanPhamImplement implements SanPhamService {
     @Autowired
     private SanPhamRepository sanPhamRepository;
+
     @Override
     public Page<SanPham> findAll(Pageable pageable) {
         return sanPhamRepository.findAll(pageable);
@@ -45,8 +45,8 @@ public class SanPhamImplement implements SanPhamService {
     @Override
     public String taoMaSanPham() {
         Random random = new Random();
-        int randomNumber = 1000+random.nextInt(9000);
-        return "SP"+randomNumber;
+        int randomNumber = 1000 + random.nextInt(9000);
+        return "SP" + randomNumber;
     }
 
     @Override
@@ -56,8 +56,17 @@ public class SanPhamImplement implements SanPhamService {
 
     @Override
     public Page<SanPham> findByMaSanPhamOrTenSanPham(String maSanPham, String tenSanPham, Pageable pageable) {
-        return sanPhamRepository.findByMaSanPhamContainingOrTenSanPhamContaining(maSanPham,tenSanPham,pageable);
+        return sanPhamRepository.findByMaSanPhamContainingOrTenSanPhamContaining(maSanPham, tenSanPham, pageable);
     }
 
 
+
+//    // ...
+//    @Override
+//    public List<SanPham> searchByNameOrHang(String keyword) {
+//        if (keyword == null || keyword.trim().isEmpty()) {
+//            return List.of();
+//        }
+//        return sanPhamRepository.findByTenSanPhamOrTenHang(keyword.trim());
+//    }
 }

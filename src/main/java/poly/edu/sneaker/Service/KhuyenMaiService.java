@@ -7,6 +7,7 @@ import poly.edu.sneaker.Model.KhuyenMai;
 
 import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 public interface KhuyenMaiService {
@@ -18,4 +19,6 @@ public interface KhuyenMaiService {
     Page<KhuyenMaiCustom> findKhuyenMaiByMaKhuyenMaiContainingOrTenKhuyenMaiContaining(String maKhuyenMai, String tenKhuyenMai, Pageable pageable);
     String taoMaoKhuyenMai();
     ArrayList<KhuyenMai> getAllKhuyenMai();
+    KhuyenMai findById(int idKM);
+    KhuyenMai findByMaKm(String maKM);
 }

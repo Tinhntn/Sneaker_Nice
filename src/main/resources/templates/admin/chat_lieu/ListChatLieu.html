@@ -46,15 +46,19 @@
                 <td th:text="${cl.tenChatLieu}"></td>
                 <td th:text="${#dates.format(cl.ngayTao, 'dd/MM/yyyy')}"></td>
                 <td th:text="${#dates.format(cl.ngaySua, 'dd/MM/yyyy')}"></td>
-                <td th:text="${cl.trangThai ? 'Hoạt động' : 'Không hoạt động'}"></td>
+                <td>
+                    <span th:text="${cl.trangThai ? 'Hoạt động' : 'Không hoạt động'}"></span>
+                </td>
                 <td>
                     <a th:href="@{/chat_lieu/edit/{id}(id=${cl.id})}">
                         <button type="button" class="btn btn-outline-warning">Sửa</button>
                     </a>
-                    <a th:href="@{/chat_lieu/delete/{id}(id=${cl.id})}">
-                        <button type="button" class="btn btn-outline-danger"
-                                onclick="return confirm('Bạn muốn xóa chất liệu này?')">Xóa</button>
-                    </a>
+                    <form th:action="@{/chat_lieu/toggleStatus/{id}(id=${cl.id})}" method="post" style="display:inline;">
+                        <button type="submit" class="btn btn-outline-primary"
+                                onclick="return confirm('Bạn muốn thay đổi trạng thái?')">
+                            <span th:text="${cl.trangThai ? 'Tắt' : 'Bật'}"></span>
+                        </button>
+                    </form>
                 </td>
             </tr>
             </tbody>
@@ -69,7 +73,7 @@
                 <li th:each="i : ${#numbers.sequence(0, totalPages - 1)}"
                     th:classappend="${i == currentPage} ? 'active' : ''" class="page-item">
                     <a th:href="@{/chat_lieu/hienthi(page=${i}, size=${10})}" class="page-link"
-                       th:text="${i + 1}">1</a>
+                       th:text="${i + 1}"></a>
                 </li>
                 <li th:classappend="${currentPage + 1 == totalPages} ? 'disabled' : ''" class="page-item">
                     <a th:href="@{/chat_lieu/hienthi(page=${currentPage+1}, size=${10})}" class="page-link">>></a>
