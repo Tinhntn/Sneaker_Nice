@@ -322,10 +322,7 @@ public class BanHangTaiQuayController {
         }
 
         // Kiểm tra nếu số tiền khách đưa nhỏ hơn tổng tiền cần thanh toán
-        if (tienKhachDua < tongtiencthd) {
-            redirectAttributes.addFlashAttribute("error", "Tiền khách đưa không đủ để thanh toán!");
-            return "redirect:/banhangtaiquay/showhoadoncho/" + idhd;
-        }
+
         // Tìm hóa đơn chi tiết theo ID
 
         HoaDon hd = banHangTaiQuayService.getHoaDonByID(idhd);
@@ -416,14 +413,18 @@ public class BanHangTaiQuayController {
             @RequestParam("tongtiencthd") float tongTienCTHD,
             @RequestParam(value = "tienKhachDua", defaultValue = "0") float tienKhachDua,
             RedirectAttributes redirectAttributes) {
+        System.out.println("id hoa don"+idhd);
+        System.out.println("tien cthd "+tongTienCTHD);
+        System.out.println("tien khach dua "+tienKhachDua);
 
         // Tính tiền thừa
         float tienThua = tienKhachDua - tongTienCTHD;
+        System.out.println("tien thừa " + tienThua);
+
         if (tienThua<0){
             redirectAttributes.addFlashAttribute("error", "tiền khách đưa đang nhỏ hơn tiền cần thanh toán");
             return "redirect:/banhangtaiquay/showhoadoncho/" + idhd;
         }
-
 
         // Đưa dữ liệu vào redirectAttributes để hiển thị lại trên giao diện
         redirectAttributes.addFlashAttribute("idHoaDon", idhd);
