@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -62,41 +63,75 @@ public class KhuyenMaiController {
     }
 
     @PostMapping("/add")
-    public String addKhuyenMai(@ModelAttribute KhuyenMai khuyenMai, RedirectAttributes redirectAttributes) {
+    public String addKhuyenMai(@RequestParam("tenKhuyenMai") String tenKhuyenMai,
+                               @RequestParam(value = "giaTriGiam", required = false) Float giaTriGiam,
+                               @RequestParam(value = "dieuKienApDung", required = false) Float dieuKienApDung,
+                               @RequestParam("loaiKhuyenMai") Boolean loaiKhuyenMai,
+                               @RequestParam(value = "mucGiamGiaToiDa", required = false) Float mucGiamGiaToiDa,
+                               @RequestParam(value = "ngayBatDau", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Date ngayBatDau,
+                               @RequestParam(value = "ngayKetThuc", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Date ngayKetThuc,
+                               @RequestParam(value = "soLuong", required = false) Integer soLuong,
+                               RedirectAttributes redirectAttributes) {
 
-        // Kiểm tra các trường bắt buộc
-//        if (khuyenMai.getMaKhuyenMai() == null || khuyenMai.getMaKhuyenMai().isEmpty()) {
-//            redirectAttributes.addFlashAttribute("errorMessage", "Mã khuyến mại không được để trống.");
-//            return "redirect:/khuyenmai/hienthi";
-//        }
-        if (khuyenMai.getTenKhuyenMai() == null || khuyenMai.getTenKhuyenMai().isEmpty()) {
-            redirectAttributes.addFlashAttribute("errorMessage", "Tên khuyến mại không được để trống.");
-            return "redirect:/khuyenmai/hienthi";
-        }
-        if (Objects.isNull(khuyenMai.getGiaTriGiam()) || khuyenMai.getGiaTriGiam() <= 0) {
-            redirectAttributes.addFlashAttribute("errorMessage", "Giá trị giảm phải lớn hơn 0.");
-            return "redirect:/khuyenmai/hienthi";
+        // Kiểm tra tên khuyến mại không được bỏ trống
+        if (tenKhuyenMai == null || tenKhuyenMai.isEmpty()) {
+            redirectAttributes.addFlashAttribute("error", "Tên khuyến mại không được để trống.");
+            return "redirect:/khuyenmai/addshow";
         }
 
-        if (Objects.isNull(khuyenMai.getDieuKienApDung())  || khuyenMai.getDieuKienApDung() <= 0) {
-            redirectAttributes.addFlashAttribute("errorMessage", "Điều kiện áp dụng phải lớn hơn 0.");
-            return "redirect:/khuyenmai/hienthi";
+        // Kiểm tra giá trị giảm phải lớn hơn 0
+        if (giaTriGiam == null || giaTriGiam <= 0) {
+            redirectAttributes.addFlashAttribute("error", "Giá trị giảm phải lớn hơn 0.");
+            return "redirect:/khuyenmai/addshow";
         }
-        if (khuyenMai.getNgayBatDau() == null) {
-            redirectAttributes.addFlashAttribute("errorMessage", "Ngày bắt đầu không được để trống.");
-            return "redirect:/khuyenmai/hienthi";
+
+        // Kiểm tra điều kiện áp dụng và mức giảm giá tối đa nếu cần thiết (nếu có)
+        if (dieuKienApDung != null && dieuKienApDung <= 0) {
+            redirectAttributes.addFlashAttribute("error", "Điều kiện áp dụng phải");
+            return "redirect:/khuyenmai/addshow";
         }
-        if (khuyenMai.getNgayKetThuc() == null) {
-            redirectAttributes.addFlashAttribute("errorMessage", "Ngày kết thúc không được để trống.");
-            return "redirect:/khuyenmai/hienthi";
+
+
+
+        if (tenKhuyenMai == null) {
+            redirectAttributes.addFlashAttribute("error", "Tên khuyến mại không được để trống.");
+            return "redirect:/khuyenmai/addshow";
         }
-        if (khuyenMai.getSoLuong() <= 0) {
-            redirectAttributes.addFlashAttribute("errorMessage", "Số lượng phải lớn hơn 0.");
-            return "redirect:/khuyenmai/hienthi";
+
+        if (giaTriGiam == null ) {
+            redirectAttributes.addFlashAttribute("error", "Giá trị giảm phải lớn hơn 0.");
+            return "redirect:/khuyenmai/addshow";
         }
-        if (!khuyenMai.getNgayKetThuc().after(khuyenMai.getNgayBatDau())) {
-            redirectAttributes.addFlashAttribute("errorMessage", "Ngày kết thúc phải lớn hơn ngày bắt đầu.");
-            return "redirect:/khuyenmai/hienthi";
+
+        if (mucGiamGiaToiDa == null ) {
+            redirectAttributes.addFlashAttribute("error", "Bạn chưa nhập mức giảm tối đa.");
+            return "redirect:/khuyenmai/addshow";
+        }
+
+        if (dieuKienApDung == null || dieuKienApDung <= 0) {
+            redirectAttributes.addFlashAttribute("error", "Điều kiện áp dụng phải lớn hơn 0.");
+            return "redirect:/khuyenmai/addshow";
+        }
+
+        if (ngayBatDau == null) {
+            redirectAttributes.addFlashAttribute("error", "Ngày bắt đầu không được để trống.");
+            return "redirect:/khuyenmai/addshow";
+        }
+
+        if (ngayKetThuc == null) {
+            redirectAttributes.addFlashAttribute("error", "Ngày kết thúc không được để trống.");
+            return "redirect:/khuyenmai/addshow";
+        }
+
+
+        if (soLuong <= 0) {
+            redirectAttributes.addFlashAttribute("error", "Số lượng phải lớn hơn 0.");
+            return "redirect:/khuyenmai/addshow";
+        }
+
+        if (!ngayKetThuc.after(ngayBatDau)) {
+            redirectAttributes.addFlashAttribute("error", "Ngày kết thúc phải lớn hơn ngày bắt đầu.");
+            return "redirect:/khuyenmai/addshow";
         }
 
         Date today = new Date();
@@ -111,26 +146,37 @@ public class KhuyenMaiController {
         calendar.set(Calendar.SECOND, 59);
         Date endOfDay = calendar.getTime();
 
+        KhuyenMai khuyenMai = new KhuyenMai();
+        khuyenMai.setTenKhuyenMai(tenKhuyenMai);
+        khuyenMai.setGiaTriGiam(giaTriGiam);
+        khuyenMai.setDieuKienApDung(dieuKienApDung);
+        khuyenMai.setLoaiKhuyenMai(loaiKhuyenMai);
+        khuyenMai.setMucGiamGiaToiDa(mucGiamGiaToiDa);
+        khuyenMai.setNgayBatDau(ngayBatDau);
+        khuyenMai.setNgayKetThuc(ngayKetThuc);
+        khuyenMai.setSoLuong(soLuong);
         khuyenMai.setMaKhuyenMai(khuyenMaiService.taoMaoKhuyenMai());
         khuyenMai.setNgayTao(new Date());
-        khuyenMai.setLoaiKhuyenMai(true);
+        khuyenMai.setLoaiKhuyenMai(true); // Mặc định giảm cố định
         khuyenMai.setNgaySua(new Date());
 
-        if (khuyenMai.getNgayBatDau().before(endOfDay) && khuyenMai.getNgayKetThuc().after(startOfDay)) {
+        if (ngayBatDau.before(endOfDay) && ngayKetThuc.after(startOfDay)) {
             khuyenMai.setTrangThai(true);
         } else {
             khuyenMai.setTrangThai(false);
         }
+
         try {
             khuyenMaiService.addKhuyenMai(khuyenMai);
-            redirectAttributes.addFlashAttribute("successMessage", "Khuyến mại đã được thêm thành công!");
+            redirectAttributes.addFlashAttribute("success", "Khuyến mại đã được thêm thành công!");
         } catch (IllegalArgumentException e) {
-            redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
+            redirectAttributes.addFlashAttribute("error", e.getMessage());
             return "redirect:/khuyenmai/hienthi";
         }
 
         return "redirect:/khuyenmai/hienthi";
     }
+
 
     @GetMapping("/detail/{id}")
     public String updateKhuyenMai(@PathVariable("id") int id, Model model) {
@@ -144,45 +190,62 @@ public class KhuyenMaiController {
         }
     }
 
-    @PostMapping("/update/{id}")
-    public String updateKhuyenMai(@ModelAttribute KhuyenMai khuyenMai, @PathVariable("id") int id, RedirectAttributes redirectAttributes) {
+    @PostMapping("/update")
+    public String updateKhuyenMai(@RequestParam("id") int id,
+                                  @RequestParam(value = "tenKhuyenMai", required = false )String tenKhuyenMai,
+                                  @RequestParam(value = "giaTriGiam", required = false) Float giaTriGiam,
+                                  @RequestParam(value = "dieuKienApDung", required = false) Float dieuKienApDung,
+                                  @RequestParam("loaiKhuyenMai") Boolean loaiKhuyenMai,
+                                  @RequestParam("trangThai") Boolean trangThai,
+                                  @RequestParam(value = "mucGiamGiaToiDa", required = false) Float mucGiamGiaToiDa,
+                                  @RequestParam(value = "ngayBatDau", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Date ngayBatDau,
+                                  @RequestParam(value = "ngayKetThuc", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Date ngayKetThuc,
+                                  @RequestParam(value = "soLuong", required = false) Integer soLuong,
+                                  RedirectAttributes redirectAttributes) {
 
-        KhuyenMai khuyenMai1 = khuyenMaiService.detailKhuyenMai(id);
-
-        // Kiểm tra các trường bắt buộc
-        if (khuyenMai.getMaKhuyenMai() == null || khuyenMai.getMaKhuyenMai().isEmpty()) {
-            redirectAttributes.addFlashAttribute("errorMessage", "Mã khuyến mại không được để trống.");
-            return "redirect:/khuyenmai/hienthi";
-        }
-        if (khuyenMai.getTenKhuyenMai() == null || khuyenMai.getTenKhuyenMai().isEmpty()) {
-            redirectAttributes.addFlashAttribute("errorMessage", "Tên khuyến mại không được để trống.");
-            return "redirect:/khuyenmai/hienthi";
-        }
-        if (Objects.isNull(khuyenMai.getGiaTriGiam()) || khuyenMai.getGiaTriGiam() <= 0) {
-            redirectAttributes.addFlashAttribute("errorMessage", "Giá trị giảm phải lớn hơn 0.");
-            return "redirect:/khuyenmai/hienthi";
+        // Validate
+        if (tenKhuyenMai == null || tenKhuyenMai.isEmpty()) {
+            redirectAttributes.addFlashAttribute("error", "Tên khuyến mại không được để trống.");
+            return "redirect:/khuyenmai/detail/" + id;
         }
 
-        if (Objects.isNull(khuyenMai.getDieuKienApDung())  || khuyenMai.getDieuKienApDung() <= 0) {
-            redirectAttributes.addFlashAttribute("errorMessage", "Điều kiện áp dụng phải lớn hơn 0.");
-            return "redirect:/khuyenmai/hienthi";
+        if (giaTriGiam == null || giaTriGiam <= 0) {
+            redirectAttributes.addFlashAttribute("error", "Giá trị giảm phải lớn hơn 0.");
+            return "redirect:/khuyenmai/detail/" + id;
         }
-        if (khuyenMai.getNgayBatDau() == null) {
-            redirectAttributes.addFlashAttribute("errorMessage", "Ngày bắt đầu không được để trống.");
-            return "redirect:/khuyenmai/hienthi";
+
+        if (mucGiamGiaToiDa == null) {
+            redirectAttributes.addFlashAttribute("error", "Bạn chưa nhập mức giảm tối đa.");
+            return "redirect:/khuyenmai/detail/" + id;
         }
-        if (khuyenMai.getNgayKetThuc() == null) {
-            redirectAttributes.addFlashAttribute("errorMessage", "Ngày kết thúc không được để trống.");
-            return "redirect:/khuyenmai/hienthi";
+
+        if (dieuKienApDung == null || dieuKienApDung <= 0) {
+            redirectAttributes.addFlashAttribute("error", "Điều kiện áp dụng phải lớn hơn 0.");
+            return "redirect:/khuyenmai/detail/" + id;
         }
-        if (khuyenMai.getSoLuong() <= 0) {
-            redirectAttributes.addFlashAttribute("errorMessage", "Số lượng phải lớn hơn 0.");
-            return "redirect:/khuyenmai/hienthi";
+
+        if (ngayBatDau == null) {
+            redirectAttributes.addFlashAttribute("error", "Ngày bắt đầu không được để trống.");
+            return "redirect:/khuyenmai/detail/" + id;
         }
-        if (!khuyenMai.getNgayKetThuc().after(khuyenMai.getNgayBatDau())) {
-            redirectAttributes.addFlashAttribute("errorMessage", "Ngày kết thúc phải lớn hơn ngày bắt đầu.");
-            return "redirect:/khuyenmai/hienthi";
+
+        if (ngayKetThuc == null) {
+            redirectAttributes.addFlashAttribute("error", "Ngày kết thúc không được để trống.");
+            return "redirect:/khuyenmai/detail/" + id;
         }
+
+        if (soLuong == null || soLuong <= 0) {
+            redirectAttributes.addFlashAttribute("error", "Số lượng phải lớn hơn 0.");
+            return "redirect:/khuyenmai/detail/" + id;
+        }
+
+        if (!ngayKetThuc.after(ngayBatDau)) {
+            redirectAttributes.addFlashAttribute("error", "Ngày kết thúc phải lớn hơn ngày bắt đầu.");
+            return "redirect:/khuyenmai/detail/" + id;
+        }
+
+        // Lấy khuyến mãi cũ để giữ lại thông tin không thay đổi
+        KhuyenMai old = khuyenMaiService.detailKhuyenMai(id);
 
         Date today = new Date();
         Calendar calendar = Calendar.getInstance();
@@ -191,30 +254,36 @@ public class KhuyenMaiController {
         calendar.set(Calendar.MINUTE, 0);
         calendar.set(Calendar.SECOND, 0);
         Date startOfDay = calendar.getTime();
-
         calendar.set(Calendar.HOUR_OF_DAY, 23);
         calendar.set(Calendar.MINUTE, 59);
         calendar.set(Calendar.SECOND, 59);
         Date endOfDay = calendar.getTime();
 
-        khuyenMai.setNgayTao(khuyenMai1.getNgayTao());
+        // Cập nhật thông tin khuyến mãi
+        KhuyenMai khuyenMai = new KhuyenMai();
+        khuyenMai.setId(id);
+        khuyenMai.setTenKhuyenMai(tenKhuyenMai);
+        khuyenMai.setGiaTriGiam(giaTriGiam);
+        khuyenMai.setDieuKienApDung(dieuKienApDung);
+        khuyenMai.setLoaiKhuyenMai(loaiKhuyenMai);
+        khuyenMai.setMucGiamGiaToiDa(mucGiamGiaToiDa);
+        khuyenMai.setNgayBatDau(ngayBatDau);
+        khuyenMai.setNgayKetThuc(ngayKetThuc);
+        khuyenMai.setSoLuong(soLuong);
+        khuyenMai.setMaKhuyenMai(old.getMaKhuyenMai()); // giữ nguyên mã
+        khuyenMai.setNgayTao(old.getNgayTao());
         khuyenMai.setNgaySua(new Date());
 
-        if (khuyenMai.getNgayBatDau().before(endOfDay) && khuyenMai.getNgayKetThuc().after(startOfDay)) {
+        if (trangThai==true) {
             khuyenMai.setTrangThai(true);
         } else {
             khuyenMai.setTrangThai(false);
         }
-        try {
             khuyenMaiService.updateKhuyenMai(khuyenMai, id);
-            redirectAttributes.addFlashAttribute("successMessage", "Khuyến mại đã được cập nhật thành công!");
-        } catch (IllegalArgumentException e) {
-            redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
-            return "redirect:/khuyenmai/hienthi";
-        }
-
+            redirectAttributes.addFlashAttribute("success", "Khuyến mại đã được cập nhật thành công!");
         return "redirect:/khuyenmai/hienthi";
     }
+
 
 
 }
