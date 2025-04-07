@@ -35,9 +35,7 @@ public interface HoaDonOnlService {
     //End hóa đơn khách hàng
 
     // tìm kiếm hóa đơn
-    Page<HoaDon> searchHoaDon(Integer idHoaDon, String tenKhachHang, int page, int size);
-
-    Page<HoaDon> filterHoaDonByDate(Date startDate, Date endDate, int page, int size);
+    Page<HoaDonOnlCustom> searchHoaDon(String keyword, Date startDate, Date endDate, int page, int size);
     // end tìm kiếm hóa đơn
 
 

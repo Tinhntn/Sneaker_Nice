@@ -123,8 +123,13 @@
                         th:attr="disabled=${hoaDon.trangThai==6}" th:if="${hoaDon.trangThai!= 4}"
                         onclick="xacNhanHoaDon()">Xác Nhận</button>
 
-                <button class="btn btn-warning" id="inhoadon" th:attr="disabled=${hoaDon.trangThai == 2}">In hóa
-                    đơn</button>
+                <button class="btn btn-warning" id="inhoadon"
+                        th:attr="disabled=${hoaDon.trangThai == 2}"
+                        th:value="${hoaDon.id}"
+                        onclick="openInvoicePage(this)">
+                    🖨️ In Hóa Đơn
+                </button>
+
 
                 <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel"
                     aria-hidden="true">
@@ -947,7 +952,18 @@
             }
         </script>
 
-
+<!--        In hóa đơn-->
+        <script>
+            function openInvoicePage(button) {
+                var hoaDonId = button.value; // Lấy ID hóa đơn từ value của nút
+                if (hoaDonId) {
+                    var url = "/hoadononline/in-hoadon/" + hoaDonId;
+                    window.open(url, "_blank"); // Mở trang in hóa đơn trong tab mới
+                } else {
+                    alert("Không tìm thấy hóa đơn!");
+                }
+            }
+        </script>
 
 
     </div>
