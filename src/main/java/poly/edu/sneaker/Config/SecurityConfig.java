@@ -38,11 +38,11 @@ public class SecurityConfig {
                                 "/css/**", "/js/**", "/fonts/**", "/scss/**",
                                 "/vendor/**", "/images/**", "/Roboto/**")
                         .permitAll()
-                        .requestMatchers("/gio-hang/**").hasRole("USER")
+                        .requestMatchers("/gio-hang/**","/khachhangonline/**","/hoadononlinekhachhang/**").hasRole("USER")
                         .requestMatchers(HttpMethod.POST, "/dang-nhap", "/quen_mat_khau", "/dang-ky").permitAll()
                         .requestMatchers("/sanpham/**", "/hoadon/**","/hoadononlinekhachhang/**","/hoadononline/**",  "/danh_muc/**","/hang/**",
-                                "/mau_sac/**","/size/**","/chat_lieu/**","/banhangtaiquay/**").hasAnyRole("EMPLOYEE", "ADMIN")
-                        .requestMatchers("/nhanvien/**","/khach_hang/**","/khachhangonline/**","/chuc_vu/**","/thongke/**", "/khuyenmai/**").permitAll()
+                                "/mau_sac/**","/size/**","/chat_lieu/**","/banhangtaiquay/**","/hoadontaiquay/**").hasAnyRole("EMPLOYEE", "ADMIN")
+                        .requestMatchers("/nhanvien/**","/khach_hang/**","/khachhangonline/**","/chuc_vu/**","/thongke/**", "/khuyenmai/**").hasRole("ADMIN")
                 )
                 .formLogin(form -> form
                         .loginPage("/dang-nhap") // Trang đăng nhập tùy chỉnh

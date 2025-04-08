@@ -5,6 +5,9 @@ import com.itextpdf.layout.property.TextAlignment;
 import com.itextpdf.layout.property.UnitValue;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
@@ -48,6 +51,8 @@ public class BanHangTaiQuayController {
     public String bhtq(Model model, @RequestParam(defaultValue = "0") int page) {
         int size = 5;
         //list chitietsanpham phan trang
+
+
         Page<ChiTietSanPham> CTSP = banHangTaiQuayService.DanhSachSanPhamPhanTrang(page,size);
         model.addAttribute("CTSP", CTSP.getContent());
         model.addAttribute("currentPage", page);

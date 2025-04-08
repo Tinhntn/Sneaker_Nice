@@ -4,6 +4,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -16,6 +18,7 @@ import poly.edu.sneaker.Model.KhachHang;
 import poly.edu.sneaker.Model.KhuyenMai;
 import poly.edu.sneaker.Service.HoaDonService;
 import poly.edu.sneaker.Service.KhachHangOnlineService;
+import poly.edu.sneaker.Service.KhachHangService;
 
 import java.util.ArrayList;
 
@@ -24,9 +27,23 @@ import java.util.ArrayList;
 public class KhachHangOnlineController {
     @Autowired
     KhachHangOnlineService khachHangOnlineService;
+    @Autowired
+    KhachHangService khachHangService;
+    public String getCurrentUserEmail() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication != null && authentication.isAuthenticated()) {
+            return authentication.getName(); // Trả về email của người dùng đã đăng nhập
+        }
+        return null; // Nếu chưa đăng nhập, trả về null hoặc giá trị mặc định
+    }
     @GetMapping("/hienthi")
     public String hienthi(Model model, @RequestParam(defaultValue = "0") int page) {
-        KhachHang khachHang = khachHangOnlineService.layKhachHangQuaid(1);
+
+        KhachHang khachHang = khachHangService.findByEmail(getCurrentUserEmail());
+        System.out.println(khachHang.getTenKhachHang());
+        if(khachHang==null){
+            return "/dang-nhap";
+        }
         model.addAttribute("khachhang",khachHang);
         return "user/khachhang/thongtinkhachhang";
     }
