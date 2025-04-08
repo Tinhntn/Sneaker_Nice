@@ -8,11 +8,13 @@ import poly.edu.sneaker.DAO.HoaDonChiTietOnlCustom;
 import poly.edu.sneaker.Model.ChiTietSanPham;
 import poly.edu.sneaker.Model.HoaDon;
 import poly.edu.sneaker.Model.HoaDonChiTiet;
+import poly.edu.sneaker.Model.KhuyenMai;
 import poly.edu.sneaker.Repository.ChiTietSanPhamRepository;
 import poly.edu.sneaker.Repository.HoaDonChiTietOnlRepository;
 import poly.edu.sneaker.Repository.HoaDonOnlRepository;
 import poly.edu.sneaker.Service.HoaDonChiTietOnlService;
 import poly.edu.sneaker.Service.HoaDonOnlService;
+import poly.edu.sneaker.Service.KhuyenMaiService;
 
 import java.util.*;
 
@@ -31,6 +33,8 @@ public class HoaDonChiTietOnlineImplement implements HoaDonChiTietOnlService {
     @Autowired
     HoaDonOnlRepository hoaDonOnlRepository;
 
+    @Autowired
+    KhuyenMaiService khuyenMaiService;
     @Override
     public List<HoaDonChiTietOnlCustom> findByHoaDonId(HoaDon idhoadon) {
         return hoaDonChiTietOnlRepository.findByIdHoaDon(idhoadon);
@@ -176,21 +180,22 @@ public class HoaDonChiTietOnlineImplement implements HoaDonChiTietOnlService {
             if (sanPham.getSoLuong() < chiTiet.getSoLuong()) {
                 throw new RuntimeException("Không đủ số lượng trong kho cho sản phẩm: " + sanPham.getIdSanPham().getTenSanPham());
             }
-
             // Trừ số lượng sản phẩm
             sanPham.setSoLuong(sanPham.getSoLuong() - chiTiet.getSoLuong());
             chiTietSanPhamRepository.save(sanPham);
         }
-
-        // Cập nhật trạng thái hóa đơn
-//        hoaDon.setTrangThai(6); // Trạng thái đã xác nhận
         hoaDonOnlRepository.save(hoaDon);
+        if(hoaDon.getIdKhuyenMai()!=null){
+            KhuyenMai khuyenMai = hoaDon.getIdKhuyenMai();
+            if(khuyenMai!=null){
+                khuyenMai.setDaSuDung(khuyenMai.getDaSuDung()+1);
+                khuyenMaiService.updateKhuyenMai(khuyenMai,khuyenMai.getId());
+                return;
+            }
+        }
     }
 
 
-//    @Override
-//    public HoaDonChiTiet findHoaDonChiTietByIdHoaDon(int idHoaDon) {
-//        return hoaDonChiTietOnlRepository.findHoaDonChiTietByIdHoaDon(idHoaDon);
-//    }
+
 
 }

@@ -136,7 +136,7 @@ public class NhanVienController {
         nhanVien.setDiaChi(diaChi);
         nhanVien.setSdt(sdt);
         nhanVien.setEmail(email);
-        PasswordEncoder passwordEncoder = new BCryptPasswordEncoder(15);
+        PasswordEncoder passwordEncoder = new BCryptPasswordEncoder(10);
         nhanVien.setMatKhau(passwordEncoder.encode(matKhau));
         nhanVien.setNgayTao(new Date());
         nhanVien.setTrangThai(true);
@@ -144,6 +144,7 @@ public class NhanVienController {
         try {
             nhanVienService.saveNhanVien(nhanVien);
             redirectAttributes.addFlashAttribute("successMessage", "Nhân viên được thêm thành công!");
+
         } catch (IllegalArgumentException e) {
             redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
             return "redirect:/nhanvien/addshow";
@@ -168,7 +169,6 @@ public class NhanVienController {
 
     @PostMapping("/update/{id}")
     public String update(@PathVariable("id") Integer idNV,
-                         @RequestParam("manhanvien") String maNhanVien,
                          @RequestParam("hovaten") String hoVaTen,
                          @RequestParam("idcv") String idcv,
                          @RequestParam(value = "ngaysinh", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Date ngaySinh,
@@ -181,10 +181,6 @@ public class NhanVienController {
                          RedirectAttributes redirectAttributes
     ){
 
-        if (maNhanVien == null || maNhanVien.trim().isEmpty()) {
-            redirectAttributes.addFlashAttribute("errorMessage", "Mã nhân viên không được để trống.");
-            return "redirect:/nhanvien/hienthi";
-        }
 
         if (hoVaTen == null || hoVaTen.trim().isEmpty()) {
             redirectAttributes.addFlashAttribute("errorMessage", "Họ và tên không được để trống.");
@@ -235,7 +231,7 @@ public class NhanVienController {
         chucVu.setId(idchucVu);
 
         NhanVien nhanVien = nhanVienService.findNhanVienById(idNV);
-        nhanVien.setMaNhanVien(maNhanVien);
+        nhanVien.setMaNhanVien(nhanVienService.taoMa());
         nhanVien.setHoVaTen(hoVaTen);
         nhanVien.setIdChucVu(chucVu);
         nhanVien.setNgaySinh(ngaySinh);
@@ -243,7 +239,7 @@ public class NhanVienController {
         nhanVien.setDiaChi(diaChi);
         nhanVien.setSdt(sdt);
         nhanVien.setEmail(email);
-        PasswordEncoder passwordEncoder = new BCryptPasswordEncoder(15);
+        PasswordEncoder passwordEncoder = new BCryptPasswordEncoder(10);
         nhanVien.setMatKhau(passwordEncoder.encode(matKhau));
         nhanVien.setNgaySua(new Date());
         nhanVien.setTrangThai(trangThai);

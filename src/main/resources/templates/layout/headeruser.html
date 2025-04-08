@@ -1,5 +1,65 @@
-
 <div th:fragment="header">
+<!--  cs Tìm Kiem an-->
+    <style>
+        /* Trạng thái mặc định (chưa cuộn) */
+        #ftco-navbar .input-group-text,
+        #ftco-navbar .form-control {
+            background-color: #5a5c69 !important; /* Màu nền tối của navbar */
+            color: #333 !important; /* Màu chữ trắng */
+            border: 1px solid  #5a5c69; /* Viền đồng bộ với navbar */
+        }
+
+        #ajaxSearchResults {
+            position: absolute;
+            z-index: 9999; /* Hiển thị trên các phần tử khác */
+            background-color:  #5a5c69; /* Màu nền đồng bộ với navbar */
+            color: #333; /* Màu chữ đồng bộ */
+            border: 1px solid  #5a5c69; /* Viền đồng bộ với navbar */
+        }
+
+        /* Khi cuộn, navbar có class .scrolled -> form đổi sang màu sáng */
+        #ftco-navbar.scrolled .input-group-text,
+        #ftco-navbar.scrolled .form-control {
+            background-color: #ffffff !important; /* Màu nền trắng */
+            color: #333 !important; /* Màu chữ đen */
+            border: 1px solid #ffffff; /* Viền trắng */
+            transition: background-color 0.3s, color 0.3s, border 0.3s;
+        }
+
+        #ftco-navbar.scrolled #ajaxSearchResults {
+            background-color: #ffffff; /* Màu nền trắng khi cuộn */
+            color: #333; /* Màu chữ đen khi cuộn */
+            border: 1px solid #ffffff; /* Viền trắng khi cuộn */
+        }
+
+        /* Placeholder màu sắc đồng bộ */
+        #ftco-navbar .form-control::placeholder {
+            color: #333; /* Placeholder màu trắng */
+        }
+
+        #ftco-navbar.scrolled .form-control::placeholder {
+            color: #333; /* Placeholder màu đen khi cuộn */
+        }
+
+        /* Điều chỉnh kích thước của icon tìm kiếm */
+        .search-icon {
+            font-size: 0.7rem;
+            padding: 0.30rem;
+        }
+
+        /* Điều chỉnh kích thước của input tìm kiếm */
+        .search-input {
+            font-size: 0.7rem;
+            padding: 0.30rem;
+        }
+
+        /* Điều chỉnh kích thước của input-group */
+        .search-group {
+            max-width: 150px;
+        }
+    </style>
+    <!--  cs Tìm Kiem an-->
+
     <!-- Modal Giỏ Hàng -->
     <!-- Overlay che nền khi mở modal -->
     <div id="cartOverlay" class="cart-overlay" onclick="closeCartModal()"></div>
@@ -61,7 +121,7 @@
                     <li class="nav-item active"><a href="/Sneakers_Nice/hienthi" class="nav-link">Trang chủ</a></li>
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" href="#" id="dropdown04" data-toggle="dropdown"
-                            aria-haspopup="true" aria-expanded="false">Catalog</a>
+                           aria-haspopup="true" aria-expanded="false">Catalog</a>
                         <div class="dropdown-menu" aria-labelledby="dropdown04">
                             <a class="dropdown-item" href="shop.html">Shop</a>
                             <a class="dropdown-item" href="product-single.html">Single Product</a>
@@ -73,12 +133,25 @@
                     <li class="nav-item"><a href="about.html" class="nav-link">Giới thiệu</a></li>
                     <li class="nav-item"><a href="blog.html" class="nav-link">Tin tức</a></li>
                     <li class="nav-item"><a href="contact.html" class="nav-link">Liên hệ</a></li>
+                    <form action="javascript:void(0);" class="nav-item">
+                        <div class="input-group search-group">
+                                  <span class="input-group-text border-0 search-icon" id="searchIcon">
+                                      <i class="fa-solid fa-magnifying-glass"></i>
+                                             </span>
+                            <input type="text" class="form-control border-0 search-input" id="searchInput"
+                                   name="keyword"
+                                   placeholder="Tìm kiếm sản phẩm..." autocomplete="off">
+                        </div>
+                        <!-- Kết quả Ajax Search sẽ được load vào đây -->
+                        <div id="ajaxSearchResults" class="smart-search-wrapper" style="display: none;"></div>
+                    </form>
 
                     <li class="nav-item cta cta-colored"><a class="nav-link" id="openModal"
-                            onclick="openCartModal()"><span class="icon-shopping_cart" cart-count> </span>
-                            <span id="cart-count">0</span>
+                                                            onclick="openCartModal()"><span class="icon-shopping_cart"
+                                                                                            cart-count> </span>
+                        <span id="cart-count">0</span>
 
-                        </a></li>
+                    </a></li>
                 </ul>
             </div>
         </div>
@@ -115,7 +188,7 @@
                 <div class="container-fluid p-0">
                     <div class="row d-flex no-gutters slider-text align-items-center justify-content-end"
 
-                        data-scrollax-parent="true">
+                         data-scrollax-parent="true">
                         <img class="one-third order-md-last img-fluid" src="/images/bg_2.png" alt="">
                         <div class="one-forth d-flex align-items-center ftco-animate"
                              data-scrollax=" properties: { translateY: '70%' }">
@@ -136,11 +209,11 @@
                 </div>
             </div>
 
-            
+
         </div>
     </section>
     <script>
-        var notyf = new Notyf({ ripple: true, position: { x: 'right', y: 'top' } });
+        var notyf = new Notyf({ripple: true, position: {x: 'right', y: 'top'}});
         // var message = /*[[${message}]]*/ null;
         // if (message) {
         //     notyf.error(message);
@@ -173,9 +246,6 @@
             loadCartItems();
             window.location.href = "/gio-hang/thanh-toan";
         });
-
-
-
 
 
         function openCartModal() {
@@ -274,10 +344,8 @@
         }
 
 
-
-
         function removeFromCart(productId) {
-            fetch(`/gio-hang/remove/${productId}`, { method: "DELETE" })
+            fetch(`/gio-hang/remove/${productId}`, {method: "DELETE"})
                 .then(() => loadCartItems());
         }
 
@@ -286,12 +354,9 @@
             let quantityElement = document.getElementById(`quantity-${idGHCT}`);
             let newQuantity = parseInt(quantityElement.innerText) + change;
 
-            if (newQuantity < 1) {
+           console.log(newQuantity)
 
-
-            }
-
-            fetch(`/gio-hang/capNhatSoLuongGioHang/${idGHCT}?soLuong=${newQuantity}`, { method: "PUT" })
+            fetch(`/gio-hang/capNhatSoLuongGioHang/${idGHCT}?soLuong=${newQuantity}`, {method: "PUT"})
                 .then(response => {
                     if (!response.ok) {
                         return response.json().then(err => {
@@ -312,4 +377,55 @@
         }
 
     </script>
+<!--   tìm kiem-->
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const searchInput = document.getElementById('searchInput');
+            const searchResults = document.getElementById('ajaxSearchResults');
+
+            // 1) Lắng nghe sự kiện input để gọi Ajax tìm kiếm
+            searchInput.addEventListener('input', function () {
+                const keyword = this.value.trim();
+                if (keyword.length > 0) {
+                    fetch('/Sneakers_Nice/ajax-search?keyword=' + encodeURIComponent(keyword))
+                        .then(response => response.text())
+                        .then(data => {
+                            searchResults.innerHTML = data;
+                            searchResults.style.display = 'block';
+                        })
+                        .catch(error => {
+                            console.error('Error:', error);
+                            searchResults.style.display = 'none';
+                        });
+                } else {
+                    searchResults.innerHTML = '';
+                    searchResults.style.display = 'none';
+                }
+            });
+
+            // 2) Khi click ra ngoài ô input và vùng kết quả (trừ khi click vào link bên trong), ẩn hộp kết quả
+            document.addEventListener('click', function (event) {
+                // Nếu không click vào ô input và không click vào link bên trong searchResults, ẩn hộp
+                if (!searchResults.contains(event.target) && event.target !== searchInput) {
+                    // Nếu click vào phần tử bên trong searchResults nhưng không phải link thì ẩn luôn
+                    if (!event.target.closest('#ajaxSearchResults a')) {
+                        searchResults.style.display = 'none';
+                    }
+                }
+            });
+            searchResults.addEventListener('click', function (e) {
+                const targetLink = e.target.closest('a');
+                if (targetLink) {
+                    // Tăng delay để cho phép chuyển hướng hoàn tất, ví dụ 500ms
+                    setTimeout(() => {
+                        searchResults.style.display = 'none';
+                    }, 500);
+                    // Không gọi e.preventDefault() để cho phép hành vi chuyển hướng mặc định
+                }
+            });
+
+        });
+    </script>
+<!--    tìm kiem -->
+
 </div>

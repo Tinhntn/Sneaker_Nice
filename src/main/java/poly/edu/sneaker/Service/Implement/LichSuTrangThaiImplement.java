@@ -4,14 +4,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-import poly.edu.sneaker.Model.HoaDon;
-import poly.edu.sneaker.Model.TrangThaiDonHang;
+import poly.edu.sneaker.Model.*;
 import poly.edu.sneaker.Repository.LichSuTrangThaiRepository;
-import poly.edu.sneaker.Service.HoaDonService;
-import poly.edu.sneaker.Service.LichSuTrnngThaiService;
+import poly.edu.sneaker.Service.*;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -21,6 +20,12 @@ public class LichSuTrangThaiImplement implements LichSuTrnngThaiService {
     private LichSuTrangThaiRepository lichSuTrangThaiRepository;
     @Autowired
     HoaDonService hoaDonService;
+    @Autowired
+    HoaDonChiTietOnlService hoaDonChiTietOnlService;
+    @Autowired
+    ChiTietSanPhamService chiTietSanPhamService;
+    @Autowired
+    KhuyenMaiService khuyenMaiService;
     @Override
     public Page<TrangThaiDonHang> findAllLichSuTrangThai(Pageable pageable) {
         return lichSuTrangThaiRepository.findAll(pageable);
@@ -53,79 +58,17 @@ public class LichSuTrangThaiImplement implements LichSuTrnngThaiService {
     }
 
     @Override
-    public void doiTrangThaiDonHang(int idHD, String ghiChu, int trangThai) {
+    public boolean doiTrangThaiDonHang(int idHD, String ghiChu, int trangThai) {
         HoaDon hoaDon = hoaDonService.findById(idHD);
-        if(trangThai==0){
-            //Hủy hóa đơn
-            hoaDon.setTrangThai(0);
-            hoaDonService.save(hoaDon);
-            TrangThaiDonHang lichSuTrangThai = new TrangThaiDonHang();
-            lichSuTrangThai.setIdHoaDon(hoaDon);
-            lichSuTrangThai.setTrangThai(hoaDon.getTrangThai());
-            lichSuTrangThai.setNgayCapNhat(new Date());
-            lichSuTrangThai.setGhiChu(ghiChu);
-            lichSuTrangThaiRepository.save(lichSuTrangThai);
-            return;
-        }else if(trangThai==1){
-            hoaDon.setTrangThai(1);
-            hoaDonService.save(hoaDon);
-            TrangThaiDonHang lichSuTrangThai = new TrangThaiDonHang();
-            lichSuTrangThai.setIdHoaDon(hoaDon);
-            lichSuTrangThai.setTrangThai(hoaDon.getTrangThai());
-            lichSuTrangThai.setNgayCapNhat(new Date());
-            lichSuTrangThai.setGhiChu(ghiChu);
-            lichSuTrangThaiRepository.save(lichSuTrangThai);
-            return;
-        }else if(trangThai==2){
-            hoaDon.setTrangThai(2);
-            hoaDonService.save(hoaDon);
-            TrangThaiDonHang lichSuTrangThai = new TrangThaiDonHang();
-            lichSuTrangThai.setIdHoaDon(hoaDon);
-            lichSuTrangThai.setTrangThai(hoaDon.getTrangThai());
-            lichSuTrangThai.setNgayCapNhat(new Date());
-            lichSuTrangThai.setGhiChu(ghiChu);
-            lichSuTrangThaiRepository.save(lichSuTrangThai);
-            return;
-        }else if(trangThai==3){
-            hoaDon.setTrangThai(3);
-            hoaDonService.save(hoaDon);
-            TrangThaiDonHang lichSuTrangThai = new TrangThaiDonHang();
-            lichSuTrangThai.setIdHoaDon(hoaDon);
-            lichSuTrangThai.setTrangThai(hoaDon.getTrangThai());
-            lichSuTrangThai.setNgayCapNhat(new Date());
-            lichSuTrangThai.setGhiChu(ghiChu);
-            lichSuTrangThaiRepository.save(lichSuTrangThai);
-            return;
-        }else if(trangThai==4){
-            hoaDon.setTrangThai(4);
-            hoaDonService.save(hoaDon);
-            TrangThaiDonHang lichSuTrangThai = new TrangThaiDonHang();
-            lichSuTrangThai.setIdHoaDon(hoaDon);
-            lichSuTrangThai.setTrangThai(hoaDon.getTrangThai());
-            lichSuTrangThai.setNgayCapNhat(new Date());
-            lichSuTrangThai.setGhiChu(ghiChu);
-            lichSuTrangThaiRepository.save(lichSuTrangThai);
-            return;
-        }else if(trangThai==5){
-            hoaDon.setTrangThai(5);
-            hoaDonService.save(hoaDon);
-            TrangThaiDonHang lichSuTrangThai = new TrangThaiDonHang();
-            lichSuTrangThai.setIdHoaDon(hoaDon);
-            lichSuTrangThai.setTrangThai(hoaDon.getTrangThai());
-            lichSuTrangThai.setNgayCapNhat(new Date());
-            lichSuTrangThai.setGhiChu(ghiChu);
-            lichSuTrangThaiRepository.save(lichSuTrangThai);
-            return;
-        }else if(trangThai ==6){
-            hoaDon.setTrangThai(6);
-            hoaDonService.save(hoaDon);
-            TrangThaiDonHang lichSuTrangThai = new TrangThaiDonHang();
-            lichSuTrangThai.setIdHoaDon(hoaDon);
-            lichSuTrangThai.setTrangThai(hoaDon.getTrangThai());
-            lichSuTrangThai.setNgayCapNhat(new Date());
-            lichSuTrangThai.setGhiChu(ghiChu);
-            lichSuTrangThaiRepository.save(lichSuTrangThai);
-            return;
-        }
+        hoaDon.setTrangThai(trangThai);
+        hoaDonService.save(hoaDon);
+
+        TrangThaiDonHang lichSuTrangThai = new TrangThaiDonHang();
+        lichSuTrangThai.setIdHoaDon(hoaDon);
+        lichSuTrangThai.setTrangThai(trangThai);
+        lichSuTrangThai.setNgayCapNhat(new Date());
+        lichSuTrangThai.setGhiChu(ghiChu);
+        lichSuTrangThaiRepository.save(lichSuTrangThai);
+        return true;
     }
 }
