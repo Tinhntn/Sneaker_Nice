@@ -65,6 +65,7 @@ public class HoaDonOnlController {
         int size = 5;
 
         Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "ngayTao"));
+
         Page<HoaDonOnlCustom> listHoaDonTatCa = hoaDonOnlService.getHoaDonCustomTatCa(pageable);
         Integer sizeTatCa = listHoaDonTatCa.getContent().size();
         model.addAttribute("sizeTatCa", sizeTatCa);
