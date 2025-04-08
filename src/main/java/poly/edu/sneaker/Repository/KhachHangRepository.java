@@ -21,4 +21,7 @@ public interface KhachHangRepository extends JpaRepository<KhachHang, Integer> {
 
     @Query("SELECT k FROM KhachHang k WHERE k.sdt = :sdt")
     KhachHang TimKhachHangQuaSDT(String sdt);
+
+    @Query("SELECT k FROM KhachHang k WHERE k.id = :id")
+    KhachHang findKhachHangByIdkh(Integer id);
 }

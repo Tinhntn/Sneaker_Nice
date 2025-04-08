@@ -9,6 +9,8 @@ import org.springframework.http.ResponseEntity;
 //import org.springframework.security.core.GrantedAuthority;
 //import org.springframework.security.core.authority.SimpleGrantedAuthority;
 //import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -47,7 +49,7 @@ public class DangNhap {
         return "user/quen_mat_khau";
     }
 
-    @GetMapping("dang_ky_moi")
+    @GetMapping("/dang_ky_moi")
     public String dangKyMoi() {
         return "user/dang_ky_moi";
     }
@@ -91,60 +93,29 @@ public class DangNhap {
         if (body == null || !body.containsKey("email") || !body.containsKey("matKhau")) {
             return ResponseEntity.badRequest().body(Map.of("message", "Thiếu thông tin đăng nhập!"));
         }
-
         String email = body.get("email");
         String matKhau = body.get("matKhau");
-
         if (email == null || matKhau == null || email.isEmpty() || matKhau.isEmpty()) {
             return ResponseEntity.badRequest().body(Map.of("message", "Vui lòng nhập email và mật khẩu"));
         }
 
-        NhanVien nhanVien = nhanVienService.getNhanVienByEmailandMatKhau(email, matKhau);
-        KhachHang khachHang = khachHangService.findByEmailAndMatKhau(email, matKhau);
-
-        if(nhanVien!=null){
+        NhanVien nhanVien = nhanVienService.getNhanVienByEmail(email);
+        KhachHang khachHang = khachHangService.findByEmail(email);
+        PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+        if(nhanVien!=null&&passwordEncoder.matches(matKhau,nhanVien.getMatKhau())){
             session.setAttribute("nhanVienSession",nhanVien);
             return ResponseEntity.ok().body(Map.of("message","Đăng nhập thành công"));
-        }else if(khachHang!=null){
+        }else if(khachHang!=null&&passwordEncoder.matches(matKhau,khachHang.getMatKhau())){
             session.setAttribute("khachHangSession",khachHang);
             return ResponseEntity.ok().body(Map.of("message","Đăng nhập thành công"));
         }else{
 
             return ResponseEntity.badRequest().body(Map.of("message","Sai thông tin đăng nhập"));
         }
-//        Map<String, Object> response = new HashMap<>();
 
-//        if (nhanVien != null) {
-//            httpSession.setAttribute("nhanVien", nhanVien);
-//            List<GrantedAuthority> authorities = List.of(new SimpleGrantedAuthority("ADMIN"));
-//            UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(nhanVien, null, authorities);
-//            SecurityContextHolder.getContext().setAuthentication(authToken);
-//            response.put("message", "Đăng nhập thành công!");
-//            response.put("redirectUrl", "/sanpham/hienthi");
-//            return ResponseEntity.ok(response);
-//        } else if (khachHang != null) {
-//            httpSession.setAttribute("khachHang", khachHang);
-//            response.put("message", "Đăng nhập thành công!");
-//            List<GrantedAuthority> authorities = List.of(new SimpleGrantedAuthority("USER"));
-//            UsernamePasswordAuthenticationToken authToken =
-//                    new UsernamePasswordAuthenticationToken(khachHang, null, authorities);
-//            SecurityContextHolder.getContext().setAuthentication(authToken);
-//            response.put("redirectUrl", "/Sneakers_Nice/hienthi");
-//            return ResponseEntity.ok(response);
-//        }
 
     }
-//
-//    @GetMapping("/check-role")
-//    public ResponseEntity<?> checkRole() {
-//        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-//
-//        if (auth == null || auth.getPrincipal().equals("anonymousUser")) {
-//            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Chưa đăng nhập!");
-//        }
-//
-//        return ResponseEntity.ok("User: " + auth.getName() + ", Roles: " + auth.getAuthorities());
-//    }
+
 
     @PostMapping("/dang-ky")
     @ResponseBody
@@ -152,7 +123,8 @@ public class DangNhap {
         String emailDK = (String) thongTinDangKy.get("emailDK");
         String hoTen = (String) thongTinDangKy.get("hoTen");
         String matKhauDK = (String) thongTinDangKy.get("matKhauDK");
-
+        PasswordEncoder passwordEncoder = new BCryptPasswordEncoder(15);
+        String hashPasswork = passwordEncoder.encode(matKhauDK);
         if (emailDK.isEmpty() || emailDK == null || hoTen.isEmpty() || hoTen == null || matKhauDK.isEmpty() || matKhauDK == null) {
             return ResponseEntity.badRequest().body(Map.of("message", "Vui lòng điền đầy đủ thông tin"));
         }
@@ -170,7 +142,7 @@ public class DangNhap {
         khachHang.setMaKhachHang(khachHangService.taoMaKhachHang());
         khachHang.setTenKhachHang(hoTen);
         khachHang.setEmail(emailDK);
-        khachHang.setMatKhau(matKhauDK);
+        khachHang.setMatKhau(hashPasswork);
         khachHang.setNgayTao(new Date());
         khachHang.setTrangThai(true);
         khachHangService.saveKhachHang(khachHang);

@@ -1,13 +1,16 @@
 package poly.edu.sneaker.Controller;
 
+import com.itextpdf.kernel.pdf.PdfDocument;
+import com.itextpdf.kernel.pdf.PdfWriter;
+import com.itextpdf.layout.Document;
+import com.itextpdf.layout.element.Paragraph;
+import com.itextpdf.layout.element.Table;
+import com.itextpdf.layout.property.TextAlignment;
+import com.itextpdf.layout.property.UnitValue;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.*;
 import org.springframework.format.annotation.DateTimeFormat;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -17,6 +20,13 @@ import poly.edu.sneaker.DAO.HoaDonOnlCustom;
 import poly.edu.sneaker.Model.*;
 import poly.edu.sneaker.Service.*;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.time.ZoneId;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -36,12 +46,19 @@ public class HoaDonOnlController {
 
     @Autowired
     KhachHangService khachHangService;
+
     @Autowired
     HoaDonService hoaDonService;
+
     @Autowired
     SizeService sizeService;
+
     @Autowired
     LichSuTrnngThaiService lichSuTrnngThaiService;
+
+    @Autowired
+    BanHangTaiQuayService banHangTaiQuayService;
+
 
     @GetMapping("/hienthi")
     public String hienthi(Model model, @RequestParam(defaultValue = "0") int page) {
@@ -76,6 +93,10 @@ public class HoaDonOnlController {
         model.addAttribute("sizeht", sizeht);
 
         System.out.println("List hoa don dh: " + listHoaDonDH.getContent().size());
+
+        model.addAttribute("listHoaDonTatCa", listHoaDonTatCa.getContent());
+        model.addAttribute("currentPage", listHoaDonTatCa.getNumber());
+        model.addAttribute("totalPages", listHoaDonTatCa.getTotalPages());
 
         model.addAttribute("listHoaDonDH", listHoaDonDH.getContent());
         model.addAttribute("currentPage", listHoaDonDH.getNumber());
@@ -439,29 +460,85 @@ public class HoaDonOnlController {
     }
 
     // tìm kiếm hóa đơn
-    // API tìm kiếm hóa đơn theo ID hoặc tên khách hàng
-    @GetMapping("/search")
-    public ResponseEntity<Page<HoaDon>> searchHoaDon(
-            @RequestParam(required = false) Integer idHoaDon,
-            @RequestParam(required = false) String tenKhachHang,
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size) {
+    @GetMapping("/hoa-don")
+    public String viewHoaDon(Model model,
+                             @RequestParam(value = "keyword", required = false) String keyword,
+                             @RequestParam(value = "startDate", required = false)
+                             @DateTimeFormat(pattern = "yyyy-MM-dd") Date startDate,
+                             @RequestParam(value = "endDate", required = false)
+                             @DateTimeFormat(pattern = "yyyy-MM-dd") Date endDate,
+                             @RequestParam(value = "page", defaultValue = "0") int page) {
+        int size = 5;
+        Pageable pageable = PageRequest.of(page, size);
 
-        Page<HoaDon> result = hoaDonOnlService.searchHoaDon(idHoaDon, tenKhachHang, page, size);
-        return ResponseEntity.ok(result);
+        // Nếu chỉ có startDate mà không có endDate thì gán endDate là hôm nay
+        if (startDate != null && endDate == null) {
+            endDate = new Date();
+        }
+
+        // Nếu chỉ có endDate mà không có startDate thì gán startDate là ngày rất xa
+        if (startDate == null && endDate != null) {
+            startDate = new GregorianCalendar(1970, Calendar.JANUARY, 1).getTime();
+        }
+
+        Page<HoaDonOnlCustom> listHoaDonTatCa = hoaDonOnlService.searchHoaDon(keyword, startDate, endDate, page, size);
+        Integer sizeTatCa = listHoaDonTatCa.getContent().size();
+        model.addAttribute("sizeTatCa", sizeTatCa);
+        System.out.println("timkiem: " + listHoaDonTatCa.getContent().size());
+
+        model.addAttribute("listHoaDonTatCa", listHoaDonTatCa.getContent());
+        model.addAttribute("currentPage", page);
+        model.addAttribute("totalPages", listHoaDonTatCa.getTotalPages());
+        model.addAttribute("keyword", keyword);
+        model.addAttribute("startDate", startDate);
+        model.addAttribute("endDate", endDate);
+
+        Page<HoaDonOnlCustom> listHoaDonDH = hoaDonOnlService.getHoaDonCustomDH(pageable);
+        Integer sizeDH = listHoaDonDH.getContent().size();
+        model.addAttribute("sizeDH", sizeDH);
+
+        Page<HoaDonOnlCustom> listHoaDonCXN = hoaDonOnlService.getHoaDonOLChoxacnhan(pageable);
+        Integer sizecxn = listHoaDonCXN.getContent().size();
+        model.addAttribute("sizecxn", sizecxn);
+
+        Page<HoaDonOnlCustom> listHoaDonCLH = hoaDonOnlService.getHoaDonOLCholayhang(pageable);
+        Integer sizeclh = listHoaDonCLH.getContent().size();
+        model.addAttribute("sizeclh", sizeclh);
+
+        Page<HoaDonOnlCustom> listHoaDonDG = hoaDonOnlService.getHoaDonCustomDG(pageable);
+        Integer sizedg = listHoaDonDG.getContent().size();
+        model.addAttribute("sizedg", sizedg);
+
+        Page<HoaDonOnlCustom> listHoaDonHT = hoaDonOnlService.getHoaDonCustomHT(pageable);
+        Integer sizeht = listHoaDonHT.getContent().size();
+        model.addAttribute("sizeht", sizeht);
+
+        System.out.println("List hoa don dh: " + listHoaDonDH.getContent().size());
+
+        model.addAttribute("listHoaDonDH", listHoaDonDH.getContent());
+        model.addAttribute("currentPage", listHoaDonDH.getNumber());
+        model.addAttribute("totalPages", listHoaDonDH.getTotalPages());
+
+        model.addAttribute("listHoaDonCXN", listHoaDonCXN.getContent());
+        model.addAttribute("currentPage", listHoaDonCXN.getNumber());
+        model.addAttribute("totalPages", listHoaDonCXN.getTotalPages());
+
+        model.addAttribute("listHoaDonCLH", listHoaDonCLH.getContent());
+        model.addAttribute("currentPage", listHoaDonCLH.getNumber());
+        model.addAttribute("totalPages", listHoaDonCLH.getTotalPages());
+
+        model.addAttribute("listHoaDonDG", listHoaDonDG.getContent());
+        model.addAttribute("currentPage", listHoaDonDG.getNumber());
+        model.addAttribute("totalPages", listHoaDonDG.getTotalPages());
+
+        model.addAttribute("listHoaDonHT", listHoaDonHT.getContent());
+        model.addAttribute("currentPage", listHoaDonHT.getNumber());
+        model.addAttribute("totalPages", listHoaDonHT.getTotalPages());
+
+        return "admin/hoa-don/hoadononline"; // view tương ứng
     }
 
-    // API lọc hóa đơn theo khoảng ngày
-    @GetMapping("/filter")
-    public ResponseEntity<Page<HoaDon>> filterHoaDonByDate(
-            @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") Date startDate,
-            @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") Date endDate,
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size) {
 
-        Page<HoaDon> result = hoaDonOnlService.filterHoaDonByDate(startDate, endDate, page, size);
-        return ResponseEntity.ok(result);
-    }
     //end tìm kiếm hóa đơn
 
 
@@ -475,6 +552,82 @@ public class HoaDonOnlController {
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(Map.of("success", false, "message", e.getMessage()));
         }
+    }
+
+
+    @GetMapping("/in-hoadon/{id}")
+    public String inHoaDon(@PathVariable Integer id, Model model, RedirectAttributes redirectAttributes) {
+        HoaDon hoaDon = banHangTaiQuayService.getHoaDonByID(id);
+        List<HoaDonChiTiet> hdct = hoaDonChiTietOnlService.findHoaDonChiTietByHoaDonId(id);
+
+        if (hoaDon == null) {
+            redirectAttributes.addFlashAttribute("error", "Hóa đơn không tồn tại!");
+            return "redirect:/hoadononline/hienthi"; // Quay về trang bán hàng nếu không tìm thấy
+        }
+
+        System.out.println("list hoa don: " + hdct.size());
+
+        model.addAttribute("hoaDon", hoaDon);
+        model.addAttribute("hdct", hdct);
+        return "admin/hoa-don/inhoadononline";
+    }
+
+
+    @GetMapping("/export/pdf/{id}")
+    public ResponseEntity<byte[]> exportHoaDonPDF(@PathVariable Integer id) throws IOException {
+        HoaDon hoaDon = banHangTaiQuayService.getHoaDonByID(id);
+        List<HoaDonChiTiet> hdct = hoaDonChiTietOnlService.findHoaDonChiTietByHoaDonId(id);
+
+        // Tạo file PDF tạm
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        PdfWriter writer = new PdfWriter(out);
+        PdfDocument pdfDoc = new PdfDocument(writer);
+        Document document = new Document(pdfDoc);
+
+        // Tiêu đề
+        document.add(new Paragraph("HÓA ĐƠN KHÁCH HÀNG")
+                .setBold()
+                .setFontSize(18)
+                .setTextAlignment(TextAlignment.CENTER)
+                .setMarginBottom(20));
+
+        // Thông tin hóa đơn
+        document.add(new Paragraph("Mã Hóa Đơn: " + hoaDon.getMaHoaDon()).setFontSize(12).setMarginBottom(5));
+//        document.add(new Paragraph("Nhân Viên Bán: " + hoaDon.getNhanVien().getTenNhanVien()).setFontSize(12).setMarginBottom(5));
+        document.add(new Paragraph("Tổng Tiền: " + hoaDon.getThanhTien() + " VND").setFontSize(12).setMarginBottom(5));
+        document.add(new Paragraph("Trạng Thái: " + (hoaDon.getTrangThai() == 1 ? "Đã thanh toán" : "Chưa thanh toán"))
+                .setFontSize(12).setMarginBottom(20));
+
+        // Tạo bảng chi tiết hóa đơn
+        Table table = new Table(4);
+        table.setWidth(UnitValue.createPercentValue(100));  // Cập nhật chiều rộng bảng thành 100%
+        table.addHeaderCell("Tên Sản Phẩm");
+        table.addHeaderCell("Số Lượng");
+        table.addHeaderCell("Đơn Giá");
+        table.addHeaderCell("Thành Tiền");
+
+        // Lặp qua các chi tiết hóa đơn và thêm vào bảng
+        for (HoaDonChiTiet ct : hdct) {
+            table.addCell(ct.getIdChiTietSanPham().getIdSanPham().getTenSanPham());
+            table.addCell(String.valueOf(ct.getSoLuong()));
+            table.addCell(String.valueOf(ct.getDonGia()));
+            table.addCell(String.valueOf(ct.getSoLuong() * ct.getDonGia()));
+        }
+
+        // Thêm bảng vào tài liệu PDF
+        document.add(table);
+
+        // Đóng tài liệu PDF
+        document.close();
+
+        // Trả về PDF
+        byte[] pdfBytes = out.toByteArray();
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_PDF);
+        headers.setContentDisposition(ContentDisposition.builder("inline")
+                .filename("hoadon_" + id + ".pdf").build());
+
+        return new ResponseEntity<>(pdfBytes, headers, HttpStatus.OK);
     }
 
 

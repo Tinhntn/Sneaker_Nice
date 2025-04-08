@@ -6,7 +6,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
-import poly.edu.sneaker.DAO.HoaDonChiTietOnlCustom;
 import poly.edu.sneaker.DAO.HoaDonOnlCustom;
 import poly.edu.sneaker.Model.HoaDon;
 import poly.edu.sneaker.Repository.HoaDonOnlRepository;
@@ -92,15 +91,9 @@ public class HoaDonOnlineImplement implements HoaDonOnlService {
     }
 
     @Override
-    public Page<HoaDon> searchHoaDon(Integer idHoaDon, String tenKhachHang, int page, int size) {
+    public Page<HoaDonOnlCustom> searchHoaDon(String keyword, Date startDate, Date endDate, int page, int size) {
         Pageable pageable = PageRequest.of(page, size, Sort.by("ngayTao").descending());
-        return hoaDonOnlRepository.searchHoaDon(idHoaDon, tenKhachHang, pageable);
-    }
-
-    @Override
-    public Page<HoaDon> filterHoaDonByDate(Date startDate, Date endDate, int page, int size) {
-        Pageable pageable = PageRequest.of(page, size, Sort.by("ngayTao").descending());
-        return hoaDonOnlRepository.filterHoaDonByDate(startDate, endDate, pageable);
+        return hoaDonOnlRepository.searchHoaDonCustom(keyword, startDate, endDate, pageable);
     }
 
 
