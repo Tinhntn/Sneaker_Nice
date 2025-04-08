@@ -5,6 +5,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -65,7 +67,7 @@ public class NhanVienController {
 
 
     @PostMapping("/add")
-    public String add(@RequestParam("manhanvien") String maNhanVien,
+    public String add(
                       @RequestParam("hovaten") String hoVaTen,
                       @RequestParam("idcv") String idcv,
                       @RequestParam(value = "ngaysinh", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Date ngaySinh,
@@ -77,64 +79,56 @@ public class NhanVienController {
                       RedirectAttributes redirectAttributes
     ){
 
-        System.out.println("hoten: " + hoVaTen);
-        System.out.println("idcv: " + idcv);
-
-        if (maNhanVien == null || maNhanVien.trim().isEmpty()) {
-            redirectAttributes.addFlashAttribute("errorMessage", "Mã nhân viên không được để trống.");
-            return "redirect:/nhanvien/hienthi";
-        }
 
         if (hoVaTen == null || hoVaTen.trim().isEmpty()) {
             redirectAttributes.addFlashAttribute("errorMessage", "Họ và tên không được để trống.");
-            return "redirect:/nhanvien/hienthi";
+            return "redirect:/nhanvien/addshow";
         }
+//
+//        if (ngaySinh == null) {
+//            redirectAttributes.addFlashAttribute("errorMessage", "Ngày sinh không được để trống.");
+//            return "redirect:/nhanvien/hienthi";
+//        }
+//
+//        if (diaChi == null || diaChi.trim().isEmpty()) {
+//            redirectAttributes.addFlashAttribute("errorMessage", "Địa chỉ không được để trống.");
+//            return "redirect:/nhanvien/hienthi";
+//        }
+//
+//        if (sdt == null || sdt.trim().isEmpty()) {
+//            redirectAttributes.addFlashAttribute("errorMessage", "Số điện thoại không được để trống.");
+//            return "redirect:/nhanvien/hienthi";
+//        }
+//        if (!sdt.matches(SDT_PATTERN)) {
+//            redirectAttributes.addFlashAttribute("errorMessage", "Số điện thoại không đúng định dạng.");
+//            return "redirect:/nhanvien/hienthi";
+//        }
+//
+//        if (email == null || email.trim().isEmpty()) {
+//            redirectAttributes.addFlashAttribute("errorMessage", "Email không được để trống.");
+//            return "redirect:/nhanvien/hienthi";
+//        }
+//
+//        if (!email.matches(EMAIL_PATTERN)) {
+//            redirectAttributes.addFlashAttribute("errorMessage", "Email không đúng định dạng.");
+//            return "redirect:/nhanvien/hienthi";
+//        }
+//
+//        if (matKhau == null || matKhau.trim().isEmpty()) {
+//            redirectAttributes.addFlashAttribute("errorMessage", "Mật khẩu không được để trống.");
+//            return "redirect:/nhanvien/hienthi";
+//        }
+//        if (!matKhau.matches(PASSWORD_PATTERN)) {
+//            redirectAttributes.addFlashAttribute("errorMessage", "Mật khẩu không đúng định dạng.");
+//            return "redirect:/nhanvien/hienthi";
+//        }
 
-        if (ngaySinh == null) {
-            redirectAttributes.addFlashAttribute("errorMessage", "Ngày sinh không được để trống.");
-            return "redirect:/nhanvien/hienthi";
-        }
-
-        if (diaChi == null || diaChi.trim().isEmpty()) {
-            redirectAttributes.addFlashAttribute("errorMessage", "Địa chỉ không được để trống.");
-            return "redirect:/nhanvien/hienthi";
-        }
-
-        if (sdt == null || sdt.trim().isEmpty()) {
-            redirectAttributes.addFlashAttribute("errorMessage", "Số điện thoại không được để trống.");
-            return "redirect:/nhanvien/hienthi";
-        }
-        if (!sdt.matches(SDT_PATTERN)) {
-            redirectAttributes.addFlashAttribute("errorMessage", "Số điện thoại không đúng định dạng.");
-            return "redirect:/nhanvien/hienthi";
-        }
-
-        if (email == null || email.trim().isEmpty()) {
-            redirectAttributes.addFlashAttribute("errorMessage", "Email không được để trống.");
-            return "redirect:/nhanvien/hienthi";
-        }
-
-        if (!email.matches(EMAIL_PATTERN)) {
-            redirectAttributes.addFlashAttribute("errorMessage", "Email không đúng định dạng.");
-            return "redirect:/nhanvien/hienthi";
-        }
-
-        if (matKhau == null || matKhau.trim().isEmpty()) {
-            redirectAttributes.addFlashAttribute("errorMessage", "Mật khẩu không được để trống.");
-            return "redirect:/nhanvien/hienthi";
-        }
-        if (!matKhau.matches(PASSWORD_PATTERN)) {
-            redirectAttributes.addFlashAttribute("errorMessage", "Mật khẩu không đúng định dạng.");
-            return "redirect:/nhanvien/hienthi";
-        }
 
         Integer idchucVu = Integer.parseInt(idcv);
-
         ChucVu chucVu = new ChucVu();
         chucVu.setId(idchucVu);
-
         NhanVien nhanVien = new NhanVien();
-        nhanVien.setMaNhanVien(maNhanVien);
+        nhanVien.setMaNhanVien(nhanVienService.taoMa());
         nhanVien.setHoVaTen(hoVaTen);
         nhanVien.setIdChucVu(chucVu);
         nhanVien.setNgaySinh(ngaySinh);
@@ -142,16 +136,18 @@ public class NhanVienController {
         nhanVien.setDiaChi(diaChi);
         nhanVien.setSdt(sdt);
         nhanVien.setEmail(email);
-        nhanVien.setMatKhau(matKhau);
+        PasswordEncoder passwordEncoder = new BCryptPasswordEncoder(10);
+        nhanVien.setMatKhau(passwordEncoder.encode(matKhau));
         nhanVien.setNgayTao(new Date());
         nhanVien.setTrangThai(true);
 
         try {
             nhanVienService.saveNhanVien(nhanVien);
             redirectAttributes.addFlashAttribute("successMessage", "Nhân viên được thêm thành công!");
+
         } catch (IllegalArgumentException e) {
             redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
-            return "redirect:/nhanvien/hienthi";
+            return "redirect:/nhanvien/addshow";
         }
         return "redirect:/nhanvien/hienthi";
     }
@@ -173,7 +169,6 @@ public class NhanVienController {
 
     @PostMapping("/update/{id}")
     public String update(@PathVariable("id") Integer idNV,
-                         @RequestParam("manhanvien") String maNhanVien,
                          @RequestParam("hovaten") String hoVaTen,
                          @RequestParam("idcv") String idcv,
                          @RequestParam(value = "ngaysinh", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Date ngaySinh,
@@ -186,10 +181,6 @@ public class NhanVienController {
                          RedirectAttributes redirectAttributes
     ){
 
-        if (maNhanVien == null || maNhanVien.trim().isEmpty()) {
-            redirectAttributes.addFlashAttribute("errorMessage", "Mã nhân viên không được để trống.");
-            return "redirect:/nhanvien/hienthi";
-        }
 
         if (hoVaTen == null || hoVaTen.trim().isEmpty()) {
             redirectAttributes.addFlashAttribute("errorMessage", "Họ và tên không được để trống.");
@@ -240,7 +231,7 @@ public class NhanVienController {
         chucVu.setId(idchucVu);
 
         NhanVien nhanVien = nhanVienService.findNhanVienById(idNV);
-        nhanVien.setMaNhanVien(maNhanVien);
+        nhanVien.setMaNhanVien(nhanVienService.taoMa());
         nhanVien.setHoVaTen(hoVaTen);
         nhanVien.setIdChucVu(chucVu);
         nhanVien.setNgaySinh(ngaySinh);
@@ -248,7 +239,8 @@ public class NhanVienController {
         nhanVien.setDiaChi(diaChi);
         nhanVien.setSdt(sdt);
         nhanVien.setEmail(email);
-        nhanVien.setMatKhau(matKhau);
+        PasswordEncoder passwordEncoder = new BCryptPasswordEncoder(10);
+        nhanVien.setMatKhau(passwordEncoder.encode(matKhau));
         nhanVien.setNgaySua(new Date());
         nhanVien.setTrangThai(trangThai);
 

@@ -34,7 +34,7 @@ import java.util.stream.Collectors;
 
 @Controller
 @RequestMapping("/Sneakers_Nice")
-public class Home {
+public class HomeController {
     @Autowired
     private ChiTietSanPhamService chiTietSanPhamService;
     @Autowired
@@ -172,10 +172,6 @@ public class Home {
         List<String> availableHang = chiTietSanPhamService.findDistinctHangByChatLieu(chatLieu);
         model.addAttribute("availableChatLieu", availableChatLieu);
         model.addAttribute("availableHang", availableHang);
-
-        // Thêm danh sách sản phẩm mới
-        Page<ChiTietSanPham> newProducts = chiTietSanPhamService.findChiTietSanPhamJustOne(PageRequest.of(0, 12));
-        model.addAttribute("listSanPham", newProducts);
 
         return "user/sanpham/trangchu";
     }

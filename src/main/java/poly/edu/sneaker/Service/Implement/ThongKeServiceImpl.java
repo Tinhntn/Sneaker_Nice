@@ -106,18 +106,16 @@ import java.util.*;
         stats.put("hd", hd);
 
         // Lấy danh sách top 5 sản phẩm bán chạy
-        List<SanPhamBanChayResponse> listSanPhamBanChay = hoaDonChiTietOnlRepository.findTop5SanPhamBanChay();
-        if (listSanPhamBanChay == null) {
-            listSanPhamBanChay = new ArrayList<>();
-        }
+        // Lấy danh sách top 5 sản phẩm bán chạy trong ngày hôm nay
+        List<SanPhamBanChayResponse> listSanPhamBanChay = hoaDonChiTietOnlRepository.getTop5SanPhamBanChay(todayStart, todayEnd, null);
         stats.put("lstSanPhamBanChay", listSanPhamBanChay);
 
         return stats;
     }
 
     @Override
-    public List<SanPhamBanChayResponse> getTop5SanPhamBanChay() {
-        return hoaDonChiTietOnlRepository.findTop5SanPhamBanChay();
+    public List<SanPhamBanChayResponse> getTop5SanPhamBanChay(Date startDate, Date endDate, Long loaiSanPham) {
+        return hoaDonChiTietOnlRepository.getTop5SanPhamBanChay(startDate, endDate, loaiSanPham);
     }
 
     @Override
@@ -162,21 +160,22 @@ import java.util.*;
             Date start = sdf.parse(startDateStr);
             Date end = sdf.parse(endDateStr);
 
-            // Lấy doanh thu tổng hợp (gộp cả online và offline)
+            // Đặt thời gian của start là 00:00:00
+            start = getStartOfDay(start);
+
+            // Đặt thời gian của end là 23:59:59
+            end = getEndOfDay(end);
+
+            // Lấy doanh thu tổng hợp
             Double doanhThu = thongKeResponsitory.getRevenueBetweenDates(start, end);
-            // Lấy số hóa đơn tổng
             Long soDonHang = thongKeResponsitory.getOrderCountBetweenDates(start, end);
-            // Lấy số hóa đơn thành công
             Long soDonHangThanhCong = thongKeResponsitory.getSuccessfulOrderCountBetweenDates(start, end);
-            // Lấy số hóa đơn hủy
             Long soDonHangHuy = thongKeResponsitory.getCancelledOrderCountBetweenDates(start, end);
-            // Lấy tổng số sản phẩm bán ra
             Long totalProducts = hoaDonChiTietOnlRepository.getTotalProductSoldBetweenDates(start, end);
             int soSanPham = (totalProducts != null) ? totalProducts.intValue() : 0;
 
-            // Tính số lượng đơn hàng theo trạng thái (map hd)
+            // Tính số lượng đơn hàng theo trạng thái
             Map<String, Integer> hd = new HashMap<>();
-            // Giả sử trạng thái đơn hàng từ 0 đến 6
             for (int i = 0; i <= 6; i++) {
                 hd.put("trangThai_" + i, 0);
             }
@@ -187,22 +186,15 @@ import java.util.*;
                 hd.put("trangThai_" + trangThai, count.intValue());
             }
 
-            // Tạo DTO mới có chứa dữ liệu chi tiết theo trạng thái
-            ThongKeDTO tk = new ThongKeDTO(doanhThu, soSanPham,
-                    soDonHangThanhCong.intValue(), soDonHangHuy.intValue(), hd);
-
             // Đưa dữ liệu vào map thống kê
-            stats.put("doanhThu", tk.getDoanhThu());
-            stats.put("soLuongSanPham", tk.getSoSanPham());
-            stats.put("soLuongHoaDonThanhCong", tk.getSoHoaDonThanhCong());
-            stats.put("soluongHoaDonHuy", tk.getSoHoaDonHuy());
-            stats.put("hd", tk.getHd());
+            stats.put("doanhThu", doanhThu);
+            stats.put("soLuongSanPham", soSanPham);
+            stats.put("soLuongHoaDonThanhCong", soDonHangThanhCong);
+            stats.put("soluongHoaDonHuy", soDonHangHuy);
+            stats.put("hd", hd);
 
-            // Ngoài ra, nếu bạn có thêm dữ liệu như danh sách sản phẩm bán chạy thì cũng thêm vào
-            List<SanPhamBanChayResponse> listSanPhamBanChay = hoaDonChiTietOnlRepository.findTop5SanPhamBanChay();
-            if (listSanPhamBanChay == null) {
-                listSanPhamBanChay = new ArrayList<>();
-            }
+            // Lấy danh sách top 5 sản phẩm bán chạy trong khoảng ngày
+            List<SanPhamBanChayResponse> listSanPhamBanChay = hoaDonChiTietOnlRepository.getTop5SanPhamBanChay(start, end, null);
             stats.put("lstSanPhamBanChay", listSanPhamBanChay);
 
             return stats;
@@ -212,7 +204,6 @@ import java.util.*;
             return stats;
         }
     }
-
 
 
     private Map<String, Object> getStatisticsBetweenDates(Date start, Date end) {
@@ -242,12 +233,9 @@ import java.util.*;
         }
         stats.put("hd", hd);
 
-        List<SanPhamBanChayResponse> listSanPhamBanChay = hoaDonChiTietOnlRepository.findTop5SanPhamBanChay();
-        if (listSanPhamBanChay == null) {
-            listSanPhamBanChay = new ArrayList<>();
-        }
+      // Lấy danh sách top 5 sản phẩm bán chạy theo loại thời gian
+        List<SanPhamBanChayResponse> listSanPhamBanChay = hoaDonChiTietOnlRepository.getTop5SanPhamBanChay(start, end, null);
         stats.put("lstSanPhamBanChay", listSanPhamBanChay);
-
         return stats;
     }
 

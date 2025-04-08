@@ -5,6 +5,8 @@ import com.itextpdf.layout.property.TextAlignment;
 import com.itextpdf.layout.property.UnitValue;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -18,6 +20,8 @@ import com.itextpdf.layout.Document;
 import com.itextpdf.layout.element.*;
 import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
+import poly.edu.sneaker.Service.NhanVienService;
+
 import java.io.*;
 
 
@@ -31,6 +35,15 @@ public class BanHangTaiQuayController {
     BanHangTaiQuayService banHangTaiQuayService ;
     @Autowired
     HoaDonService hoaDonService;
+    @Autowired
+    NhanVienService nhanVienService;
+    public String getCurrentUserEmail() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication != null && authentication.isAuthenticated()) {
+            return authentication.getName(); // Trả về email của người dùng đã đăng nhập
+        }
+        return null; // Nếu chưa đăng nhập, trả về null hoặc giá trị mặc định
+    }
     @GetMapping("/hienthi")
     public String bhtq(Model model, @RequestParam(defaultValue = "0") int page) {
         int size = 5;
@@ -107,6 +120,8 @@ public class BanHangTaiQuayController {
     public String taoHoaDon(@ModelAttribute("hoadon") HoaDon hd, Model model,
                             RedirectAttributes redirectAttributes,
                             @RequestParam(defaultValue = "0") int page) {
+        NhanVien nhanVien = nhanVienService.getNhanVienByEmail(getCurrentUserEmail());
+
         List<HoaDon> list = banHangTaiQuayService.getAllHoaDon();
         if (list.size() >= 5) {
             redirectAttributes.addFlashAttribute("error", "Chỉ được tạo tối đa 5 hóa đơn chờ.");
@@ -117,6 +132,7 @@ public class BanHangTaiQuayController {
             Random random = new Random();
             int soNgauNhien = 10000 + random.nextInt(90000); // Sinh số từ 10000 đến 99999
             String maHoaDon = "HD" + soNgauNhien; // Kết hợp tiền tố "HD"
+            hd.setIdNhanVien(nhanVien);
             hd.setMaHoaDon(maHoaDon); // Gán mã hóa đơn cho đối tượng
             hd.setLoaiHoaDon(false);
             hd.setThanhTien(0);

@@ -4,6 +4,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -95,6 +97,8 @@ public class KhachHangController {
             }
             khachHang.setNgayTao(new Date());
             khachHang.setNgaySua(new Date());
+            PasswordEncoder passwordEncoder = new BCryptPasswordEncoder(10);
+            khachHang.setMatKhau(passwordEncoder.encode(khachHang.getMatKhau()));
             khachHangService.saveKhachHang(khachHang);
             redirectAttributes.addFlashAttribute("successMessage", "Khách hàng được thêm thành công!");
         } catch (Exception e) {
@@ -146,6 +150,8 @@ public class KhachHangController {
             } else {
                 khachHang.setHinhAnh(existingKhachHang.getHinhAnh());
             }
+            PasswordEncoder passwordEncoder = new BCryptPasswordEncoder(10);
+            khachHang.setMatKhau(passwordEncoder.encode(khachHang.getMatKhau()));
             khachHangService.updateKhachHang(khachHang, id);
             redirectAttributes.addFlashAttribute("successMessage", "Cập nhật khách hàng thành công!");
         } catch (Exception e) {

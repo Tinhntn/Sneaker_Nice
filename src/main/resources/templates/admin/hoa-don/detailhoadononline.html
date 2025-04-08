@@ -93,6 +93,9 @@
                         <span th:if="${ls.trangThai == 0}" class="fa fa-times"></span>
                         <span th:if="${ls.trangThai == 4}" class="fa fa-box"></span>
                         <span th:if="${ls.trangThai == 5}" class="fa fa-check-square"></span>
+                        <span th:if="${ls.trangThai == 6}" class="fa fa-times-circle"></span>
+                        <span th:if="${ls.trangThai == 10}" class="fa fa-venus-double"></span>
+
                     </div>
                     <span class="text-secondary" th:text="${ls.trangThai == 1 ? 'Đã Thanh Toán' :
                                                                 (ls.trangThai == 2 ? 'Chờ xác nhận' :
@@ -100,7 +103,8 @@
                                                                 (ls.trangThai == 0 ? 'Chưa thanh toán' :
                                                                 (ls.trangThai == 4 ? 'Đang giao' :
                                                                 (ls.trangThai == 5 ? 'Đã giao' :
-                                                                'Đã hủy')))))}"></span>
+                                                                (ls.trangThai == 10 ? 'Đã thanh toán - chờ xác nhận':
+                                                                'Đã hủy'))))))}"></span>
                     <br>
                     <span th:text="${#dates.format(ls.ngayCapNhat,'dd/MM/yyyy hh:mm:ss')}"></span>
                     <div th:if="${!stat.last}" class="arrow">→</div>
@@ -111,16 +115,23 @@
 
             <div class="col-4">
                 <button type="button" class="btn btn-danger" id="huydon" data-bs-toggle="modal"
-                    data-bs-target="#modalhuyhoadon" th:attr="disabled=${hoaDon.trangThai==6}"
-                    th:if="${hoaDon.trangThai != 5}">
+                    data-bs-target="#modalhuyhoadon" th:attr="disabled=${hoaDon.trangThai==6 or hoaDon.trangThai==5}"
+                    >
                     Hủy đơn
                 </button>
                 <button class="btn btn-success" id="xacnhan" data-bs-toggle="modal" data-bs-target="#exampleModal"
-                    th:attr="disabled=${hoaDon.trangThai==6}" th:if="${hoaDon.trangThai!= 5}">Xác
-                    Nhận</button>
-                <button class="btn btn-warning" id="inhoadon" th:attr="disabled=${hoaDon.trangThai == 2}">In hóa
-                    đơn</button>
+                        th:attr="disabled=${hoaDon.trangThai==6}" 
+                        onclick="xacNhanHoaDon()">Đổi trạng thái</button>
 
+                <button class="btn btn-warning" id="inhoadon"
+                        th:attr="disabled=${hoaDon.trangThai == 2}"
+                        th:value="${hoaDon.id}"
+                        onclick="openInvoicePage(this)">
+                    🖨️ In Hóa Đơn
+                </button>
+                <button class="btn btn-danger" id="muaLaiDonHang" th:attr="disabled=${hoaDon.trangThai!=5}">
+                    Mua lại đơn hàng
+                </button>
                 <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel"
                     aria-hidden="true">
                     <div class="modal-dialog">
@@ -139,7 +150,7 @@
                                         <label for="status">Trạng thái:</label>
                                         <select class="form-control" id="status">
                                             <option value="" disabled selected>Vui lòng chọn trạng thái</option>
-                                            <option th:if="${hoaDon.trangThai == 2}" th:value="2">Xác
+                                            <option th:if="${hoaDon.trangThai == 2||hoaDon.trangThai==10}" th:value="2">Xác
                                                 nhận</option>
                                             <option th:if="${hoaDon.trangThai == 3}" th:value="3">Đã
                                                 lấy hàng</option>
@@ -208,16 +219,8 @@
                     </tr>
                 </tbody>
             </table>
-            <!--        <form id="huy" th:action="@{/hoadononline/huydh/{id}(id=${hdcxn.id})}" method="post">&ndash;&gt;-->
-            <!--        <input type="hidden" id="ghichu" name="ghichu" value="">-->
-            <!--        <button id="cfhuy" type="button" class="btn btn-outline-secondary">Huỷ</button>-->
-            <!--        </form>-->
-            <!--        <form id="xacnhan" th:action="@{/hoadononline/xacnhanhoadoncho/{id}(id=${hdcxn.id})}" method="post">-->
-            <!--            <input type="hidden" id="" name="ghichu" value="">-->
-            <!--            <button id="cfxacnhan" type="button" class="btn btn-outline-secondary">Xác nhận</button>-->
-            <!--        </form>-->
         </div>
-    
+
         <div class="container-fluid">
             <div class="card shadow container">
                 <h2>Thông tin đơn hàng</h2>
@@ -273,11 +276,8 @@
                     <div th:if="${errorMessage}" class="alert alert-danger" role="alert">
                         <p th:text="${errorMessage}"></p>
                     </div>
-
                 </div>
             </div>
-
-
         </div>
 
         <div class="container-fluid">
@@ -285,7 +285,7 @@
                 <div class="card-header">
                     <button type="button" class="btn btn-primary mb-3" data-bs-toggle="modal"
                         data-bs-target="#modalSanPham"
-                        th:attr="disabled=${hoaDon == null or hoaDon.trangThai != 2 ? 'disabled' : null}">
+                        th:attr="disabled=${hoaDon == null or(hoaDon.trangThai != 2 and hoaDon.trangThai!=3)? 'disabled' : null}">
                         Thêm sản phẩm
                     </button>
                 </div>
@@ -320,7 +320,7 @@
                                     <input type="number" class="form-control soLuongInput"
                                         style="width: 80px; display: inline-block;" th:value="${chiTietHoaDon.soLuong}"
                                         min="1"
-                                        th:attr="disabled=${hoaDon == null or hoaDon.trangThai != 2 ? 'disabled' : null}" />
+                                        th:attr="disabled=${hoaDon == null or (hoaDon.trangThai != 2 and hoaDon.trangThai!=3) ? 'disabled' : null}" />
                                 </td>
                                 <td style="text-align: center;">
                                     <span th:text="${chiTietHoaDon.idChiTietSanPham.idSize.tenSize}"></span>
@@ -329,13 +329,13 @@
                                     <button class="btn btn-danger btnXoaSanPham"
                                         th:data-id-hoa-don="${chiTietHoaDon.idHoaDon.id}"
                                         th:data-id-san-pham="${chiTietHoaDon.idChiTietSanPham.id}"
-                                        th:attr="disabled=${hoaDon == null or hoaDon.trangThai != 2 ? 'disabled' : null}">
+                                        th:attr="disabled=${hoaDon == null or (hoaDon.trangThai != 2 and hoaDon.trangThai!=3)? 'disabled' : null}">
                                         Xóa
                                     </button>
                                     <button class="btn btn-primary btnCapNhatSanPham"
                                         th:data-id-hoa-don="${chiTietHoaDon.idHoaDon.id}"
                                         th:data-id-san-pham="${chiTietHoaDon.idChiTietSanPham.id}"
-                                        th:attr="disabled=${hoaDon == null or hoaDon.trangThai != 2 ? 'disabled' : null}">
+                                        th:attr="disabled=${hoaDon == null or (hoaDon.trangThai != 2 and hoaDon.trangThai!=3) ? 'disabled' : null}">
                                         Cập nhật
                                     </button>
                                 </td>
@@ -474,22 +474,24 @@
                             </tbody>
                         </table>
                     </div>
-                        <nav aria-label="Page navigation" class="mt-3">
-                            <ul class="pagination justify-content-center">
-                                <li class="page-item" th:classappend="${currentPageCTSP == 0} ? 'disabled' : ''">
-                                    <a th:href="@{/hoaDon/detailhoadononlinect(page=${currentPageCTSP - 1}, size=${10})}"
-                                        class="page-link">«</a>
-                                </li>
-                                <li class="page-item" th:each="i : ${#numbers.sequence(0, totalPagesCTSP - 1)}"
-                                    th:classappend="${i == currentPageCTSP} ? 'active' : ''">
-                                    <a th:href="@{/hoaDon/detailhoadononlinect(page=${i}, size=${10})}" class="page-link"
-                                        th:text="${i + 1}"></a>
-                                </li>
-                                <li class="page-item" th:classappend="${currentPageCTSP + 1 == totalPagesCTSP} ? 'disabled' : ''">
-                                    <a th:href="@{/hoaDon/detailhoadononlinect(page=${currentPageCTSP+1}, size=${10})}" class="page-link">»</a>
-                                </li>
-                            </ul>
-                        </nav>
+                    <nav aria-label="Page navigation" class="mt-3">
+                        <ul class="pagination justify-content-center">
+                            <li class="page-item" th:classappend="${currentPageCTSP == 0} ? 'disabled' : ''">
+                                <a th:href="@{/hoaDon/detailhoadononlinect(page=${currentPageCTSP - 1}, size=${10})}"
+                                    class="page-link">«</a>
+                            </li>
+                            <li class="page-item" th:each="i : ${#numbers.sequence(0, totalPagesCTSP - 1)}"
+                                th:classappend="${i == currentPageCTSP} ? 'active' : ''">
+                                <a th:href="@{/hoaDon/detailhoadononlinect(page=${i}, size=${10})}" class="page-link"
+                                    th:text="${i + 1}"></a>
+                            </li>
+                            <li class="page-item"
+                                th:classappend="${currentPageCTSP + 1 == totalPagesCTSP} ? 'disabled' : ''">
+                                <a th:href="@{/hoaDon/detailhoadononlinect(page=${currentPageCTSP+1}, size=${10})}"
+                                    class="page-link">»</a>
+                            </li>
+                        </ul>
+                    </nav>
                 </div>
             </div>
         </div>
@@ -538,8 +540,8 @@
                             <div class="mb-3">
                                 <label for="phuongXa" class="form-label">Phường/Xã<span
                                         class="text-danger">*</span></label>
-                                <input type="text" class="form-control w-80" id="phuongXa"
-                                    th:field="${hoaDon.phuongXa}" required />
+                                <input type="text" class="form-control w-80" id="phuongXa" th:field="${hoaDon.phuongXa}"
+                                    required />
                             </div>
 
                         </div>
@@ -691,8 +693,6 @@
                         url: '/hoadononline/doi-trang-thai', // Đường dẫn đến endpoint của controller Spring
                         data: JSON.stringify(formData), // Chuyển đổi đối tượng thành JSON
                         success: function (response) {
-                            console.log(response.message)
-                            alert(response.message);
                             $('#cancelModal').modal('hide');
                             // Đăng ký sự kiện chỉ 1 lần ngoài Ajax
                             document.getElementById("confirmCancel").addEventListener("click", function () {
@@ -735,7 +735,7 @@
                 }
 
                 var ttdoi;
-                if (status === 2) {
+                if (status === 2 || status === 10) {
                     ttdoi = 3;
                 } else if (status === 3) {
                     ttdoi = 4;
@@ -743,7 +743,7 @@
                     ttdoi = 5;
                 } else {
                     // Trường hợp mặc định nếu không khớp với bất kỳ giá trị nào
-                    alert('Trạng thái không hợp lệ.');
+                    notyf.error("Trạng thía không hợp lệ")
                     return;
                 }
                 var formData = {
@@ -921,9 +921,37 @@
         </script>
 
 
+<!--        Xác nhận hóa đơn chi tiết-->
+        <script th:inline="javascript">
+            function xacNhanHoaDon() {
+                let hoaDonId = [[${hoaDon.id}]]; // Lấy ID hóa đơn từ Thymeleaf
 
+                fetch('/hoadononline/xacnhan/' + hoaDonId, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (!data.success) {
+                            alert('Lỗi: ' + data.message);
+                        }
+                    })
+                    .catch(error => console.error('Lỗi:', error));
+            }
+        </script>
 
-
+<!--        In hóa đơn-->
+        <script>
+            function openInvoicePage(button) {
+                var hoaDonId = button.value; // Lấy ID hóa đơn từ value của nút
+                if (hoaDonId) {
+                    var url = "/hoadononline/in-hoadon/" + hoaDonId;
+                    window.open(url, "_blank"); // Mở trang in hóa đơn trong tab mới
+                } else {
+                    alert("Không tìm thấy hóa đơn!");
+                }
+            }
+        </script>
 
 
     </div>
