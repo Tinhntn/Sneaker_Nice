@@ -35,7 +35,7 @@ public class BanHangTaiQuayController {
     public String bhtq(Model model, @RequestParam(defaultValue = "0") int page) {
         int size = 5;
         //list chitietsanpham phan trang
-        Page<ChiTietSanPham> CTSP = banHangTaiQuayService.DanhSachSanPhamPhanTrang(page, size);
+        Page<ChiTietSanPham> CTSP = banHangTaiQuayService.DanhSachSanPhamPhanTrang(page,size);
         model.addAttribute("CTSP", CTSP.getContent());
         model.addAttribute("currentPage", page);
         model.addAttribute("totalPages", CTSP.getTotalPages());
@@ -314,7 +314,12 @@ public class BanHangTaiQuayController {
                                 RedirectAttributes redirectAttributes,
                             @RequestParam(value = "tienKhachDua", defaultValue = "0") float tienKhachDua,
                             @RequestParam(value = "tienThua", defaultValue = "0") float tienThua,
-                                 @RequestParam("tongtiencthd") Float tongtiencthd) {
+                                 @RequestParam("tongtiencthd") Float tongtiencthd,
+                                 @RequestParam("tongtiencthddatru") Float tongtiencthddatru,
+                                 @RequestParam("sotiengiam") Float sotiengiam) {
+        System.out.println(tongtiencthd);
+        System.out.println(tongtiencthddatru);
+        System.out.println(sotiengiam);
         // Kiểm tra nếu số lượng không hợp lệ (chứa chữ hoặc số âm)
         if (tienKhachDua <= 0) {
             redirectAttributes.addFlashAttribute("error", "Vui lòng nhập tiền khách đưa!");
@@ -336,7 +341,8 @@ public class BanHangTaiQuayController {
             banHangTaiQuayService.saveKM(km);
         }
         hd.setTrangThai(1);
-        hd.setThanhTien(tongtiencthd);
+        hd.setThanhTien(tongtiencthddatru);
+        hd.setTongTienGiam(sotiengiam);
         hd.setTongTien(tongtiencthd); // Cập nhật tổng doanh thu cho hóa đơn
         if (tongtiencthd<=0){
             redirectAttributes.addFlashAttribute("error", "Chưa có sản phẩm!");
