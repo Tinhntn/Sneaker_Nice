@@ -86,6 +86,21 @@ public class NhanVienImplement implements NhanVienService {
        return emailSent;
 
     }
+
+    @Override
+    public String taoMa(){
+        Random random = new Random();
+        String  randomNumber = "NV" + random.nextInt(9000);
+        List<NhanVien> lstNhanVien = nhanVienRepository.findAll();
+        for (NhanVien nv : lstNhanVien
+        ) {
+            if(nv.getMaNhanVien().equals(randomNumber)){
+                randomNumber = "NV" + random.nextInt(9000);
+            }
+        }
+        return randomNumber;
+    }
+
     public static boolean sendEmail(String emailNguoiNhan, String tieuDe, String body) {
         // Địa chỉ email và mật khẩu của tài khoản Gmail để gửi email
         String senderEmail = "ntinh4939@gmail.com";

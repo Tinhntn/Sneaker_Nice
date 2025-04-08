@@ -67,7 +67,7 @@ public class NhanVienController {
 
 
     @PostMapping("/add")
-    public String add(@RequestParam("manhanvien") String maNhanVien,
+    public String add(
                       @RequestParam("hovaten") String hoVaTen,
                       @RequestParam("idcv") String idcv,
                       @RequestParam(value = "ngaysinh", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Date ngaySinh,
@@ -78,13 +78,6 @@ public class NhanVienController {
                       @RequestParam("matkhau") String matKhau,
                       RedirectAttributes redirectAttributes
     ){
-
-
-
-        if (maNhanVien == null || maNhanVien.trim().isEmpty()) {
-            redirectAttributes.addFlashAttribute("errorMessage", "Mã nhân viên không được để trống.");
-            return "redirect:/nhanvien/hienthi";
-        }
 
         if (hoVaTen == null || hoVaTen.trim().isEmpty()) {
             redirectAttributes.addFlashAttribute("errorMessage", "Họ và tên không được để trống.");
@@ -134,7 +127,7 @@ public class NhanVienController {
         ChucVu chucVu = new ChucVu();
         chucVu.setId(idchucVu);
         NhanVien nhanVien = new NhanVien();
-        nhanVien.setMaNhanVien(maNhanVien);
+        nhanVien.setMaNhanVien(nhanVienService.taoMa());
         nhanVien.setHoVaTen(hoVaTen);
         nhanVien.setIdChucVu(chucVu);
         nhanVien.setNgaySinh(ngaySinh);
@@ -150,6 +143,7 @@ public class NhanVienController {
         try {
             nhanVienService.saveNhanVien(nhanVien);
             redirectAttributes.addFlashAttribute("successMessage", "Nhân viên được thêm thành công!");
+
         } catch (IllegalArgumentException e) {
             redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
             return "redirect:/nhanvien/hienthi";
@@ -174,7 +168,6 @@ public class NhanVienController {
 
     @PostMapping("/update/{id}")
     public String update(@PathVariable("id") Integer idNV,
-                         @RequestParam("manhanvien") String maNhanVien,
                          @RequestParam("hovaten") String hoVaTen,
                          @RequestParam("idcv") String idcv,
                          @RequestParam(value = "ngaysinh", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Date ngaySinh,
@@ -187,10 +180,6 @@ public class NhanVienController {
                          RedirectAttributes redirectAttributes
     ){
 
-        if (maNhanVien == null || maNhanVien.trim().isEmpty()) {
-            redirectAttributes.addFlashAttribute("errorMessage", "Mã nhân viên không được để trống.");
-            return "redirect:/nhanvien/hienthi";
-        }
 
         if (hoVaTen == null || hoVaTen.trim().isEmpty()) {
             redirectAttributes.addFlashAttribute("errorMessage", "Họ và tên không được để trống.");
@@ -241,7 +230,7 @@ public class NhanVienController {
         chucVu.setId(idchucVu);
 
         NhanVien nhanVien = nhanVienService.findNhanVienById(idNV);
-        nhanVien.setMaNhanVien(maNhanVien);
+        nhanVien.setMaNhanVien(nhanVienService.taoMa());
         nhanVien.setHoVaTen(hoVaTen);
         nhanVien.setIdChucVu(chucVu);
         nhanVien.setNgaySinh(ngaySinh);

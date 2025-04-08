@@ -206,7 +206,6 @@
 							</div>
 						</div>
 						<div class="cart-detail bg-light p-3 mt-4">
-
 							<h3 class="billing-heading mb-4">Chọn mã khuyến mãi</h3>
 							<div class="form-group">
 								<button id="apply-discount-btn" class="btn btn-primary w-100 mt-3"
@@ -499,7 +498,6 @@
 					const maKhuyenMai = document.getElementById("inputMaKhuyenMai").value;
 					if (!maKhuyenMai) {
 						notyf.error("Bạn cần nhập mã khuyến mãi");
-						location.reload();
 						return;
 					}
 
@@ -602,9 +600,8 @@
 				let thanhToanChuyenKhoan = document.getElementById("bank").checked;
 				let thanhToanKhiNhanHang = document.getElementById("cod").checked;
 				let shippingFee = parseFloat(document.getElementById("shipping-fee").innerText.replace(/[^\d]/g, '')) || 0;
-				let totalPrice = parseFloat(document.getElementById("tong").innerText.replace(/[^\d]/g, '')) || 0;
-				let finalPrice =parseFloat(document.getElementById("final-price").innerText.replace(/[^\d]/g, '')) || 0;
-				let disscountPrice = parseFloat(document.getElementById("disscount-price").innerText.replace(/[^\d]/g, '')) || 0;
+				let totalPrice = parseFloat(document.getElementById("final-price").innerText.replace(/[^\d]/g, '')) || 0;
+
 				let formData = {
 					hoVaTen: document.getElementById("hoVaTen").value.trim(),
 					soDienThoai: document.getElementById("soDienThoai").value.trim(),
@@ -616,8 +613,6 @@
 					ghiChu: document.getElementById("ghiChu").value.trim(),
 					tienShip: shippingFee,
 					tongTien: totalPrice,
-					thanhTien: finalPrice,
-					giamGia :disscountPrice,
 					selectedItems: selectedItems
 				};
 
@@ -702,10 +697,7 @@
 									return response.json();
 								})
 								.then(data => {
-									notyf.success(data.message)
-									setTimeout(()=>{
-										window.location.href = data.redirectUrl; // Chuyển hướng đến trang thanh toán
-									})
+									window.location.href = data.vnpayUrl; // Chuyển hướng đến trang thanh toán
 								})
 								.catch(error => {
 									console.error("Lỗi khi thanh toán:", error);
@@ -729,14 +721,14 @@
 								})
 								.then(data => {
 									if (data.redirectUrl) {
-										setTimeout(()=>{
-											window.location.href = data.redirectUrl; // Điều hướng đến trang thanh toán VNPAY
-										},2000)
+										console.log("Redirect to:", data.redirectUrl);
+										window.location.href = data.redirectUrl; // Điều hướng đến trang thanh toán VNPAY
 									} else {
 										throw new Error(data.message || "Lỗi không xác định khi tạo đơn hàng!");
 									}
 								})
 								.catch(error => {
+									console.error("Lỗi khi thanh toán:", error);
 									notyf.error(error.message || "Đã xảy ra lỗi!");
 								});
 						}

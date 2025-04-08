@@ -14,6 +14,49 @@
 
 <body>
     <div layout:fragment="content">
+        <script th:if="${success != null}" th:inline="javascript">
+            /*<![CDATA[*/
+            Swal.fire({
+                icon: 'success',
+                title: 'Thành công',
+                text: '[[${success}]]',
+                position: 'center',
+                timer: 3000,
+                timerProgressBar: true,
+                showConfirmButton: false
+            });
+            /*]]>*/
+        </script>
+
+        <!-- Hiển thị thông báo lỗi nếu có -->
+        <script th:if="${error != null}" th:inline="javascript">
+            /*<![CDATA[*/
+            Swal.fire({
+                icon: 'error',
+                title: 'Lỗi',
+                text: '[[${error}]]',
+                position: 'center',
+                timer: 3000,
+                timerProgressBar: true,
+                showConfirmButton: false
+            });
+            /*]]>*/
+        </script>
+
+        <!-- Hiển thị cảnh báo nếu có -->
+        <script th:if="${warning != null}" th:inline="javascript">
+            /*<![CDATA[*/
+            Swal.fire({
+                icon: 'warning',
+                title: 'Lưu ý',
+                text: '[[${warning}]]',
+                position: 'center',
+                timer: 3000,
+                timerProgressBar: true,
+                showConfirmButton: false
+            });
+            /*]]>*/
+        </script>
         <div class="container-fluid">
             <h1>Danh Sách Khuyến Mại</h1>
 

@@ -25,4 +25,5 @@ public interface NhanVienService {
     NhanVien getNhanVienByEmail(String email);
 
     boolean layLaiMatKhauNhanVien(NhanVien nhanVien);
+    String taoMa();
 }
