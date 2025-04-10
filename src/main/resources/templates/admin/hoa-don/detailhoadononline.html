@@ -236,7 +236,7 @@
                         <h5 class="card-title mb-0">Thông tin đơn hàng</h5>
 
                         <button
-                            th:attr="disabled=${hoaDon == null or(hoaDon.trangThai != 2 and hoaDon.trangThai !=3) ? 'disabled' : null}"
+                            th:attr="disabled=${hoaDon.trangThai == null or(hoaDon.trangThai != 2 and hoaDon.trangThai!=3) ? 'disabled' : null}"
                             class="btn btn-warning ml-auto" data-bs-toggle="modal" data-bs-target="#capnhatlichsu">Cập
                             nhật</button>
                     </div>

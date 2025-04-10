@@ -120,7 +120,6 @@
                 <div class="container">
                     <div class="row" style="margin-top: 15px">
                         <div class="col-md-12">
-                            <p>Tab này đang được active</p>
                             <table class="table table-header" id="hoaDonTable">
                                 <thead>
                                 <tr>
@@ -152,242 +151,189 @@
                     </div>
                 </div>
             </div>
-        </div>
-            <!-- Chờ xác nhận -->
-            <div class="tab-pane fade" id="tab2" role="tabpanel" aria-labelledby="tab2-tab">
-                <div class="container-fluid">
-                            <!-- Sử dụng th:each để lặp qua danh sách hdcxn -->
-                            <div class="card mb-3">
-                                <div class="card-body" style="background-color: wheat; padding-top: 15px;">
-                                    <table class="table table-header">
-                                        <thead>
-                                            <tr>
-                                                <th>Mã</th>
-                                                <th>Tên khách hàng</th>
-                                                <th>Tổng số tiền</th>
-                                                <th>Thành tiền</th>
-                                                <th>Ngày tạo</th>
-                                                <th>Thao tác</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            <tr th:each="hdcxn : ${listHoaDonCXN}">
-                                                <td th:text="${hdcxn.maHoaDon}"></td>
-                                                <td th:text="${hdcxn.tenKhachHang}"></td>
-                                                <td th:text="${#numbers.formatInteger(hdcxn.tongTien,3,'COMMA')} +  ' VND'"></td>
-                                                <td th:text="${#numbers.formatInteger(hdcxn.thanhTien,3,'COMMA')} +  ' VND'"></td>
-                                                <td th:text="${hdcxn.ngayTao}"></td>
-                                                <td>
-                                                    <a th:href="@{/hoadononline/detailhoadononlinect/{id}(id=${hdcxn.id})}">
-                                                    <button type="button" class="btn btn-outline-primary">Chi tiết</button></a>
-                                                </td>
-                                            </tr>
-                                        </tbody>
-                                    </table>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <!-- Chờ lấy hàng -->
-            <div class="tab-pane fade" id="tab3" role="tabpanel" aria-labelledby="tab3-tab">
-                <div class="container">
-                    <div class="row" style="margin-top: 15px">
-                        <div class="col-md-12">
-                            <div class="card mb-3">
-                                <div class="card-body" style="background-color: wheat; padding-top: 15px;">
-                                    <!--                                <h5 class="card-title">Mã hóa đơn: <span th:text="${hdclh.maHoaDon}"></span></h5>-->
-                                    <table class="table table-header">
-                                        <thead>
+<!--        </div>-->
+
+        <!-- Chờ xác nhận -->
+        <div class="tab-pane fade" id="tab2" role="tabpanel" aria-labelledby="tab2-tab">
+            <div class="container-fluid">
+                        <!-- Sử dụng th:each để lặp qua danh sách hdcxn -->
+                        <div class="card mb-3">
+                            <div class="card-body" style="background-color: wheat; padding-top: 15px;">
+                                <table class="table table-header">
+                                    <thead>
                                         <tr>
                                             <th>Mã</th>
                                             <th>Tên khách hàng</th>
                                             <th>Tổng số tiền</th>
                                             <th>Thành tiền</th>
                                             <th>Ngày tạo</th>
-                                            <!-- <th>Loại hóa đơn</th> -->
-                                            <!-- <th>Mô tả</th> -->
-                                            <!--                                        <th>Trạng thái</th>-->
                                             <th>Thao tác</th>
                                         </tr>
-                                        </thead>
-                                        <tbody>
-                                        <tr th:each="hdclh : ${listHoaDonCLH}">
-                                            <td th:text="${hdclh.maHoaDon}"></td>
-                                            <td th:text="${hdclh.tenKhachHang}"></td>
-                                            <td
-                                                    th:text="${#numbers.formatInteger(hdclh.tongTien,3,'COMMA')} +  ' VND'">
-                                            </td>
-                                            <td
-                                                    th:text="${#numbers.formatInteger(hdclh.thanhTien,3,'COMMA')} +  ' VND'">
-                                            </td>
-                                            <!-- <td th:text="${hdcxn.loaiKhuyenMai}!=null?${hdcxn.loaiKhuyenMai}:'Không có'"></td> -->
-                                            <td th:text="${hdclh.ngayTao}"></td>
-
-                                            <!--                                        <td th:text="${hdcxn.trangThai == true ? 'Còn hoạt động' : 'Không hoạt động'}"></td>-->
+                                    </thead>
+                                    <tbody>
+                                        <tr th:each="hdcxn : ${listHoaDonCXN}">
+                                            <td th:text="${hdcxn.maHoaDon}"></td>
+                                            <td th:text="${hdcxn.tenKhachHang}"></td>
+                                            <td th:text="${#numbers.formatInteger(hdcxn.tongTien,3,'COMMA')} +  ' VND'"></td>
+                                            <td th:text="${#numbers.formatInteger(hdcxn.thanhTien,3,'COMMA')} +  ' VND'"></td>
+                                            <td th:text="${hdcxn.ngayTao}"></td>
                                             <td>
-                                                <a
-                                                        th:href="@{/hoadononline/detailhoadononlinect/{id}(id=${hdclh.id})}">
-                                                    <button type="button" class="btn btn-outline-primary">Chi
-                                                        tiết</button>
-                                                </a>
+                                                <a th:href="@{/hoadononline/detailhoadononlinect/{id}(id=${hdcxn.id})}">
+                                                <button type="button" class="btn btn-outline-primary">Chi tiết</button></a>
                                             </td>
                                         </tr>
-                                        </tbody>
-                                    </table>
-                                            <!--                                <p class="card-text text-muted mt-2">Thành tiền: <span th:text="${hdclh.thanhTien}"></span></p>-->
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- đang vận chuyển -->
-                    <div class="tab-pane fade" id="tab4" role="tabpanel" aria-labelledby="tab4-tab">
-                        <div class="container">
-                            <div class="row" style="margin-top: 15px">
-                                <table class="table table-header">
-                                    <thead>
-                                    <tr>
-                                        <th>Mã</th>
-                                        <th>Tên khách hàng</th>
-                                        <th>Tổng số tiền</th>
-                                        <th>Thành tiền</th>
-                                        <th>Ngày tạo</th>
-                                        <!-- <th>Loại hóa đơn</th> -->
-                                        <!-- <th>Mô tả</th> -->
-                                        <!--                                        <th>Trạng thái</th>-->
-                                        <th>Thao tác</th>
-                                    </tr>
-                                    </thead>
-                                    <tbody>
-                                    <tr th:each="hddg : ${listHoaDonDG}">
-                                        <td th:text="${hddg.maHoaDon}"></td>
-                                        <td th:text="${hddg.tenKhachHang}"></td>
-                                        <td
-                                                th:text="${#numbers.formatInteger(hddg.tongTien,3,'COMMA')} +  ' VND'">
-                                        </td>
-                                        <td
-                                                th:text="${#numbers.formatInteger(hddg.thanhTien,3,'COMMA')} +  ' VND'">
-                                        </td>
-                                        <!-- <td th:text="${hdcxn.loaiKhuyenMai}!=null?${hdcxn.loaiKhuyenMai}:'Không có'"></td> -->
-                                        <td th:text="${hddg.ngayTao}"></td>
-
-                                        <!--                                        <td th:text="${hdcxn.trangThai == true ? 'Còn hoạt động' : 'Không hoạt động'}"></td>-->
-                                        <td>
-                                            <a
-                                                    th:href="@{/hoadononline/detailhoadononlinect/{id}(id=${hddg.id})}">
-                                                <button type="button" class="btn btn-outline-primary">Chi
-                                                    tiết</button>
-                                            </a>
-                                        </td>
-                                    </tr>
                                     </tbody>
                                 </table>
-                            </div>
-                        </div>
-                    </div>
-
-
-                    <!-- Đã giao -->
-                    <div class="tab-pane fade" id="tab5" role="tabpanel" aria-labelledby="tab5-tab">
-                        <div class="container">
-                            <div class="row" style="margin-top: 15px">
-                                <table class="table table-header">
-                                    <thead>
-                                    <tr>
-                                        <th>Mã</th>
-                                        <th>Tên khách hàng</th>
-                                        <th>Tổng số tiền</th>
-                                        <th>Thành tiền</th>
-                                        <th>Ngày tạo</th>
-                                        <!-- <th>Loại hóa đơn</th> -->
-                                        <!-- <th>Mô tả</th> -->
-                                        <!--                                        <th>Trạng thái</th>-->
-                                        <th>Thao tác</th>
-                                    </tr>
-                                    </thead>
-                                    <tbody>
-                                    <tr th:each="hdht : ${listHoaDonHT}">
-                                        <td th:text="${hdht.maHoaDon}"></td>
-                                        <td th:text="${hdht.tenKhachHang}"></td>
-                                        <td
-                                                th:text="${#numbers.formatInteger(hdht.tongTien,3,'COMMA')} +  ' VND'">
-                                        </td>
-                                        <td
-                                                th:text="${#numbers.formatInteger(hdht.thanhTien,3,'COMMA')} +  ' VND'">
-                                        </td>
-                                        <!-- <td th:text="${hdcxn.loaiKhuyenMai}!=null?${hdcxn.loaiKhuyenMai}:'Không có'"></td> -->
-                                        <td th:text="${hdht.ngayTao}"></td>
-
-                                        <!--                                        <td th:text="${hdcxn.trangThai == true ? 'Còn hoạt động' : 'Không hoạt động'}"></td>-->
-                                        <td>
-                                            <a
-                                                    th:href="@{/hoadononline/detailhoadononlinect/{id}(id=${hdht.id})}">
-                                                <button type="button" class="btn btn-outline-primary">Chi
-                                                    tiết</button>
-                                            </a>
-                                        </td>
-                                    </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-                    </div>
-                    <!-- Đã hủy -->
-                    <div class="tab-pane fade" id="tab6" role="tabpanel" aria-labelledby="tab6-tab">
-                        <div class="container">
-                            <div class="row" style="margin-top: 15px">
-                                <table class="table table-header">
-                                    <thead>
-                                    <tr>
-                                        <th>Mã</th>
-                                        <th>Tên khách hàng</th>
-                                        <th>Tổng số tiền</th>
-                                        <th>Thành tiền</th>
-                                        <th>Ngày tạo</th>
-                                        <!-- <th>Loại hóa đơn</th> -->
-                                        <!-- <th>Mô tả</th> -->
-                                        <!--                                        <th>Trạng thái</th>-->
-                                        <th>Thao tác</th>
-                                    </tr>
-                                    </thead>
-                                    <tbody>
-                                    <tr th:each="hddh : ${listHoaDonDH}">
-                                        <td th:text="${hddh.maHoaDon}"></td>
-                                        <td th:text="${hddh.tenKhachHang}"></td>
-                                        <td
-                                                th:text="${#numbers.formatInteger(hddh.tongTien,3,'COMMA')} +  ' VND'">
-                                        </td>
-                                        <td
-                                                th:text="${#numbers.formatInteger(hddh.thanhTien,3,'COMMA')} +  ' VND'">
-                                        </td>
-                                        <!-- <td th:text="${hdcxn.loaiKhuyenMai}!=null?${hdcxn.loaiKhuyenMai}:'Không có'"></td> -->
-                                        <td th:text="${hddh.ngayTao}"></td>
-
-                                        <!--                                        <td th:text="${hdcxn.trangThai == true ? 'Còn hoạt động' : 'Không hoạt động'}"></td>-->
-                                        <td>
-                                            <a
-                                                    th:href="@{/hoadononline/detailhoadononlinect/{id}(id=${hddh.id})}">
-                                                <button type="button" class="btn btn-outline-primary">Chi
-                                                    tiết</button>
-                                            </a>
-                                        </td>
-                                    </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
                     </div>
                 </div>
             </div>
         </div>
 
-<!--        Tìm kiếm hóa đơn-->
+        <!-- Chờ lấy hàng -->
+        <div class="tab-pane fade" id="tab3" role="tabpanel" aria-labelledby="tab3-tab">
+            <div class="container-fluid">
+                <!-- Sử dụng th:each để lặp qua danh sách hdcxn -->
+                <div class="card mb-3">
+                    <div class="card-body" style="background-color: wheat; padding-top: 15px;">
+                        <table class="table table-header">
+                            <thead>
+                            <tr>
+                                <th>Mã</th>
+                                <th>Tên khách hàng</th>
+                                <th>Tổng số tiền</th>
+                                <th>Thành tiền</th>
+                                <th>Ngày tạo</th>
+                                <th>Thao tác</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr th:each="hdclh : ${listHoaDonCLH}">
+                                <td th:text="${hdclh.maHoaDon}"></td>
+                                <td th:text="${hdclh.tenKhachHang}"></td>
+                                <td th:text="${#numbers.formatInteger(hdclh.tongTien,3,'COMMA')} +  ' VND'"></td>
+                                <td th:text="${#numbers.formatInteger(hdclh.thanhTien,3,'COMMA')} +  ' VND'"></td>
+                                <td th:text="${hdclh.ngayTao}"></td>
+                                <td>
+                                    <a th:href="@{/hoadononline/detailhoadononlinect/{id}(id=${hdclh.id})}">
+                                        <button type="button" class="btn btn-outline-primary">Chi tiết</button></a>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
 
+        <!-- đang vận chuyển -->
+        <div class="tab-pane fade" id="tab4" role="tabpanel" aria-labelledby="tab4-tab">
+            <div class="container-fluid">
+                <!-- Sử dụng th:each để lặp qua danh sách hdcxn -->
+                <div class="card mb-3">
+                    <div class="card-body" style="background-color: wheat; padding-top: 15px;">
+                        <table class="table table-header">
+                            <thead>
+                            <tr>
+                                <th>Mã</th>
+                                <th>Tên khách hàng</th>
+                                <th>Tổng số tiền</th>
+                                <th>Thành tiền</th>
+                                <th>Ngày tạo</th>
+                                <th>Thao tác</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr th:each="hddg : ${listHoaDonDG}">
+                                <td th:text="${hddg.maHoaDon}"></td>
+                                <td th:text="${hddg.tenKhachHang}"></td>
+                                <td th:text="${#numbers.formatInteger(hddg.tongTien,3,'COMMA')} +  ' VND'"></td>
+                                <td th:text="${#numbers.formatInteger(hddg.thanhTien,3,'COMMA')} +  ' VND'"></td>
+                                <td th:text="${hddg.ngayTao}"></td>
+                                <td>
+                                    <a th:href="@{/hoadononline/detailhoadononlinect/{id}(id=${hddg.id})}">
+                                        <button type="button" class="btn btn-outline-primary">Chi tiết</button></a>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
 
-<!--        Kết thúc tìm kiếm hóa đơn-->
+        <!-- Đã giao -->
+        <div class="tab-pane fade" id="tab5" role="tabpanel" aria-labelledby="tab5-tab">
+            <div class="container-fluid">
+                <!-- Sử dụng th:each để lặp qua danh sách hdcxn -->
+                <div class="card mb-3">
+                    <div class="card-body" style="background-color: wheat; padding-top: 15px;">
+                        <table class="table table-header">
+                            <thead>
+                            <tr>
+                                <th>Mã</th>
+                                <th>Tên khách hàng</th>
+                                <th>Tổng số tiền</th>
+                                <th>Thành tiền</th>
+                                <th>Ngày tạo</th>
+                                <th>Thao tác</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr th:each="hdht : ${listHoaDonHT}">
+                                <td th:text="${hdht.maHoaDon}"></td>
+                                <td th:text="${hdht.tenKhachHang}"></td>
+                                <td th:text="${#numbers.formatInteger(hdht.tongTien,3,'COMMA')} +  ' VND'"></td>
+                                <td th:text="${#numbers.formatInteger(hdht.thanhTien,3,'COMMA')} +  ' VND'"></td>
+                                <td th:text="${hdht.ngayTao}"></td>
+                                <td>
+                                    <a th:href="@{/hoadononline/detailhoadononlinect/{id}(id=${hdht.id})}">
+                                        <button type="button" class="btn btn-outline-primary">Chi tiết</button></a>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
 
+        <!-- Đã hủy -->
+        <div class="tab-pane fade" id="tab6" role="tabpanel" aria-labelledby="tab6-tab">
+            <div class="container-fluid">
+                <!-- Sử dụng th:each để lặp qua danh sách hdcxn -->
+                <div class="card mb-3">
+                    <div class="card-body" style="background-color: wheat; padding-top: 15px;">
+                        <table class="table table-header">
+                            <thead>
+                            <tr>
+                                <th>Mã</th>
+                                <th>Tên khách hàng</th>
+                                <th>Tổng số tiền</th>
+                                <th>Thành tiền</th>
+                                <th>Ngày tạo</th>
+                                <th>Thao tác</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr th:each="hddh : ${listHoaDonDH}">
+                                <td th:text="${hddh.maHoaDon}"></td>
+                                <td th:text="${hddh.tenKhachHang}"></td>
+                                <td th:text="${#numbers.formatInteger(hddh.tongTien,3,'COMMA')} +  ' VND'"></td>
+                                <td th:text="${#numbers.formatInteger(hddh.thanhTien,3,'COMMA')} +  ' VND'"></td>
+                                <td th:text="${hddh.ngayTao}"></td>
+                                <td>
+                                    <a th:href="@{/hoadononline/detailhoadononlinect/{id}(id=${hddh.id})}">
+                                        <button type="button" class="btn btn-outline-primary">Chi tiết</button></a>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
 
+</div>
+</div>
 </body>
 </html>
