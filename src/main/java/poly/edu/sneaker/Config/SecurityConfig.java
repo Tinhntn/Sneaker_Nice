@@ -35,7 +35,7 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/","/api/dang-nhap", "/dang-nhap", "/quen_mat_khau", "/dang-ky", "/dang_ky_moi", "/Sneakers_Nice/**", "/register",
-                                "/css/**", "/js/**", "/fonts/**", "/scss/**",
+                                "/css/**", "/js/**", "/fonts/**", "/scss/**","/static/**",
                                 "/vendor/**", "/images/**", "/Roboto/**")
                         .permitAll()
                         .requestMatchers("/gio-hang/**","/khachhangonline/**","/hoadononlinekhachhang/**").hasRole("USER")

@@ -68,9 +68,6 @@
                 <a class="nav-link" href="/banhangtaiquay/hienthi" sec:authorize="hasAnyRole('EMPLOYEE','ADMIN')">
                     <i class="fas fa-fw fa-tachometer-alt"></i>
                     <span>Bán hàng tại quầy</span></a>
-                <a class="nav-link" href="/hoadontaiquay/hienthi" sec:authorize="hasAnyRole('EMPLOYEE','ADMIN')">
-                    <i class="fas fa-fw fa-tachometer-alt"></i>
-                    <span>Hóa đơn tại quầy</span></a>
             </li>
 
             <!-- Divider -->
@@ -86,16 +83,19 @@
                 <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseTwo"
                     aria-expanded="true" aria-controls="collapseTwo">
                     <i class="fas fa-fw fa-cog"></i>
-                    <span>Quản lý đơn hàng</span>
+                    <span>Quản lý hóa đơn</span>
                 </a>
                 <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
                     <div class="bg-white py-2 collapse-inner rounded">
                         <h6 class="collapse-header">Thông tin đơn hàng</h6>
-
                         <a class="collapse-item" href="/hoadononline/hienthi"
-                            sec:authorize="hasAnyRole('EMPLOYEE','ADMIN')">Quản lý đơn hàng</a>
-                        <a class="collapse-item" href="/thongke/hienthi" sec:authorize="hasRole('ADMIN')">Thống kê</a>
+                            sec:authorize="hasAnyRole('EMPLOYEE','ADMIN')">Quản lý hóa đơn online</a>
+                        <a class="collapse-item" href="/hoadontaiquay/hienthi"
+                            sec:authorize="hasAnyRole('EMPLOYEE','ADMIN')">Quản lý hóa đơn
+                            tại quầy</a>
                     </div>
+
+
                 </div>
             </li>
 
@@ -147,30 +147,24 @@
                             sec:authorize="hasAnyRole('EMPLOYEE','ADMIN')">Quản lý Size</a>
                         <a class="collapse-item" href="/chat_lieu/hienthi"
                             sec:authorize="hasAnyRole('EMPLOYEE','ADMIN')">Quản chất liệu</a>
-
-                        <div class="collapse-divider"></div>
-                        <h6 class="collapse-header">Doanh số:</h6>
-                        <a class="collapse-item" href="/khuyenmai/hienthi" sec:authorize="hasRole('ADMIN')">Quản lý
-                            khuyến mại</a>
-                        <a class="collapse-item" href="/thongke/hienthi" sec:authorize="hasRole('ADMIN')">Quản lý thống
-                            kê</a>
-
+                    
                     </div>
                 </div>
             </li>
 
             <!-- Nav Item - Charts -->
             <li class="nav-item">
-                <a class="nav-link" href="charts.html">
+                <a class="nav-link" href="/khuyenmai/hienthi">
                     <i class="fas fa-fw fa-chart-area"></i>
-                    <span>Charts</span></a>
+                    <span>Quản lý khuyến mại</span></a>
             </li>
 
             <!-- Nav Item - Tables -->
             <li class="nav-item">
-                <a class="nav-link" href="tables.html">
+                <a class="nav-link" href="/thongke/hienthi">
                     <i class="fas fa-fw fa-table"></i>
-                    <span>Tables</span></a>
+                    <span>Quản lý thống
+                    kê</span></a>
             </li>
 
             <!-- Divider -->
