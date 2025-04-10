@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" xmlns:th="http://www.thymeleaf.org">
+<html xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 
 <head>
     <meta charset="UTF-8">
@@ -64,7 +64,7 @@
 
             <!-- Nav Item - Dashboard -->
             <li class="nav-item">
-                <a class="nav-link" href="/banhangtaiquay/hienthi">
+                <a class="nav-link" href="/banhangtaiquay/hienthi" sec:authorize="hasAnyRole('EMPLOYEE','ADMIN')">
                     <i class="fas fa-fw fa-tachometer-alt"></i>
                     <span>Bán hàng tại quầy</span></a>
             </li>
@@ -88,8 +88,8 @@
                     <div class="bg-white py-2 collapse-inner rounded">
                         <h6 class="collapse-header">Thông tin đơn hàng</h6>
 
-                        <a class="collapse-item" href="/hoadononline/hienthi">Quản lý đơn hàng</a>
-                        <a class="collapse-item" href="/thongke/hienthi">Thống kê</a>
+                        <a class="collapse-item" href="/hoadononline/hienthi" sec:authorize="hasAnyRole('EMPLOYEE','ADMIN')">Quản lý đơn hàng</a>
+                        <a class="collapse-item" href="/thongke/hienthi" sec:authorize="hasRole('ADMIN')">Thống kê</a>
                     </div>
                 </div>
             </li>
@@ -105,9 +105,9 @@
                     data-parent="#accordionSidebar">
                     <div class="bg-white py-2 collapse-inner rounded">
                         <h6 class="collapse-header">Quản lý nhân viên</h6>
-                        <a class="collapse-item" href="/nhanvien/hienthi">Nhân viên</a>
-                        <a class="collapse-item" href="/chuc_vu/hienthi">Chức vụ</a>
-                        <a class="collapse-item" href="/khach_hang/hienthi">Khách hàng </a>
+                        <a class="collapse-item" href="/nhanvien/hienthi" sec:authorize="hasRole('ADMIN')">Nhân viên</a>
+                        <a class="collapse-item" href="/chuc_vu/hienthi" sec:authorize="hasRole('ADMIN')">Chức vụ</a>
+                        <a class="collapse-item" href="/khach_hang/hienthi" sec:authorize="hasRole('ADMIN')">Khách hàng </a>
 
                     </div>
                 </div>
@@ -131,16 +131,16 @@
                 <div id="collapsePages" class="collapse" aria-labelledby="headingPages" data-parent="#accordionSidebar">
                     <div class="bg-white py-2 collapse-inner rounded">
                         <h6 class="collapse-header">Sản phẩm</h6>
-                        <a class="collapse-item" href="/sanpham/hienthi">Quản lý sản phẩm</a>
-                        <a class="collapse-item" href="/hang/hienthi">Quản lý Hãng</a>
-                        <a class="collapse-item" href="/danh_muc/hienthi">Quản lý Danh Mục</a>
-                        <a class="collapse-item" href="/size/hienthi">Quản lý Size</a>
-                        <a class="collapse-item" href="/chat_lieu/hienthi">Quản chất liệu</a>
+                        <a class="collapse-item" href="/sanpham/hienthi" sec:authorize="hasAnyRole('EMPLOYEE','ADMIN')">Quản lý sản phẩm</a>
+                        <a class="collapse-item" href="/hang/hienthi" sec:authorize="hasAnyRole('EMPLOYEE','ADMIN')">Quản lý Hãng</a>
+                        <a class="collapse-item" href="/danh_muc/hienthi" sec:authorize="hasAnyRole('EMPLOYEE','ADMIN')">Quản lý Danh Mục</a>
+                        <a class="collapse-item" href="/size/hienthi" sec:authorize="hasAnyRole('EMPLOYEE','ADMIN')">Quản lý Size</a>
+                        <a class="collapse-item" href="/chat_lieu/hienthi" sec:authorize="hasAnyRole('EMPLOYEE','ADMIN')">Quản chất liệu</a>
 
                         <div class="collapse-divider"></div>
                         <h6 class="collapse-header">Doanh số:</h6>
-                        <a class="collapse-item" href="/khuyenmai/hienthi">Quản lý khuyến mại</a>
-                        <a class="collapse-item" href="/thongke/hienthi">Quản lý thống kê</a>
+                        <a class="collapse-item" href="/khuyenmai/hienthi" sec:authorize="hasRole('ADMIN')">Quản lý khuyến mại</a>
+                        <a class="collapse-item" href="/thongke/hienthi" sec:authorize="hasRole('ADMIN')">Quản lý thống kê</a>
 
                     </div>
                 </div>

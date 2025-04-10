@@ -29,6 +29,7 @@ public class NhanVienImplement implements NhanVienService {
 
     @Autowired
     NhanVienRepository nhanVienRepository;
+    private String matKhauMoi;
 
     @Override
     public Page<NhanVienCustom> getAll(Pageable pageable) {
@@ -76,36 +77,28 @@ public class NhanVienImplement implements NhanVienService {
     @Override
     public boolean layLaiMatKhauNhanVien(NhanVien nhanVien) {
 
-        PasswordEncoder passwordEncoder = new BCryptPasswordEncoder(15);
-
+        PasswordEncoder passwordEncoder = new BCryptPasswordEncoder(10);
         String matKhauMoi = generatePassword();
         String matKhauHash = passwordEncoder.encode(matKhauMoi);
         nhanVien.setMatKhau(matKhauHash);
         nhanVienRepository.save(nhanVien);
         boolean emailSent = sendEmail(nhanVien.getEmail(), "Mật khẩu mới", nhanVien.getMatKhau());
-        if (emailSent) {
-            return true; // Email đã được gửi thành công
-        } else {
-            // Thực hiện xử lý khi email không gửi được, ví dụ: trả về thông báo lỗi
-            // Đây là ví dụ về cách bạn có thể xử lý điều đó, tùy thuộc vào yêu cầu của ứng dụng.
-            return false; // Email không gửi thành công
-        }
+       return emailSent;
+
     }
 
     @Override
-    public String taoMa() {
-
-            Random random = new Random();
-            String  randomNumber = "NV" + random.nextInt(9000);
-            List<NhanVien> lstNhanVien = nhanVienRepository.findAll();
-            for (NhanVien nv : lstNhanVien
-            ) {
-                if(nv.getMaNhanVien().equals(randomNumber)){
-                    randomNumber = "NV" + random.nextInt(9000);
-                }
+    public String taoMa(){
+        Random random = new Random();
+        String  randomNumber = "NV" + random.nextInt(9000);
+        List<NhanVien> lstNhanVien = nhanVienRepository.findAll();
+        for (NhanVien nv : lstNhanVien
+        ) {
+            if(nv.getMaNhanVien().equals(randomNumber)){
+                randomNumber = "NV" + random.nextInt(9000);
             }
-            return randomNumber;
-
+        }
+        return randomNumber;
     }
 
     public static boolean sendEmail(String emailNguoiNhan, String tieuDe, String body) {

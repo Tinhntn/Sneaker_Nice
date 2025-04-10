@@ -115,13 +115,13 @@
 
             <div class="col-4">
                 <button type="button" class="btn btn-danger" id="huydon" data-bs-toggle="modal"
-                    data-bs-target="#modalhuyhoadon" th:attr="disabled=${hoaDon.trangThai==6}"
-                    th:if="${hoaDon.trangThai != 4}">
+                    data-bs-target="#modalhuyhoadon" th:attr="disabled=${hoaDon.trangThai==6 or hoaDon.trangThai==5}"
+                    >
                     Hủy đơn
                 </button>
                 <button class="btn btn-success" id="xacnhan" data-bs-toggle="modal" data-bs-target="#exampleModal"
-                        th:attr="disabled=${hoaDon.trangThai==6}" th:if="${hoaDon.trangThai!= 4}"
-                        onclick="xacNhanHoaDon()">Xác Nhận</button>
+                        th:attr="disabled=${hoaDon.trangThai==6}" 
+                        onclick="xacNhanHoaDon()">Đổi trạng thái</button>
 
                 <button class="btn btn-warning" id="inhoadon"
                         th:attr="disabled=${hoaDon.trangThai == 2}"
@@ -129,8 +129,9 @@
                         onclick="openInvoicePage(this)">
                     🖨️ In Hóa Đơn
                 </button>
-
-
+                <button class="btn btn-danger" id="muaLaiDonHang" th:attr="disabled=${hoaDon.trangThai!=5}">
+                    Mua lại đơn hàng
+                </button>
                 <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel"
                     aria-hidden="true">
                     <div class="modal-dialog">
@@ -218,14 +219,6 @@
                     </tr>
                 </tbody>
             </table>
-            <!--        <form id="huy" th:action="@{/hoadononline/huydh/{id}(id=${hdcxn.id})}" method="post">&ndash;&gt;-->
-            <!--        <input type="hidden" id="ghichu" name="ghichu" value="">-->
-            <!--        <button id="cfhuy" type="button" class="btn btn-outline-secondary">Huỷ</button>-->
-            <!--        </form>-->
-            <!--        <form id="xacnhan" th:action="@{/hoadononline/xacnhanhoadoncho/{id}(id=${hdcxn.id})}" method="post">-->
-            <!--            <input type="hidden" id="" name="ghichu" value="">-->
-            <!--            <button id="cfxacnhan" type="button" class="btn btn-outline-secondary">Xác nhận</button>-->
-            <!--        </form>-->
         </div>
 
         <div class="container-fluid">
@@ -283,11 +276,8 @@
                     <div th:if="${errorMessage}" class="alert alert-danger" role="alert">
                         <p th:text="${errorMessage}"></p>
                     </div>
-
                 </div>
             </div>
-
-
         </div>
 
         <div class="container-fluid">
@@ -703,8 +693,6 @@
                         url: '/hoadononline/doi-trang-thai', // Đường dẫn đến endpoint của controller Spring
                         data: JSON.stringify(formData), // Chuyển đổi đối tượng thành JSON
                         success: function (response) {
-                            console.log(response.message)
-                            alert(response.message);
                             $('#cancelModal').modal('hide');
                             // Đăng ký sự kiện chỉ 1 lần ngoài Ajax
                             document.getElementById("confirmCancel").addEventListener("click", function () {
@@ -755,7 +743,7 @@
                     ttdoi = 5;
                 } else {
                     // Trường hợp mặc định nếu không khớp với bất kỳ giá trị nào
-                    alert('Trạng thái không hợp lệ.');
+                    notyf.error("Trạng thía không hợp lệ")
                     return;
                 }
                 var formData = {

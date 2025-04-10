@@ -64,13 +64,10 @@ public class HoaDonOnlController {
     public String hienthi(Model model, @RequestParam(defaultValue = "0") int page) {
         int size = 5;
 
-        Pageable pageable = PageRequest.of(page, size);
-
+        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "ngayTao"));
         Page<HoaDonOnlCustom> listHoaDonTatCa = hoaDonOnlService.getHoaDonCustomTatCa(pageable);
         Integer sizeTatCa = listHoaDonTatCa.getContent().size();
         model.addAttribute("sizeTatCa", sizeTatCa);
-
-        System.out.println("List hoa don tat ca: " + listHoaDonTatCa.getContent().size());
 
         Page<HoaDonOnlCustom> listHoaDonDH = hoaDonOnlService.getHoaDonCustomDH(pageable);
         Integer sizeDH = listHoaDonDH.getContent().size();
@@ -92,7 +89,6 @@ public class HoaDonOnlController {
         Integer sizeht = listHoaDonHT.getContent().size();
         model.addAttribute("sizeht", sizeht);
 
-        System.out.println("List hoa don dh: " + listHoaDonDH.getContent().size());
 
         model.addAttribute("listHoaDonTatCa", listHoaDonTatCa.getContent());
         model.addAttribute("currentPage", listHoaDonTatCa.getNumber());
@@ -359,6 +355,12 @@ public class HoaDonOnlController {
     public ResponseEntity<Map<String, Object>> xoaChiTiet(@PathVariable int idHoaDon, @PathVariable int idChiTietSanPham) {
         Map<String, Object> response = new HashMap<>();
 
+        List<HoaDonChiTiet> hoaDonChiTiets = hoaDonChiTietOnlService.findHoaDonChiTietByHoaDonId(idHoaDon);
+        if(hoaDonChiTiets!=null||hoaDonChiTiets.size()<=1){
+            response.put("success", false);
+            response.put("message", "Phải có tối thiểu 1 sản phẩm trong đơn hàng");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+        }
         ChiTietSanPham chiTietSanPham;
         HoaDonChiTiet hoaDonChiTiet;
 
@@ -389,17 +391,26 @@ public class HoaDonOnlController {
             int trangthai = Integer.parseInt(formData.get("trangThai").toString());
             HoaDon hoaDon = hoaDonService.findById(idhoadon);
             if (trangthai == 3) {
-                lichSuTrnngThaiService.doiTrangThaiDonHang(idhoadon, ghichu, trangthai);
+               boolean doiTT = lichSuTrnngThaiService.doiTrangThaiDonHang(idhoadon, ghichu, trangthai);
+           if(!doiTT){
+               return ResponseEntity.badRequest().body(Map.of("message","Đổi trạng thái thất bại"));
+           }
                 return ResponseEntity.ok(Map.of("message", "Chờ lấy hàng"));
             } else if (trangthai == 4) {
                 if (hoaDon.getTenNguoiGiao() == null || hoaDon.getTenNguoiGiao().isEmpty() || hoaDon.getSdtNguoiGiao() == null || hoaDon.getSdtNguoiGiao().isEmpty()) {
                     return ResponseEntity.badRequest().body(Map.of("message", "Vui lòng cập nhật thông tin người giao hàng"));
                 }
-                lichSuTrnngThaiService.doiTrangThaiDonHang(idhoadon, ghichu, trangthai);
+                boolean doiTT = lichSuTrnngThaiService.doiTrangThaiDonHang(idhoadon, ghichu, trangthai);
+                if(!doiTT){
+                    return ResponseEntity.badRequest().body(Map.of("message","Đổi trạng thái thất bại"));
+                }
                 return ResponseEntity.ok(Map.of("message", "Đang giao"));
 
             } else if (trangthai == 5) {
-                lichSuTrnngThaiService.doiTrangThaiDonHang(idhoadon, ghichu, trangthai);
+                boolean doiTT = lichSuTrnngThaiService.doiTrangThaiDonHang(idhoadon, ghichu, trangthai);
+                if(!doiTT){
+                    return ResponseEntity.badRequest().body(Map.of("message","Đổi trạng thái thất bại"));
+                }
                 return ResponseEntity.ok(Map.of("message", "Đã giao"));
             } else if (trangthai == 6) {
                 List<HoaDonChiTietOnlCustom> chiTietHoaDon = hoaDonChiTietOnlService.findByHoaDonId(hoaDon);
@@ -407,8 +418,10 @@ public class HoaDonOnlController {
                 ) {
                     chiTietSanPhamService.capNhatSoLuongKhiHuyHoaDon(ct.getIdChiTietSanPham(), ct.getSoLuong());
                 }
-                lichSuTrnngThaiService.doiTrangThaiDonHang(idhoadon, ghichu, trangthai);
-
+                boolean doiTT = lichSuTrnngThaiService.doiTrangThaiDonHang(idhoadon, ghichu, trangthai);
+                if(!doiTT){
+                    return ResponseEntity.badRequest().body(Map.of("message","Đổi trạng thái thất bại"));
+                }
                 return ResponseEntity.ok(Map.of("message", "Đã hủy hóa đơn"));
             }
             return ResponseEntity.ok(Map.of("message", "Đổi trạng thái thất bại"));

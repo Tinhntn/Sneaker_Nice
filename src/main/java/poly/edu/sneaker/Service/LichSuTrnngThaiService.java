@@ -13,5 +13,5 @@ public interface LichSuTrnngThaiService {
     TrangThaiDonHang findLichSuTrangThaiById(Integer id);
     void updateLichSuTrangThai(TrangThaiDonHang lt);
     List<TrangThaiDonHang> getAllByIdHoaDon(int idHD);
-    void doiTrangThaiDonHang(int idHD, String ghiChu,int trangThai);
+    boolean doiTrangThaiDonHang(int idHD, String ghiChu,int trangThai);
 }
