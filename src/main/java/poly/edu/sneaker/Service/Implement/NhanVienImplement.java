@@ -19,8 +19,8 @@ import javax.mail.Session;
 import javax.mail.Transport;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
+import java.util.*;
 import java.security.SecureRandom;
-import java.util.List;
 import java.util.Properties;
 import java.util.Random;
 
@@ -86,6 +86,21 @@ public class NhanVienImplement implements NhanVienService {
        return emailSent;
 
     }
+
+    @Override
+    public String taoMa(){
+        Random random = new Random();
+        String  randomNumber = "NV" + random.nextInt(9000);
+        List<NhanVien> lstNhanVien = nhanVienRepository.findAll();
+        for (NhanVien nv : lstNhanVien
+        ) {
+            if(nv.getMaNhanVien().equals(randomNumber)){
+                randomNumber = "NV" + random.nextInt(9000);
+            }
+        }
+        return randomNumber;
+    }
+
     public static boolean sendEmail(String emailNguoiNhan, String tieuDe, String body) {
         // Địa chỉ email và mật khẩu của tài khoản Gmail để gửi email
         String senderEmail = "ntinh4939@gmail.com";

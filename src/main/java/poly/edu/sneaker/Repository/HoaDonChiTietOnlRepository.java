@@ -19,6 +19,12 @@ import java.util.Optional;
 public interface HoaDonChiTietOnlRepository extends JpaRepository<HoaDonChiTiet, Integer> {
 
 
+    @Query("SELECT h FROM HoaDonChiTiet h WHERE h.idHoaDon.id = :idHoaDon AND h.idChiTietSanPham.id = :idChiTietSanPham")
+    HoaDonChiTiet findByIdHoaDonAndIdChiTietSanPham(@Param("idHoaDon") int idHoaDon, @Param("idChiTietSanPham") int idChiTietSanPham);
+
+
+
+
     List<HoaDonChiTietOnlCustom> findByIdHoaDon(HoaDon idHoaDon);
 
     @Query("SELECT h FROM HoaDonChiTiet h WHERE h.idHoaDon.id = :idHoaDon AND h.idChiTietSanPham.id = :idChiTietSanPham")
