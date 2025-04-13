@@ -70,7 +70,9 @@ public interface ChiTietSanPhamRepository extends JpaRepository<ChiTietSanPham, 
             "JOIN sp.idChatLieu cl " +
             "WHERE (:tenHang IS NULL OR h.tenHang = :tenHang) " +
             "AND (:chatLieu IS NULL OR cl.tenChatLieu = :chatLieu) " +
-            "AND ctp.giaBan BETWEEN :minPrice AND :maxPrice")
+            "AND ctp.giaBan BETWEEN :minPrice AND :maxPrice " +
+            "AND ctp.soLuong > 0 " + // Thêm điều kiện kiểm tra số lượng
+            "AND ctp.trangThai = true") // Thêm điều kiện kiểm tra trạng thái
     Page<ChiTietSanPham> filterByHangAndPrice(
             @Param("tenHang") String tenHang,
             @Param("chatLieu") String chatLieu,
@@ -114,6 +116,5 @@ public interface ChiTietSanPhamRepository extends JpaRepository<ChiTietSanPham, 
                                                @Param("idHang") Integer idHang,
                                                @Param("idChatLieu") Integer idChatLieu,
                                                Pageable pageable);
-
     //code quan end
 }

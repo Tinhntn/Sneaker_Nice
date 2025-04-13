@@ -62,6 +62,11 @@ public class ChucVuController {
     public String addChucVu(@Valid @ModelAttribute("chucVu") ChucVu chucVu,
                             BindingResult bindingResult,
                             RedirectAttributes redirectAttributes) {
+        // Kiểm tra trùng tên chức vụ
+        if (chucVuService.getAll().stream().anyMatch(cv -> cv.getTenChucVu().equalsIgnoreCase(chucVu.getTenChucVu()))) {
+            bindingResult.addError(new FieldError("chucVu", "tenChucVu", "Tên chức vụ đã tồn tại"));
+        }
+
         validateChucVu(chucVu, bindingResult);
         if (bindingResult.hasErrors()) {
             return "admin/chuc_vu/add";
@@ -93,6 +98,12 @@ public class ChucVuController {
                              @Valid @ModelAttribute("chucVu") ChucVu chucVu,
                              BindingResult bindingResult,
                              RedirectAttributes redirectAttributes) {
+        // Kiểm tra trùng tên chức vụ (ngoại trừ chính nó)
+        if (chucVuService.getAll().stream()
+                .anyMatch(cv -> !cv.getId().equals(id) && cv.getTenChucVu().equalsIgnoreCase(chucVu.getTenChucVu()))) {
+            bindingResult.addError(new FieldError("chucVu", "tenChucVu", "Tên chức vụ đã tồn tại"));
+        }
+
         validateChucVu(chucVu, bindingResult);
         if (bindingResult.hasErrors()) {
             return "admin/chuc_vu/update";

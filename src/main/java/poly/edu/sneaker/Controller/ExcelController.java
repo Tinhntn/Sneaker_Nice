@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import poly.edu.sneaker.DAO.SanPhamBanChayResponse;
 import poly.edu.sneaker.DAO.ThongKeDTO;
 import poly.edu.sneaker.Service.ThongKeService;
 import poly.edu.sneaker.Utils.ExcelExporter;
@@ -25,7 +26,8 @@ public class ExcelController {
             @RequestParam(value = "loaiLoc", required = false) Integer loaiLoc,
             HttpServletResponse response) throws Exception {
 
-        response.setContentType("application/octet-stream");
+        // Đặt Content-Type cho file Excel
+        response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
         String headerKey = "Content-Disposition";
         String currentDateTime = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
         String headerValue = "attachment; filename=thongke_" + currentDateTime + ".xlsx";
@@ -69,7 +71,11 @@ public class ExcelController {
         List<ThongKeDTO> listThongKe = new ArrayList<>();
         listThongKe.add(tk);
 
-        ExcelExporter exporter = new ExcelExporter(listThongKe);
+        // Lấy danh sách top 5 sản phẩm bán chạy
+        List<SanPhamBanChayResponse> top5SanPham = (List<SanPhamBanChayResponse>) stats.get("lstSanPhamBanChay");
+
+        // Truyền cả listThongKe và top5SanPham vào ExcelExporter
+        ExcelExporter exporter = new ExcelExporter(listThongKe, top5SanPham);
         exporter.export(response);
     }
 }

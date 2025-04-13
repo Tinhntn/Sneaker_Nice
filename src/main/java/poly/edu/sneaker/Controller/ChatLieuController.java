@@ -43,10 +43,18 @@ public class ChatLieuController {
     }
 
     @PostMapping("/add")
-    public String addChatLieu(@Valid @ModelAttribute("chatLieu") ChatLieu chatLieu, BindingResult bindingResult, RedirectAttributes redirectAttributes) {
+    public String addChatLieu(@Valid @ModelAttribute("chatLieu") ChatLieu chatLieu,
+                              BindingResult bindingResult,
+                              RedirectAttributes redirectAttributes) {
+        // Kiểm tra trùng tên chất liệu
+        if (chatLieuService.existsByTenChatLieu(chatLieu.getTenChatLieu())) {
+            bindingResult.rejectValue("tenChatLieu", "error.chatLieu", "Tên chất liệu đã tồn tại");
+        }
+
         if (bindingResult.hasErrors()) {
             return "admin/chat_lieu/add";
         }
+
         try {
             String maChatLieu = chatLieuService.taoMaChatLieu();
             while (chatLieuService.findByMaChatLieu(maChatLieu) != null) {
@@ -73,12 +81,21 @@ public class ChatLieuController {
         model.addAttribute("chatLieu", chatLieu);
         return "admin/chat_lieu/update";
     }
-
     @PostMapping("/update/{id}")
-    public String editChatLieu(@PathVariable("id") Integer id, @Valid @ModelAttribute("chatLieu") ChatLieu chatLieu, BindingResult bindingResult, RedirectAttributes redirectAttributes) {
+    public String editChatLieu(@PathVariable("id") Integer id,
+                               @Valid @ModelAttribute("chatLieu") ChatLieu chatLieu,
+                               BindingResult bindingResult,
+                               RedirectAttributes redirectAttributes) {
+        // Kiểm tra trùng tên chất liệu (ngoại trừ chính nó)
+        if (chatLieuService.getAllChatLieus().stream()
+                .anyMatch(cl -> !cl.getId().equals(id) && cl.getTenChatLieu().equalsIgnoreCase(chatLieu.getTenChatLieu()))) {
+            bindingResult.rejectValue("tenChatLieu", "error.chatLieu", "Tên chất liệu đã tồn tại");
+        }
+
         if (bindingResult.hasErrors()) {
             return "admin/chat_lieu/update";
         }
+
         try {
             ChatLieu existingChatLieu = chatLieuService.findChatLieuById(id);
             if (existingChatLieu != null) {
@@ -95,7 +112,6 @@ public class ChatLieuController {
         }
         return "redirect:/chat_lieu/hienthi";
     }
-
     @PostMapping("/toggleStatus/{id}")
     public String toggleStatus(@PathVariable("id") Integer id, RedirectAttributes redirectAttributes) {
         try {

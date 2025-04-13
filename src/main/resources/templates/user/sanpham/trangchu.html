@@ -175,15 +175,18 @@
 
                             <span th:if="${priceRange != null}">
 
-                            | Giá: <strong th:text="${priceRange}"></strong>
+                            | Giá: <strong th:text="'Giá bán: ' + ${priceRange} + ' VND'"></strong>
+                            </span>
+<!--                            <span th:text="'Giá bán: ' + ${priceRange} + ' VND'">0 VND</span>-->
 
-                        </span>
+
 
                             <span th:if="${hang != null or chatLieu != null or priceRange != null}">
 
                             | <a th:href="@{/Sneakers_Nice/hienthi}" class="text-danger">Xóa bộ lọc</a>
 
                         </span>
+
 
                         </div>
 
