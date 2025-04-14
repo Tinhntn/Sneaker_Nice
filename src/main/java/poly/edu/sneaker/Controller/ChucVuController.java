@@ -19,7 +19,6 @@ import java.util.ArrayList;
 @Controller
 @RequestMapping("/chuc_vu")
 public class ChucVuController {
-
     @Autowired
     private ChucVuService chucVuService;
 

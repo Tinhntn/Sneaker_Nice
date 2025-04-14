@@ -46,7 +46,7 @@ public class BanHangTaiQuayController {
     }
     @GetMapping("/hienthi")
     public String bhtq(Model model, @RequestParam(defaultValue = "0") int page) {
-        int size = 5;
+        int size = 1;
         //list chitietsanpham phan trang
         Page<ChiTietSanPham> CTSP = banHangTaiQuayService.DanhSachSanPhamPhanTrang(page,size);
         model.addAttribute("CTSP", CTSP.getContent());
@@ -121,6 +121,8 @@ public class BanHangTaiQuayController {
                             RedirectAttributes redirectAttributes,
                             @RequestParam(defaultValue = "0") int page) {
         NhanVien nhanVien = nhanVienService.getNhanVienByEmail(getCurrentUserEmail());
+        System.out.println(nhanVien.getId());
+
 
         List<HoaDon> list = banHangTaiQuayService.getAllHoaDon();
         if (list.size() >= 5) {
@@ -149,7 +151,7 @@ public class BanHangTaiQuayController {
     @GetMapping("/showhoadoncho/{id}")
     public String detailHD(@PathVariable Integer id, Model model, @RequestParam(defaultValue = "0") int page
                            ) {
-        int size = 5;
+        int size = 1;
         Page<ChiTietSanPham> CTSP = banHangTaiQuayService.DanhSachSanPhamPhanTrang(page, size);
         model.addAttribute("CTSP", CTSP.getContent());
         model.addAttribute("currentPage", page);
