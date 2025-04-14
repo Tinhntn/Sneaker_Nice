@@ -43,7 +43,7 @@ public class SanPhamController {
     @GetMapping("/hienthi")
     public String hienThi(Model model, RedirectAttributes redirectAttributes, @RequestParam(defaultValue = "0") int page, @RequestParam(required = false) String keyword) {
         int size = 5;
-        Pageable pageable = PageRequest.of(page, size);
+        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "ngayTao"));
 
         Page<SanPham> lstSanPham;
         if (keyword != null && !keyword.isEmpty()) {
@@ -120,7 +120,7 @@ public class SanPhamController {
     public String chiTietSanPham(@PathVariable("id") int idSanPham, Model model, @RequestParam(defaultValue = "0") int page
     ) {
         int size = 5;
-        Pageable pageable = PageRequest.of(page, size);
+        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "ngayTao"));
         Page<ChiTietSanPham> lstCTSP = chiTietSanPhamService.findChiTietSanPhamByIDSanPham(idSanPham, pageable);
         model.addAttribute("lstCTSP", lstCTSP.getContent());
         model.addAttribute("currentPage", lstCTSP.getNumber());
@@ -174,6 +174,8 @@ public class SanPhamController {
                                      @RequestParam("img") MultipartFile file,
                                      @ModelAttribute ChiTietSanPham chiTietSanPham, RedirectAttributes redirectAttributes) {
         try {
+           List<ChiTietSanPham> lstCTSP = chiTietSanPhamService.findByIdSanPham(idSanPham);
+
             if (chiTietSanPham != null) {
                 if (!file.isEmpty()) {
                     // Lưu file vào thư mục static/images
@@ -190,6 +192,12 @@ public class SanPhamController {
                 ctsp.setIdSanPham(sanPhamService.findById(idSanPham));
                 ctsp.setIdSize(chiTietSanPham.getIdSize());
                 ctsp.setIdMauSac(chiTietSanPham.getIdMauSac());
+                for (ChiTietSanPham ct : lstCTSP
+                ) {
+                    if(ct.getIdSize().equals(chiTietSanPham.getIdSize())&&ct.getIdMauSac().equals(chiTietSanPham.getIdMauSac())){
+                        redirectAttributes.addFlashAttribute("errrorMasage", "Chi tiết sản phẩm đã tồn tại");
+                    }
+                }
                 ctsp.setTrongLuong(chiTietSanPham.getTrongLuong());
                 ctsp.setGiaNhap(chiTietSanPham.getGiaNhap());
                 ctsp.setGiaBan(chiTietSanPham.getGiaBan());

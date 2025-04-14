@@ -21,100 +21,89 @@
 <body>
 
     <div layout:fragment="content">
-
-        <div class="container-fluid row">
-            <div class="col-2"></div>
-            <div class="col-8">
-                <h1>Thêm Sản Phẩm</h1>
-                <form th:action="@{/sanpham/themsanpham}" th:object="${sanPham}" method="post">
-
-                    <div class="container p-4 row"
-                        style="background-color: #f8f9fa; border-radius: 10px; border: 1px solid #ddd;">
-                        <h4 class="text-center mb-4">Thêm Sản Phẩm</h4>
-
-                        <!-- Mã Sản Phẩm (Không cho chỉnh sửa) -->
-                        <div class=" col-6 mb-3">
-                            <label for="maSanPham" class="form-label">Mã sản phẩm<span class="text-danger">*</span></label>
-                            <input type="text" id="maSanPham" name="maSanPham" class="form-control"
-                                th:value="${maSanPham}" readonly>
-                        </div>
-
-                        <!-- Tên sản phẩm -->
-                        <div class=" col-6 mb-3">
-                            <label for="tenSanPham" class="form-label">Tên sản phẩm<span class="text-danger">*</span></label>
-                            <input type="text" id="tenSanPham" name="tenSanPham" class="form-control" required>
-                        </div>
-
-                        <!-- Hãng (Combobox) -->
-                        <div class="col-md-6">
-                            <label for="hang" class="form-label">Hãng<span class="text-danger">*</span></label>
-                            <div class="input-group">
-                                <select id="hang" name="hang" class="form-select">
-                                    <option th:each="hang : ${lstHang}" th:value="${hang.id}" th:text="${hang.tenHang}">
-                                    </option>
-                                </select>
-                                <!-- Nút thêm hãng -->
-                                <button type="button" class="btn btn-primary ms-2" data-bs-toggle="modal"
-                                    data-bs-target="#themHangModal">
-                                    Thêm
-                                </button>
-                            </div>
-                        </div>
-                        <!-- Danh Mục (Combobox) -->
-                        <div class=" col-6 mb-3">
-                            <label for="danhMuc" class="form-label">Danh mục<span class="text-danger">*</span></label>
-                            <div class="input-group">
-                                <select id="danhMuc" name="danhMuc" class="form-select" >
-                                    <option th:each="danhMuc : ${lstDanhMuc}" th:value="${danhMuc.id}"
-                                        th:text="${danhMuc.tenDanhMuc}">
-                                    </option>
-                                    <span class="text-danger">*</span>
-                                </select >
-                                <button type="button" class="btn btn-primary ms-2" data-bs-toggle="modal"
-                                    data-bs-target="#themDanhMucModal">
-                                    Thêm
-                                </button>
-                            </div>
-
-                        </div>
-
-                        <!-- Chất Liệu (Combobox) -->
-                        <div class=" col-6 mb-3">
-                            <label for="chatLieu" class="form-label">Chất <span class="text-danger">*</span></label>
-                            <div class="input-group">
-                                <select id="chatLieu" name="chatLieu" class="form-select">
-                                    <option th:each="chatLieu : ${lstChatlieu}" th:value="${chatLieu.id}"
-                                        th:text="${chatLieu.tenChatLieu}">
-                                    </option>
-                                    <span class="text-danger">*</span>
-                                </select>
-                                <button type="button" class="btn btn-primary ms-2" data-bs-toggle="modal"
-                                    data-bs-target="#themChatLieuModal">
-                                    Thêm
-                                </button>
-                            </div>
-
-                        </div>
-
-                        <!-- Nút Lưu -->
-                        <div class="text-center">
-                            <button type="submit" class="btn btn-primary">Lưu Sản Phẩm</button>
-                            <a href="/sanpham/hienthi" class="btn btn-secondary">Hủy</a>
-                        </div>
-                    </div>
+        <div class="container-fluid">
+            <div class="row justify-content-center">
+                <div class="col-lg-8">
+                    <form th:action="@{/sanpham/themsanpham}" th:object="${sanPham}" method="post" >
                     
-                </form>
-                <br>
+                        <div class="container p-4 row" style="background-color: #f8f9fa; border-radius: 10px; border: 1px solid #ddd;">
+                            <h4 class="text-center mb-4">Thêm Sản Phẩm</h4>
+                    
+                            <!-- Mã Sản Phẩm (Không cho chỉnh sửa) -->
+                            <div class=" col-6 mb-3">
+                                <label for="maSanPham" class="form-label">Mã sản phẩm<span class="text-danger">*</span></label>
+                                <input type="text" id="maSanPham" name="maSanPham" class="form-control" th:value="${maSanPham}" readonly>
+                            </div>
+                    
+                            <!-- Tên sản phẩm -->
+                            <div class=" col-6 mb-3">
+                                <label for="tenSanPham" class="form-label">Tên sản phẩm<span class="text-danger">*</span></label>
+                                <input type="text" id="tenSanPham" name="tenSanPham" class="form-control" required>
+                            </div>
+                    
+                            <!-- Hãng (Combobox) -->
+                            <div class="col-md-6">
+                                <label for="hang" class="form-label">Hãng<span class="text-danger">*</span></label>
+                                <div class="input-group">
+                                    <select id="hang" name="hang" class="form-select">
+                                        <option th:each="hang : ${lstHang}" th:value="${hang.id}" th:text="${hang.tenHang}">
+                                        </option>
+                                    </select>
+                                    <!-- Nút thêm hãng -->
+                                    <button type="button" class="btn btn-primary ms-2" data-bs-toggle="modal"
+                                        data-bs-target="#themHangModal">
+                                        Thêm
+                                    </button>
+                                </div>
+                            </div>
+                            <!-- Danh Mục (Combobox) -->
+                            <div class=" col-6 mb-3">
+                                <label for="danhMuc" class="form-label">Danh mục<span class="text-danger">*</span></label>
+                                <div class="input-group">
+                                    <select id="danhMuc" name="danhMuc" class="form-select">
+                                        <option th:each="danhMuc : ${lstDanhMuc}" th:value="${danhMuc.id}" th:text="${danhMuc.tenDanhMuc}">
+                                        </option>
+                                        <span class="text-danger">*</span>
+                                    </select>
+                                    <button type="button" class="btn btn-primary ms-2" data-bs-toggle="modal"
+                                        data-bs-target="#themDanhMucModal">
+                                        Thêm
+                                    </button>
+                                </div>
+                    
+                            </div>
+                    
+                            <!-- Chất Liệu (Combobox) -->
+                            <div class=" col-6 mb-3">
+                                <label for="chatLieu" class="form-label">Chất <span class="text-danger">*</span></label>
+                                <div class="input-group">
+                                    <select id="chatLieu" name="chatLieu" class="form-select">
+                                        <option th:each="chatLieu : ${lstChatlieu}" th:value="${chatLieu.id}"
+                                            th:text="${chatLieu.tenChatLieu}">
+                                        </option>
+                                        <span class="text-danger">*</span>
+                                    </select>
+                                    <button type="button" class="btn btn-primary ms-2" data-bs-toggle="modal"
+                                        data-bs-target="#themChatLieuModal">
+                                        Thêm
+                                    </button>
+                                </div>
+                    
+                            </div>
+                    
+                            <!-- Nút Lưu -->
+                            <div class="text-center">
+                                <button type="submit" class="btn btn-primary">Lưu Sản Phẩm</button>
+                                <a href="/sanpham/hienthi" class="btn btn-secondary">Hủy</a>
+                            </div>
+                        </div>
+                    
+                    </form>
+                </div>
             </div>
-
-            <br>
-
-            <!-- Hiển thị thông báo lỗi -->
-            <div th:if="${errorMessage}" class="alert alert-danger" role="alert">
-                <p th:text="${errorMessage}"></p>
-            </div>
-
+         
         </div>
+
         <div class="modal fade" id="themHangModal" tabindex="-1" aria-labelledby="themHangModalLabel"
             aria-hidden="true">
             <div class="modal-dialog">
@@ -126,7 +115,8 @@
                     <div class="modal-body">
                         <form id="themHangForm" method="post" action="/hang/add">
                             <div class="mb-3">
-                                <label for="tenHangMoi" class="form-label">Tên Hãng<span class="text-danger">*</span></label>
+                                <label for="tenHangMoi" class="form-label">Tên Hãng<span
+                                        class="text-danger">*</span></label>
                                 <input type="text" class="form-control" id="tenHang" name="tenHang" required>
                             </div>
                             <button type="submit" class="btn btn-primary">Lưu</button>
@@ -146,7 +136,8 @@
                     <div class="modal-body">
                         <form id="themChatLieuForm" method="post" action="/chat_lieu/add">
                             <div class="mb-3">
-                                <label for="tenChatLieu" class="form-label">Tên Chất Liệu<span class="text-danger">*</span></label>
+                                <label for="tenChatLieu" class="form-label">Tên Chất Liệu<span
+                                        class="text-danger">*</span></label>
                                 <input type="text" class="form-control" id="tenChatLieu" name="tenChatLieu" required>
                             </div>
                             <button type="submit" class="btn btn-primary">Lưu</button>
@@ -166,7 +157,8 @@
                     <div class="modal-body">
                         <form id="themDanhMucForm" method="post" action="/danh_muc/add">
                             <div class="mb-3">
-                                <label for="tenDanhMucMoi" class="form-label">Tên Danh Mục<span class="text-danger">*</span></label>
+                                <label for="tenDanhMucMoi" class="form-label">Tên Danh Mục<span
+                                        class="text-danger">*</span></label>
                                 <input type="text" class="form-control" id="tenDanhMuc" name="tenDanhMuc" required>
                             </div>
                             <button type="submit" class="btn btn-primary">Lưu</button>

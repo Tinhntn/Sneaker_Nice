@@ -149,6 +149,8 @@ public class GioHangController {
                     hoaDon.setIdKhuyenMai(khuyenMai);
                 }
             }
+
+            System.out.println(sanPhamThanhToan);
             hoaDon.setIdKhachHang(khachHang);
             hoaDon.setTenNguoiNhan((String) sanPhamThanhToan.get("hoVaTen"));
             hoaDon.setSdtNguoiNhan((String) sanPhamThanhToan.get("soDienThoai"));
@@ -190,11 +192,13 @@ public class GioHangController {
             lichSuTrnngThaiService.saveLichSuTrangThai(trangThaiDonHang);
             // Lấy danh sách sản phẩm trong giỏ hàng
             List<Integer> idCTGH = (List<Integer>) sanPhamThanhToan.get("selectedItems");
+            System.out.println(idCTGH.get(0).toString());
             if (idCTGH == null || idCTGH.isEmpty()) {
                 return ResponseEntity.badRequest().body("Danh sách sản phẩm trống!");
             }
             for (Integer idGioHangChiTiet : idCTGH) {
                 GioHangChiTiet ghct = gioHangChiTietService.findById(idGioHangChiTiet);
+                System.out.println(ghct.getIdChiTietSanPham().getIdSanPham().getTenSanPham());
                 if (ghct == null) {
                     return ResponseEntity.badRequest().body("Sản phẩm không tồn tại trong giỏ hàng!");
                 }

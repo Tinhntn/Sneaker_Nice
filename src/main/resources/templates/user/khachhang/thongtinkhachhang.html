@@ -45,7 +45,6 @@
 <body>
 <div layout:fragment="content" class="container mt-5">
     <script th:if="${success != null}" th:inline="javascript">
-        /*<![CDATA[*/
         Swal.fire({
             icon: 'success',
             title: 'Thành công',
@@ -55,12 +54,9 @@
             timerProgressBar: true,
             showConfirmButton: false
         });
-        /*]]>*/
     </script>
 
-    <!-- Hiển thị thông báo lỗi nếu có -->
     <script th:if="${error != null}" th:inline="javascript">
-        /*<![CDATA[*/
         Swal.fire({
             icon: 'error',
             title: 'Lỗi',
@@ -70,12 +66,9 @@
             timerProgressBar: true,
             showConfirmButton: false
         });
-        /*]]>*/
     </script>
 
-    <!-- Hiển thị cảnh báo nếu có -->
     <script th:if="${warning != null}" th:inline="javascript">
-        /*<![CDATA[*/
         Swal.fire({
             icon: 'warning',
             title: 'Lưu ý',
@@ -85,9 +78,10 @@
             timerProgressBar: true,
             showConfirmButton: false
         });
-        /*]]>*/
     </script>
+
     <h2 class="mb-4 text-center">Thông tin khách hàng</h2>
+
     <div class="row justify-content-center align-items-center">
         <div class="col-md-4 text-center">
             <img th:src="@{${khachhang.hinhAnh != null ? khachhang.hinhAnh : '/img/add.jpg'}}"
@@ -120,6 +114,7 @@
         </div>
     </div>
 
+    <!-- Modal cập nhật -->
     <div class="modal fade" id="updateModal" tabindex="-1" aria-labelledby="updateModalLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
@@ -159,44 +154,50 @@
                             <button type="submit" class="btn btn-primary">Lưu thay đổi</button>
                         </div>
                     </form>
-
                 </div>
             </div>
         </div>
     </div>
+
+    <!-- Script validate -->
     <script>
         function validateForm() {
-            let tenKhachHang = document.forms["updateForm"]["tenKhachHang"].value.trim();
-            let email = document.forms["updateForm"]["email"].value.trim();
-            let sdt = document.forms["updateForm"]["sdt"].value.trim();
-            let tinhThanhPho = document.forms["updateForm"]["tinhThanhPho"].value.trim();
-            let quanHuyen = document.forms["updateForm"]["quanHuyen"].value.trim();
-            let phuongXa = document.forms["updateForm"]["phuongXa"].value.trim();
+            const form = document.getElementById("updateForm");
 
-            let nameRegex = /^[a-zA-ZÀ-ỹ\s]+$/;
-            let emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-            let phoneRegex = /^0\d{9,10}$/;
+            const tenKhachHang = form.tenKhachHang.value.trim();
+            const email = form.email.value.trim();
+            const sdt = form.sdt.value.trim();
+            const tinhThanhPho = form.tinhThanhPho.value.trim();
+            const quanHuyen = form.quanHuyen.value.trim();
+            const phuongXa = form.phuongXa.value.trim();
+
+            const nameRegex = /^[a-zA-ZÀ-ỹĂăĐđÊêÔôƠơƯư\s]+$/u;
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            const phoneRegex = /^0\d{9,10}$/;
 
             if (!nameRegex.test(tenKhachHang)) {
                 Swal.fire("Lỗi", "Tên khách hàng chỉ được chứa chữ cái và khoảng trắng.", "error");
                 return false;
             }
+
             if (!emailRegex.test(email)) {
-                Swal.fire("Lỗi", "Email không hợp lệ.", "error");
+                Swal.fire("Lỗi", "Email không hợp lệ. Vui lòng nhập đúng định dạng.", "error");
                 return false;
             }
+
             if (!phoneRegex.test(sdt)) {
                 Swal.fire("Lỗi", "Số điện thoại phải bắt đầu bằng số 0 và có 10-11 chữ số.", "error");
                 return false;
             }
-            if (tinhThanhPho === "" || quanHuyen === "" || phuongXa === "") {
-                Swal.fire("Lỗi", "Vui lòng nhập đầy đủ địa chỉ.", "error");
+
+            if (!tinhThanhPho || !quanHuyen || !phuongXa) {
+                Swal.fire("Lỗi", "Vui lòng nhập đầy đủ địa chỉ: Tỉnh/TP, Quận/Huyện, Phường/Xã.", "error");
                 return false;
             }
+
             return true;
         }
     </script>
-
 </div>
 </body>
 </html>

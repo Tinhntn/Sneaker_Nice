@@ -57,6 +57,10 @@ public class HomeController {
     public String hienthi(Model model, @RequestParam(defaultValue = "0") int page) {
         KhachHang khachHangSession = (KhachHang) httpSession.getAttribute("khachHangSession");
 
+        if (page < 0) {
+            page = 0;
+        }
+
         int size = 12;
         Page<ChiTietSanPham> lstCTSP = chiTietSanPhamService.findChiTietSanPhamJustOne(PageRequest.of(page, size));
         for (ChiTietSanPham ctsp : lstCTSP

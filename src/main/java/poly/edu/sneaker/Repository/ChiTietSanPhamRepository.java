@@ -19,8 +19,13 @@ public interface ChiTietSanPhamRepository extends JpaRepository<ChiTietSanPham, 
 
     // Lấy bản ghi mới nhất cho mỗi sản phẩm
     @Query("SELECT ctp FROM ChiTietSanPham ctp " +
-
-            "WHERE ctp.ngayTao = (SELECT MAX(ctp2.ngayTao) FROM ChiTietSanPham ctp2 WHERE ctp2.idSanPham.id = ctp.idSanPham.id and ctp.trangThai = true) ")
+            "WHERE ctp.ngayTao = (" +
+            "   SELECT MAX(ctp2.ngayTao) " +
+            "   FROM ChiTietSanPham ctp2 " +
+            "   WHERE ctp2.idSanPham.id = ctp.idSanPham.id " +
+            "   AND ctp2.trangThai = true" +
+            ") " +
+            "AND ctp.soLuong > 0")
     Page<ChiTietSanPham> findFirstRecordForEachProduct(Pageable pageable);
 
     @Query(value = "select * from ChiTietSanPham", nativeQuery = true)
@@ -29,13 +34,10 @@ public interface ChiTietSanPhamRepository extends JpaRepository<ChiTietSanPham, 
     ChiTietSanPham findById(int id);
 
 
-
-
-
     //code quan end
 
     //code hung
-    @Query("SELECT c FROM ChiTietSanPham c ORDER BY c.ngayTao DESC")
+    @Query("SELECT c FROM ChiTietSanPham c WHERE c.soLuong > 0 ORDER BY c.ngayTao DESC")
     List<ChiTietSanPham> findTop10NewestProducts(Pageable pageable);
     // code hung end
 
