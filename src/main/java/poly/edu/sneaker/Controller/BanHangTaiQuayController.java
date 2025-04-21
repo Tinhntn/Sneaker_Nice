@@ -504,7 +504,7 @@ public class BanHangTaiQuayController {
         document.setMargins(50, 50, 50, 50);
 
         // Font setup
-        PdfFont boldFont = PdfFontFactory.createFont(ResourceUtils.getFile("classpath:static/fonts/Flaticon.ttf").getAbsolutePath(), PdfEncodings.IDENTITY_H, true);
+        PdfFont boldFont = PdfFontFactory.createFont(ResourceUtils.getFile("classpath:static/fonts/Roboto-Regular.ttf").getAbsolutePath(), PdfEncodings.IDENTITY_H, true);
 
         // Header
         Paragraph header = new Paragraph("HÓA ĐƠN BÁN HÀNG")

@@ -5634,7 +5634,8 @@ input[type="button"].btn-block {
   }
 }
 
-.quantity-controls button,.remove-item  {
+
+.quantity-controls button,.remove-item, .cart-item-info-thanhtoan button  {
   border: none;
   width: 35px;
   /* Tăng kích thước */
@@ -5659,7 +5660,7 @@ input[type="button"].btn-block {
   justify-content: center;
 }
 
-.quantity-controls button:hover,.remove-item:hover {
+.quantity-controls button:hover,.remove-item:hover,.cart-item-info-thanhtoan button:hover {
   background-color: #dbcc8f;
   /* Màu xanh khi hover */
   color: white;
@@ -5668,7 +5669,7 @@ input[type="button"].btn-block {
   /* Hiệu ứng phóng to nhẹ */
 }
 
-.quantity-controls button:active,.remove-item:active {
+.quantity-controls button:active,.remove-item:active,.cart-item-info-thanhtoan button:active {
   transform: scale(0.95);
   /* Hiệu ứng nhấn xuống */
   background-color: #0056b3;
