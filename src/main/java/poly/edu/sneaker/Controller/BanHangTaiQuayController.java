@@ -46,7 +46,7 @@ public class BanHangTaiQuayController {
     }
     @GetMapping("/hienthi")
     public String bhtq(Model model, @RequestParam(defaultValue = "0") int page) {
-        int size = 1;
+        int size = 5;
         //list chitietsanpham phan trang
         Page<ChiTietSanPham> CTSP = banHangTaiQuayService.DanhSachSanPhamPhanTrang(page,size);
         model.addAttribute("CTSP", CTSP.getContent());
@@ -151,7 +151,7 @@ public class BanHangTaiQuayController {
     @GetMapping("/showhoadoncho/{id}")
     public String detailHD(@PathVariable Integer id, Model model, @RequestParam(defaultValue = "0") int page
                            ) {
-        int size = 1;
+        int size = 5;
         Page<ChiTietSanPham> CTSP = banHangTaiQuayService.DanhSachSanPhamPhanTrang(page, size);
         model.addAttribute("CTSP", CTSP.getContent());
         model.addAttribute("currentPage", page);

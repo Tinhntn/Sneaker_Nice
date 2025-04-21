@@ -341,7 +341,7 @@
                             <td><img th:src="${lst.hinhAnh}" alt="Image" style="width:80px;height:50px;"/></td>
                             <td th:text="${lst.soLuong}"></td>
                             <td th:text="${#numbers.formatDecimal(lst.giaBan, 0, 'COMMA', 0, 'POINT')} + ' VNĐ'"></td>
-                            <td th:text="${lst.trangThai == 1 ? 'Còn hoạt động' : lst.trangThai}"></td>
+                            <td th:text="${lst.trangThai == true ? 'Còn hoạt động' : lst.trangThai}"></td>
                             <td>
                                 <div th:if="${hoadonduocchon != null}">
                                     <form  th:action="@{/banhangtaiquay/addCTHD/{ctspid}(ctspid=${lst.id})}" method="post">
@@ -494,8 +494,6 @@
     : hoadonduocchon.idKhuyenMai.giaTriGiam + ' %') : 'Chưa áp dụng'}"
                                       class="fw-bold text-dark">
 </span>
-
-
                             </div>
 
                             <!-- Form xóa mã giảm giá (TÁCH RIÊNG) -->
