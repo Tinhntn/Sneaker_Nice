@@ -38,7 +38,7 @@ public class SecurityConfig {
                                 "/css/**", "/js/**", "/fonts/**", "/scss/**",
                                 "/vendor/**", "/images/**", "/Roboto/**")
                         .permitAll()
-                        .requestMatchers("/gio-hang/**","/khachhangonline/**","/hoadononlinekhachhang/**").hasRole("USER")
+                        .requestMatchers("/gio-hang/**").hasRole("USER")
                         .requestMatchers(HttpMethod.POST, "/dang-nhap", "/quen_mat_khau", "/dang-ky").permitAll()
                         .requestMatchers("/sanpham/**", "/hoadon/**","/hoadononlinekhachhang/**","/hoadononline/**",  "/danh_muc/**","/hang/**",
                                 "/mau_sac/**","/size/**","/chat_lieu/**","/banhangtaiquay/**","/hoadontaiquay/**").hasAnyRole("EMPLOYEE", "ADMIN")
