@@ -10,11 +10,9 @@ import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
 import poly.edu.sneaker.Model.ChucVu;
 import poly.edu.sneaker.Service.ChucVuService;
-
-import jakarta.validation.Valid;
-import java.util.ArrayList;
 
 @Controller
 @RequestMapping("/chuc_vu")
