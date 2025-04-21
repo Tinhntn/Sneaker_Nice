@@ -35,7 +35,7 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/","/api/dang-nhap", "/dang-nhap", "/quen_mat_khau", "/dang-ky", "/dang_ky_moi", "/Sneakers_Nice/**", "/register",
-                                "/css/**", "/js/**", "/fonts/**", "/scss/**",
+                                "/css/**", "/js/**", "/fonts/**", "/scss/**","/static/**",
                                 "/vendor/**", "/images/**", "/Roboto/**")
                         .permitAll()
                         .requestMatchers("/gio-hang/**","/khachhangonline/**","/hoadononlinekhachhang/**").hasRole("USER")
@@ -49,7 +49,6 @@ public class SecurityConfig {
                         .loginProcessingUrl("/dang-nhap") // URL xử lý submit form
                         .successHandler((request, response, authentication) -> {
                             // Trả về JSON khi đăng nhập thành công
-                            System.out.println(authentication.getAuthorities());
                             boolean isUser = authentication.getAuthorities().stream()
                                             .anyMatch(auth -> auth.getAuthority().equals("ROLE_USER"));
                             boolean isAdmin = authentication.getAuthorities().stream()
@@ -84,6 +83,13 @@ public class SecurityConfig {
                         .invalidateHttpSession(true)
                         .deleteCookies("JSESSIONID", "remember-me")
                         .permitAll()
+                )
+                .exceptionHandling(ex -> ex
+                        .authenticationEntryPoint((request, response, authException) -> {
+                            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                            response.setContentType("application/json;charset=UTF-8");
+                            response.getWriter().write("{\"message\": \"Bạn cần đăng nhập để mua sắm\"}");
+                        })
                 )
                 .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.ALWAYS) // LUÔN tạo session

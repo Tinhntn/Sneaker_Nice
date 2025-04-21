@@ -5,12 +5,14 @@
     <div layout:fragment="content">
 
         <div class="container-fluid ">
-            <h1>Thêm Sản Phẩm</h1>
+            <h2
+                style=" margin: 5px;font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;">
+                Cập nhật Sản Phẩm</h2>
 
             <form th:action="@{/sanpham/capnhatsanpham/{id}(id=${sanPham.id})}" method="post">
                 <div class=" container p-4"
                     style="background-color: #f8f9fa; border-radius: 10px; border: 1px solid #ddd;">
-                    <input type="hidden" name="id" th:value="${sanPham.id}" />
+                    <input id="idSanPham" type="hidden" name="id" th:value="${sanPham.id}" />
                     <div class="mb-3">
                         <label class="form-label">Tên sản phẩm:</label>
                         <input type="text" name="tenSanPham" th:value="${sanPham.tenSanPham}" class="form-control"
@@ -53,11 +55,17 @@
                     </div>
                 </div>
             </form>
-            <h1>Thêm Chi Tiết Sản Phẩm</h1>
+            <h2
+                style=" margin: 5px;font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;">
+                Thêm Chi Tiết Sản Phẩm</h2>
             <!-- Button trigger modal -->
             <div class="text-center">
-                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">
+                <button type="button" style="margin: 10px;" class="btn btn-primary" data-bs-toggle="modal"
+                    data-bs-target="#exampleModal">
                     Thêm chi tiết sản phẩm </button>
+                <button type="button" style="margin: 10px;" class="btn btn-primary" 
+                    id="themNhanhChiTietSanPham">
+                    Thêm nhanh </button>
             </div>
 
             <!-- Modal -->
@@ -144,109 +152,115 @@
 
 
 
-            <div class="container-fluid card">
-                <form th:action="@{/sanpham/updateCTSP}" method="post" id="updateCTSP">
-                    <table class="table table-header">
-                        <thead>
-                            <tr>
-                                <th scope="col">Mã sản phẩm</th>
-                                <th scope="col">Tên sản phẩm</th>
-                                <th scope="col">Hãng</th>
-                                <th scope="col">Chất liệu</th>
-                                <th scope="col">Danh mục</th>
-                                <th scope="col">Size</th>
-                                <th scope="col">Màu sắc</th>
-                                <th scope="col">Trọng lượng</th>
-                                <th scope="col">Giá nhập</th>
-                                <th scope="col">Giá bán</th>
-                                <th scope="col">Hình ảnh</th>
-                                <th scope="col">Số lượng</th>
-                                <th scope="col">Mô tả</th>
-                                <th scope="col">Ngày tạo</th>
-                                <th scope="col">Ngày sửa</th>
-                                <th scope="col">Trạng thái</th>
-                                <th scope="col">Thao tác</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr th:each="sanPham : ${lstCTSP}" th:attr="data-id=${sanPham.id}">
-                                <input type="hidden" name="id" th:value="${sanPham.id}" />
-                                <input type="hidden" id="idSP"
-                                    th:value="${sanPham.idSanPham!=null?sanPham.idSanPham.id:'Không có'}">
-                                <td th:text="${sanPham.idSanPham!=null?sanPham.idSanPham.maSanPham:'Không có'}"></td>
-                                <td th:text="${sanPham.idSanPham!=null?sanPham.idSanPham.tenSanPham:'Không có'}"></td>
-                                <td
-                                    th:text="${sanPham.idSanPham.idHang!=null?sanPham.idSanPham.idHang.tenHang:'Không có'}">
-                                </td>
-                                <td
-                                    th:text="${sanPham.idSanPham.idChatLieu!=null?sanPham.idSanPham.idChatLieu.tenChatLieu:'Không có'}">
-                                </td>
-                                <td
-                                    th:text="${sanPham.idSanPham.idDanhMuc!=null?sanPham.idSanPham.idDanhMuc.tenDanhMuc:'Không có'}">
-                                </td>
-                                <td>
-                                    <select name="idSize" class="form-select">
-                                        <option th:each="size : ${lstSize}" th:value="${size.id}"
-                                            th:text="${size.tenSize}"
-                                            th:selected="${sanPham.idSize != null and size.id == sanPham.idSize.id}">
-                                        </option>
-                                    </select>
-                                </td>
-                                <td>
-                                    <select name="idMauSac" class="form-select">
-                                        <option th:each="mauSac : ${lstMauSac}" th:value="${mauSac.id}"
-                                            th:text="${mauSac.tenMauSac}"
-                                            th:selected="${mauSac.id!=null and mauSac.id == sanPham.idMauSac.id}">
-                                        </option>
-                                    </select>
-                                </td>
-                                <td>
-                                    <input type="text" name="trongLuong"
-                                        th:value="${sanPham.trongLuong!=null?sanPham.trongLuong:'Không có'}"
-                                        class="form-control" />
-                                </td>
-                                <td>
-                                    <input type="text" name="giaNhap"
-                                        th:value="${sanPham.giaNhap!=null?sanPham.giaNhap:'Không có'}"
-                                        class="form-control" />
-                                </td>
-                                <td>
-                                    <input type="text" name="giaBan"
-                                        th:value="${sanPham.giaBan!=null?sanPham.giaBan:'Không có'}"
-                                        class="form-control" />
-                                </td>
-                                <td>
-                                    <label for="fileInput-[[${sanPham.id}]]" class="image-label">
-                                        <img th:src="@{${sanPham.hinhAnh} != null ? ${sanPham.hinhAnh} : '/path/to/default-image.jpg'}"
-                                            alt="Product Image" class="product-img" th:id="'img-'+${sanPham.id}" />
-                                    </label>
-                                    <!-- <input type="file" th:id="'fileInput-'+${sanPham.id}" th:name="'hinhAnh'" class="file-input" accept="image/*"
-                                        onchange="previewImage(this," 'img-'+${sanPham.id}") /> -->
-                                </td>
+            <div class="container-fluid card p-7 st">
+                <div class="table-responsive">
+                    <form th:action="@{/sanpham/updateCTSP}" style="margin-top: 20px;" method="post" id="updateCTSP">
+                        <table class="table table-bordered table-hover">
+                            <thead class="table-hover">
+                                <tr>
+                                    <th scope="col">Mã sản phẩm</th>
+                                    <th scope="col">Tên sản phẩm</th>
+                                    <th scope="col">Hãng</th>
+                                    <th scope="col">Chất liệu</th>
+                                    <th scope="col">Danh mục</th>
+                                    <th scope="col">Size</th>
+                                    <th scope="col">Màu sắc</th>
+                                    <th scope="col">Trọng lượng</th>
+                                    <th scope="col">Giá nhập</th>
+                                    <th scope="col">Giá bán</th>
+                                    <th scope="col">Hình ảnh</th>
+                                    <th scope="col">Số lượng</th>
+                                    <th scope="col">Mô tả</th>
+                                    <th scope="col">Ngày tạo</th>
+                                    <th scope="col">Ngày sửa</th>
+                                    <th scope="col">Trạng thái</th>
+                                    <th scope="col">Thao tác</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr th:each="sanPham : ${lstCTSP}" th:attr="data-id=${sanPham.id}">
+                                    <input type="hidden" name="id" th:value="${sanPham.id}" />
+                                    <input type="hidden" id="idSP"
+                                        th:value="${sanPham.idSanPham!=null?sanPham.idSanPham.id:'Không có'}">
+                                    <td th:text="${sanPham.idSanPham!=null?sanPham.idSanPham.maSanPham:'Không có'}">
+                                    </td>
+                                    <td th:text="${sanPham.idSanPham!=null?sanPham.idSanPham.tenSanPham:'Không có'}">
+                                    </td>
+                                    <td
+                                        th:text="${sanPham.idSanPham.idHang!=null?sanPham.idSanPham.idHang.tenHang:'Không có'}">
+                                    </td>
+                                    <td
+                                        th:text="${sanPham.idSanPham.idChatLieu!=null?sanPham.idSanPham.idChatLieu.tenChatLieu:'Không có'}">
+                                    </td>
+                                    <td
+                                        th:text="${sanPham.idSanPham.idDanhMuc!=null?sanPham.idSanPham.idDanhMuc.tenDanhMuc:'Không có'}">
+                                    </td>
+                                    <td>
+                                        <select name="idSize" class="form-select">
+                                            <option th:each="size : ${lstSize}" th:value="${size.id}"
+                                                th:text="${size.tenSize}"
+                                                th:selected="${sanPham.idSize != null and size.id == sanPham.idSize.id}">
+                                            </option>
+                                        </select>
+                                    </td>
+                                    <td>
+                                        <select name="idMauSac" class="form-select">
+                                            <option th:each="mauSac : ${lstMauSac}" th:value="${mauSac.id}"
+                                                th:text="${mauSac.tenMauSac}"
+                                                th:selected="${mauSac.id!=null and mauSac.id == sanPham.idMauSac.id}">
+                                            </option>
+                                        </select>
+                                    </td>
+                                    <td>
+                                        <input type="text" name="trongLuong" style="width: 50px;"
+                                            th:value="${sanPham.trongLuong!=null?sanPham.trongLuong:'Không có'}"
+                                            class="form-control" />
+                                    </td>
+                                    <td>
+                                        <input type="text" name="giaNhap"
+                                            th:value="${sanPham.giaNhap!=null?#numbers.formatInteger(sanPham.giaNhap,3,'COMMA'):'Không có'}"
+                                            class="form-control" />
+                                    </td>
+                                    <td>
+                                        <input type="text" name="giaBan"
+                                            th:value="${sanPham.giaBan!=null?#numbers.formatInteger(sanPham.giaBan,3,'COMMA'):'Không có'}"
+                                            class="form-control" />
+                                    </td>
+                                    <td>
+                                        <label for="fileInput-[[${sanPham.id}]]" class="image-label">
+                                            <img th:src="@{${sanPham.hinhAnh} != null ? ${sanPham.hinhAnh} : '/path/to/default-image.jpg'}"
+                                                alt="Product Image" class="product-img" th:id="'img-'+${sanPham.id}" />
+                                        </label>
+                                        <!-- <input type="file" th:id="'fileInput-'+${sanPham.id}" th:name="'hinhAnh'" class="file-input" accept="image/*"
+                                                                        onchange="previewImage(this," 'img-'+${sanPham.id}") /> -->
+                                    </td>
 
-                                <td>
-                                    <input type="text" name="soLuong"
-                                        th:value="${sanPham.soLuong!=null?sanPham.soLuong:'Không có'}"
-                                        class="form-control" />
-                                </td>
-                                <td>
-                                    <input type="text" name="moTa"
-                                        th:value="${sanPham.moTa!=null?sanPham.moTa:'Không có'}" class="form-control" />
-                                </td>
-                                <td th:text="${sanPham.ngayTao}"></td>
-                                <td th:text="${sanPham.ngaySua}"></td>
-                                <td>
-                                    <input type="checkbox" name="trangThai" class="toggle-status"
-                                        th:checked="${sanPham.trangThai}" th:data-id="${sanPham.id}" />
-                                    <p th:text="${sanPham.trangThai} ? 'Hoạt động' : 'Không hoạt động'"></p>
-                                </td>
-                                <td>
-                                    <button type="button" class="btn btn-outline-warning update-btn">Cập nhật</button>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </form>
+                                    <td>
+                                        <input type="text" name="soLuong" style="width: 50px;"
+                                            th:value="${sanPham.soLuong!=null?sanPham.soLuong:'Không có'}"
+                                            class="form-control" />
+                                    </td>
+                                    <td>
+                                        <input type="text" name="moTa"
+                                            th:value="${sanPham.moTa!=null?sanPham.moTa:'Không có'}"
+                                            class="form-control" />
+                                    </td>
+                                    <td th:text="${#dates.format(sanPham.ngayTao,'MM/dd/yyyy')}"></td>
+                                    <td th:text="${#dates.format(sanPham.ngaySua,'MM/dd/yyyy')}"></td>
+                                    <td>
+                                        <input type="checkbox" name="trangThai" class="toggle-status"
+                                            th:checked="${sanPham.trangThai}" th:data-id="${sanPham.id}" />
+                                        <p th:text="${sanPham.trangThai} ? 'Hoạt động' : 'Không hoạt động'"></p>
+                                    </td>
+                                    <td>
+                                        <button type="button" class="btn btn-outline-warning update-btn">Cập
+                                            nhật</button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </form>
+                </div>
 
                 <th:block th:if="${totalPages > 0}">
                     <nav aria-label="Page navigation" class="mt-3">
@@ -272,15 +286,37 @@
 
         </div>
         <script>
-               function previewImage(input, imgId) {
-                    if (input.files && input.files[0]) {
-                        let reader = new FileReader();
-                        reader.onload = function (e) {
-                            document.getElementById(imgId).src = e.target.result;
-                        };
-                        reader.readAsDataURL(input.files[0]);
-                    }
+            function previewImage(input, imgId) {
+                if (input.files && input.files[0]) {
+                    let reader = new FileReader();
+                    reader.onload = function (e) {
+                        document.getElementById(imgId).src = e.target.result;
+                    };
+                    reader.readAsDataURL(input.files[0]);
                 }
+            }
+          const notyf = new Notyf();
+
+            document.getElementById("themNhanhChiTietSanPham").addEventListener("click", function () {
+                const idSanPham = document.getElementById("idSanPham").value;
+
+                $.ajax({
+                    url: "/sanpham/createProductValidations",
+                    type: "GET",
+                    data: { idSanPham: idSanPham },
+                    success: function (response) {
+                        notyf.success(response.success);
+                        setTimeout(function () {
+                            window.location.reload();
+                        }, 2000);
+                    },
+                    error: function (xhr) {
+                        notyf.error(xhr.responseJSON.message);
+                    }
+                });
+            });
+
+
             document.getElementById("btnSubmit").addEventListener("click", function () {
                 document.querySelector("#exampleModal form").submit();
             });
@@ -339,7 +375,7 @@
                                 notyf.error("Cập nhật thất bại! Vui lòng thử lại.");
                             }
                         } catch (error) {
-                                notyf.error("Lỗi khi cập nhật sản phẩm! Vui lòng thử lại.");
+                            notyf.error("Lỗi khi cập nhật sản phẩm! Vui lòng thử lại.");
                         }
                     });
                 });
