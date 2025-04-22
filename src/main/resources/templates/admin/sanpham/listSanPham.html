@@ -87,7 +87,6 @@
                     </tbody>
                 </table>
             </div>
-
             <!-- Phân trang -->
             <nav aria-label="Page navigation" class="mt-3">
                 <ul class="pagination justify-content-center">
@@ -103,32 +102,9 @@
                         <a th:href="@{/sanpham/hienthi(page=${currentPage+1}, size=${10})}" class="page-link">»</a>
                     </li>
                 </ul>
-            </nav>
-
-            <!-- Hiển thị thông báo thành công -->
-            <div th:if="${successMessage}">
-                <script th:inline="javascript">
-                    /*<![CDATA[*/
-                    var successMessage = /*[[${successMessage}]]*/ 'null';
-                    if (successMessage !== 'null') {
-                        Swal.fire({
-                            icon: 'success',
-                            title: 'Thành công',
-                            text: successMessage,
-                            confirmButtonText: 'OK'
-                        }).then(() => {
-                            history.replaceState(null, '', location.pathname);
-                        });
-                    }
-                    /*]]>*/
-                </script>
-            </div>
+            </nav>          
         </div>
-
-
-
     </div>
-
 </body>
 
 </html>

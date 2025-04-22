@@ -16,16 +16,10 @@ public interface ChiTietSanPhamRepository extends JpaRepository<ChiTietSanPham, 
 
     // Lấy sản phẩm theo id của sản phẩm (SanPham)
     Page<ChiTietSanPham> findChiTietSanPhamByIdSanPham_Id(int idSanPham, Pageable pageable);
-
+    List<ChiTietSanPham> findChiTietSanPhamByIdSanPham_Id(int idSanPham);
     // Lấy bản ghi mới nhất cho mỗi sản phẩm
     @Query("SELECT ctp FROM ChiTietSanPham ctp " +
-            "WHERE ctp.ngayTao = (" +
-            "   SELECT MAX(ctp2.ngayTao) " +
-            "   FROM ChiTietSanPham ctp2 " +
-            "   WHERE ctp2.idSanPham.id = ctp.idSanPham.id " +
-            "   AND ctp2.trangThai = true" +
-            ") " +
-            "AND ctp.soLuong > 0")
+            "WHERE ctp.ngayTao = (SELECT MAX(ctp2.ngayTao) FROM ChiTietSanPham ctp2 WHERE ctp2.idSanPham.id = ctp.idSanPham.id and ctp2.trangThai = true and ctp2.soLuong >0) and ctp.trangThai =true ")
     Page<ChiTietSanPham> findFirstRecordForEachProduct(Pageable pageable);
 
     @Query(value = "select * from ChiTietSanPham", nativeQuery = true)
@@ -41,11 +35,10 @@ public interface ChiTietSanPhamRepository extends JpaRepository<ChiTietSanPham, 
     List<ChiTietSanPham> findTop10NewestProducts(Pageable pageable);
     // code hung end
 
-    // Tìm chi tiết sản phẩm theo id sản phẩm và id màu sắc, với trạng thái đang hoạt động
-    @Query("SELECT c FROM ChiTietSanPham c WHERE c.idSanPham.id = :idSanPham AND c.idMauSac.id = :idMauSac and c.trangThai = true")
-    ChiTietSanPham findChiTietSanPhamByIdAndIdMauSacAndTrangThai(@Param("idSanPham") int idSanPham,
-                                                                 @Param("idMauSac") int idMauSac,
-                                                                 @Param("trangThai") boolean trangThai);
+    @Query("SELECT c FROM ChiTietSanPham c WHERE c.idSanPham.id = :id AND c.idMauSac.id = :idMauSac AND c.trangThai = true")
+    List<ChiTietSanPham> findChiTietSanPhamByIdSPAndIdMauSac(@Param("id") int id,
+                                                     @Param("idMauSac") int idMauSac);
+
 
     // Lấy danh sách chi tiết sản phẩm theo id sản phẩm với trạng thái đang hoạt động
     ArrayList<ChiTietSanPham> findByIdSanPham_IdAndTrangThai(int idSanPham, boolean trangThai);
