@@ -26,4 +26,5 @@ public interface ChucVuService {
 
     ChucVu findByMaChucVu(String maChucVu);
     String taoMaChucVu();
+    boolean existsByTenChucVu(String tenChucVu);
 }

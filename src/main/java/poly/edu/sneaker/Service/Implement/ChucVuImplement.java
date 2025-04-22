@@ -84,4 +84,8 @@ public class ChucVuImplement implements ChucVuService {
         String maCV = "CV"+1000+random.nextInt(9000);
         return maCV;
     }
+    @Override
+    public boolean existsByTenChucVu(String tenChucVu) {
+        return chucVuRepository.existsByTenChucVu(tenChucVu);
+    }
 }

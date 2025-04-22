@@ -173,6 +173,7 @@ public class SanPhamController {
                                      @RequestParam("img") MultipartFile file,
                                      @ModelAttribute ChiTietSanPham chiTietSanPham, RedirectAttributes redirectAttributes) {
         try {
+
             List<ChiTietSanPham> lstCTSP = chiTietSanPhamService.findByIdSanPham(idSanPham);
 
             if (chiTietSanPham != null) {
@@ -184,7 +185,6 @@ public class SanPhamController {
                     Files.copy(file.getInputStream(), path, StandardCopyOption.REPLACE_EXISTING);
                     // Lưu đường dẫn file vào database
                     chiTietSanPham.setHinhAnh("/images/" + fileName);
-                    System.out.println(chiTietSanPham.getHinhAnh());
                 }
 
                 ChiTietSanPham ctsp = new ChiTietSanPham();
@@ -193,6 +193,7 @@ public class SanPhamController {
                 ctsp.setIdMauSac(chiTietSanPham.getIdMauSac());
                 for (ChiTietSanPham ct : lstCTSP
                 ) {
+
                     if (ct.getIdSize().equals(chiTietSanPham.getIdSize().getId()) && ct.getIdMauSac().equals(chiTietSanPham.getIdMauSac().getId())) {
                         redirectAttributes.addFlashAttribute("errrorMasage", "Chi tiết sản phẩm đã tồn tại");
                     }

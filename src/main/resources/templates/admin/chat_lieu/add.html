@@ -40,6 +40,8 @@
             <div class="mb-3">
                 <label for="tenChatLieu" class="form-label">Tên Chất Liệu</label>
                 <input type="text" class="form-control" id="tenChatLieu" th:field="*{tenChatLieu}" required>
+                <div class="text-danger" th:if="${#fields.hasErrors('tenChatLieu')}" th:errors="*{tenChatLieu}"></div>
+
             </div>
 
             <!-- Trạng thái (select true/false) -->

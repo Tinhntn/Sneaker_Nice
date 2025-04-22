@@ -2,6 +2,7 @@ package poly.edu.sneaker.Controller;
 
 
 
+
 import com.itextpdf.kernel.pdf.PdfDocument;
 import com.itextpdf.kernel.pdf.PdfWriter;
 import com.itextpdf.kernel.font.PdfFont;
@@ -76,8 +77,6 @@ public class BanHangTaiQuayController {
     public String bhtq(Model model, @RequestParam(defaultValue = "0") int page) {
         int size = 5;
         //list chitietsanpham phan trang
-
-
         Page<ChiTietSanPham> CTSP = banHangTaiQuayService.DanhSachSanPhamPhanTrang(page, size);
         model.addAttribute("CTSP", CTSP.getContent());
         model.addAttribute("currentPage", page);
@@ -467,13 +466,12 @@ public class BanHangTaiQuayController {
             @RequestParam("tongtiencthd") float tongTienCTHD,
             @RequestParam(value = "tienKhachDua", defaultValue = "0") float tienKhachDua,
             RedirectAttributes redirectAttributes) {
-        System.out.println("id hoa don" + idhd);
-        System.out.println("tien cthd " + tongTienCTHD);
-        System.out.println("tien khach dua " + tienKhachDua);
+
 
         // Tính tiền thừa
         float tienThua = tienKhachDua - tongTienCTHD;
         System.out.println("tien thừa " + tienThua);
+
 
         if (tienThua < 0) {
             redirectAttributes.addFlashAttribute("error", "tiền khách đưa đang nhỏ hơn tiền cần thanh toán");
@@ -519,12 +517,10 @@ public class BanHangTaiQuayController {
         PdfDocument pdfDoc = new PdfDocument(writer);
         Document document = new Document(pdfDoc, PageSize.A4);
         document.setMargins(50, 50, 50, 50);
-
         // Cấu hình font chữ
         InputStream fontStream = getClass().getClassLoader().getResourceAsStream("static/fonts/font-times-new-roman.ttf");
         FontProgram fontProgram = FontProgramFactory.createFont(fontStream.readAllBytes());
         PdfFont boldFont = PdfFontFactory.createFont(fontProgram, PdfEncodings.IDENTITY_H, true);
-
         // Tiêu đề
         Paragraph header = new Paragraph("HÓA ĐƠN BÁN HÀNG")
                 .setFont(boldFont)
@@ -533,7 +529,7 @@ public class BanHangTaiQuayController {
                 .setMarginBottom(20);
         document.add(header);
 
-        // Thông tin công ty
+
         Paragraph companyInfo = new Paragraph()
                 .add(new Text("Tiệm giày Sneakers_Nice\n").setFont(boldFont).setFontSize(12))
                 .add("Địa chỉ: Số 1 Trịnh Văn Bô, Nam Từ Liêm, Hà Nội\n")
@@ -543,7 +539,6 @@ public class BanHangTaiQuayController {
                 .setMarginBottom(20);
         document.add(companyInfo);
 
-        // Thông tin hóa đơn - 2 cột
         float[] columnWidths = {1, 1};
         Table invoiceInfoTable = new Table(columnWidths);
         invoiceInfoTable.setWidth(UnitValue.createPercentValue(100));
@@ -570,10 +565,10 @@ public class BanHangTaiQuayController {
         invoiceInfoTable.addCell(rightCell);
         document.add(invoiceInfoTable);
 
+
         // Dòng phân cách
         document.add(new LineSeparator(new SolidLine()).setMarginTop(10).setMarginBottom(10));
 
-        // Bảng sản phẩm
         Table productsTable = new Table(new float[]{3, 1, 1, 1});
         productsTable.setWidth(UnitValue.createPercentValue(100));
 
@@ -593,7 +588,7 @@ public class BanHangTaiQuayController {
 
         document.add(productsTable);
 
-        // Bảng tổng hợp
+
         Table summaryTable = new Table(new float[]{3, 1});
         summaryTable.setWidth(UnitValue.createPercentValue(50));
         summaryTable.setHorizontalAlignment(HorizontalAlignment.RIGHT);

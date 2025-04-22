@@ -492,6 +492,12 @@
 				return null;
 			}
 			document.getElementById("searchMaGiamGia").addEventListener("click", async function () {
+<<<<<<< HEAD
+					const maKhuyenMai = document.getElementById("inputMaKhuyenMai").value;
+					if (!maKhuyenMai) {
+						notyf.error("Bạn cần nhập mã khuyến mãi");
+						return;
+=======
 				const maKhuyenMai = document.getElementById("inputMaKhuyenMai").value;
 				if (!maKhuyenMai) {
 					notyf.error("Bạn cần nhập mã khuyến mãi");
@@ -503,6 +509,7 @@
 					if (!response.ok) {
 						const err = await response.json();
 						throw new Error(err.message || 'Không tìm thấy mã giảm giá');
+>>>>>>> master
 					}
 
 					const data = await response.json();
@@ -610,6 +617,7 @@
 					selectedIds:selectedIds
 				};
 
+					console.log(formData)
 				// Danh sách input cần kiểm tra
 				let requiredFields = ["hoVaTen", "soDienThoai", "email", "diaChiCuThe"];
 				let requiredSelects = ["province", "district", "ward"];
@@ -691,7 +699,6 @@
 									return response.json();
 								})
 								.then(data => {
-
 									notyf.success("Đặt hafg thành công")
 									setTimeout(function(){
 										window.location.href = data.redirectUrl; // Chuyển hướng đến trang thanh toán
@@ -721,7 +728,6 @@
 									if (data.redirectUrl) {
 										setTimeout(function(){
 											window.location.href = data.redirectUrl; // Điều hướng đến trang thanh toán VNPAY
-
 										},2000)
 									} else {
 										throw new Error(data.message || "Lỗi không xác định khi tạo đơn hàng!");

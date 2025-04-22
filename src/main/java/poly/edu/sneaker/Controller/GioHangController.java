@@ -214,6 +214,7 @@ public class GioHangController {
             lichSuTrnngThaiService.saveLichSuTrangThai(trangThaiDonHang);
             // Lấy danh sách sản phẩm trong giỏ hàng
 
+
             for (GioHangChiTiet ghct : lstGioHangChiTiet) {
                 HoaDonChiTiet hoaDonChiTiet = new HoaDonChiTiet();
                 hoaDonChiTiet.setIdHoaDon(hoaDonService.findById(hoaDon.getId()));
