@@ -27,6 +27,7 @@ public interface HoaDonOnlService {
 
 
     //Hóa đơn khách hàng
+    Page<HoaDonOnlCustom> getHoaDonCustomTatCaKH(Pageable pageable, Integer idKhachHang);
     Page<HoaDonOnlCustom> getHoaDonCustomDHKH(Pageable pageable, Integer idKhachHang);
     Page<HoaDonOnlCustom> getHoaDonOLChoxacnhanKH(Pageable pageable, Integer idKhachHang);
     Page<HoaDonOnlCustom> getHoaDonOLCholayhangKH(Pageable pageable, Integer idKhachHang);

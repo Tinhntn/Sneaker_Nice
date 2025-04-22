@@ -146,19 +146,24 @@
             /* Đã thanh toán - chờ xác nhận */
         </style>
 
+
         <div class="container-fluid invoice-container">
             <!-- Header và nút hành động -->
             <div class="card mb-4">
                 <div class="card-header">
                     <h5 class="mb-0">Chi tiết hóa đơn #<span th:text="${hoaDon.maHoaDon}"></span></h5>
                     <div class="d-flex flex-wrap">
-                        <button type="button" class="btn btn-danger btn-action" id="huydon" data-bs-toggle="modal"
-                            data-bs-target="#modalhuyhoadon"
-                            th:disabled="${hoaDon.trangThai==6 or hoaDon.trangThai==5}">
-                            <i class="fas fa-times-circle me-1"></i> Hủy đơn
-                        </button>
+                        <form th:action="@{/hoadononline/huydh/{id}(id = ${hoaDon.id})}" method="post">
+                            <input type="hidden" th:name="idHoaDon" th:value="${hoaDon.id}" />
+                            <button type="submit" class="btn btn-danger btn-action" id="huydhuyhoadonon"
+                                    th:disabled="${hoaDon.trangThai == 4 or hoaDon.trangThai == 5 or hoaDon.trangThai == 0}">
+                                <i class="fas fa-times-circle me-1"></i> Hủy đơn
+                            </button>
+                        </form>
+
+                        </form>
                         <button class="btn btn-success btn-action" id="xacnhan" data-bs-toggle="modal"
-                            data-bs-target="#exampleModal" th:disabled="${hoaDon.trangThai==6}"
+                            data-bs-target="#exampleModal" th:disabled="${hoaDon.trangThai == 0 or hoaDon.trangThai == 5}"
                             onclick="xacNhanHoaDon()">
                             <i class="fas fa-check-circle me-1"></i> Đổi trạng thái
                         </button>
@@ -1050,6 +1055,18 @@
                 }
             }
         </script>
+
+        //hủy đơn hàng
+        <script th:if="${thanhcong != null}">
+            Swal.fire({
+                icon: 'success',
+                title: 'Thành công',
+                text: [[${thanhcong}]],
+                timer: 2000,
+                showConfirmButton: false
+            });
+        </script>
+
     </div>
 </body>
 
