@@ -4,8 +4,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import poly.edu.sneaker.Model.ChucVu;
 
+
 import java.util.ArrayList;
-import java.util.List;
 
 public interface ChucVuService {
     Page<ChucVu> findAll(Pageable pageable);

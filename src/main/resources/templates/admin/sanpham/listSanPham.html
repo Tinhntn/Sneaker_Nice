@@ -104,31 +104,8 @@
                     </li>
                 </ul>
             </nav>
-
-            <!-- Hiển thị thông báo thành công -->
-            <div th:if="${successMessage}">
-                <script th:inline="javascript">
-                    /*<![CDATA[*/
-                    var successMessage = /*[[${successMessage}]]*/ 'null';
-                    if (successMessage !== 'null') {
-                        Swal.fire({
-                            icon: 'success',
-                            title: 'Thành công',
-                            text: successMessage,
-                            confirmButtonText: 'OK'
-                        }).then(() => {
-                            history.replaceState(null, '', location.pathname);
-                        });
-                    }
-                    /*]]>*/
-                </script>
-            </div>
         </div>
-
-
-
     </div>
-
 </body>
 
 </html>

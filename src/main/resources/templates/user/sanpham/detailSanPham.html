@@ -1,4 +1,3 @@
-<!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
     layout:decorate="~{layout/mainUser.html}">
 
@@ -20,38 +19,6 @@
 <body>
 
     <div layout:fragment="content">
-        <!-- Thông báo thành công -->
-
-        <div th:if="${message}">
-            <script th:inline="javascript">
-                /*<![CDATA[*/
-                var errorMessage = /*[[${message}]]*/ 'null';
-                if (errorMessage !== 'null') {
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Thất bại',
-                        text: errorMessage,
-                        confirmButtonText: 'OK'
-                    });
-                }
-                /*]]>*/
-            </script>
-        </div>
-        <div th:if="${thanhcong}">
-            <script th:inline="javascript">
-                /*<![CDATA[*/
-                var successMessage = /*[[${message}]]*/ 'null';
-                if (successMessage !== 'null') {
-                    Swal.fire({
-                        icon: 'success',
-                        title: 'Thành công',
-                        text: successMessage,
-                        confirmButtonText: 'OK'
-                    });
-                }
-                /*]]>*/
-            </script>
-        </div>
         <section class="ftco-section">
             <div class="container mt-5">
                 <div class="row">
@@ -72,11 +39,15 @@
                             </p>
 
                         </div>
-                  
+
                         <h4 class="mb-3"
                             th:text="${chiTietSanPham.idSanPham.tenSanPham + ' ' + chiTietSanPham.idSanPham.idHang.tenHang + ' ' + chiTietSanPham.idSanPham.idDanhMuc.tenDanhMuc + ' ' + chiTietSanPham.idSanPham.idChatLieu.tenChatLieu}">
                         </h4>
-                        <h4 class="price mb-3" th:text="'Giá: ' + ${chiTietSanPham.giaBan} + ' VND'"></h4>
+                        <h4 class="mb-3" id="idMauSac" th:data-mauSac="${chiTietSanPham.idMauSac.id}"
+                            th:text="${chiTietSanPham.idMauSac.tenMauSac}">
+                        </h4>
+                        <h4 id="giaBan" class="price mb-3"
+                            th:text="'Giá: ' +${#numbers.formatInteger(chiTietSanPham.giaBan,3,'COMMA')} + ' VND'"></h4>
                         <h4 class="mb-4" id="soLuong"
                             th:text="${chiTietSanPham.soLuong != null ? 'Còn hàng: ' + chiTietSanPham.soLuong : 'Hết hàng'}">
                         </h4>
@@ -100,7 +71,6 @@
                                     onclick="selectMauSac(this)">
                                 </button>
                             </div>
-                            </span>
                         </div>
 
                         <div class="input-group col-md-6 d-flex mb-3">
@@ -127,7 +97,7 @@
                                     giỏ hàng
                                 </a>
                                 <br>
-                                <a href="cart.html" class="btn btn-primary btnMuaNgay py-3 px-5">Mua ngay</a>
+                                <a id="muaNgay" class="btn btn-primary btnMuaNgay py-3 px-5">Mua ngay</a>
 
                             </form>
                         </div>
@@ -171,32 +141,24 @@
                                 // Xóa class active khỏi tất cả các nút màu sắc
                                 document.querySelectorAll('.btn-mau-sac').forEach(btn => {
                                     btn.classList.remove('active');
-                                });
 
+
+                                });
                                 // Đánh dấu nút được chọn
                                 button.classList.add('active');
-
-                                // Cập nhật giá trị màu sắc được chọn
-                                document.getElementById("selectedMauSac").value = button.getAttribute("data-idMauSac");
-                                let idMauSac = document.getElementById("idMauSac");
-                                let idCTSP = document.getElementById("idCTSP");
-                                fetch(`/Sneakers_Nice/chitietsanpham?idCTSP=${idCTSP}&idMauSac=${idMauSac}`)
-                                    .then(response => response.json())
-                                    .then(data => {
-                                        if (data && data.hinhAnh) {
-                                            document.getElementById("productImage").src = data.hinhAnh;
-                                        }
-                                    })
-                                    .catch(error => notyf.error('Có lỗi xảy ra', error)
-                                    );
                             }
+
+
+
+
+
                             document.addEventListener("DOMContentLoaded", function () {
                                 updateCartCount();
-
                                 var combinations = /*[[${lstCTSP}]]*/[];
                                 const colorButtons = document.querySelectorAll(".btn-mau-sac");
                                 const sizeButtons = document.querySelectorAll(".size-btn");
                                 const quantityText = document.getElementById("soLuong");
+                                const giaBan = document.getElementById('giaBan');
 
                                 let selectedColor = null;
                                 let selectedSize = null;
@@ -204,24 +166,29 @@
                                     let idMauSac = document.querySelector(".btn-mau-sac.active")?.getAttribute("data-idMauSac") || "";
                                     let idSize = document.querySelector(".size-btn.active")?.getAttribute("data-idSize") || "";
                                     let idSanPham = /*[[${chiTietSanPham != null && chiTietSanPham.idSanPham != null ? chiTietSanPham.idSanPham.id : ''}]]*/ "";
-                                    let formData = { idSanPham, idSize, idMauSac };
+                                    let query = new URLSearchParams({ idSanPham, idSize, idMauSac }).toString();
 
-                                    fetch(`/sanpham/lay-combination`, {
+                                    fetch(`/Sneakers_Nice/lay-combination?${query}`, {
                                         method: "GET",
-                                        headers: { "Content-Type": "application/json" },
-                                        URL: JSON.stringify(formData)
+                                        headers: { "Content-Type": "application/json" }
                                     })
                                         .then(response => response.json())
                                         .then(data => {
-                                            if (data && data.soLuong !== undefined) {
-                                                quantityText.innerText = `Còn hàng: ${data.soLuong}`;
+                                            if (data && data.chiTietSanPham !== undefined) {
+                                                quantityText.innerText = `Còn hàng: ${data.chiTietSanPham.soLuong}`;
+                                                giaBan.innerText = `Giá: ${Number(data.chiTietSanPham.giaBan).toLocaleString('vi-VN')} VNĐ`;
+                                                document.getElementById("idMauSac").innerText = `${data.chiTietSanPham.idMauSac.tenMauSac}`;
+                                                document.getElementById("idMauSac").setAttribute("data-mauSac", `${data.chiTietSanPham.idMauSac.id}`);
                                             } else {
+                                                giaBan.innerText = `Giá: ${Number(data.chiTietSanPham.giaBan).toLocaleString('vi-VN')} VNĐ`;
+                                                document.getElementById("idMauSac").innerText = `${data.chiTietSanPham.idMauSac.tenMauSac}`;
+                                                document.getElementById("idMauSac").setAttribute("data-mauSac", `${data.chiTietSanPham.idMauSac.id}`)
                                                 quantityText.innerText = "Hết hàng";
+
                                             }
                                         })
                                         .catch(error => {
                                             console.error("Lỗi:", error);
-                                            notyf.error("Có lỗi xảy ra");
                                         });
                                 }
 
@@ -252,6 +219,9 @@
                                     btn.addEventListener("click", function () {
                                         selectedColor = this.getAttribute("data-idMauSac");
                                         updateSizes();
+                                        if (selectedColor && selectedSize) {
+                                            updateQuantity();
+                                        }
                                     });
                                 });
 
@@ -259,6 +229,9 @@
                                     btn.addEventListener("click", function () {
                                         selectedSize = this.getAttribute("data-idSize");
                                         updateColors();
+                                        if (selectedColor && selectedSize) {
+                                            updateQuantity();
+                                        }
                                     });
                                 });
                                 document.addEventListener("click", function (event) {
@@ -275,79 +248,146 @@
 
                             });
 
+                            document.querySelectorAll(".btn-mau-sac").forEach(button => {
+                                button.addEventListener("click", function () {
+                                    // Lấy id màu sắc từ nút được click
+                                    const idMauSac = this.getAttribute("data-idMauSac");
+
+                                    // Cập nhật value cho input ẩn
+                                    document.getElementById("selectedMauSac").value = idMauSac;
+
+                                    // Lấy id sản phẩm từ Thymeleaf (tùy bạn dùng kiểu nào)
+                                    const idSP = /*[[${chiTietSanPham != null && chiTietSanPham.idSanPham!=null ? chiTietSanPham.idSanPham.id : ''}]]*/ "";
+
+                                    // Gọi API để lấy ảnh theo idSP và idMauSac
+                                    fetch(`/Sneakers_Nice/layAnh?idSP=${idSP}&idMauSac=${idMauSac}`)
+                                        .then(response => response.json())
+                                        .then(data => {
+                                            if (data && data.hinhAnh) {
+                                                document.getElementById("productImage").src = data.hinhAnh;
+                                            }
+                                        })
+                                        .catch(error => {
+                                            console.error("Lỗi khi lấy ảnh:", error);
+                                            notyf.error('Có lỗi xảy ra khi cập nhật ảnh!');
+                                        });
+
+                                    // Cập nhật class active cho nút được chọn
+                                    document.querySelectorAll(".btn-mau-sac").forEach(btn => btn.classList.remove("active"));
+                                    this.classList.add("active");
+                                });
+                            });
 
 
                             $("#themVaoGioHang").click(async function themSanPhamVaoGioHang() {
-                                var idSize = $(".btn-mau-sac.active").attr("data-idMauSac");
-                                var idMauSac = $(".size-btn.active").attr("data-idSize");
+                                var idMauSac = $(".btn-mau-sac.active").attr("data-idMauSac");
+                                var idSize = $(".size-btn.active").attr("data-idSize");
                                 var soLuong = document.getElementById("quantity").value;
                                 var idSanPham = /*[[${chiTietSanPham != null && chiTietSanPham.idSanPham != null ? chiTietSanPham.idSanPham.id : ''}]]*/ "";
 
-                                if (soLuong <= 0) {
+                                if (soLuong < 1) {
                                     notyf.error('Số lượng phải lớn hơn 0');
-                                    location.reload();
+                                    return;
                                 } else if (idSize == null) {
                                     notyf.error('Vui lòng chọn size');
+                                    return;
                                 }
                                 else if (idMauSac == null) {
                                     notyf.error('Vui lòng chọn màu sắc');
+                                    return;
                                 }
                                 else {
-
                                     let formData = {
                                         idSanPham: idSanPham,
                                         idSize: idSize,
                                         idMauSac: idMauSac,
                                         soLuong: soLuong
-                                    }
-                                    try {
-                                        let response = await fetch(`/gio-hang/them-vao-gio-hang`, {
-                                            method: "POST",
-                                            headers: { "Content-Type": "application/json" },
-                                            body: JSON.stringify(formData)
-                                        });
-                                        if (!response.ok) {
-                                            let errorData;
-                                            try {
-                                                errorData = await response.json(); // Lấy dữ liệu lỗi từ server
-                                            } catch (e) {
-                                                errorData = { message: "Lỗi không xác định" }; // Nếu không lấy được dữ liệu
-                                            }
-
-                                            if (response.status === 401) {
-                                                notyf.error(errorData.message || 'Bạn chưa đăng nhập!');
-                                                setTimeout(() => {
-                                                    window.location.href = "/dang-nhap";
-                                                }, 2000);
-
-                                            } else if (response.status === 400) {
-                                                notyf.error(errorData.message || 'Dữ liệu gửi lên không hợp lệ!');
-
-                                            } else {
-                                                notyf.error(errorData.message || 'Có lỗi xảy ra khi thêm sản phẩm vào giỏ hàng');
-
-                                            }
-
-                                        }else if(response.status === 200) {
-                                            let data = await response.json();
-                                            if (data && data.message) {
-                                                notyf.success(data.message);
-                                            } else {
-                                                notyf.success('Thêm sản phẩm vào giỏ hàng thành công');
-                                                return
-                                            }
+                                    };
+                                    let response = await fetch(`/gio-hang/them-vao-gio-hang`, {
+                                        method: "POST",
+                                        headers: { "Content-Type": "application/json" },
+                                        body: JSON.stringify(formData)
+                                    });
+                                    if (!response.ok) {
+                                        let errorData = {};
+                                        try {
+                                            errorData = await response.json();
+                                        } catch (e) {
+                                            console.error("Không parse được lỗi JSON:", e);
                                         }
-                                    } catch (e) {
-                                        notyf.error('Có lỗi xảy ra khi thêm sản phẩm vào giỏ hàng');
 
+                                        const message = errorData.message || "Có lỗi xảy ra";
+
+                                        if (response.status === 401) {
+                                            notyf.error(errorData.message);
+                                            setTimeout(() => window.location.href = "/dang-nhap", 2000);
+                                            return;
+                                        }
                                     }
+                                    else if (response.status === 200) {
+                                        let data = await response.json();
+                                        if (data && data.message) {
+                                            updateCartCount();
+                                            notyf.success(data.message);
+                                        } else {
+                                            updateCartCount();
+                                            notyf.success('Thêm sản phẩm vào giỏ hàng thành công');
+                                            return;
+                                        }
+                                    }
+                                }
+                            });
+                            $("#muaNgay").click(async function muaNgay() {
+                                var idMauSac = $(".btn-mau-sac.active").attr("data-idMauSac");
+                                var idSize = $(".size-btn.active").attr("data-idSize");
+                                var soLuong = document.getElementById("quantity").value;
+                                var idSanPham = /*[[${chiTietSanPham != null && chiTietSanPham.idSanPham != null ? chiTietSanPham.idSanPham.id : ''}]]*/ "";
 
+                                if (soLuong < 1) {
+                                    notyf.error('Số lượng phải lớn hơn 0');
+                                    return;
+                                } else if (idSize == null) {
+                                    notyf.error('Vui lòng chọn size');
+                                    return;
+                                }
+                                else if (idMauSac == null) {
+                                    notyf.error('Vui lòng chọn màu sắc');
+                                    return;
+                                }
+                                else {
+                                    let formData = {
+                                        idSanPham: idSanPham,
+                                        idSize: idSize,
+                                        idMauSac: idMauSac,
+                                        soLuong: soLuong
+                                    };
+                                    let response = await fetch(`/gio-hang/them-vao-gio-hang`, {
+                                        method: "POST",
+                                        headers: { "Content-Type": "application/json" },
+                                        body: JSON.stringify(formData)
+                                    });
+                                    if (!response.ok) {
+                                        let errorData;
+                                        try {
+                                            errorData = await response.json(); // Lấy dữ liệu lỗi từ server
+                                        } catch (e) {
+                                            errorData = { message: "Lỗi không xác định" }; // Nếu không lấy được dữ liệu
+                                        }
+                                        const message = errorData.message || "Có lỗi xảy ra";
+
+                                        if (response.status === 401) {
+                                            notyf.error(errorData.message);
+                                            setTimeout(() => window.location.href = "/dang-nhap", 2000);
+                                            return;
+                                        }
+
+                                    } else if (response.status === 200) {
+                                        window.location.href = "/gio-hang/thanh-toan"
+                                    }
 
                                 }
 
                             });
-                            updateQuantity();
-
                         </script>
                     </div>
 

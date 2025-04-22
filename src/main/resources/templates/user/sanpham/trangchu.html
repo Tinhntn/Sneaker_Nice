@@ -1,15 +1,8 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
     layout:decorate="~{layout/mainUser}">
-
-
-
-
 <body>
-
     <div layout:fragment="content">
-
-        
         <section class="ftco-section ftco-no-pt ftco-no-pb">
             <div class="container">
                 <div class="row no-gutters ftco-services">
@@ -238,7 +231,7 @@
 
                                 <p class="price">
 
-                                    <span th:text="'Giá bán: ' + ${sp.giaBan} + ' VND'">0 VND</span>
+                                    <span th:text="'Giá bán: ' + ${#numbers.formatInteger(sp.giaBan,3,'COMMA')} + ' VND'">0 VND</span>
 
                                 </p>
 
@@ -335,7 +328,7 @@
 
                                 <p class="price">
 
-                                    <span th:text="'Giá bán: ' + ${sp.giaBan} + ' VND'">0 VND</span>
+                                    <span th:text="'Giá bán: ' + ${#numbers.formatInteger(sp.giaBan,3,'COMMA')} + ' VND'">0 VND</span>
 
                                 </p>
 
@@ -407,7 +400,7 @@
                                         th:text="${sp.idSanPham.tenSanPham}">Tên SP</a>
                                 </h3>
                                 <p class="price">
-                                    <span th:text="'Giá bán: ' + ${sp.giaBan} + ' VND'">0 VND</span>
+                                    <span th:text="'Giá bán: ' + ${#numbers.formatInteger(sp.giaBan,3,'COMMA')} + ' VND'">0 VND</span>
                                 </p>
                             </div>
                         </div>

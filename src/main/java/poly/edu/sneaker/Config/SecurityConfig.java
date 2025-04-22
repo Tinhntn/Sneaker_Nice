@@ -1,4 +1,5 @@
 
+
 package poly.edu.sneaker.Config;
 
 import jakarta.servlet.http.HttpServletResponse;
@@ -48,7 +49,6 @@ public class SecurityConfig {
                         .loginProcessingUrl("/dang-nhap") // URL xử lý submit form
                         .successHandler((request, response, authentication) -> {
                             // Trả về JSON khi đăng nhập thành công
-                            System.out.println(authentication.getAuthorities());
                             boolean isUser = authentication.getAuthorities().stream()
                                             .anyMatch(auth -> auth.getAuthority().equals("ROLE_USER"));
                             boolean isAdmin = authentication.getAuthorities().stream()
@@ -83,6 +83,13 @@ public class SecurityConfig {
                         .invalidateHttpSession(true)
                         .deleteCookies("JSESSIONID", "remember-me")
                         .permitAll()
+                )
+                .exceptionHandling(ex -> ex
+                        .authenticationEntryPoint((request, response, authException) -> {
+                            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                            response.setContentType("application/json;charset=UTF-8");
+                            response.getWriter().write("{\"message\": \"Bạn cần đăng nhập để mua sắm\"}");
+                        })
                 )
                 .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.ALWAYS) // LUÔN tạo session
