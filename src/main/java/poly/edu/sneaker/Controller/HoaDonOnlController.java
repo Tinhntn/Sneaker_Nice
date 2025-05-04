@@ -1,14 +1,26 @@
 package poly.edu.sneaker.Controller;
 
+import com.itextpdf.io.font.PdfEncodings;
+import com.itextpdf.io.font.constants.StandardFonts;
+import com.itextpdf.kernel.font.PdfFont;
+import com.itextpdf.kernel.font.PdfFontFactory;
+import com.itextpdf.kernel.geom.PageSize;
+import com.itextpdf.kernel.pdf.PdfDocument;
+import com.itextpdf.kernel.pdf.PdfWriter;
+import com.itextpdf.kernel.pdf.canvas.draw.SolidLine;
+import com.itextpdf.layout.Document;
+import com.itextpdf.layout.borders.Border;
+import com.itextpdf.layout.element.*;
+import com.itextpdf.layout.property.HorizontalAlignment;
+import com.itextpdf.layout.property.TextAlignment;
+import com.itextpdf.layout.property.UnitValue;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.data.domain.*;
+import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.*;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.util.ResourceUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import poly.edu.sneaker.DAO.HoaDonChiTietOnlCustom;
@@ -16,7 +28,16 @@ import poly.edu.sneaker.DAO.HoaDonOnlCustom;
 import poly.edu.sneaker.Model.*;
 import poly.edu.sneaker.Service.*;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.text.DecimalFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.time.ZoneId;
 import java.util.*;
+import java.util.List;
 import java.util.stream.Collectors;
 
 @CrossOrigin(origins = "*")
@@ -35,18 +56,29 @@ public class HoaDonOnlController {
 
     @Autowired
     KhachHangService khachHangService;
+
     @Autowired
     HoaDonService hoaDonService;
+
     @Autowired
     SizeService sizeService;
+
     @Autowired
     LichSuTrnngThaiService lichSuTrnngThaiService;
+
+    @Autowired
+    BanHangTaiQuayService banHangTaiQuayService;
+
 
     @GetMapping("/hienthi")
     public String hienthi(Model model, @RequestParam(defaultValue = "0") int page) {
         int size = 5;
 
-        Pageable pageable = PageRequest.of(page, size);
+        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "ngayTao"));
+
+        Page<HoaDonOnlCustom> listHoaDonTatCa = hoaDonOnlService.getHoaDonCustomTatCa(pageable);
+        Integer sizeTatCa = listHoaDonTatCa.getContent().size();
+        model.addAttribute("sizeTatCa", sizeTatCa);
 
         Page<HoaDonOnlCustom> listHoaDonDH = hoaDonOnlService.getHoaDonCustomDH(pageable);
         Integer sizeDH = listHoaDonDH.getContent().size();
@@ -68,7 +100,10 @@ public class HoaDonOnlController {
         Integer sizeht = listHoaDonHT.getContent().size();
         model.addAttribute("sizeht", sizeht);
 
-        System.out.println("List hoa don dh: " + listHoaDonDH.getContent().size());
+
+        model.addAttribute("listHoaDonTatCa", listHoaDonTatCa.getContent());
+        model.addAttribute("currentPage", listHoaDonTatCa.getNumber());
+        model.addAttribute("totalPages", listHoaDonTatCa.getTotalPages());
 
         model.addAttribute("listHoaDonDH", listHoaDonDH.getContent());
         model.addAttribute("currentPage", listHoaDonDH.getNumber());
@@ -330,9 +365,26 @@ public class HoaDonOnlController {
     @DeleteMapping("/xoa-chi-tiet/{idHoaDon}/{idChiTietSanPham}")
     public ResponseEntity<Map<String, Object>> xoaChiTiet(@PathVariable int idHoaDon, @PathVariable int idChiTietSanPham) {
         Map<String, Object> response = new HashMap<>();
+
+        List<HoaDonChiTiet> hoaDonChiTiets = hoaDonChiTietOnlService.findHoaDonChiTietByHoaDonId(idHoaDon);
+        if(hoaDonChiTiets!=null||hoaDonChiTiets.size()<=1){
+            response.put("success", false);
+            response.put("message", "Phải có tối thiểu 1 sản phẩm trong đơn hàng");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+        }
+        ChiTietSanPham chiTietSanPham;
+        HoaDonChiTiet hoaDonChiTiet;
+
         try {
+            chiTietSanPham = chiTietSanPhamService.findById(idChiTietSanPham);
+            hoaDonChiTiet = hoaDonChiTietOnlService.findByIdHoaDonAndIdChiTietSanPham(idHoaDon, idChiTietSanPham);
+
             hoaDonChiTietOnlService.xoaSPCTVaoHDCT(idHoaDon, idChiTietSanPham);
+            chiTietSanPham.setSoLuong(chiTietSanPham.getSoLuong() + hoaDonChiTiet.getSoLuong());
+
+            chiTietSanPhamService.update(chiTietSanPham);
             response.put("success", true);
+
             return ResponseEntity.ok(response);
         } catch (Exception e) {
             response.put("success", false);
@@ -350,17 +402,26 @@ public class HoaDonOnlController {
             int trangthai = Integer.parseInt(formData.get("trangThai").toString());
             HoaDon hoaDon = hoaDonService.findById(idhoadon);
             if (trangthai == 3) {
-                lichSuTrnngThaiService.doiTrangThaiDonHang(idhoadon, ghichu, trangthai);
+               boolean doiTT = lichSuTrnngThaiService.doiTrangThaiDonHang(idhoadon, ghichu, trangthai);
+           if(!doiTT){
+               return ResponseEntity.badRequest().body(Map.of("message","Đổi trạng thái thất bại"));
+           }
                 return ResponseEntity.ok(Map.of("message", "Chờ lấy hàng"));
             } else if (trangthai == 4) {
                 if (hoaDon.getTenNguoiGiao() == null || hoaDon.getTenNguoiGiao().isEmpty() || hoaDon.getSdtNguoiGiao() == null || hoaDon.getSdtNguoiGiao().isEmpty()) {
                     return ResponseEntity.badRequest().body(Map.of("message", "Vui lòng cập nhật thông tin người giao hàng"));
                 }
-                lichSuTrnngThaiService.doiTrangThaiDonHang(idhoadon, ghichu, trangthai);
+                boolean doiTT = lichSuTrnngThaiService.doiTrangThaiDonHang(idhoadon, ghichu, trangthai);
+                if(!doiTT){
+                    return ResponseEntity.badRequest().body(Map.of("message","Đổi trạng thái thất bại"));
+                }
                 return ResponseEntity.ok(Map.of("message", "Đang giao"));
 
             } else if (trangthai == 5) {
-                lichSuTrnngThaiService.doiTrangThaiDonHang(idhoadon, ghichu, trangthai);
+                boolean doiTT = lichSuTrnngThaiService.doiTrangThaiDonHang(idhoadon, ghichu, trangthai);
+                if(!doiTT){
+                    return ResponseEntity.badRequest().body(Map.of("message","Đổi trạng thái thất bại"));
+                }
                 return ResponseEntity.ok(Map.of("message", "Đã giao"));
             } else if (trangthai == 6) {
                 List<HoaDonChiTietOnlCustom> chiTietHoaDon = hoaDonChiTietOnlService.findByHoaDonId(hoaDon);
@@ -368,8 +429,10 @@ public class HoaDonOnlController {
                 ) {
                     chiTietSanPhamService.capNhatSoLuongKhiHuyHoaDon(ct.getIdChiTietSanPham(), ct.getSoLuong());
                 }
-                lichSuTrnngThaiService.doiTrangThaiDonHang(idhoadon, ghichu, trangthai);
-
+                boolean doiTT = lichSuTrnngThaiService.doiTrangThaiDonHang(idhoadon, ghichu, trangthai);
+                if(!doiTT){
+                    return ResponseEntity.badRequest().body(Map.of("message","Đổi trạng thái thất bại"));
+                }
                 return ResponseEntity.ok(Map.of("message", "Đã hủy hóa đơn"));
             }
             return ResponseEntity.ok(Map.of("message", "Đổi trạng thái thất bại"));
@@ -418,6 +481,247 @@ public class HoaDonOnlController {
             return ResponseEntity.ok(Map.of("message", "Lỗi khi cập nhật thông tin đơn hàng"));
         }
 
-
     }
+
+    // tìm kiếm hóa đơn
+    @GetMapping("/hoa-don")
+    public String viewHoaDon(Model model,
+                             @RequestParam(value = "keyword", required = false) String keyword,
+                             @RequestParam(value = "startDate", required = false)
+                             @DateTimeFormat(pattern = "yyyy-MM-dd") Date startDate,
+                             @RequestParam(value = "endDate", required = false)
+                             @DateTimeFormat(pattern = "yyyy-MM-dd") Date endDate,
+                             @RequestParam(value = "page", defaultValue = "0") int page) {
+        int size = 5;
+        Pageable pageable = PageRequest.of(page, size);
+
+        // Nếu chỉ có startDate mà không có endDate thì gán endDate là hôm nay
+        if (startDate != null && endDate == null) {
+            endDate = new Date();
+        }
+
+        // Nếu chỉ có endDate mà không có startDate thì gán startDate là ngày rất xa
+        if (startDate == null && endDate != null) {
+            startDate = new GregorianCalendar(1970, Calendar.JANUARY, 1).getTime();
+        }
+
+        Page<HoaDonOnlCustom> listHoaDonTatCa = hoaDonOnlService.searchHoaDon(keyword, startDate, endDate, page, size);
+        Integer sizeTatCa = listHoaDonTatCa.getContent().size();
+        model.addAttribute("sizeTatCa", sizeTatCa);
+        System.out.println("timkiem: " + listHoaDonTatCa.getContent().size());
+
+        model.addAttribute("listHoaDonTatCa", listHoaDonTatCa.getContent());
+        model.addAttribute("currentPage", page);
+        model.addAttribute("totalPages", listHoaDonTatCa.getTotalPages());
+        model.addAttribute("keyword", keyword);
+        model.addAttribute("startDate", startDate);
+        model.addAttribute("endDate", endDate);
+
+        Page<HoaDonOnlCustom> listHoaDonDH = hoaDonOnlService.getHoaDonCustomDH(pageable);
+        Integer sizeDH = listHoaDonDH.getContent().size();
+        model.addAttribute("sizeDH", sizeDH);
+
+        Page<HoaDonOnlCustom> listHoaDonCXN = hoaDonOnlService.getHoaDonOLChoxacnhan(pageable);
+        Integer sizecxn = listHoaDonCXN.getContent().size();
+        model.addAttribute("sizecxn", sizecxn);
+
+        Page<HoaDonOnlCustom> listHoaDonCLH = hoaDonOnlService.getHoaDonOLCholayhang(pageable);
+        Integer sizeclh = listHoaDonCLH.getContent().size();
+        model.addAttribute("sizeclh", sizeclh);
+
+        Page<HoaDonOnlCustom> listHoaDonDG = hoaDonOnlService.getHoaDonCustomDG(pageable);
+        Integer sizedg = listHoaDonDG.getContent().size();
+        model.addAttribute("sizedg", sizedg);
+
+        Page<HoaDonOnlCustom> listHoaDonHT = hoaDonOnlService.getHoaDonCustomHT(pageable);
+        Integer sizeht = listHoaDonHT.getContent().size();
+        model.addAttribute("sizeht", sizeht);
+
+        System.out.println("List hoa don dh: " + listHoaDonDH.getContent().size());
+
+        model.addAttribute("listHoaDonDH", listHoaDonDH.getContent());
+        model.addAttribute("currentPage", listHoaDonDH.getNumber());
+        model.addAttribute("totalPages", listHoaDonDH.getTotalPages());
+
+        model.addAttribute("listHoaDonCXN", listHoaDonCXN.getContent());
+        model.addAttribute("currentPage", listHoaDonCXN.getNumber());
+        model.addAttribute("totalPages", listHoaDonCXN.getTotalPages());
+
+        model.addAttribute("listHoaDonCLH", listHoaDonCLH.getContent());
+        model.addAttribute("currentPage", listHoaDonCLH.getNumber());
+        model.addAttribute("totalPages", listHoaDonCLH.getTotalPages());
+
+        model.addAttribute("listHoaDonDG", listHoaDonDG.getContent());
+        model.addAttribute("currentPage", listHoaDonDG.getNumber());
+        model.addAttribute("totalPages", listHoaDonDG.getTotalPages());
+
+        model.addAttribute("listHoaDonHT", listHoaDonHT.getContent());
+        model.addAttribute("currentPage", listHoaDonHT.getNumber());
+        model.addAttribute("totalPages", listHoaDonHT.getTotalPages());
+
+        return "admin/hoa-don/hoadononline"; // view tương ứng
+    }
+
+
+    //end tìm kiếm hóa đơn
+
+
+    //Xác nhận hóa đơn chi tiết
+    @PostMapping("/xacnhan/{id}")
+    @ResponseBody
+    public ResponseEntity<?> xacNhanHoaDon(@PathVariable int id) {
+        try {
+            hoaDonChiTietOnlService.xacNhanHoaDon(id);
+            return ResponseEntity.ok(Map.of("success", true));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(Map.of("success", false, "message", e.getMessage()));
+        }
+    }
+
+
+    @GetMapping("/in-hoadon/{id}")
+    public String inHoaDon(@PathVariable Integer id, Model model, RedirectAttributes redirectAttributes) {
+        HoaDon hoaDon = banHangTaiQuayService.getHoaDonByID(id);
+        List<HoaDonChiTiet> hdct = hoaDonChiTietOnlService.findHoaDonChiTietByHoaDonId(id);
+
+        if (hoaDon == null) {
+            redirectAttributes.addFlashAttribute("error", "Hóa đơn không tồn tại!");
+            return "redirect:/hoadononline/hienthi"; // Quay về trang bán hàng nếu không tìm thấy
+        }
+
+        System.out.println("list hoa don: " + hdct.size());
+
+        model.addAttribute("hoaDon", hoaDon);
+        model.addAttribute("hdct", hdct);
+        return "admin/hoa-don/inhoadononline";
+    }
+
+
+    @GetMapping("/export/pdf/{id}")
+    public ResponseEntity<byte[]> exportHoaDonPDF(@PathVariable Integer id) throws IOException {
+        HoaDon hoaDon = hoaDonService.findById(id);
+        List<HoaDonChiTiet> hdct = hoaDonChiTietOnlService.findHoaDonChiTietByHoaDonId(id);
+        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm");
+
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        PdfWriter writer = new PdfWriter(out);
+        PdfDocument pdfDoc = new PdfDocument(writer);
+        Document document = new Document(pdfDoc, PageSize.A4);
+        document.setMargins(50, 50, 50, 50);
+
+        // Font setup
+        PdfFont boldFont = PdfFontFactory.createFont(ResourceUtils.getFile("classpath:static/fonts/Roboto-Regular.ttf").getAbsolutePath(), PdfEncodings.IDENTITY_H, true);
+
+        // Header
+        Paragraph header = new Paragraph("HÓA ĐƠN BÁN HÀNG")
+                .setFont(boldFont)
+                .setFontSize(20)
+                .setTextAlignment(TextAlignment.CENTER)
+                .setMarginBottom(20);
+        document.add(header);
+
+        // Company info
+        Paragraph companyInfo = new Paragraph()
+                .add(new Text("Tiệm giày Sneakers_Nice\n").setFont(boldFont).setFontSize(12))
+                .add("Địa chỉ: Phú Đô, Mỹ Đình, Từ Liêm, Hà Nội\n")
+                .add("Điện thoại: 0123 456 789\n")
+                .add("Email: Sneakers_Nice@gmail.com")
+                .setTextAlignment(TextAlignment.CENTER)
+                .setMarginBottom(20);
+        document.add(companyInfo);
+
+        // Invoice info - 2 columns
+        float[] columnWidths = {1, 1};
+        Table invoiceInfoTable = new Table(columnWidths);
+        invoiceInfoTable.setWidth(UnitValue.createPercentValue(100));
+
+        Cell leftCell = new Cell()
+                .add(new Paragraph("Mã hóa đơn: ").setFont(boldFont))
+                .add(new Paragraph(hoaDon.getMaHoaDon()))
+                .add(new Paragraph("Ngày tạo: ").setFont(boldFont))
+                .add(new Paragraph(sdf.format(hoaDon.getNgayTao())))
+                .add(new Paragraph("Nhân viên: ").setFont(boldFont))
+                .add(new Paragraph(hoaDon.getIdNhanVien() != null ? hoaDon.getIdNhanVien().getHoVaTen() : "Không có"))
+                .setBorder(Border.NO_BORDER);
+
+        Cell rightCell = new Cell()
+                .add(new Paragraph("Khách hàng: ").setFont(boldFont))
+                .add(new Paragraph(hoaDon.getTenNguoiNhan()))
+                .add(new Paragraph("Điện thoại: ").setFont(boldFont))
+                .add(new Paragraph(hoaDon.getSdtNguoiNhan()))
+                .add(new Paragraph("Địa chỉ: ").setFont(boldFont))
+                .add(new Paragraph(hoaDon.getDiaChiChiTiet()))
+                .setBorder(Border.NO_BORDER);
+
+        invoiceInfoTable.addCell(leftCell);
+        invoiceInfoTable.addCell(rightCell);
+        document.add(invoiceInfoTable);
+
+        // Line separator
+        document.add(new LineSeparator(new SolidLine()).setMarginTop(10).setMarginBottom(10));
+
+        // Products table
+        Table productsTable = new Table(new float[]{3, 1, 1, 1});
+        productsTable.setWidth(UnitValue.createPercentValue(100));
+
+        productsTable.addHeaderCell(new Cell().add(new Paragraph("Sản phẩm").setFont(boldFont)));
+        productsTable.addHeaderCell(new Cell().add(new Paragraph("SL").setFont(boldFont)).setTextAlignment(TextAlignment.CENTER));
+        productsTable.addHeaderCell(new Cell().add(new Paragraph("Đơn giá").setFont(boldFont)).setTextAlignment(TextAlignment.RIGHT));
+        productsTable.addHeaderCell(new Cell().add(new Paragraph("Thành tiền").setFont(boldFont)).setTextAlignment(TextAlignment.RIGHT));
+
+        DecimalFormat currencyFormat = new DecimalFormat("#,##0");
+
+        for (HoaDonChiTiet ct : hdct) {
+            productsTable.addCell(new Cell().add(new Paragraph(ct.getIdChiTietSanPham().getIdSanPham().getTenSanPham())));
+            productsTable.addCell(new Cell().add(new Paragraph(String.valueOf(ct.getSoLuong()))).setTextAlignment(TextAlignment.CENTER));
+            productsTable.addCell(new Cell().add(new Paragraph(currencyFormat.format(ct.getDonGia()) + " đ")).setTextAlignment(TextAlignment.RIGHT));
+            productsTable.addCell(new Cell().add(new Paragraph(currencyFormat.format(ct.getSoLuong() * ct.getDonGia()) + " đ")).setTextAlignment(TextAlignment.RIGHT));
+        }
+
+        document.add(productsTable);
+
+        // Summary
+        Table summaryTable = new Table(new float[]{3, 1});
+        summaryTable.setWidth(UnitValue.createPercentValue(50));
+        summaryTable.setHorizontalAlignment(HorizontalAlignment.RIGHT);
+        summaryTable.setMarginTop(20);
+
+        summaryTable.addCell(new Cell().add(new Paragraph("Tổng tiền hàng:").setFont(boldFont)).setBorder(Border.NO_BORDER));
+        summaryTable.addCell(new Cell().add(new Paragraph(currencyFormat.format(hoaDon.getTongTien()) + " đ")).setTextAlignment(TextAlignment.RIGHT).setBorder(Border.NO_BORDER));
+
+        summaryTable.addCell(new Cell().add(new Paragraph("Giảm giá:").setFont(boldFont)).setBorder(Border.NO_BORDER));
+        summaryTable.addCell(new Cell().add(new Paragraph("-" + currencyFormat.format(hoaDon.getTongTienGiam()) + " đ")).setTextAlignment(TextAlignment.RIGHT).setBorder(Border.NO_BORDER));
+
+        summaryTable.addCell(new Cell().add(new Paragraph("Phí vận chuyển:").setFont(boldFont)).setBorder(Border.NO_BORDER));
+        summaryTable.addCell(new Cell().add(new Paragraph(currencyFormat.format(hoaDon.getPhiShip()) + " đ")).setTextAlignment(TextAlignment.RIGHT).setBorder(Border.NO_BORDER));
+
+        summaryTable.addCell(new Cell().add(new Paragraph("Tổng thanh toán:").setFont(boldFont).setFontSize(14)).setBorder(Border.NO_BORDER));
+        summaryTable.addCell(new Cell().add(new Paragraph(currencyFormat.format(hoaDon.getThanhTien()) + " đ").setFont(boldFont).setFontSize(14)).setTextAlignment(TextAlignment.RIGHT).setBorder(Border.NO_BORDER));
+
+        document.add(summaryTable);
+
+        // Footer
+        Paragraph footer = new Paragraph()
+                .add("\n\nCảm ơn quý khách đã sử dụng dịch vụ!\n")
+                .add("Hóa đơn có giá trị từ ngày " +
+                        (hoaDon.getNgayTao() != null ? sdf.format(hoaDon.getNgayTao()) : "N/A"))
+                .setTextAlignment(TextAlignment.CENTER)
+                .setFontSize(10)
+                .setMarginTop(30);
+        document.add(footer);
+
+        document.close();
+
+        byte[] pdfBytes = out.toByteArray();
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_PDF);
+        headers.setContentDisposition(ContentDisposition.builder("attachment")
+                .filename("hoadon_" + hoaDon.getMaHoaDon() + ".pdf")
+                .build());
+
+        return new ResponseEntity<>(pdfBytes, headers, HttpStatus.OK);
+    }
+
+
+
 }

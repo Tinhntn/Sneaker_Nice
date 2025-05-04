@@ -16,4 +16,9 @@ public class KhachHangOnlineImplement implements KhachHangOnlineService {
     public KhachHang layKhachHangQuaid(Integer id) {
         return khachHangRepository.findKhachHangByIdkh(id);
     }
+
+    @Override
+    public KhachHang saveKH(KhachHang kh) {
+        return khachHangRepository.save(kh);
+    }
 }

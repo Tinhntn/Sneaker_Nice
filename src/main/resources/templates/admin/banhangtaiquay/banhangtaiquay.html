@@ -146,7 +146,7 @@
     <div class="container-fluid">
     <h2>Bán Hàng Tại Quầy </h2>
     <div class="row">
-        <div class="col-md-8">
+        <div class="col-md-9">
             <div class="tab-container text-white">
                 <div id="invoiceTabs" class="d-flex flex-row">
                     <th:block th:each="hoaDon : ${listHoaDon}">
@@ -200,30 +200,26 @@
                         <td th:text="${hdct.idChiTietSanPham.idMauSac.tenMauSac}"></td>
                         <td th:text="${hdct.idChiTietSanPham.idSanPham.idDanhMuc.tenDanhMuc}"></td>
                         <td th:text="${hdct.idChiTietSanPham.idSanPham.idChatLieu.tenChatLieu}"></td>
-                        <td>
-                            <form th:action="@{/banhangtaiquay/updatehdct/{id}(id=${hdct.id})}" method="post" class="d-flex align-items-center">
-
+                        <td style="min-width: 160px;">
+                            <form th:action="@{/banhangtaiquay/updatehdct/{id}(id=${hdct.id})}" method="post"
+                                  class="d-flex justify-content-center align-items-center gap-1 flex-nowrap">
                                 <input type="hidden" name="id" th:value="${hdct.id}" />
                                 <input type="hidden" name="idhd" th:value="${hoadonduocchon.id}" />
 
-                                <!-- Nút giảm số lượng -->
                                 <button type="submit" name="suahdct" value="giam"
                                         class="btn btn-outline-secondary btn-sm px-2">−</button>
 
-                                <!-- Input cho phép chỉnh sửa số lượng -->
                                 <input type="number" name="soluong" th:value="${hdct.soLuong}"
-                                       class="form-control text-center mx-1"
-                                       style="width: 100px; -moz-appearance: textfield;"
+                                       class="form-control text-center"
+                                       style="width: 70px; min-width: 70px; max-width: 90px;"
                                        inputmode="numeric"
-                                       onblur="this.form.submit()"/>
+                                       onblur="this.form.submit()" />
 
-
-                                <!-- Nút tăng số lượng -->
                                 <button type="submit" name="suahdct" value="tang"
                                         class="btn btn-outline-secondary btn-sm px-2">+</button>
                             </form>
-
                         </td>
+
 
 
                         <td th:text="${#numbers.formatDecimal(hdct.donGia, 0, 'COMMA', 0, 'POINT')} + ' đ'"></td>
@@ -384,7 +380,7 @@
                 </div>
             </div>
         </div>
-        <div class="col-md-4 invoice-section">
+        <div class="col-md-3 invoice-section">
             <h4>Thông Tin Hóa Đơn</h4>
             <!-- Thêm khách hàng -->
             <div class="p-3 border rounded shadow-sm bg-light">
@@ -501,33 +497,43 @@
     </span>đ
                 </h5>
 
+                <div class="d-flex align-items-center mb-2">
+                    <h6 class="mb-0 me-2">Số tiền được giảm:</h6>
+                    <span th:text="${(tongtiencthd != null and hoadonduocchon != null and hoadonduocchon.idKhuyenMai != null)
+        ? (hoadonduocchon.idKhuyenMai.loaiKhuyenMai
+            ? #numbers.formatDecimal(hoadonduocchon.idKhuyenMai.giaTriGiam, 0, 'COMMA', 0, 'POINT')
+            : #numbers.formatDecimal(tongtiencthd * (hoadonduocchon.idKhuyenMai.giaTriGiam / 100.0), 0, 'COMMA', 0, 'POINT'))
+        : '0'} + ' đ'"></span>
+                </div>
+
                 <h5 class="mt-3">Tổng tiền Thanh Toán:
                     <span id="invoiceTotal"
                           th:text="${(tongtiencthd != null and hoadonduocchon != null and hoadonduocchon.idKhuyenMai != null)
-            ? (hoadonduocchon.idKhuyenMai.loaiKhuyenMai
-                ? #numbers.formatDecimal(tongtiencthd - hoadonduocchon.idKhuyenMai.giaTriGiam, 0, 'COMMA', 0, 'POINT')
-                : #numbers.formatDecimal(tongtiencthd * (1 - hoadonduocchon.idKhuyenMai.giaTriGiam / 100), 0, 'COMMA', 0, 'POINT'))
-            : (tongtiencthd != null ? #numbers.formatDecimal(tongtiencthd, 0, 'COMMA', 0, 'POINT') : '0')}">
-    </span>đ
+        ? (hoadonduocchon.idKhuyenMai.loaiKhuyenMai
+            ? #numbers.formatDecimal(tongtiencthd - hoadonduocchon.idKhuyenMai.giaTriGiam, 0, 'COMMA', 0, 'POINT')
+            : #numbers.formatDecimal(tongtiencthd * (1 - hoadonduocchon.idKhuyenMai.giaTriGiam / 100.0), 0, 'COMMA', 0, 'POINT'))
+        : (tongtiencthd != null ? #numbers.formatDecimal(tongtiencthd, 0, 'COMMA', 0, 'POINT') : '0')}">đ
+    </span>
                 </h5>
+
 
                 <form id="tienkhachdua" th:action="@{/banhangtaiquay/tienkhachdua}" method="post">
                     <input type="hidden" name="idHoaDon" th:value="${hoadonduocchon != null ? hoadonduocchon.id : ''}" />
-
                     <!-- Tổng tiền sau khi áp dụng khuyến mãi -->
                     <input type="hidden" name="tongtiencthd"
                            th:value="${(tongtiencthd != null and hoadonduocchon != null and hoadonduocchon.idKhuyenMai != null)
-                ? (hoadonduocchon.idKhuyenMai.loaiKhuyenMai
-                    ? tongtiencthd * (1 - hoadonduocchon.idKhuyenMai.giaTriGiam / 100)
-                    : tongtiencthd - hoadonduocchon.idKhuyenMai.giaTriGiam)
-                : (tongtiencthd != null ? tongtiencthd : 0)}" />
+        ? (hoadonduocchon.idKhuyenMai.loaiKhuyenMai
+            ? tongtiencthd - hoadonduocchon.idKhuyenMai.giaTriGiam
+            : tongtiencthd * (1 - hoadonduocchon.idKhuyenMai.giaTriGiam / 100.0))
+        : (tongtiencthd != null ? tongtiencthd : 0)}" />
+
 
                     <!-- Hiển thị số tiền khách đưa -->
                     <div class="mb-3">
                         <label class="form-label"><strong>Tiền khách đưa:</strong></label>
                         <input type="number" class="form-control" name="tienKhachDua"
                                placeholder="Nhập số tiền khách đưa"
-                               th:value="${tienKhachDua != null ? tienKhachDua : ''}"
+                               th:value="${tienKhachDua != null ? tienKhachDua.intValue : ''}"
                                onblur="document.getElementById('tienkhachdua').submit()">
                     </div>
 
@@ -543,6 +549,21 @@
                 <form th:if="${hoadonduocchon != null}" id="formThanhToan" th:action="@{/banhangtaiquay/thanhtoan}" method="post">
                     <input type="hidden" name="idHoaDon" th:value="${hoadonduocchon.id}" />
                     <input type="hidden" name="tongtiencthd" th:value="${tongtiencthd}">
+
+                    <input type="hidden" name="sotiengiam"
+                           th:value="${(tongtiencthd != null and hoadonduocchon != null and hoadonduocchon.idKhuyenMai != null)
+        ? (hoadonduocchon.idKhuyenMai.loaiKhuyenMai
+            ? hoadonduocchon.idKhuyenMai.giaTriGiam
+            : tongtiencthd * (hoadonduocchon.idKhuyenMai.giaTriGiam / 100.0))
+        : 0}" />
+
+
+                    <input type="hidden" name="tongtiencthddatru"
+                           th:value="${(tongtiencthd != null and hoadonduocchon != null and hoadonduocchon.idKhuyenMai != null)
+        ? (hoadonduocchon.idKhuyenMai.loaiKhuyenMai
+            ? tongtiencthd - hoadonduocchon.idKhuyenMai.giaTriGiam
+            : tongtiencthd * (1 - hoadonduocchon.idKhuyenMai.giaTriGiam / 100.0))
+        : (tongtiencthd != null ? tongtiencthd : 0)}" />
 
                     <!-- Các input ẩn lưu tiền khách đưa và tiền thừa -->
                     <input type="hidden" name="tienKhachDua" id="hiddenCashGiven" th:value="${tienKhachDua}">

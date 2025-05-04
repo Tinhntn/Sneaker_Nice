@@ -16,18 +16,38 @@
 <body>
     <div layout:fragment="content">
 
-        <div class="container-fluid card p-7">
-            <div class="d-flex justify-content-between align-items-center mb-3">
-                <a th:href="@{/sanpham/themsanpham}" class="btn btn-primary">Thêm +</a>
-                <form th:action="@{/sanpham/hienthi}" method="get" class="d-flex" style="max-width: 300px;">
-                    <input type="text" class="form-control me-2" placeholder="Tìm kiếm sản phẩm" name="keyword"
-                        th:value="${keyword}">
-                    <button class="btn btn-primary" type="submit">Tìm kiếm</button>
+        <!-- Thanh tìm kiếm và bộ lọc -->
+        <div class="card shadow-sm mb-4">
+            <div class="card-body ">
+                <form th:action="@{/sanpham/hienthi}" method="get" class="row g-3" >
+                    <div class="col-md-4">
+                        <input type="text" class="form-control " placeholder="Tìm kiếm sản phẩm" name="keyword"
+                            th:value="${keyword}">
+                    </div>
+                    <div class="col-md-3">
+                        <input type="date" name="startDate" th:value="${#dates.format(startDate, 'yyyy-MM-dd')}"
+                            class="form-control">
+                    </div>
+                    <div class="col-md-3">
+                        <input type="date" name="endDate" th:value="${#dates.format(endDate, 'yyyy-MM-dd')}"
+                            class="form-control">
+                    </div>
+
+                    <div class="col-md-2">
+                        <button class="btn btn-primary  w-100" type="submit"><i class="fas fa-search me-2"></i>Tìm kiếm
+                        </button>
+                    </div>
                 </form>
             </div>
-        
-            <h2 class="text-center mb-3">Danh Sách Sản Phẩm</h2>
-        
+        </div>
+        <div class="container-fluid card p-7">
+            <div class="d-flex justify-content-between align-items-center mb-3" style="margin: 10px;">
+                <a th:href="@{/sanpham/themsanpham}" class="btn btn-primary">Thêm +</a>
+
+            </div>
+
+            <h2 class="text-center mb-3" >Danh Sách Sản Phẩm</h2>
+
             <div class="table-responsive">
                 <table class="table table-bordered table-hover">
                     <thead class="table-hover">
@@ -48,14 +68,15 @@
                             <td th:text="${sanPham.maSanPham}"></td>
                             <td th:text="${sanPham.tenSanPham}"></td>
                             <td th:text="${sanPham.idHang != null ? sanPham.idHang.tenHang : 'Không có'}"></td>
-                            <td th:text="${sanPham.idChatLieu != null ? sanPham.idChatLieu.tenChatLieu : 'Không có'}"></td>
+                            <td th:text="${sanPham.idChatLieu != null ? sanPham.idChatLieu.tenChatLieu : 'Không có'}">
+                            </td>
                             <td th:text="${sanPham.idDanhMuc != null ? sanPham.idDanhMuc.tenDanhMuc : 'Không có'}"></td>
-                            <td th:text="${sanPham.ngayTao}"></td>
-                            <td th:text="${sanPham.ngaySua}"></td>
+                            <td  th:text="${sanPham.ngayTao!=null?#dates.format(sanPham.ngayTao, 'dd/MM/yyyy'):'Không có'}"></td>
+                            <td th:text="${sanPham.ngayTao!=null?#dates.format(sanPham.ngaySua, 'dd/MM/yyyy'):'Không có'}"></td>
                             <td class="text-center" disabled>
-                                <input type="checkbox" class="toggle-status" th:checked="${sanPham.trangThai}"
-                                    th:attr="data-id=${sanPham.id}"  />
-                                <span class="status-label"
+                                <input type="checkbox" style="font-size: 11px;" class="toggle-status" th:checked="${sanPham.trangThai}"
+                                    th:attr="data-id=${sanPham.id}" />
+                                <span class="status-label" style="font-size: 11px;"
                                     th:text="${sanPham.trangThai ? 'Hoạt động' : 'Không hoạt động'}"></span>
                             </td>
                             <td>
@@ -66,7 +87,6 @@
                     </tbody>
                 </table>
             </div>
-        
             <!-- Phân trang -->
             <nav aria-label="Page navigation" class="mt-3">
                 <ul class="pagination justify-content-center">
@@ -75,38 +95,16 @@
                     </li>
                     <li class="page-item" th:each="i : ${#numbers.sequence(0, totalPages - 1)}"
                         th:classappend="${i == currentPage} ? 'active' : ''">
-                        <a th:href="@{/sanpham/hienthi(page=${i}, size=${10})}" class="page-link" th:text="${i + 1}"></a>
+                        <a th:href="@{/sanpham/hienthi(page=${i}, size=${10})}" class="page-link"
+                            th:text="${i + 1}"></a>
                     </li>
                     <li class="page-item" th:classappend="${currentPage + 1 == totalPages} ? 'disabled' : ''">
                         <a th:href="@{/sanpham/hienthi(page=${currentPage+1}, size=${10})}" class="page-link">»</a>
                     </li>
                 </ul>
-            </nav>
-        
-            <!-- Hiển thị thông báo thành công -->
-            <div th:if="${successMessage}">
-                <script th:inline="javascript">
-                    /*<![CDATA[*/
-                    var successMessage = /*[[${successMessage}]]*/ 'null';
-                    if (successMessage !== 'null') {
-                        Swal.fire({
-                            icon: 'success',
-                            title: 'Thành công',
-                            text: successMessage,
-                            confirmButtonText: 'OK'
-                        }).then(() => {
-                            history.replaceState(null, '', location.pathname);
-                        });
-                    }
-                    /*]]>*/
-                </script>
-            </div>
+            </nav>          
         </div>
-
-
-
     </div>
-
 </body>
 
 </html>

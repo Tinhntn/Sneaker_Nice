@@ -19,36 +19,36 @@ public class KhuyenMai {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
-    @JoinColumn(name = "ma_khuyen_mai")
+    @Column(name = "ma_khuyen_mai")
     private String maKhuyenMai;
-    @JoinColumn(name = "ten_khuyen_mai")
+    @Column(name = "ten_khuyen_mai")
     private String tenKhuyenMai;
-    @JoinColumn(name = "mo_ta")
+    @Column(name = "mo_ta")
     private String moTa;
-    @JoinColumn(name = "dieu_kien_ap_dung")
+    @Column(name = "dieu_kien_ap_dung")
     private float dieuKienApDung;
-    @JoinColumn(name = "loai_khuyen_mai")
+    @Column(name = "loai_khuyen_mai")
     private Boolean loaiKhuyenMai;
-    @JoinColumn(name = "gia_tri_giam")
+    @Column(name = "gia_tri_giam")
     private float giaTriGiam;
-    @JoinColumn(name = "muc_giam_gia_toi_da")
+    @Column(name = "muc_giam_gia_toi_da")
     private float mucGiamGiaToiDa;
-    @JoinColumn(name = "da_su_dung")
+    @Column(name = "da_su_dung")
     private int daSuDung;
-    @JoinColumn(name = "so_luong")
+    @Column(name = "so_luong")
     private int soLuong;
     @DateTimeFormat(pattern = "yyyy-MM-dd")
-    @JoinColumn(name = "ngay_bat_dau")
+    @Column(name = "ngay_bat_dau")
     private Date ngayBatDau;
     @DateTimeFormat(pattern = "yyyy-MM-dd")
-    @JoinColumn(name = "ngay_ket_thuc")
+    @Column(name = "ngay_ket_thuc")
     private Date ngayKetThuc;
     @DateTimeFormat(pattern = "yyyy-MM-dd")
-    @JoinColumn(name = "ngay_tao")
+    @Column(name = "ngay_tao")
     private Date ngayTao;
     @DateTimeFormat(pattern = "yyyy-MM-dd")
-    @JoinColumn(name = "ngay_sua")
+    @Column(name = "ngay_sua")
     private Date ngaySua;
-    @JoinColumn(name = "trang_thai")
+    @Column(name = "trang_thai")
     private Boolean trangThai;
 }

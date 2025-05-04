@@ -5,8 +5,7 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>In Hóa Đơn</title>
 
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
@@ -18,7 +17,8 @@
 
 <body>
 <div layout:fragment="content">
-    <!-- Hiển thị thông báo thành công -->
+
+    <!-- Thông báo -->
     <script th:if="${success != null}" th:inline="javascript">
         Swal.fire({
             icon: 'success',
@@ -30,8 +30,6 @@
             showConfirmButton: false
         });
     </script>
-
-    <!-- Hiển thị thông báo lỗi -->
     <script th:if="${error != null}" th:inline="javascript">
         Swal.fire({
             icon: 'error',
@@ -44,66 +42,77 @@
         });
     </script>
 
-    <div class="container">
-        <div class="container mt-5">
-            <div class="card shadow-lg p-4 mb-4">
-                <h2 class="text-center mb-4">Thông Tin Hóa Đơn</h2>
+    <div class="container mt-5">
+        <div class="card shadow p-4 bg-white">
+            <h2 class="text-center text-uppercase mb-4">Thông tin hóa đơn</h2>
 
-                <!-- Thông tin hóa đơn (không dùng bảng) -->
-                <div class="mb-3">
-                    <strong>Mã Hóa Đơn:</strong> <span th:text="${hoaDon.maHoaDon}"></span>
+            <div class="row mb-3">
+                <div class="col-md-4 fw-bold">Mã hóa đơn:</div>
+                <div class="col-md-8" th:text="${hoaDon.maHoaDon}"></div>
+            </div>
+            <div class="row mb-3">
+                <div class="col-md-4 fw-bold">Nhân viên bán:</div>
+                <div class="col-md-8" th:text="${hoaDon.idNhanVien != null ? hoaDon.idNhanVien.hoVaTen : ''}"></div>
+            </div>
+            <div class="row mb-3">
+                <div class="col-md-4 fw-bold">Trạng thái:</div>
+                <div class="col-md-8">
+                    <span class="badge"
+                          th:classappend="${hoaDon.trangThai == 1} ? 'bg-success' : 'bg-warning text-dark'"
+                          th:text="${hoaDon.trangThai == 1 ? 'Đã thanh toán' : 'Chưa thanh toán'}"></span>
                 </div>
-                <div class="mb-3">
-                    <strong>Nhân Viên Bán:</strong>
-<!--                    <span th:text="${hoaDon.nhanVien.tenNhanVien}"></span>-->
-                </div>
-                <div class="mb-3">
-                    <strong>Tổng Tiền:</strong> <span th:text="${hoaDon.thanhTien}"></span>
-                </div>
-                <div class="mb-3">
-                    <strong>Trạng Thái:</strong>
-                    <span th:text="${hoaDon.trangThai == 1 ? 'Đã thanh toán' : 'Chưa thanh toán'}"></span>
-                </div>
+            </div>
 
+            <div class="row mb-3">
+                <div class="col-md-4 fw-bold">Giảm giá:</div>
+                <div class="col-md-8">
+                    <span th:text="${hoaDon.tongTienGiam != null ? #numbers.formatDecimal(hoaDon.tongTienGiam, 0, 'COMMA', 0, 'POINT') + ' đ' : '0 đ'}"></span>
+                </div>
+            </div>
+            <div class="row mb-3">
+                <div class="col-md-4 fw-bold">Tổng tiền thanh toán:</div>
+                <div class="col-md-8 text-success fw-bold"
+                     th:text="${#numbers.formatDecimal(hoaDon.thanhTien, 0, 'COMMA', 0, 'POINT') + ' đ'}"></div>
+            </div>
 
-                <!-- Bảng chi tiết hóa đơn -->
-                <table class="table table-bordered table-striped">
-                    <thead class="thead-dark">
+            <hr>
+
+            <h5 class="fw-bold text-uppercase border-bottom pb-2 mb-3">Danh sách sản phẩm</h5>
+            <div class="table-responsive">
+                <table class="table table-bordered table-hover align-middle text-center">
+                    <thead class="table-dark">
                     <tr>
-                        <th scope="col">Tên Sản Phẩm</th>
-                        <th scope="col">Số Lượng</th>
-                        <th scope="col">Đơn Giá</th>
-                        <th scope="col">Thành Tiền</th>
+                        <th>Tên Sản Phẩm</th>
+                        <th>Số Lượng</th>
+                        <th>Đơn Giá</th>
+                        <th>Thành Tiền</th>
                     </tr>
                     </thead>
                     <tbody>
-                    <!-- Lặp qua danh sách chi tiết hóa đơn -->
                     <tr th:each="ct : ${hdct}">
-                        <td th:text="${ct.idChiTietSanPham.idSanPham.tenSanPham}"></td> <!-- Tên sản phẩm -->
-                        <td th:text="${ct.soLuong}"></td> <!-- Số lượng -->
-                        <td th:text="${ct.donGia}"></td> <!-- Đơn giá -->
-                        <td th:text="${ct.soLuong * ct.donGia}"></td> <!-- Thành tiền (số lượng * đơn giá) -->
+                        <td th:text="${ct.idChiTietSanPham.idSanPham.tenSanPham}"></td>
+                        <td>
+                            <span class="badge bg-primary fs-6 px-3 py-2" th:text="${ct.soLuong}"></span>
+                        </td>
+                        <td th:text="${#numbers.formatDecimal(ct.donGia, 0, 'COMMA', 0, 'POINT')} + ' đ'"></td>
+                        <td th:text="${#numbers.formatDecimal(ct.soLuong * ct.donGia, 0, 'COMMA', 0, 'POINT')} + ' đ'"></td>
                     </tr>
                     </tbody>
                 </table>
+            </div>
 
-                <!-- Nút điều hướng -->
-                <div class="d-flex justify-content-between mt-4">
-                    <a href="/banhangtaiquay/hienthi" class="btn btn-outline-secondary">
-                        🔙 Trở Lại Bán Hàng
-                    </a>
-                    <a th:href="@{'/banhangtaiquay/export/pdf/' + ${hoaDon.id}}"
-                       class="btn btn-primary"
-                       target="_blank">
-                        📄 In Hóa Đơn (PDF)
-                    </a>
-                </div>
+            <div class="d-flex justify-content-between mt-4">
+                <a href="/banhangtaiquay/hienthi" class="btn btn-outline-secondary px-4">
+                    <i class="fas fa-arrow-left me-2"></i> Trở lại bán hàng
+                </a>
+                <a th:href="@{'/banhangtaiquay/export/pdf/' + ${hoaDon.id}}" target="_blank"
+                   class="btn btn-primary px-4">
+                    <i class="fas fa-print me-2"></i> In hóa đơn (PDF)
+                </a>
             </div>
         </div>
+    </div>
 
-
-</div> <!-- Kết thúc layout fragment -->
 </div>
-
 </body>
 </html>

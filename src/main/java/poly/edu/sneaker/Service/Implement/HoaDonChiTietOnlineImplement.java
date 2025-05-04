@@ -8,10 +8,13 @@ import poly.edu.sneaker.DAO.HoaDonChiTietOnlCustom;
 import poly.edu.sneaker.Model.ChiTietSanPham;
 import poly.edu.sneaker.Model.HoaDon;
 import poly.edu.sneaker.Model.HoaDonChiTiet;
+import poly.edu.sneaker.Model.KhuyenMai;
 import poly.edu.sneaker.Repository.ChiTietSanPhamRepository;
 import poly.edu.sneaker.Repository.HoaDonChiTietOnlRepository;
+import poly.edu.sneaker.Repository.HoaDonOnlRepository;
 import poly.edu.sneaker.Service.HoaDonChiTietOnlService;
 import poly.edu.sneaker.Service.HoaDonOnlService;
+import poly.edu.sneaker.Service.KhuyenMaiService;
 
 import java.util.*;
 
@@ -27,6 +30,11 @@ public class HoaDonChiTietOnlineImplement implements HoaDonChiTietOnlService {
     @Autowired
     ChiTietSanPhamRepository chiTietSanPhamRepository;
 
+    @Autowired
+    HoaDonOnlRepository hoaDonOnlRepository;
+
+    @Autowired
+    KhuyenMaiService khuyenMaiService;
     @Override
     public List<HoaDonChiTietOnlCustom> findByHoaDonId(HoaDon idhoadon) {
         return hoaDonChiTietOnlRepository.findByIdHoaDon(idhoadon);
@@ -145,10 +153,49 @@ public class HoaDonChiTietOnlineImplement implements HoaDonChiTietOnlService {
         return bestSellingProducts;
     }
 
+    @Override
+    public HoaDonChiTiet findByIdHoaDonAndIdChiTietSanPham(int idHoaDon, int idChiTietSanPham) {
+        return hoaDonChiTietOnlRepository.findByIdHoaDonAndIdChiTietSanPham(idHoaDon, idChiTietSanPham);
+    }
 
-//    @Override
-//    public HoaDonChiTiet findHoaDonChiTietByIdHoaDon(int idHoaDon) {
-//        return hoaDonChiTietOnlRepository.findHoaDonChiTietByIdHoaDon(idHoaDon);
-//    }
+    @Override
+    @Transactional
+    public void xacNhanHoaDon(int hoaDonId) {
+        HoaDon hoaDon = hoaDonOnlRepository.findById(hoaDonId)
+                .orElseThrow(() -> new RuntimeException("Không tìm thấy hóa đơn"));
+
+        if (hoaDon.getTrangThai() == 6) {
+            throw new RuntimeException("Hóa đơn này đã được xác nhận trước đó.");
+        }
+
+        // Lấy danh sách chi tiết hóa đơn
+        List<HoaDonChiTiet> chiTietList = hoaDonChiTietOnlRepository.findHoaDonChiTietByHoaDonId(hoaDonId);
+
+        for (HoaDonChiTiet chiTiet : chiTietList) {
+            ChiTietSanPham sanPham = chiTietSanPhamRepository.findById(chiTiet.getIdChiTietSanPham().getId());
+            if (sanPham == null) {
+                throw new RuntimeException("Không tìm thấy sản phẩm");
+            }
+
+            if (sanPham.getSoLuong() < chiTiet.getSoLuong()) {
+                throw new RuntimeException("Không đủ số lượng trong kho cho sản phẩm: " + sanPham.getIdSanPham().getTenSanPham());
+            }
+            // Trừ số lượng sản phẩm
+            sanPham.setSoLuong(sanPham.getSoLuong() - chiTiet.getSoLuong());
+            chiTietSanPhamRepository.save(sanPham);
+        }
+        hoaDonOnlRepository.save(hoaDon);
+        if(hoaDon.getIdKhuyenMai()!=null){
+            KhuyenMai khuyenMai = hoaDon.getIdKhuyenMai();
+            if(khuyenMai!=null){
+                khuyenMai.setDaSuDung(khuyenMai.getDaSuDung()+1);
+                khuyenMaiService.updateKhuyenMai(khuyenMai,khuyenMai.getId());
+                return;
+            }
+        }
+    }
+
+
+
 
 }

@@ -23,6 +23,9 @@ public interface HoaDonChiTietOnlService {
 
     List<Map<String, Object>> getTop10BestSellingProducts();
 
+    HoaDonChiTiet findByIdHoaDonAndIdChiTietSanPham(@Param("idHoaDon") int idHoaDon, @Param("idChiTietSanPham") int idChiTietSanPham);
+
+    void xacNhanHoaDon(int hoaDonId);
 //    HoaDonChiTiet findHoaDonChiTietByIdHoaDon(int idHoaDon);
 
 
