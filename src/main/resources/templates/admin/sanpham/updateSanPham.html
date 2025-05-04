@@ -122,6 +122,7 @@
                                     <div class="col-md-6">
                                         <label class="form-label">Hình ảnh</label>
                                         <input type="file" class="form-control" name="img" accept="image/*" multiple>
+                                        <small class="text-muted">Tối đa 5 ảnh</small>
                                     </div>
 
                                     <div class="col-md-6">
@@ -230,10 +231,12 @@
                                         <label for="fileInput-[[${sanPham.id}]]" class="image-label">
                                             <!-- <img th:src="@{${sanPham.hinhAnh} != null ? ${sanPham.hinhAnh} : '/path/to/default-image.jpg'}"
                                                 alt="Product Image" class="product-img" th:id="'img-'+${sanPham.id}" /> -->
-                                            <th:block
-                                                th:each="img : ${#strings.arraySplit(sanPham.hinhAnh, ',')}">
-                                                <img th:src="@{/uploads/{img}(img=${img})}" width="100">
+                                            <th:block th:each="img, stat : ${#strings.arraySplit(sanPham.hinhAnh, ',')}"
+                                                th:if="${stat.index == 0}">
+                                                <img th:src="@{/images/{img}(img=${img})}" width="100"
+                                                    alt="Ảnh sản phẩm">
                                             </th:block>
+
                                         </label>
 
 
@@ -290,6 +293,13 @@
 
         </div>
         <script>
+            const notyf = new Notyf();
+            document.getElementById('imgInput').addEventListener('change', function (e) {
+                if (this.files.length > 5) {
+                    notyf.error("Chỉ đẹp thêm tối đa 5 ảnh")
+                    this.value = ""; // Reset input
+                }
+            });
             function previewImage(input, imgId) {
                 if (input.files && input.files[0]) {
                     let reader = new FileReader();
@@ -300,7 +310,6 @@
                 }
             }
 
-            const notyf = new Notyf();
 
             document.getElementById("themNhanhChiTietSanPham").addEventListener("click", function () {
                 const idSanPham = document.getElementById("idSanPham").value;

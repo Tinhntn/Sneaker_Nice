@@ -171,15 +171,15 @@ public class SanPhamController {
 
     @PostMapping("/addctsanpham/{id}")
     public String themChiTietSanPham(@PathVariable("id") int idSanPham,
-                                     @RequestParam("img[]") MultipartFile[] file,
+                                     @RequestParam("img") MultipartFile[] img,
                                      @ModelAttribute ChiTietSanPham chiTietSanPham, RedirectAttributes redirectAttributes) {
         try {
 
             List<ChiTietSanPham> lstCTSP = chiTietSanPhamService.findByIdSanPham(idSanPham);
             if (chiTietSanPham != null) {
                 List<String> paths = new ArrayList<>();
-                if(file!=null && file.length>0) {
-                    for (MultipartFile fileItem : file) {
+                if(img!=null && img.length>0) {
+                    for (MultipartFile fileItem : img) {
                         if (!fileItem.isEmpty()) {
                             // Lưu file vào thư mục static/images
                             String fileName = fileItem.getOriginalFilename();
@@ -197,7 +197,7 @@ public class SanPhamController {
                 }
 
                 String allImages = String.join(",", paths);
-
+                System.out.println(allImages);
                 ChiTietSanPham ctsp = new ChiTietSanPham();
                 ctsp.setIdSanPham(sanPhamService.findById(idSanPham));
                 ctsp.setIdSize(chiTietSanPham.getIdSize());
