@@ -637,38 +637,7 @@
                                 notyf.error(error.message || "Đã xảy ra lỗi!");
                             });
 
-<<<<<<< HEAD
-                        // Nếu chọn thanh toán qua VNPAY
-                    } else if (thanhToanChuyenKhoan) {
-                        fetch('/gio-hang/vnpay-payment', {
-                            method: 'POST',
-                            headers: {'Content-Type': 'application/json'},
-                            body: JSON.stringify(formData)
-                        })
-                            .then(response => {
-                                if (!response.ok) {
-                                    return response.json().then(err => {
-                                        throw new Error(err.message || `Lỗi HTTP: ${response.status}`);
-                                    });
-                                }
-                                return response.json();
-                            })
-                            .then(data => {
-                                if (data.redirectUrl) {
-                                    setTimeout(() => {
-                                        window.location.href = data.redirectUrl; // Điều hướng đến trang thanh toán VNPAY
-                                    }, 2000)
-                                } else {
-                                    throw new Error(data.message || "Lỗi không xác định khi tạo đơn hàng!");
-                                }
-                            })
-                            .catch(error => {
-                                notyf.error(error.message || "Đã xảy ra lỗi!");
-                            });
-                    }
-                }
-            });
-=======
+
 				if (selectedItems.length === 0) {
 					notyf.error("Vui lòng chọn ít nhất một sản phẩm để thanh toán!");
 					return;
@@ -691,6 +660,7 @@
 					selectedIds:selectedIds
 				};
 
+					console.log(formData)
 				// Danh sách input cần kiểm tra
 				let requiredFields = ["hoVaTen", "soDienThoai", "email", "diaChiCuThe"];
 				let requiredSelects = ["province", "district", "ward"];
@@ -738,16 +708,14 @@
 					notyf.error("Vui lòng nhập đầy đủ thông tin!");
 					return;
 				}
->>>>>>> f06bae99c1ae0c3d220b43e17d232ba1f13ffefc
+
 
 
         });
         document.getElementById("apply-discount-btn").addEventListener("click", function () {
             let maKhuyenMai = document.getElementById("discount-code").value;
 
-<<<<<<< HEAD
-            let totalPrice = /*[[${totalPrice}]]*/ 0;
-=======
+
 				// Hiển thị hộp thoại xác nhận với SweetAlert2
 				Swal.fire({
 					title: "Xác nhận thanh toán",
@@ -776,7 +744,6 @@
 									return response.json();
 								})
 								.then(data => {
-
 									notyf.success("Đặt hafg thành công")
 									setTimeout(function(){
 										window.location.href = data.redirectUrl; // Chuyển hướng đến trang thanh toán
@@ -806,7 +773,6 @@
 									if (data.redirectUrl) {
 										setTimeout(function(){
 											window.location.href = data.redirectUrl; // Điều hướng đến trang thanh toán VNPAY
-
 										},2000)
 									} else {
 										throw new Error(data.message || "Lỗi không xác định khi tạo đơn hàng!");
@@ -819,7 +785,7 @@
 						}
 					}
 				});
->>>>>>> f06bae99c1ae0c3d220b43e17d232ba1f13ffefc
+
 
 
             Swal.fire({
@@ -912,10 +878,7 @@
         }
 
 
-<<<<<<< HEAD
-    </script>
-</div>
-=======
+
 				Swal.fire({
 					title: "Xác nhận dùng mã giảm giá",
 					text: "Bạn có muốn dùng mã giảm giá này không?",
@@ -967,6 +930,10 @@
 							return;
 						}
 						let items = data.items;
+						  if (items.length === 0) {
+							window.location.reload();
+							return;
+						}
 						let totalPrice = data.totalPrice || 0;
 						cartList.innerHTML = "";
 						items.forEach(item => {
@@ -977,11 +944,15 @@
                         <img src="${item.hinhAnh}" alt=""
                              style="width: 50px; height: 50px; margin-right: 10px;">
                         <div class="cart-item-info-thanhtoan">
-                            <span>${item.tenSanPham} Size: ${item.size}, Màu: ${item.mauSac}</span>
+                           <span> ${item.tenSanPham} </span>
+							<span>Size: ${item.size}, Màu: ${item.mauSac}</span>
                             <p>Đơn giá: ${item.gia.toLocaleString()}đ</p>
-                            <button onclick="thayDoiSoLuongThanhToan(${item.idGioHangChiTiet}, -1)">-</button>
-                            <span id="soLuong${item.idGioHangChiTiet}" style="color: rgb(49, 49, 49)">${item.soLuong}</span>
+							<div>
+								      <button onclick="thayDoiSoLuongThanhToan(${item.idGioHangChiTiet}, -1)">-</button>
+                            <span id="soLuong${item.idGioHangChiTiet}" style="color: rgb(49, 49, 49) ; width: 20px">${item.soLuong}</span>
                             <button onclick="thayDoiSoLuongThanhToan(${item.idGioHangChiTiet}, 1)">+</button>
+							</div>
+                      
                             <p style="color: red">Thành tiền: ${(item.gia * item.soLuong).toLocaleString()}đ</p>
                         </div>
                     </div>
@@ -1004,7 +975,6 @@
 			}
 
 			function thayDoiSoLuongThanhToan(idGHCT, change) {
-				console.log(idGHCT)
 				let quantityElement = document.getElementById(`soLuong${idGHCT}`);
 				let quantity = quantityElement.textContent;
 				let newQuantity = parseInt(quantity) + change;
@@ -1016,7 +986,6 @@
 					.then(response => {
 						if (!response.ok) {
 							return response.json().then(err => {
-								notyf.error(err.message || "Cập nhật sản phẩm thất bại");
 								throw new Error(notyf.error(err.message || "Cập nhật sản phẩm thất bại"));
 								return;
 							});
@@ -1039,8 +1008,6 @@
 
 		</script>
 	</div>
-
->>>>>>> f06bae99c1ae0c3d220b43e17d232ba1f13ffefc
 
 
 </body>

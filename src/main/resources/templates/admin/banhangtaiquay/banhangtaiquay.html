@@ -180,8 +180,6 @@
                         <th>Tên sản phẩm</th>
                         <th>Hình ảnh</th>
                         <th>Tên hãng</th>
-                        <th>Tên size</th>
-                        <th>Màu sắc</th>
                         <th>Tên danh mục</th>
                         <th>Chi tiết</th> <!-- Gộp size, màu sắc, chất liệu -->
                         <th>Số lượng</th>
@@ -226,8 +224,6 @@
                             </form>
                         </td>
 
-
-
                         <td th:text="${#numbers.formatDecimal(hdct.donGia, 0, 'COMMA', 0, 'POINT')} + ' đ'"></td>
                         <td th:text="${#numbers.formatDecimal(hdct.soLuong * hdct.donGia, 0, 'COMMA', 0, 'POINT')} + ' đ'"></td>
                         <td>
@@ -236,13 +232,16 @@
                                 Xóa
                             </a>
                         </td>
-
                     </tr>
+
                     <tr th:if="${#lists.isEmpty(listHDCT)}">
                         <td colspan="9" class="text-center">Chưa có sản phẩm</td>
                     </tr>
                     </tbody>
                 </table>
+
+
+
             </div>
 
 
@@ -309,8 +308,6 @@
                         </form>
                     </div>
                 </div>
-
-
 
 
                 <div class="col-md-12">
