@@ -22,4 +22,5 @@ public interface ChatLieuRepository extends JpaRepository<ChatLieu, Integer> {
             nativeQuery = true)
     List<ChatLieu> getAllChatLieuTimKiem();
     //Code cua quan end
+    boolean existsByTenChatLieu(String tenChatLieu);
 }

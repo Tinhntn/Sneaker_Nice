@@ -82,7 +82,6 @@ public class GioHangController {
     @ResponseBody
     public ResponseEntity<Map<String, Object>> layMaGiamGia(@RequestBody Map<String, String> request) {
         Map<String, Object> response = new HashMap<>();
-
         String maKm = request.get("maKhuyenMai");
         if (maKm == null || maKm.isEmpty()) {
             response.put("message", "Mã khuyến mãi không hợp lệ");
@@ -214,6 +213,7 @@ public class GioHangController {
             lichSuTrnngThaiService.saveLichSuTrangThai(trangThaiDonHang);
             // Lấy danh sách sản phẩm trong giỏ hàng
 
+
             for (GioHangChiTiet ghct : lstGioHangChiTiet) {
                 HoaDonChiTiet hoaDonChiTiet = new HoaDonChiTiet();
                 hoaDonChiTiet.setIdHoaDon(hoaDonService.findById(hoaDon.getId()));
@@ -344,7 +344,10 @@ public class GioHangController {
     public String checkoutSuccess() {
         return "/user/sanpham/checkoutSuccess";
     }
-
+    @GetMapping("checkout-failed")
+    public String checkoutFailed() {
+        return "redirect:/gio-hang/thanh-toan";
+    }
     @PostMapping("/vnpay-payment")
     @ResponseBody
     public ResponseEntity<?> ThanhToanVNPay(@RequestBody Map<String, Object> sanPhamThanhToan,
@@ -544,11 +547,16 @@ public class GioHangController {
         if (khuyenMai == null) {
             return ResponseEntity.badRequest().body(Map.of("message", "Mã khuyến mãi đã hết"));
         }
+        GioHang gioHang = gioHangService.findGioHangByIDKH(khachHangService.findByEmail(getCurrentUserEmail()).getId());
+
         try {
 
             float tongTien = Float.parseFloat(Object.get("tongTien").toString());
             if (tongTien < khuyenMai.getDieuKienApDung()) {
                 return ResponseEntity.badRequest().body(Map.of("message", "Đơn hàng của bạn không đủ điều kiện"));
+            }
+            if(gioHang.getIdKhuyenMai().getId()==khuyenMai.getId()){
+                return ResponseEntity.badRequest().body(Map.of("message", "Đã áp dụng mã khuyến mãi"));
             }
             List<Integer> lstIdProductsChoice = (List<Integer>) Object.get("selectedIds");
             float tongTienSanPhamDaChon = 0;
@@ -567,7 +575,6 @@ public class GioHangController {
                 double t2 = tongTien * khuyenMai.getGiaTriGiam() / 100;
                 tongTienGiam = (float) Math.min(t1, t2);
             }
-            GioHang gioHang = gioHangService.findGioHangByIDKH(khachHangService.findByEmail(getCurrentUserEmail()).getId());
             gioHang.setIdKhuyenMai(khuyenMai);
             gioHangService.save(gioHang);
             return ResponseEntity.ok(Map.of("tongTienGiam", tongTienGiam));
@@ -748,19 +755,20 @@ public class GioHangController {
     @PutMapping("/capNhatSoLuongGioHang/{idGHCT}")
     public ResponseEntity<?> capNhatSoLuongGioHang(@PathVariable int idGHCT, @RequestParam int soLuong) {
         GioHangChiTiet gioHangChiTiet = gioHangChiTietService.findById(idGHCT);
+        if (gioHangChiTiet != null) {
         ArrayList<GioHangChiTiet> lstGHCT = gioHangChiTietService.findByIdGioHang(gioHangChiTiet.getIdGioHang().getId());
         int tongTienGioHang = 0;
         for (GioHangChiTiet gh : lstGHCT) {
-            if (gh == gioHangChiTiet) {
+            if (gh.getId() == idGHCT) {
                 tongTienGioHang += gh.getDonGia() * soLuong;
+            } else {
+                tongTienGioHang += gh.getTongTien();
             }
-            tongTienGioHang += gh.getTongTien();
         }
-        System.out.println("" + tongTienGioHang);
         if (tongTienGioHang > 20000000) {
             return ResponseEntity.badRequest().body(Collections.singletonMap("message", "Đơn hàng vượt quá 20 triệu"));
         }
-        if (gioHangChiTiet != null) {
+
             ChiTietSanPham chiTietSanPham = chiTietSanPhamService
                     .findById(gioHangChiTiet.getIdChiTietSanPham().getId());
 

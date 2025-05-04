@@ -467,9 +467,6 @@ public class BanHangTaiQuayController {
             @RequestParam("tongtiencthd") float tongTienCTHD,
             @RequestParam(value = "tienKhachDua", defaultValue = "0") float tienKhachDua,
             RedirectAttributes redirectAttributes) {
-        System.out.println("id hoa don" + idhd);
-        System.out.println("tien cthd " + tongTienCTHD);
-        System.out.println("tien khach dua " + tienKhachDua);
 
         // Tính tiền thừa
         float tienThua = tienKhachDua - tongTienCTHD;
@@ -521,7 +518,7 @@ public class BanHangTaiQuayController {
         document.setMargins(50, 50, 50, 50);
 
         // Cấu hình font chữ
-        InputStream fontStream = getClass().getClassLoader().getResourceAsStream("static/fonts/Roboto-Regular.ttf");
+        InputStream fontStream = getClass().getClassLoader().getResourceAsStream("static/fonts/font-times-new-roman.ttf");
         FontProgram fontProgram = FontProgramFactory.createFont(fontStream.readAllBytes());
         PdfFont boldFont = PdfFontFactory.createFont(fontProgram, PdfEncodings.IDENTITY_H, true);
 
@@ -536,7 +533,7 @@ public class BanHangTaiQuayController {
         // Thông tin công ty
         Paragraph companyInfo = new Paragraph()
                 .add(new Text("Tiệm giày Sneakers_Nice\n").setFont(boldFont).setFontSize(12))
-                .add("Địa chỉ: Phú Đô, Mỹ Đình, Từ Liêm, Hà Nội\n")
+                .add("Địa chỉ: Số 1 Trịnh Văn Bô, Nam Từ Liêm, Hà Nội\n")
                 .add("Điện thoại: 0123 456 789\n")
                 .add("Email: Sneakers_Nice@gmail.com")
                 .setTextAlignment(TextAlignment.CENTER)
@@ -559,11 +556,11 @@ public class BanHangTaiQuayController {
 
         Cell rightCell = new Cell()
                 .add(new Paragraph("Khách hàng: ").setFont(boldFont))
-                .add(new Paragraph(hoaDon.getTenNguoiNhan()))
+                .add(new Paragraph(hoaDon.getTenNguoiNhan()==null?"Khách lẻ":hoaDon.getTenNguoiNhan()))
                 .add(new Paragraph("Điện thoại: ").setFont(boldFont))
-                .add(new Paragraph(hoaDon.getSdtNguoiNhan()))
+                .add(new Paragraph(hoaDon.getSdtNguoiNhan()==null?"Không có":hoaDon.getSdtNguoiNhan()))
                 .add(new Paragraph("Địa chỉ: ").setFont(boldFont))
-                .add(new Paragraph(hoaDon.getDiaChiChiTiet()))
+                .add(new Paragraph(hoaDon.getDiaChiChiTiet()==null?"Không có":hoaDon.getDiaChiChiTiet()))
                 .setBorder(Border.NO_BORDER);
 
         invoiceInfoTable.addCell(leftCell);

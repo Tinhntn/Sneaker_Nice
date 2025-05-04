@@ -1,5 +1,6 @@
 package poly.edu.sneaker.Controller;
 
+import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -12,7 +13,9 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import poly.edu.sneaker.Model.GioHang;
 import poly.edu.sneaker.Model.KhachHang;
+import poly.edu.sneaker.Service.GioHangService;
 import poly.edu.sneaker.Service.KhachHangService;
 import jakarta.validation.Valid;
 
@@ -28,6 +31,14 @@ public class KhachHangController {
 
     @Autowired
     private KhachHangService khachHangService;
+    @Autowired
+    GioHangService gioHangService;
+
+    @Autowired
+    HttpSession session;
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
 
     @GetMapping("/hienthi")
     public String hienThiKhachHang(Model model,
@@ -72,41 +83,80 @@ public class KhachHangController {
     }
 
 
-    // Xử lý thêm khách hàng (validate, upload hình ảnh)
     @PostMapping("/add")
-    public String addKhachHang(@Valid @ModelAttribute("khachHang") KhachHang khachHang,
-                               BindingResult bindingResult,
-                               @RequestParam("imageFile") MultipartFile imageFile,
-                               RedirectAttributes redirectAttributes) {
+    public String addKhachHang(@ModelAttribute("khachHang") KhachHang khachHang, BindingResult bindingResult, RedirectAttributes redirectAttributes) {
+
+        // Validate tên khách hàng
+        if (khachHang.getTenKhachHang() == null || khachHang.getTenKhachHang().isBlank()) {
+            bindingResult.rejectValue("tenKhachHang", "error.khachHang", "Tên khách hàng không được để trống");
+        } else if (khachHang.getTenKhachHang().length() < 2 || khachHang.getTenKhachHang().length() > 100) {
+            bindingResult.rejectValue("tenKhachHang", "error.khachHang", "Tên khách hàng phải từ 2 đến 100 ký tự");
+        }
+
+        // Validate email
+        if (khachHang.getEmail() == null || khachHang.getEmail().isBlank()) {
+            bindingResult.rejectValue("email", "error.khachHang", "Email không được để trống");
+        } else if (!khachHang.getEmail().matches("^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$")) {
+            bindingResult.rejectValue("email", "error.khachHang", "Email không đúng định dạng");
+        }
+
+        // Validate số điện thoại
+        if (khachHang.getSdt() == null || khachHang.getSdt().isBlank()) {
+            bindingResult.rejectValue("sdt", "error.khachHang", "Số điện thoại không được để trống");
+        } else if (!khachHang.getSdt().matches("\\d+")) {
+            bindingResult.rejectValue("sdt", "error.khachHang", "Số điện thoại chỉ được chứa chữ số");
+        } else if (khachHang.getSdt().length() < 10 || khachHang.getSdt().length() > 15) {
+            bindingResult.rejectValue("sdt", "error.khachHang", "Số điện thoại phải từ 10 đến 15 ký tự");
+        }
+
+        // Validate mật khẩu
+        if (khachHang.getMatKhau() == null || khachHang.getMatKhau().isBlank()) {
+            bindingResult.rejectValue("matKhau", "error.khachHang", "Mật khẩu không được để trống");
+        } else if (khachHang.getMatKhau().length() < 8) {
+            bindingResult.rejectValue("matKhau", "error.khachHang", "Mật khẩu phải có ít nhất 8 ký tự");
+        }
+
+        // Validate ngày sinh
+        if (khachHang.getNgaySinh() == null) {
+            bindingResult.rejectValue("ngaySinh", "error.khachHang", "Ngày sinh không được để trống");
+        } else if (khachHang.getNgaySinh().after(new Date())) {
+            bindingResult.rejectValue("ngaySinh", "error.khachHang", "Ngày sinh không được lớn hơn ngày hiện tại");
+        }
+
+        // Nếu có lỗi, trả về trang thêm khách hàng
         if (bindingResult.hasErrors()) {
             return "admin/khach_hang/add";
         }
+
         try {
-            // Kiểm tra email đã tồn tại
-            if (khachHangService.findByEmail(khachHang.getEmail()) != null) {
-                redirectAttributes.addFlashAttribute("errorMessage", "Email đã tồn tại!");
-                return "redirect:/khach_hang/add";
+            // Tạo mã khách hàng tự động
+            String maKhachHang = khachHangService.taoMaKhachHang();
+            while (khachHangService.findByMaKhachHang(maKhachHang) != null) {
+                maKhachHang = khachHangService.taoMaKhachHang();
             }
-            // Xử lý file upload nếu có
-            if (!imageFile.isEmpty()) {
-                String fileName = imageFile.getOriginalFilename();
-                String uploadDir = "src/main/resources/static/images/";
-                Path path = Paths.get(uploadDir + fileName);
-                Files.copy(imageFile.getInputStream(), path, StandardCopyOption.REPLACE_EXISTING);
-                khachHang.setHinhAnh("/images/" + fileName);
-            }
-            khachHang.setNgayTao(new Date());
-            khachHang.setNgaySua(new Date());
-            PasswordEncoder passwordEncoder = new BCryptPasswordEncoder(10);
+            khachHang.setMaKhachHang(maKhachHang);
+
+            // Mã hóa mật khẩu
             khachHang.setMatKhau(passwordEncoder.encode(khachHang.getMatKhau()));
+
+            // Lưu khách hàng
             khachHangService.saveKhachHang(khachHang);
-            redirectAttributes.addFlashAttribute("successMessage", "Khách hàng được thêm thành công!");
+
+            // Tạo giỏ hàng tự động cho khách hàng
+            GioHang gioHang = new GioHang();
+            gioHang.setMaGioHang(gioHangService.taoMaGioHang());
+            gioHang.setIdKhachHang(khachHang);
+            gioHang.setNgayTao(new Date());
+            gioHang.setTrangThai(true);
+            gioHang.setGhiChu("Giỏ hàng tự động tạo khi thêm khách hàng");
+            gioHangService.save(gioHang);
+
+            redirectAttributes.addFlashAttribute("successMessage", "Thêm khách hàng và tạo giỏ hàng thành công!");
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("errorMessage", "Lỗi khi thêm khách hàng!");
         }
         return "redirect:/khach_hang/hienthi";
     }
-
     // Hiển thị form cập nhật khách hàng
     @GetMapping("/edit/{id}")
     public String showEditForm(@PathVariable("id") Integer id,
@@ -121,39 +171,58 @@ public class KhachHangController {
         return "admin/khach_hang/update";
     }
 
-    // Xử lý cập nhật khách hàng (validate, upload hình ảnh nếu có file mới)
     @PostMapping("/update/{id}")
-    public String updateKhachHang(@PathVariable("id") Integer id,
-                                  @Valid @ModelAttribute("khachHang") KhachHang khachHang,
-                                  BindingResult bindingResult,
-                                  @RequestParam("imageFile") MultipartFile imageFile,
-                                  RedirectAttributes redirectAttributes) {
+    public String updateKhachHang(@PathVariable("id") int id, @ModelAttribute("khachHang") KhachHang khachHang, BindingResult bindingResult, RedirectAttributes redirectAttributes) {
+        // Validate tên khách hàng
+        if (khachHang.getTenKhachHang() == null || khachHang.getTenKhachHang().isBlank()) {
+            bindingResult.rejectValue("tenKhachHang", "error.khachHang", "Tên khách hàng không được để trống");
+        } else if (khachHang.getTenKhachHang().length() < 2 || khachHang.getTenKhachHang().length() > 100) {
+            bindingResult.rejectValue("tenKhachHang", "error.khachHang", "Tên khách hàng phải từ 2 đến 100 ký tự");
+        }
+
+        // Validate email
+        if (khachHang.getEmail() == null || khachHang.getEmail().isBlank()) {
+            bindingResult.rejectValue("email", "error.khachHang", "Email không được để trống");
+        } else if (!khachHang.getEmail().matches("^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$")) {
+            bindingResult.rejectValue("email", "error.khachHang", "Email không đúng định dạng");
+        }
+        //sdt
+        if (khachHang.getSdt() == null || khachHang.getSdt().isBlank()) {
+            bindingResult.rejectValue("sdt", "error.khachHang", "Số điện thoại không được để trống");
+        } else if (!khachHang.getSdt().matches("\\d+")) {
+            bindingResult.rejectValue("sdt", "error.khachHang", "Số điện thoại chỉ được chứa chữ số");
+        } else if (khachHang.getSdt().length() < 10 || khachHang.getSdt().length() > 15) {
+            bindingResult.rejectValue("sdt", "error.khachHang", "Số điện thoại phải từ 10 đến 15 ký tự");
+        }
+        // Validate mật khẩu
+        if (khachHang.getMatKhau() == null || khachHang.getMatKhau().isBlank()) {
+            bindingResult.rejectValue("matKhau", "error.khachHang", "Mật khẩu không được để trống");
+        } else if (khachHang.getMatKhau().length() < 6) {
+            bindingResult.rejectValue("matKhau", "error.khachHang", "Mật khẩu phải có ít nhất 6 ký tự");
+        }
+        // Nếu có lỗi, trả về trang cập nhật khách hàng
         if (bindingResult.hasErrors()) {
             return "admin/khach_hang/update";
         }
+
+        // Logic cũ: Cập nhật khách hàng
         try {
+            // Lấy khách hàng hiện tại từ cơ sở dữ liệu
             KhachHang existingKhachHang = khachHangService.findKhachHangById(id);
-            if (existingKhachHang == null) {
-                redirectAttributes.addFlashAttribute("errorMessage", "Khách hàng không tồn tại!");
-                return "redirect:/khach_hang/hienthi";
-            }
-            khachHang.setId(id);
-            khachHang.setNgayTao(existingKhachHang.getNgayTao());
-            khachHang.setNgaySua(new Date());
-            // Nếu có file mới, upload và cập nhật hình ảnh; nếu không, giữ nguyên hình cũ
-            if (!imageFile.isEmpty()) {
-                String fileName = imageFile.getOriginalFilename();
-                String uploadDir = "src/main/resources/static/images/";
-                Path path = Paths.get(uploadDir + fileName);
-                Files.copy(imageFile.getInputStream(), path, StandardCopyOption.REPLACE_EXISTING);
-                khachHang.setHinhAnh("/images/" + fileName);
+            if (existingKhachHang != null) {
+                // Mã hóa mật khẩu nếu mật khẩu được thay đổi
+                if (!khachHang.getMatKhau().equals(existingKhachHang.getMatKhau())) {
+                    khachHang.setMatKhau(passwordEncoder.encode(khachHang.getMatKhau()));
+                }
+
+                // Cập nhật thông tin khách hàng
+                khachHang.setId(id);
+                khachHangService.updateKhachHang(khachHang, id);
+
+                redirectAttributes.addFlashAttribute("successMessage", "Cập nhật khách hàng thành công!");
             } else {
-                khachHang.setHinhAnh(existingKhachHang.getHinhAnh());
+                redirectAttributes.addFlashAttribute("errorMessage", "Khách hàng không tồn tại!");
             }
-            PasswordEncoder passwordEncoder = new BCryptPasswordEncoder(10);
-            khachHang.setMatKhau(passwordEncoder.encode(khachHang.getMatKhau()));
-            khachHangService.updateKhachHang(khachHang, id);
-            redirectAttributes.addFlashAttribute("successMessage", "Cập nhật khách hàng thành công!");
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("errorMessage", "Lỗi khi cập nhật khách hàng!");
         }

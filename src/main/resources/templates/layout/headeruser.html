@@ -353,15 +353,17 @@
 
         function removeFromCart(productId) {
             fetch(`/gio-hang/remove/${productId}`, { method: "DELETE" })
-                .then(() => loadCartItems());
+                .then(() => {
+                    loadCartItems();
+                    loadCheckout();
+                })
+                .catch(error => console.error("Lỗi khi xoá sản phẩm:", error));
         }
 
 
         function updateQuantity(idGHCT, change) {
             let quantityElement = document.getElementById(`quantity-${idGHCT}`);
             let newQuantity = parseInt(quantityElement.innerText) + change;
-
-
 
             fetch(`/gio-hang/capNhatSoLuongGioHang/${idGHCT}?soLuong=${newQuantity}`, { method: "PUT" })
                 .then(response => {
@@ -376,6 +378,7 @@
                 .then(data => {
                     if (data.success) {
                         loadCartItems();
+                        loadCheckout();
                         const event = new CustomEvent('cartUpdated',{detail:{idGHCT,newQuantity}});
                         document.dispatchEvent(event);
                     } else if (data.message) {

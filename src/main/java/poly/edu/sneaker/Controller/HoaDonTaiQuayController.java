@@ -2,6 +2,7 @@ package poly.edu.sneaker.Controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -41,5 +42,40 @@ public class HoaDonTaiQuayController {
         System.out.println(hd.getMaHoaDon());
         return "admin/hoa-don/chitiethoadontaiquay";
     }
+
+    @GetMapping("/search")
+    public String searchHoaDon(@RequestParam(value = "keyword", required = false, defaultValue = "null") String keyword
+            ,@RequestParam(defaultValue = "0") int page, Model model) {
+        int size = 5;
+        Page<HoaDon> ketQua = hoaDonService.timkiemhoadon(keyword,page,size);
+        for(HoaDon hd:ketQua){
+            System.out.println(hd.getMaHoaDon());
+        }
+        model.addAttribute("hd", ketQua);
+        model.addAttribute("currentPage", page);
+        model.addAttribute("totalPages", ketQua.getTotalPages());
+        return "admin/hoa-don/hoadontaiquay";// trang html hiển thị danh sách kết quả
+
+    }
+
+    @GetMapping("/search-date")
+    public String searchByDateRange(@RequestParam("startDate") String startDate,
+                                    @RequestParam("endDate") String endDate,
+                                    @RequestParam(defaultValue = "0") int page,
+                                    Model model) {
+        int size = 10;
+        Page<HoaDon> pageHoaDon = hoaDonService.searchHoaDonByDateRange(startDate, endDate, page,size);
+        model.addAttribute("hd", pageHoaDon);
+        model.addAttribute("totalPages", pageHoaDon.getTotalPages());
+        model.addAttribute("currentPage", page);
+        model.addAttribute("startDate", startDate);
+        model.addAttribute("endDate", endDate);
+        return "admin/hoa-don/hoadontaiquay"; // hoặc file Thymeleaf bạn đang dùng để hiển thị hóa đơn
+
+
+
+    }
+
+
 
 }

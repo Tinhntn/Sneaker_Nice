@@ -25,4 +25,5 @@ public interface DanhMucService {
     String taoMaDanhMuc();
 
     ArrayList<DanhMuc> getAllDanhMucs();
+    boolean existsByTenDanhMuc(String tenDanhMuc);
 }

@@ -43,7 +43,14 @@ public class ChatLieuController {
     }
 
     @PostMapping("/add")
-    public String addChatLieu(@Valid @ModelAttribute("chatLieu") ChatLieu chatLieu, BindingResult bindingResult, RedirectAttributes redirectAttributes) {
+    public String addChatLieu(@Valid @ModelAttribute("chatLieu") ChatLieu chatLieu,
+                              BindingResult bindingResult,
+                              RedirectAttributes redirectAttributes) {
+        // Kiểm tra trùng tên chất liệu
+        if (chatLieuService.existsByTenChatLieu(chatLieu.getTenChatLieu())) {
+            bindingResult.rejectValue("tenChatLieu", "error.chatLieu", "Tên chất liệu đã tồn tại");
+        }
+
         if (bindingResult.hasErrors()) {
             return "admin/chat_lieu/add";
         }
@@ -75,7 +82,16 @@ public class ChatLieuController {
     }
 
     @PostMapping("/update/{id}")
-    public String editChatLieu(@PathVariable("id") Integer id, @Valid @ModelAttribute("chatLieu") ChatLieu chatLieu, BindingResult bindingResult, RedirectAttributes redirectAttributes) {
+    public String editChatLieu(@PathVariable("id") Integer id,
+                               @Valid @ModelAttribute("chatLieu") ChatLieu chatLieu,
+                               BindingResult bindingResult,
+                               RedirectAttributes redirectAttributes) {
+        // Kiểm tra trùng tên chất liệu (ngoại trừ chính nó)
+        if (chatLieuService.getAllChatLieus().stream()
+                .anyMatch(cl -> !cl.getId().equals(id) && cl.getTenChatLieu().equalsIgnoreCase(chatLieu.getTenChatLieu()))) {
+            bindingResult.rejectValue("tenChatLieu", "error.chatLieu", "Tên chất liệu đã tồn tại");
+        }
+
         if (bindingResult.hasErrors()) {
             return "admin/chat_lieu/update";
         }

@@ -75,4 +75,8 @@ public class DanhMucImplement implements DanhMucService {
     public ArrayList<DanhMuc> getAllDanhMucs() {
         return (ArrayList<DanhMuc>) danhMucRepository.findAll();
     }
+    @Override
+    public boolean existsByTenDanhMuc(String tenDanhMuc) {
+        return danhMucRepository.existsByTenDanhMuc(tenDanhMuc);
+    }
 }

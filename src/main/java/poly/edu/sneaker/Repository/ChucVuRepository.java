@@ -12,4 +12,4 @@ public interface ChucVuRepository extends JpaRepository<ChucVu, Integer> {
 
     ChucVu findByMaChucVu(String maChucVu);
     ChucVu findAllById(int id);
-}
+    boolean existsByTenChucVu(String tenChucVu);}
