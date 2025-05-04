@@ -38,5 +38,5 @@ public interface ChiTietSanPhamService {
     void capNhatSoLuongKhiHuyHoaDon(int idCTSP, int soLuong);
     List<ChiTietSanPham> findIDSPByIDMauSac(int idSP, int idMauSac);
     ArrayList<ChiTietSanPham> findByIdSanPham(int idSanPham);
-    ChiTietSanPham findCTSPByIdSPAndIdMauSacAndIdSize(int idSanPham, int idMauSac, int idSize);
+    ChiTietSanPham findCTSPByIdSPAndIdMauSacAndIdSize(int idSanPham, int idSize, int idMauSac);
 }

@@ -26,5 +26,5 @@ public interface ChatLieuService {
 
      ChatLieu findByMaChatLieu(String maChatLieu);
      String taoMaChatLieu();
-
+     boolean existsByTenChatLieu(String tenChatLieu);
 }

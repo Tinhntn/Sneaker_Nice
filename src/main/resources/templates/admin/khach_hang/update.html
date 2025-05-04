@@ -26,7 +26,7 @@
             </div>
             <div class="card-body">
                 <!-- Form cập nhật có hỗ trợ upload file -->
-                <form th:action="@{/khach_hang/update/{id}(id=${khachHang.id})}" th:object="${khachHang}" method="post" enctype="multipart/form-data">
+                <form th:action="@{/khach_hang/update/{id}(id=${khachHang.id})}" th:object="${khachHang}" method="post" enctype="multipart/form-data" novalidate>
                     <!-- Hàng 1: Mã KH & Tên KH -->
                     <div class="row mb-3">
                         <div class="col-md-6">
@@ -35,8 +35,8 @@
                             <div class="text-danger" th:if="${#fields.hasErrors('maKhachHang')}" th:errors="*{maKhachHang}"></div>
                         </div>
                         <div class="col-md-6">
-                            <label for="tenKhachHang" class="form-label">Tên Khách Hàng</label>
-                            <input type="text" class="form-control" id="tenKhachHang" th:field="*{tenKhachHang}" required>
+                            <label for="tenKhachHang" class="form-label">Tên Khách Hàng <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" id="tenKhachHang" th:field="*{tenKhachHang}">
                             <div class="text-danger" th:if="${#fields.hasErrors('tenKhachHang')}" th:errors="*{tenKhachHang}"></div>
                         </div>
                     </div>
@@ -65,27 +65,27 @@
                             </select>
                         </div>
                         <div class="col-md-4">
-                            <label for="email" class="form-label">Email</label>
-                            <input type="email" class="form-control" id="email" th:field="*{email}" required>
+                            <label for="email" class="form-label">Email <span class="text-danger">*</span></label>
+                            <input type="email" class="form-control" id="email" th:field="*{email}">
                             <div class="text-danger" th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></div>
                         </div>
                         <div class="col-md-4">
-                            <label for="sdt" class="form-label">Số Điện Thoại</label>
-                            <input type="text" class="form-control" id="sdt" th:field="*{sdt}" required>
+                            <label for="sdt" class="form-label">Số Điện Thoại <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" id="sdt" th:field="*{sdt}">
                             <div class="text-danger" th:if="${#fields.hasErrors('sdt')}" th:errors="*{sdt}"></div>
                         </div>
                     </div>
                     <!-- Hàng 4: Ngày Sinh & Mật Khẩu -->
                     <div class="row mb-3">
                         <div class="col-md-6">
-                            <label for="ngaySinh" class="form-label">Ngày Sinh</label>
+                            <label for="ngaySinh" class="form-label">Ngày Sinh <span class="text-danger">*</span></label>
                             <input type="date" class="form-control" id="ngaySinh" th:field="*{ngaySinh}">
                             <div class="text-danger" th:if="${#fields.hasErrors('ngaySinh')}" th:errors="*{ngaySinh}"></div>
                         </div>
                         <div class="col-md-6">
-                            <label for="matKhau" class="form-label">Mật Khẩu</label>
+                            <label for="matKhau" class="form-label">Mật Khẩu <span class="text-danger">*</span></label>
                             <div class="input-group">
-                                <input type="password" class="form-control" id="matKhau" th:field="*{matKhau}" placeholder="Nhập mật khẩu" required>
+                                <input type="password" class="form-control" id="matKhau" th:field="*{matKhau}">
                                 <button class="btn btn-outline-secondary" type="button" id="togglePassword">
                                     <i class="fa fa-eye"></i>
                                 </button>

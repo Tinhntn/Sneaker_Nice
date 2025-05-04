@@ -63,11 +63,22 @@
         </dependency>
 
 
-        <!-- Thymeleaf Extras cho Spring Security (nếu dùng Thymeleaf) -->
-        <dependency>
-            <groupId>org.thymeleaf.extras</groupId>
-            <artifactId>thymeleaf-extras-springsecurity6</artifactId>
-        </dependency>
+                <dependency>
+                    <groupId>org.springframework.boot</groupId>
+                    <artifactId>spring-boot-starter-security</artifactId>
+                </dependency>
+
+
+                <!-- Thymeleaf Extras cho Spring Security (nếu dùng Thymeleaf) -->
+                <dependency>
+                    <groupId>org.thymeleaf.extras</groupId>
+                    <artifactId>thymeleaf-extras-springsecurity6</artifactId>
+                </dependency>
+
+                <dependency>
+                    <groupId>org.thymeleaf.extras</groupId>
+                    <artifactId>thymeleaf-extras-springsecurity6</artifactId>
+                </dependency>
 
         <dependency>
             <groupId>com.microsoft.sqlserver</groupId>
@@ -126,7 +137,6 @@
             <version>5.0.0</version>
             <scope>provided</scope>
         </dependency>
-
         <dependency>
             <groupId>com.itextpdf</groupId>
             <artifactId>kernel</artifactId>

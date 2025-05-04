@@ -15,6 +15,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import poly.edu.sneaker.Model.*;
 import poly.edu.sneaker.Service.*;
 
+import java.io.IOException;
 import java.lang.reflect.Array;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -170,23 +171,33 @@ public class SanPhamController {
 
     @PostMapping("/addctsanpham/{id}")
     public String themChiTietSanPham(@PathVariable("id") int idSanPham,
-                                     @RequestParam("img") MultipartFile file,
+                                     @RequestParam("img") MultipartFile[] img,
                                      @ModelAttribute ChiTietSanPham chiTietSanPham, RedirectAttributes redirectAttributes) {
         try {
-            List<ChiTietSanPham> lstCTSP = chiTietSanPhamService.findByIdSanPham(idSanPham);
 
+            List<ChiTietSanPham> lstCTSP = chiTietSanPhamService.findByIdSanPham(idSanPham);
             if (chiTietSanPham != null) {
-                if (!file.isEmpty()) {
-                    // Lưu file vào thư mục static/images
-                    String fileName = file.getOriginalFilename();
-                    String uploadDir = "src/main/resources/static/images/";
-                    Path path = Paths.get(uploadDir + fileName);
-                    Files.copy(file.getInputStream(), path, StandardCopyOption.REPLACE_EXISTING);
-                    // Lưu đường dẫn file vào database
-                    chiTietSanPham.setHinhAnh("/images/" + fileName);
-                    System.out.println(chiTietSanPham.getHinhAnh());
+                List<String> paths = new ArrayList<>();
+                if(img!=null && img.length>0) {
+                    for (MultipartFile fileItem : img) {
+                        if (!fileItem.isEmpty()) {
+                            // Lưu file vào thư mục static/images
+                            String fileName = fileItem.getOriginalFilename();
+                            String uploadDir = "src/main/resources/static/images/";
+                            Path path = Paths.get(uploadDir + fileName);
+                            try {
+                                Files.copy(fileItem.getInputStream(), path, StandardCopyOption.REPLACE_EXISTING);
+                                paths.add(fileName); // Lưu đường dẫn ảnh để lưu DB
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
+                            // Ghép đường dẫn ảnh thành 1 chuỗi (ngăn cách bởi ,)
+                        }
+                    }
                 }
 
+                String allImages = String.join(",", paths);
+                System.out.println(allImages);
                 ChiTietSanPham ctsp = new ChiTietSanPham();
                 ctsp.setIdSanPham(sanPhamService.findById(idSanPham));
                 ctsp.setIdSize(chiTietSanPham.getIdSize());
@@ -201,7 +212,7 @@ public class SanPhamController {
                 ctsp.setGiaNhap(chiTietSanPham.getGiaNhap());
                 ctsp.setGiaBan(chiTietSanPham.getGiaBan());
                 ctsp.setSoLuong(chiTietSanPham.getSoLuong());
-                ctsp.setHinhAnh(chiTietSanPham.getHinhAnh());
+                ctsp.setHinhAnh(allImages);
                 ctsp.setMoTa(chiTietSanPham.getMoTa());
                 ctsp.setNgayTao(new Date());
                 ctsp.setNgaySua(new Date());

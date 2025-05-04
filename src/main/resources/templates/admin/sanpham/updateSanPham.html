@@ -55,6 +55,7 @@
                 </div>
             </div>
         </form>
+
         <h2
                 style=" margin: 5px;font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;">
             Thêm Chi Tiết Sản Phẩm</h2>
@@ -63,8 +64,7 @@
             <button type="button" style="margin: 10px;" class="btn btn-primary" data-bs-toggle="modal"
                     data-bs-target="#exampleModal">
                 Thêm chi tiết sản phẩm </button>
-            <button type="button" style="margin: 10px;" class="btn btn-primary"
-                    id="themNhanhChiTietSanPham">
+            <button type="button" style="margin: 10px;" class="btn btn-primary" id="themNhanhChiTietSanPham">
                 Thêm nhanh </button>
         </div>
 
@@ -121,7 +121,8 @@
                             <div class="row g-3 mt-2">
                                 <div class="col-md-6">
                                     <label class="form-label">Hình ảnh</label>
-                                    <input type="file" class="form-control" name="img" accept="image/*">
+                                    <input type="file" class="form-control" name="img" accept="image/*" multiple>
+                                    <small class="text-muted">Tối đa 5 ảnh</small>
                                 </div>
 
                                 <div class="col-md-6">
@@ -228,11 +229,17 @@
                             </td>
                             <td>
                                 <label for="fileInput-[[${sanPham.id}]]" class="image-label">
-                                    <img th:src="@{${sanPham.hinhAnh} != null ? ${sanPham.hinhAnh} : '/path/to/default-image.jpg'}"
-                                         alt="Product Image" class="product-img" th:id="'img-'+${sanPham.id}" />
+                                    <!-- <img th:src="@{${sanPham.hinhAnh} != null ? ${sanPham.hinhAnh} : '/path/to/default-image.jpg'}"
+                                        alt="Product Image" class="product-img" th:id="'img-'+${sanPham.id}" /> -->
+                                    <th:block th:each="img, stat : ${#strings.arraySplit(sanPham.hinhAnh, ',')}"
+                                              th:if="${stat.index == 0}">
+                                        <img th:src="@{/images/{img}(img=${img})}" width="100"
+                                             alt="Ảnh sản phẩm">
+                                    </th:block>
+
                                 </label>
-                                <!-- <input type="file" th:id="'fileInput-'+${sanPham.id}" th:name="'hinhAnh'" class="file-input" accept="image/*"
-                                                                onchange="previewImage(this," 'img-'+${sanPham.id}") /> -->
+
+
                             </td>
 
                             <td>
@@ -286,6 +293,13 @@
 
     </div>
     <script>
+        const notyf = new Notyf();
+        document.getElementById('imgInput').addEventListener('change', function (e) {
+            if (this.files.length > 5) {
+                notyf.error("Chỉ đẹp thêm tối đa 5 ảnh")
+                this.value = ""; // Reset input
+            }
+        });
         function previewImage(input, imgId) {
             if (input.files && input.files[0]) {
                 let reader = new FileReader();
@@ -295,7 +309,7 @@
                 reader.readAsDataURL(input.files[0]);
             }
         }
-        const notyf = new Notyf();
+
 
         document.getElementById("themNhanhChiTietSanPham").addEventListener("click", function () {
             const idSanPham = document.getElementById("idSanPham").value;

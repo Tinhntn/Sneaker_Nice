@@ -51,15 +51,19 @@ public class HoaDonKhachHangController {
                             Model model, @RequestParam(defaultValue = "0") int page) {
         int size = 5;
 
-        int id = 1;
+        int id = 8;
 
         Pageable pageable = PageRequest.of(page, size);
+
+        Page<HoaDonOnlCustom> listHoaDonTatCaKH = hoaDonOnlService.getHoaDonCustomTatCaKH(pageable, id);
+        Integer sizeTatCaKH = listHoaDonTatCaKH.getContent().size();
+        model.addAttribute("sizeDHKH", sizeTatCaKH);
 
         Page<HoaDonOnlCustom> listHoaDonDHKH = hoaDonOnlService.getHoaDonCustomDHKH(pageable, id);
         Integer sizeDHKH = listHoaDonDHKH.getContent().size();
         model.addAttribute("sizeDHKH", sizeDHKH);
 
-        Page<HoaDonOnlCustom> listHoaDonCXNKH = hoaDonOnlService.getHoaDonOLCholayhangKH(pageable, id);
+        Page<HoaDonOnlCustom> listHoaDonCXNKH = hoaDonOnlService.getHoaDonOLChoxacnhanKH(pageable, id);
         Integer sizecxnKH = listHoaDonCXNKH.getContent().size();
         model.addAttribute("sizecxnKH", sizecxnKH);
 
@@ -77,7 +81,11 @@ public class HoaDonKhachHangController {
 
         System.out.println("List hoa don cxn: " + listHoaDonCXNKH.getContent().size());
         System.out.println("List hoa don clh: " + listHoaDonCLHKH.getContent().size());
-//        System.out.println("List hoa don dh: " + listHoaDonDHKH.getContent().size());
+        System.out.println("List hoa don tatca: " + listHoaDonTatCaKH.getContent().size());
+
+        model.addAttribute("listHoaDonTatCaKH", listHoaDonTatCaKH.getContent());
+        model.addAttribute("currentPage", listHoaDonTatCaKH.getNumber());
+        model.addAttribute("totalPages", listHoaDonTatCaKH.getTotalPages());
 
         model.addAttribute("listHoaDonDHKH", listHoaDonDHKH.getContent());
         model.addAttribute("currentPage", listHoaDonDHKH.getNumber());

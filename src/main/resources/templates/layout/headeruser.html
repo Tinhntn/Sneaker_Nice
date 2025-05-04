@@ -226,11 +226,6 @@
     </section>
     <script>
         var notyf = new Notyf({ ripple: true, position: { x: 'right', y: 'top' } });
-        // var message = /*[[${message}]]*/ null;
-        // if (message) {
-        //     notyf.error(message);
-        // }
-
         function updateCartCount() {
             fetch('/gio-hang/so-luong')
                 .then(response => {
@@ -358,7 +353,11 @@
 
         function removeFromCart(productId) {
             fetch(`/gio-hang/remove/${productId}`, { method: "DELETE" })
-                .then(() => loadCartItems());
+                .then(() => {
+                    loadCartItems();
+                    loadCheckout();
+                })
+                .catch(error => console.error("Lỗi khi xoá sản phẩm:", error));
         }
 
 
@@ -379,6 +378,9 @@
                 .then(data => {
                     if (data.success) {
                         loadCartItems();
+                        loadCheckout();
+                        const event = new CustomEvent('cartUpdated',{detail:{idGHCT,newQuantity}});
+                        document.dispatchEvent(event);
                     } else if (data.message) {
                         notyf.error(message + "cập nhật số lượng thất bại")
                     }

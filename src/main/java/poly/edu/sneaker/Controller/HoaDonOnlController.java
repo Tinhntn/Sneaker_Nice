@@ -134,7 +134,7 @@ public class HoaDonOnlController {
 
 
         HoaDon hd = hoaDonOnlService.detailHD(id);
-        hd.setTrangThai(2);
+        hd.setTrangThai(3);
         hoaDonOnlService.updateHoaDon(hd, id);
         redirectAttributes.addFlashAttribute("thanhcong", "thành công");
         return "redirect:/hoadononline/hienthi";
@@ -152,7 +152,7 @@ public class HoaDonOnlController {
         HoaDon hd = hoaDonOnlService.detailHD(id);
         hd.setTenNguoiGiao(tennguoigiao);
         hd.setSdtNguoiGiao(sdtnguoigiao);
-        hd.setTrangThai(3);
+        hd.setTrangThai(4);
         hoaDonOnlService.updateHoaDon(hd, id);
         redirectAttributes.addFlashAttribute("thanhcong", "thành công");
         return "redirect:/hoadononline/hienthi";
@@ -166,32 +166,13 @@ public class HoaDonOnlController {
         nv.setId(4);
 
         HoaDon hd = hoaDonOnlService.detailHD(id);
-        hd.setTrangThai(4);
+        hd.setTrangThai(5);
         hoaDonOnlService.updateHoaDon(hd, id);
         redirectAttributes.addFlashAttribute("thanhcong", "thành công");
         return "redirect:/hoadononline/hienthi";
     }
 
-    @PostMapping("/huydh/{id}")
-    public String huydonhang(@PathVariable int id, @RequestParam(value = "ghichu",
-            defaultValue = "trong") String ghichu,
-                             Model model, RedirectAttributes redirectAttributes) {
-        HoaDon hd = hoaDonOnlService.detailHD(id);
-        hd.setGhiChu(ghichu);
-        hd.setTrangThai(0);
-        hoaDonOnlService.updateHoaDon(hd, id);
-        List<HoaDonChiTietOnlCustom> chiTietHoaDonList = hoaDonChiTietOnlService.findByHoaDonId(hd);
 
-        for (HoaDonChiTietOnlCustom ct : chiTietHoaDonList) {
-            ChiTietSanPham dt = chiTietSanPhamService.findById(ct.getId());
-            System.out.println(ct.getSoLuong());
-            System.out.println(dt.getSoLuong());
-            dt.setSoLuong(dt.getSoLuong() + ct.getSoLuong());
-            chiTietSanPhamService.update(dt);
-        }
-        redirectAttributes.addFlashAttribute("thanhcong", "Hủy thành công");
-        return "redirect:/hoadononline/hienthi";
-    }
 
     @GetMapping("/detailhoadononlinect/{id}")
     public String chitiethoadononline(@PathVariable int id, Model model, @RequestParam(defaultValue = "0") int page) {
@@ -234,6 +215,31 @@ public class HoaDonOnlController {
         model.addAttribute("currentPageCTSP", sanPhamChiTiet.getNumber());
         model.addAttribute("totalPagesCTSP", sanPhamChiTiet.getTotalPages());
         return "admin/hoa-don/detailhoadononline";
+    }
+
+
+    @PostMapping("/huydh/{id}")
+    public String huydonhang(@PathVariable int id, @RequestParam(value = "ghichu", defaultValue = "trong") String ghichu,
+                             Model model, RedirectAttributes redirectAttributes) {
+        HoaDon hd = hoaDonOnlService.detailHD(id);
+        if (hd == null) {
+            redirectAttributes.addFlashAttribute("error", "Không tìm thấy hóa đơn.");
+            return "redirect:/hoadononline/hienthi";
+        }
+        hd.setGhiChu(ghichu);
+        hd.setTrangThai(0);  // Đặt trạng thái hủy
+        hoaDonOnlService.updateHoaDon(hd, id);
+
+        // Cập nhật lại số lượng sản phẩm
+        List<HoaDonChiTietOnlCustom> chiTietHoaDonList = hoaDonChiTietOnlService.findByHoaDonId(hd);
+        for (HoaDonChiTietOnlCustom ct : chiTietHoaDonList) {
+            ChiTietSanPham dt = chiTietSanPhamService.findById(ct.getId());
+            dt.setSoLuong(dt.getSoLuong() + ct.getSoLuong());
+            chiTietSanPhamService.update(dt);
+        }
+
+        redirectAttributes.addFlashAttribute("thanhcong", "Hủy thành công");
+        return "redirect:/hoadononline/hienthi";
     }
 
     @GetMapping("/detailkhachhang/{id}")
@@ -397,6 +403,7 @@ public class HoaDonOnlController {
     @ResponseBody
     public ResponseEntity<?> DoiTrangThai(@RequestBody Map<String, Object> formData) {
         try {
+
             int idhoadon = Integer.parseInt(formData.get("idHoaDon").toString());
             String ghichu = formData.get("ghiChu").toString();
             int trangthai = Integer.parseInt(formData.get("trangThai").toString());
