@@ -101,12 +101,13 @@ public interface ChiTietSanPhamRepository extends JpaRepository<ChiTietSanPham, 
     ChiTietSanPham getChiTietSanPhamById(@Param("id") Integer id);
 
     @Query("SELECT c FROM ChiTietSanPham c WHERE " +
-            "( c.idSanPham.tenSanPham LIKE CONCAT('%', :tenSanPham, '%')) OR " +
+            "c.trangThai = true AND (" +
+            "(:tenSanPham IS NOT NULL AND :tenSanPham <> '' AND c.idSanPham.tenSanPham LIKE CONCAT('%', :tenSanPham, '%')) OR " +
             "(:idSize IS NOT NULL AND c.idSize.id = :idSize) OR " +
             "(:idMauSac IS NOT NULL AND c.idMauSac.id = :idMauSac) OR " +
             "(:idDanhMuc IS NOT NULL AND c.idSanPham.idDanhMuc.id = :idDanhMuc) OR " +
             "(:idHang IS NOT NULL AND c.idSanPham.idHang.id = :idHang) OR " +
-            "(:idChatLieu IS NOT NULL AND c.idSanPham.idChatLieu.id = :idChatLieu)")
+            "(:idChatLieu IS NOT NULL AND c.idSanPham.idChatLieu.id = :idChatLieu))")
     Page<ChiTietSanPham> timKiemSanPhamQuaCTSP(@Param("tenSanPham") String tenSanPham,
                                                @Param("idSize") Integer idSize,
                                                @Param("idMauSac") Integer idMauSac,
@@ -114,6 +115,8 @@ public interface ChiTietSanPhamRepository extends JpaRepository<ChiTietSanPham, 
                                                @Param("idHang") Integer idHang,
                                                @Param("idChatLieu") Integer idChatLieu,
                                                Pageable pageable);
+
+
 
     //code quan end
 }

@@ -35,14 +35,14 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/","/api/dang-nhap", "/dang-nhap", "/quen_mat_khau", "/dang-ky", "/dang_ky_moi", "/Sneakers_Nice/**", "/register",
-                                "/css/**", "/js/**", "/fonts/**", "/scss/**",
+                                "/css/**", "/js/**", "/fonts/**", "/scss/**","/static/**",
                                 "/vendor/**", "/images/**", "/Roboto/**")
                         .permitAll()
-                        .requestMatchers("/gio-hang/**").hasRole("USER")
+                        .requestMatchers("/gio-hang/**","/khachhangonline/**","/hoadononlinekhachhang/**").hasRole("USER")
                         .requestMatchers(HttpMethod.POST, "/dang-nhap", "/quen_mat_khau", "/dang-ky").permitAll()
                         .requestMatchers("/sanpham/**", "/hoadon/**","/hoadononlinekhachhang/**","/hoadononline/**",  "/danh_muc/**","/hang/**",
-                                "/mau_sac/**","/size/**","/chat_lieu/**","/banhangtaiquay/**","/hoadontaiquay/**").permitAll()
-                        .requestMatchers("/nhanvien/**","/khach_hang/**","/khachhangonline/**","/chuc_vu/**","/thongke/**", "/khuyenmai/**,","/hoadontaiquay/**").permitAll()
+                                "/mau_sac/**","/size/**","/chat_lieu/**","/banhangtaiquay/**","/hoadontaiquay/**").hasAnyRole("EMPLOYEE", "ADMIN")
+                        .requestMatchers("/nhanvien/**","/khach_hang/**","/khachhangonline/**","/chuc_vu/**","/thongke/**", "/khuyenmai/**").hasRole("ADMIN")
                 )
                 .formLogin(form -> form
                         .loginPage("/dang-nhap") // Trang đăng nhập tùy chỉnh
@@ -51,7 +51,7 @@ public class SecurityConfig {
                             // Trả về JSON khi đăng nhập thành công
                             System.out.println(authentication.getAuthorities());
                             boolean isUser = authentication.getAuthorities().stream()
-                                            .anyMatch(auth -> auth.getAuthority().equals("ROLE_USER"));
+                                    .anyMatch(auth -> auth.getAuthority().equals("ROLE_USER"));
                             boolean isAdmin = authentication.getAuthorities().stream()
                                     .anyMatch(auth -> auth.getAuthority().equals("ROLE_ADMIN"));
                             boolean isEmployee = authentication.getAuthorities().stream()
