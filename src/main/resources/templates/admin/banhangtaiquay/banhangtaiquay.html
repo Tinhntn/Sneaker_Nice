@@ -403,12 +403,6 @@
                                 </button>
                             </div>
 
-                        <!-- Link đến trang kế tiếp -->
-                        <button type="button" class="btn btn-primary" th:disabled="${currentPage == totalPages - 1}"
-                                th:onclick="|window.location.href='/banhangtaiquay/hienthi?page=${currentPage + 1}'|">
-                            >>
-                        </button>
-                    </div>
                             <!-- Trang kế tiếp -->
                             <button type="button" class="btn btn-primary" th:disabled="${currentPage == totalPages - 1}"
                                     th:onclick="|window.location.href='/banhangtaiquay/hienthi?page=${currentPage + 1}'|">

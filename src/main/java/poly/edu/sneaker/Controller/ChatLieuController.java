@@ -54,6 +54,7 @@ public class ChatLieuController {
         if (bindingResult.hasErrors()) {
             return "admin/chat_lieu/add";
         }
+
         try {
             String maChatLieu = chatLieuService.taoMaChatLieu();
             while (chatLieuService.findByMaChatLieu(maChatLieu) != null) {
@@ -80,7 +81,6 @@ public class ChatLieuController {
         model.addAttribute("chatLieu", chatLieu);
         return "admin/chat_lieu/update";
     }
-
     @PostMapping("/update/{id}")
     public String editChatLieu(@PathVariable("id") Integer id,
                                @Valid @ModelAttribute("chatLieu") ChatLieu chatLieu,
@@ -95,6 +95,7 @@ public class ChatLieuController {
         if (bindingResult.hasErrors()) {
             return "admin/chat_lieu/update";
         }
+
         try {
             ChatLieu existingChatLieu = chatLieuService.findChatLieuById(id);
             if (existingChatLieu != null) {
@@ -111,7 +112,6 @@ public class ChatLieuController {
         }
         return "redirect:/chat_lieu/hienthi";
     }
-
     @PostMapping("/toggleStatus/{id}")
     public String toggleStatus(@PathVariable("id") Integer id, RedirectAttributes redirectAttributes) {
         try {

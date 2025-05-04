@@ -371,7 +371,7 @@
 					checkbox.addEventListener("change", updateTotalPrice);
 				});
 				updateTotalPrice();
->>>>>>> f06bae99c1ae0c3d220b43e17d232ba1f13ffefc
+
 
             async function capNhatGiaGiam(tongTien) {
                 try {
@@ -495,119 +495,7 @@
             }
         }
 
-<<<<<<< HEAD
 
-        // Load danh sách quận/huyện khi chọn tỉnh/thành phố
-        async function loadDistricts() {
-            let provinceCode = document.getElementById("province").value;
-            if (!provinceCode) return;
-
-            try {
-                let response = await fetch(API_PROVINCE + "p/" + provinceCode + "?depth=2");
-                let data = await response.json();
-
-                let districtSelect = document.getElementById("district");
-                districtSelect.innerHTML = '<option value="">Chọn quận/huyện</option>';
-
-                let savedDistrict = document.getElementById("savedDistrict").value;
-
-                data.districts.forEach(district => {
-                    let option = document.createElement("option");
-                    option.value = district.code;
-                    option.textContent = district.name;
-
-                    // Chọn quận/huyện đã lưu
-                    if (district.code === savedDistrict) {
-                        option.selected = true;
-                    }
-
-                    districtSelect.appendChild(option);
-                });
-
-                // Nếu có quận/huyện được chọn thì tự động load phường/xã
-                if (districtSelect.value) {
-                    await loadWards();
-                }
-            } catch (error) {
-                console.error("Lỗi khi tải danh sách quận/huyện:", error);
-            }
-        }
-
-        // Load danh sách phường/xã khi chọn quận/huyện
-        async function loadWards() {
-            let districtCode = document.getElementById("district").value;
-            if (!districtCode) return;
-
-            try {
-                let response = await fetch(API_PROVINCE + "d/" + districtCode + "?depth=2");
-                let data = await response.json();
-
-                let wardSelect = document.getElementById("ward");
-                wardSelect.innerHTML = '<option value="">Chọn phường/xã</option>';
-
-                let savedWard = document.getElementById("savedWard").value;
-
-                data.wards.forEach(ward => {
-                    let option = document.createElement("option");
-                    option.value = ward.code;
-                    option.textContent = ward.name;
-
-                    // Chọn phường/xã đã lưu
-                    if (ward.code === savedWard) {
-                        option.selected = true;
-                    }
-
-                    wardSelect.appendChild(option);
-                });
-            } catch (error) {
-                console.error("Lỗi khi tải danh sách phường/xã:", error);
-            }
-        }
-
-
-        // Gọi API khi trang tải lần đầu
-        document.addEventListener("DOMContentLoaded", loadProvinces);
-
-        function getSelectedVoucherId() {
-            const selectedRadio = document.querySelector('input[name="voucher"]:checked');
-            if (selectedRadio) {
-                return selectedRadio.value;
-            }
-            return null;
-        }
-
-        document.getElementById("searchMaGiamGia").addEventListener("click", async function () {
-            const maKhuyenMai = document.getElementById("inputMaKhuyenMai").value;
-            if (!maKhuyenMai) {
-                notyf.error("Bạn cần nhập mã khuyến mãi");
-                location.reload();
-                return;
-            }
-
-            try {
-                const response = await fetch(`/gio-hang/tim-giam-gia?maKhuyenMai=${encodeURIComponent(maKhuyenMai)}`);
-                if (!response.ok) {
-                    const err = await response.json();
-                    throw new Error(err.message || 'Không tìm thấy mã giảm giá');
-                }
-
-                const data = await response.json();
-                const khuyenMai = data.khuyenMai;
-
-                // Cập nhật danh sách mã khuyến mãi
-                const voucherListElement = document.getElementById("voucher-list");
-                voucherListElement.innerHTML = ""; // Xóa nội dung cũ
-
-                const mucToiDa = khuyenMai.mucGiamGiaToiDa != null
-                    ? `Giảm tối đa ${khuyenMai.mucGiamGiaToiDa.toLocaleString("vi-VN")} VNĐ`
-                    : "Không có giới hạn";
-
-                const dieuKien = khuyenMai.dieuKienApDung != null
-                    ? `Đơn tối thiểu ${khuyenMai.dieuKienApDung.toLocaleString("vi-VN")} VNĐ`
-                    : "";
-
-                const html = `
-=======
 			// Gọi API khi trang tải lần đầu
 			document.addEventListener("DOMContentLoaded", loadProvinces);
 			function getSelectedVoucherId() {
@@ -618,6 +506,7 @@
 				return null;
 			}
 			document.getElementById("searchMaGiamGia").addEventListener("click", async function () {
+
 				const maKhuyenMai = document.getElementById("inputMaKhuyenMai").value;
 				if (!maKhuyenMai) {
 					notyf.error("Bạn cần nhập mã khuyến mãi");
@@ -647,7 +536,6 @@
 						: "";
 
 					const html = `
->>>>>>> f06bae99c1ae0c3d220b43e17d232ba1f13ffefc
             <div class="voucher-item border p-2 rounded mb-2 position-relative">
                 <span class="badge bg-secondary position-absolute top-0 end-0">${khuyenMai.soLuong}</span>
                 <div class="d-flex align-items-center">
@@ -664,137 +552,7 @@
             </div>
         `;
 
-<<<<<<< HEAD
-                voucherListElement.insertAdjacentHTML("beforeend", html);
-            } catch (error) {
-                notyf.error(error.message);
-            }
-        });
 
-        document.getElementById("apMaGiamGia").addEventListener("click", function () {
-            const voucherId = getSelectedVoucherId();
-            if (voucherId) {
-                let tongTien = parseFloat(document.getElementById("tong").innerText.replace(/[^\d]/g, ""));
-                let formData = {
-                    idKhuyenMai: voucherId,
-                    tongTien: tongTien
-                }
-                fetch('/gio-hang/addVoucher', {
-                    method: 'POST',
-                    headers: {'Content-Type': 'application/json'},
-                    body: JSON.stringify(formData)
-                })
-                    .then(response => {
-                        if (!response.ok) {
-                            return response.json().then(err => {
-                                throw new Error(err.message || "Thêm voucher thất bại");
-                            });
-                        }
-                        return response.json(); // ✅ chỉ cần dòng này sau xử lý lỗi
-                    })
-                    .then(data => {
-                        document.getElementById("disscount-price").innerText = data.tongTienGiam.toLocaleString("vi-VN") + "₫";
-                        document.getElementById("final-price").innerText = (tongTien - data.tongTienGiam).toLocaleString("vi-VN") + "₫";
-                        document.getElementById("btnCloseModal").click();
-
-                    })
-                    .catch(error => {
-                        notyf.error(error.message || "Đã xãy ra lỗi");
-                    })
-                // Gửi lên server hoặc xử lý tiếp...
-            } else {
-                notyf.error("Chưa chọn voucher");
-            }
-        });
-
-
-        document.getElementById("thanhToanDonHang").addEventListener("click", function (e) {
-            e.preventDefault(); // Ngăn chặn hành vi mặc định của nút bấm
-
-            let isValid = true;
-            let notyf = new Notyf(); // Đảm bảo thư viện Notyf được khởi tạo
-            let selectedItems = Array.from(document.querySelectorAll('.cart-checkbox:checked'))
-                .map(checkbox => parseInt(checkbox.getAttribute('data-id')));
-
-            if (selectedItems.length === 0) {
-                notyf.error("Vui lòng chọn ít nhất một sản phẩm để thanh toán!");
-                return;
-            }
-            let thanhToanChuyenKhoan = document.getElementById("bank").checked;
-            let thanhToanKhiNhanHang = document.getElementById("cod").checked;
-            let shippingFee = parseFloat(document.getElementById("shipping-fee").innerText.replace(/[^\d]/g, '')) || 0;
-            let totalPrice = parseFloat(document.getElementById("tong").innerText.replace(/[^\d]/g, '')) || 0;
-            let finalPrice = parseFloat(document.getElementById("final-price").innerText.replace(/[^\d]/g, '')) || 0;
-            let disscountPrice = parseFloat(document.getElementById("disscount-price").innerText.replace(/[^\d]/g, '')) || 0;
-            let formData = {
-                hoVaTen: document.getElementById("hoVaTen").value.trim(),
-                soDienThoai: document.getElementById("soDienThoai").value.trim(),
-                email: document.getElementById("email").value.trim(),
-                province: document.getElementById("province").options[document.getElementById("province").selectedIndex].text,
-                district: document.getElementById("district").options[document.getElementById("district").selectedIndex].text,
-                ward: document.getElementById("ward").options[document.getElementById("ward").selectedIndex].text,
-                diaChiCuThe: document.getElementById("diaChiCuThe").value.trim(),
-                ghiChu: document.getElementById("ghiChu").value.trim(),
-                tienShip: shippingFee,
-                tongTien: totalPrice,
-                thanhTien: finalPrice,
-                giamGia: disscountPrice,
-                selectedItems: selectedItems
-            };
-
-            // Danh sách input cần kiểm tra
-            let requiredFields = ["hoVaTen", "soDienThoai", "email", "diaChiCuThe"];
-            let requiredSelects = ["province", "district", "ward"];
-
-            // Kiểm tra input rỗng và thêm class `is-invalid`
-            requiredFields.forEach(id => {
-                let input = document.getElementById(id);
-                if (!input.value.trim()) {
-                    input.classList.add("is-invalid");
-                    isValid = false;
-                } else {
-                    input.classList.remove("is-invalid");
-                }
-            });
-
-            // Kiểm tra select trống
-            requiredSelects.forEach(id => {
-                let select = document.getElementById(id);
-                if (!select.value) {
-                    select.classList.add("is-invalid");
-                    isValid = false;
-                } else {
-                    select.classList.remove("is-invalid");
-                }
-            });
-
-            // Kiểm tra số điện thoại hợp lệ
-            let phoneRegex = /^(03|05|07|08|09)\d{8}$/;
-            let phoneInput = document.getElementById("soDienThoai");
-            if (!phoneRegex.test(formData.soDienThoai)) {
-                phoneInput.classList.add("is-invalid");
-                notyf.error("Số điện thoại không hợp lệ!");
-                return;
-            } else {
-                phoneInput.classList.remove("is-invalid");
-            }
-
-            // Kiểm tra điều khoản
-            if (!document.getElementById("terms").checked) {
-                notyf.error("Vui lòng đồng ý với điều khoản mua hàng!");
-                return;
-            }
-
-            if (!isValid) {
-                notyf.error("Vui lòng nhập đầy đủ thông tin!");
-                return;
-            }
-
-
-            let confirmMessage = thanhToanChuyenKhoan
-                ? "Bạn có chắc chắn muốn thanh toán qua VNPAY không?"
-                : "Bạn có chắc chắn muốn thanh toán khi nhận hàng?";
-=======
 					voucherListElement.insertAdjacentHTML("beforeend", html);
 				} catch (error) {
 					notyf.error(error.message);
@@ -840,7 +598,6 @@
 			});
 			document.getElementById("thanhToanDonHang").addEventListener("click", function (e) {
 				e.preventDefault(); // Ngăn chặn hành vi mặc định của nút bấm
->>>>>>> f06bae99c1ae0c3d220b43e17d232ba1f13ffefc
 
             // Hiển thị hộp thoại xác nhận với SweetAlert2
             Swal.fire({
