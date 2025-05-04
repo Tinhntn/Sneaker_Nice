@@ -361,10 +361,8 @@
             let quantityElement = document.getElementById(`quantity-${idGHCT}`);
             let newQuantity = parseInt(quantityElement.innerText) + change;
 
-<<<<<<< HEAD
 
-=======
->>>>>>> f06bae99c1ae0c3d220b43e17d232ba1f13ffefc
+
             fetch(`/gio-hang/capNhatSoLuongGioHang/${idGHCT}?soLuong=${newQuantity}`, { method: "PUT" })
                 .then(response => {
                     if (!response.ok) {
