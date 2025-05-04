@@ -460,7 +460,6 @@ public class GioHangController {
         model.addAttribute("giamGia", tongTienGiam);
         model.addAttribute("khachHang", khachHangSessiong);
         model.addAttribute("shippingFee", shippingFee);
-        System.out.println((int)tongTien);
         model.addAttribute("totalPrice", tongTien);
         model.addAttribute("lstGioHangChiTiet", lstGioHangChiTiet);
         return "/user/sanpham/checkout";

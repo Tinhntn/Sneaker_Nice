@@ -141,11 +141,6 @@
     </section>
     <script>
         var notyf = new Notyf({ ripple: true, position: { x: 'right', y: 'top' } });
-        // var message = /*[[${message}]]*/ null;
-        // if (message) {
-        //     notyf.error(message);
-        // }
-
         function updateCartCount() {
             fetch('/gio-hang/so-luong')
                 .then(response => {
@@ -286,7 +281,6 @@
             let quantityElement = document.getElementById(`quantity-${idGHCT}`);
             let newQuantity = parseInt(quantityElement.innerText) + change;
 
-           console.log(newQuantity)
 
             fetch(`/gio-hang/capNhatSoLuongGioHang/${idGHCT}?soLuong=${newQuantity}`, { method: "PUT" })
                 .then(response => {
@@ -301,6 +295,8 @@
                 .then(data => {
                     if (data.success) {
                         loadCartItems();
+                        const event = new CustomEvent('cartUpdated',{detail:{idGHCT,newQuantity}});
+                        document.dispatchEvent(event);
                     } else if (data.message) {
                         notyf.error(message + "cập nhật số lượng thất bại")
                     }
