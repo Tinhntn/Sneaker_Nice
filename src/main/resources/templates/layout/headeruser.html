@@ -282,7 +282,7 @@
                 .then(data => {
                     if (!data || !Array.isArray(data.items)) {
                         console.error("Lỗi: Dữ liệu giỏ hàng không hợp lệ", data);
-                        cartList.innerHTML = "<p>Lỗi tải giỏ hàng. Vui lòng thử lại.</p>";
+                        cartList.innerHTML = "<p>Đăng nhập để mua hàng</p>";
                         totalPriceElement.innerText = "0đ";
                         checkoutButton.disabled = true;
                         checkoutButton.classList.add("disabled");
@@ -323,7 +323,7 @@
                             <p>Size: ${item.size}</p>
                             <p>Màu: ${item.mauSac}</p>
                             <p>Đơn giá :${(item.gia || 0).toLocaleString()}đ</p>
-                            <p style="color:red;">Thành tiền :${(item.gia*item.soLuong || 0).toLocaleString()}đ</p>
+                            <p style="color:red;">Thành tiền :${(item.gia * item.soLuong || 0).toLocaleString()}đ</p>
                             <div class="quantity-controls">
                                 <button ${item.soLuong <= 1 ? "disabled" : ""} ${disableIncreaseButton}  onclick="updateQuantity(${item.idGioHangChiTiet}, -1)">-</button>
                                 <span  id="quantity-${item.idGioHangChiTiet}">${item.soLuong || 0}</span>
@@ -348,18 +348,22 @@
                 })
                 .catch(error => {
                     console.error("Lỗi khi tải giỏ hàng:", error);
-                    cartList.innerHTML = "<p>Chưa có sản phẩm nào trong giỏ hàng</p>";
+                    cartList.innerHTML = "<p>Đăng nhập để mua hàng</p>";
                     totalPriceElement.innerText = "0đ";
                     checkoutButton.disabled = true;
                     checkoutButton.classList.add("disabled");
                 });
         }
 
-
         function removeFromCart(productId) {
             fetch(`/gio-hang/remove/${productId}`, { method: "DELETE" })
-                .then(() => loadCartItems());
+                .then(() => {
+                    loadCartItems();
+                    loadCheckout();
+                })
+                .catch(error => console.error("Lỗi khi xoá sản phẩm:", error));
         }
+
 
 
         function updateQuantity(idGHCT, change) {
@@ -379,6 +383,7 @@
                 .then(data => {
                     if (data.success) {
                         loadCartItems();
+                        loadCheckout();
                     } else if (data.message) {
                         notyf.error(message + "cập nhật số lượng thất bại")
                     }
