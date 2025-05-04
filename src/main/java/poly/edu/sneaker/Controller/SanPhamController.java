@@ -197,14 +197,14 @@ public class SanPhamController {
                 }
 
                 String allImages = String.join(",", paths);
-                System.out.println(allImages);
+
                 ChiTietSanPham ctsp = new ChiTietSanPham();
                 ctsp.setIdSanPham(sanPhamService.findById(idSanPham));
                 ctsp.setIdSize(chiTietSanPham.getIdSize());
                 ctsp.setIdMauSac(chiTietSanPham.getIdMauSac());
                 for (ChiTietSanPham ct : lstCTSP
                 ) {
-                    if (ct.getIdSize().equals(chiTietSanPham.getIdSize().getId()) && ct.getIdMauSac().equals(chiTietSanPham.getIdMauSac().getId())) {
+                    if ((ct.getIdSize().getId()==chiTietSanPham.getIdSize().getId()) && (ct.getIdMauSac().getId()==chiTietSanPham.getIdMauSac().getId())) {
                         redirectAttributes.addFlashAttribute("errrorMasage", "Chi tiết sản phẩm đã tồn tại");
                     }
                 }

@@ -290,45 +290,26 @@
             </th:block>
 
         </div>
+<<<<<<< HEAD
 
     </div>
-    <script>
-        const notyf = new Notyf();
-        document.getElementById('imgInput').addEventListener('change', function (e) {
-            if (this.files.length > 5) {
-                notyf.error("Chỉ đẹp thêm tối đa 5 ảnh")
-                this.value = ""; // Reset input
-            }
-        });
-        function previewImage(input, imgId) {
-            if (input.files && input.files[0]) {
-                let reader = new FileReader();
-                reader.onload = function (e) {
-                    document.getElementById(imgId).src = e.target.result;
-                };
-                reader.readAsDataURL(input.files[0]);
-            }
-        }
-
-
-        document.getElementById("themNhanhChiTietSanPham").addEventListener("click", function () {
-            const idSanPham = document.getElementById("idSanPham").value;
-
-            $.ajax({
-                url: "/sanpham/createProductValidations",
-                type: "GET",
-                data: { idSanPham: idSanPham },
-                success: function (response) {
-                    notyf.success(response.success);
-                    setTimeout(function () {
-                        window.location.reload();
-                    }, 2000);
-                },
-                error: function (xhr) {
-                    notyf.error(xhr.responseJSON.message);
+        <script>
+            const notyf = new Notyf();
+//             document.getElementById('imgInput').addEventListener('change', function (e) {
+//                 if (this.files.length > 5) {
+//                     notyf.error("Chỉ đẹp thêm tối đa 5 ảnh")
+//                     this.value = ""; // Reset input
+//                 }
+//             });
+            function previewImage(input, imgId) {
+                if (input.files && input.files[0]) {
+                    let reader = new FileReader();
+                    reader.onload = function (e) {
+                        document.getElementById(imgId).src = e.target.result;
+                    };
+                    reader.readAsDataURL(input.files[0]);
                 }
-            });
-        });
+            }
 
 
         document.getElementById("btnSubmit").addEventListener("click", function () {
