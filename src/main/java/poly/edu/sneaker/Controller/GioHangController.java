@@ -676,6 +676,7 @@ public class GioHangController {
                 ChiTietSanPham chiTietSanPham = chiTietSanPhamService.findCTSPByIdSPAndIdMauSacAndIdSize(idSanPham,
                         idSize, idMauSac);
 
+                System.out.println(chiTietSanPham.getSoLuong());
                 if (chiTietSanPham == null) {
                     return ResponseEntity.badRequest()
                             .body(Collections.singletonMap("message", "Sản phẩm không còn hoạt động"));
