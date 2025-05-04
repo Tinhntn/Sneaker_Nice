@@ -36,7 +36,7 @@ public interface ChiTietSanPhamService {
     //code hung end
 
     void capNhatSoLuongKhiHuyHoaDon(int idCTSP, int soLuong);
-    ChiTietSanPham findCTSPByIDMauSac(int idCTSP, int idMauSac);
+    List<ChiTietSanPham> findIDSPByIDMauSac(int idSP, int idMauSac);
     ArrayList<ChiTietSanPham> findByIdSanPham(int idSanPham);
     ChiTietSanPham findCTSPByIdSPAndIdMauSacAndIdSize(int idSanPham, int idMauSac, int idSize);
 }

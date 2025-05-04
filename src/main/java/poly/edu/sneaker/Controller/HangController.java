@@ -5,16 +5,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-import poly.edu.sneaker.Model.ChucVu;
 import poly.edu.sneaker.Model.Hang;
-import poly.edu.sneaker.Model.NhanVien;
 import poly.edu.sneaker.Service.HangService;
-
 import java.util.ArrayList;
 import java.util.Date;
 
