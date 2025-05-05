@@ -195,7 +195,7 @@ CREATE TABLE HoaDon (
     sdt_nguoi_giao NVARCHAR(15),
     ngay_tao DATETIME DEFAULT GETDATE(),
     ngay_sua DATETIME DEFAULT GETDATE(),
-    trang_thai BIT DEFAULT 1,
+    trang_thai int NOT NUll,
 );
 
 -- Bảng HoaDonChiTiet
@@ -247,10 +247,3 @@ CREATE TABLE TrangThaiDonHang(
     ghi_chu NVARCHAR(MAX),
 );
 
-
-INSERT INTO HoaDonChiTiet (id_hoa_don, id_chi_tiet_san_pham, so_luong, tong_trong_luong, don_gia) 
-VALUES
-(21, 23, 2, 1.6, 750000),  
-(22, 24, 1, 0.9, 1530000);
-
-select *from HoaDonChiTiet
