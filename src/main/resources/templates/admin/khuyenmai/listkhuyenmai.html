@@ -90,9 +90,8 @@
                         <th>Ngày bắt đầu</th>
                         <th>Ngày kết thúc</th>
                         <th>Số lượng</th>
+                        <th>Số lượng đã sử dụng</th>
                         <!-- <th>Mô tả</th> -->
-                        <th>Ngày tạo</th>
-                        <th>Ngày sửa</th>
                         <th>Trạng thái</th>
                         <th>Thao tác</th>
                     </tr>
@@ -101,18 +100,20 @@
                     <tr th:each="khuyenMai : ${listKhuyenMai}">
                         <td th:text="${khuyenMai.maKhuyenMai}"></td>
                         <td th:text="${khuyenMai.tenKhuyenMai}"></td>
-                        <td th:text="${#numbers.formatDecimal(khuyenMai.giaTriGiam, 0, 'COMMA', 0, 'POINT')} + ' VNĐ'"></td>
-                        <td th:text="${#numbers.formatDecimal(khuyenMai.dieuKienApDung, 0, 'COMMA', 0, 'POINT')} + ' VNĐ'"></td>
-                        <td th:text="${#numbers.formatDecimal(khuyenMai.mucGiamGiaToiDa, 0, 'COMMA', 0, 'POINT')} + ' VNĐ'"></td>
+                        <td th:text="${#numbers.formatDecimal(khuyenMai.giaTriGiam, 0, 'COMMA', 0, 'POINT')} + ' VNĐ'">
+                        </td>
+                        <td
+                            th:text="${#numbers.formatDecimal(khuyenMai.dieuKienApDung, 0, 'COMMA', 0, 'POINT')} + ' VNĐ'">
+                        </td>
+                        <td
+                            th:text="${#numbers.formatDecimal(khuyenMai.mucGiamGiaToiDa, 0, 'COMMA', 0, 'POINT')} + ' VNĐ'">
+                        </td>
                         <!-- <td th:text="${khuyenMai.loaiKhuyenMai}!=null?${khuyenMai.loaiKhuyenMai}:'Không có'"></td> -->
                         <td th:text="${#dates.format(khuyenMai.ngayBatDau, 'yyyy-MM-dd')}"></td>
                         <td th:text="${#dates.format(khuyenMai.ngayKetThuc, 'yyyy-MM-dd')}"></td>
                         <td th:text="${khuyenMai.soLuong}"></td>
+                        <td th:text="${khuyenMai.daSuDung}"></td>
                         <!-- <td th:text="${khuyenMai.moTa}!=null?${khuyenMai.moTa}:'Không có'"></td> -->
-                        <td th:text="${#dates.format(khuyenMai.ngayTao, 'yyyy-MM-dd')}"></td>
-                        <td
-                            th:text="${#dates.format(khuyenMai.ngaySua, 'yyyy-MM-dd')}!=null?${#dates.format(khuyenMai.ngaySua, 'yyyy-MM-dd')}:'Không có'">
-                        </td>
                         <td th:text="${khuyenMai.trangThai == true ? 'Còn hoạt động' : 'Không hoạt động'}"></td>
                         <td>
                             <a th:href="@{/khuyenmai/detail/{id}(id=${khuyenMai.id})}">
@@ -127,18 +128,19 @@
                 <ul class="pagination justify-content-center">
                     <!-- Nút "Trang trước" -->
                     <li class="page-item" th:classappend="${currentPage == 0} ? 'disabled'">
-                        <a class="page-link" th:href="@{/nhanvien/hienthi(page=${currentPage - 1})}"><<</a>
+                        <a class="page-link" th:href="@{/khuyenmai/hienthi(page=${currentPage - 1})}">
+                            <<< /a>
                     </li>
-    
+
                     <!-- Các nút số trang -->
                     <li class="page-item" th:each="i : ${#numbers.sequence(0, totalPages - 1)}"
                         th:classappend="${i == currentPage} ? 'active'">
-                        <a class="page-link" th:href="@{/nhanvien/hienthi(page=${i})}" th:text="${i + 1}"></a>
+                        <a class="page-link" th:href="@{/khuyenmai/hienthi(page=${i})}" th:text="${i + 1}"></a>
                     </li>
-    
+
                     <!-- Nút "Trang sau" -->
                     <li class="page-item" th:classappend="${currentPage + 1 == totalPages} ? 'disabled'">
-                        <a class="page-link" th:href="@{/nhanvien/hienthi(page=${currentPage + 1})}">>></a>
+                        <a class="page-link" th:href="@{/khuyenmai/hienthi(page=${currentPage + 1})}">>></a>
                     </li>
                 </ul>
             </div>
@@ -146,4 +148,5 @@
         </div>
     </div>
 </body>
+
 </html>

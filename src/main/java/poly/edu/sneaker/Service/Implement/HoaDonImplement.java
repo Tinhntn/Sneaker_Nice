@@ -69,6 +69,21 @@ public class HoaDonImplement implements HoaDonService {
         return maHoaDon;
     }
 
+    @Override
+    public Page<HoaDon> timkiemhoadon(String keyword,int page, int size) {
+        return hoaDonRepository.searchByMaHoaDonTenKhachHangOrSdt(keyword,PageRequest.of(page,size));
+    }
+
+    @Override
+    public Page<HoaDon> searchHoaDonByDateRange(String startDate, String endDate, int page, int size) {
+        return hoaDonRepository.findByNgayTaoBetween(startDate,endDate,PageRequest.of(page,size));
+    }
+
+    @Override
+    public Page<HoaDon> timHoaDonTheoIdKhuyenMai(Integer idkm, int page, int size) {
+        return hoaDonRepository.timHoaDonTheoIdKhuyenMai(idkm,PageRequest.of(page,size));
+    }
+
     //code quan
 
 }

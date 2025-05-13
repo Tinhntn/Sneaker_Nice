@@ -50,7 +50,7 @@ public class SecurityConfig {
                         .successHandler((request, response, authentication) -> {
                             // Trả về JSON khi đăng nhập thành công
                             boolean isUser = authentication.getAuthorities().stream()
-                                            .anyMatch(auth -> auth.getAuthority().equals("ROLE_USER"));
+                                    .anyMatch(auth -> auth.getAuthority().equals("ROLE_USER"));
                             boolean isAdmin = authentication.getAuthorities().stream()
                                     .anyMatch(auth -> auth.getAuthority().equals("ROLE_ADMIN"));
                             boolean isEmployee = authentication.getAuthorities().stream()

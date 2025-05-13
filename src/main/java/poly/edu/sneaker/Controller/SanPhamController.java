@@ -5,6 +5,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -15,6 +16,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import poly.edu.sneaker.Model.*;
 import poly.edu.sneaker.Service.*;
 
+import java.io.IOException;
 import java.lang.reflect.Array;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -42,24 +44,44 @@ public class SanPhamController {
 
 
     @GetMapping("/hienthi")
-    public String hienThi(Model model, RedirectAttributes redirectAttributes, @RequestParam(defaultValue = "0") int page, @RequestParam(required = false) String keyword) {
+    public String hienThi(Model model,
+                          @RequestParam(defaultValue = "0") int page,
+                          @RequestParam(required = false) String keyword,
+                          @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Date startDate,
+                          @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Date endDate) {
+        if (page < 0) {
+            page = 0;
+        }
         int size = 5;
         Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "ngayTao"));
 
-        Page<SanPham> lstSanPham;
-        if (keyword != null && !keyword.isEmpty()) {
-            lstSanPham = sanPhamService.findByMaSanPhamOrTenSanPham(keyword, keyword, pageable);
-            model.addAttribute("keyword", keyword);
-            if (lstSanPham == null) {
-                redirectAttributes.addFlashAttribute("successMessage", "Không tìm thấy sản phẩm");
-                lstSanPham = sanPhamService.findAll(pageable);
-            }
-        } else {
-            lstSanPham = sanPhamService.findAll(pageable);
+        // Xử lý logic mặc định cho ngày
+        Date now = new Date();
+        Calendar cal = Calendar.getInstance();
+
+        if (startDate != null && endDate == null) {
+            endDate = now;
+        } else if (endDate != null && startDate == null) {
+            cal.setTime(endDate);
+            cal.add(Calendar.DATE, -30);
+            startDate = cal.getTime();
         }
+
+        Page<SanPham> lstSanPham = sanPhamService.searchSanPham(keyword, startDate, endDate, pageable);
+
+        // Truyền lại dữ liệu tìm kiếm cho view
+        model.addAttribute("keyword", keyword);
+        model.addAttribute("startDate", startDate);
+        model.addAttribute("endDate", endDate);
+
+        if (lstSanPham.isEmpty()) {
+            model.addAttribute("message", "Không tìm thấy sản phẩm.");
+        }
+
         model.addAttribute("lstSanPham", lstSanPham.getContent());
         model.addAttribute("currentPage", lstSanPham.getNumber());
         model.addAttribute("totalPages", lstSanPham.getTotalPages());
+
         return "admin/sanpham/listSanPham";
     }
 
@@ -96,14 +118,13 @@ public class SanPhamController {
         sanPham.setIdDanhMuc(danhMucService.findDanhMucById(idDanhMuc));
         sanPham.setIdChatLieu(chatLieuService.getChatLieuById(idChatLieu));
         List<SanPham> lstSP = sanPhamService.getAllSanPhams();
-        for (SanPham sp : lstSP
-        ) {
-            if (sp.getTenSanPham().equals(sanPham.getTenSanPham())) {
+        for (SanPham sp : lstSP) {
+            if (sp.getTenSanPham().trim().equalsIgnoreCase(sanPham.getTenSanPham().trim())) {
                 redirectAttributes.addFlashAttribute("errorMessage", "Sản phẩm đã tồn tại!");
-                return "redirect:/sanpham/themsanpham"; // Điều hướng về trang thêm sản phẩm            }
-
+                return "redirect:/sanpham/themsanpham";
             }
         }
+
         sanPham.setTrangThai(true);
         sanPham.setNgaySua(new Date());
         sanPham.setNgayTao(new Date());
@@ -170,39 +191,48 @@ public class SanPhamController {
 
     @PostMapping("/addctsanpham/{id}")
     public String themChiTietSanPham(@PathVariable("id") int idSanPham,
-                                     @RequestParam("img") MultipartFile file,
+                                     @RequestParam("img") MultipartFile img,
                                      @ModelAttribute ChiTietSanPham chiTietSanPham, RedirectAttributes redirectAttributes) {
         try {
 
             List<ChiTietSanPham> lstCTSP = chiTietSanPhamService.findByIdSanPham(idSanPham);
-
+            String fileName =null;
             if (chiTietSanPham != null) {
-                if (!file.isEmpty()) {
+                List<String> paths = new ArrayList<>();
+                if (!img.isEmpty()) {
                     // Lưu file vào thư mục static/images
-                    String fileName = file.getOriginalFilename();
+                     fileName = img.getOriginalFilename();
+
+
                     String uploadDir = "src/main/resources/static/images/";
                     Path path = Paths.get(uploadDir + fileName);
-                    Files.copy(file.getInputStream(), path, StandardCopyOption.REPLACE_EXISTING);
-                    // Lưu đường dẫn file vào database
-                    chiTietSanPham.setHinhAnh("/images/" + fileName);
+                    try {
+                        Files.copy(img.getInputStream(), path, StandardCopyOption.REPLACE_EXISTING);
+                        paths.add(fileName); // Lưu đường dẫn ảnh để lưu DB
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                    // Ghép đường dẫn ảnh thành 1 chuỗi (ngăn cách bởi ,)
                 }
+                String allImages = ("/images/"+fileName);
 
                 ChiTietSanPham ctsp = new ChiTietSanPham();
                 ctsp.setIdSanPham(sanPhamService.findById(idSanPham));
                 ctsp.setIdSize(chiTietSanPham.getIdSize());
                 ctsp.setIdMauSac(chiTietSanPham.getIdMauSac());
-                for (ChiTietSanPham ct : lstCTSP
-                ) {
-
-                    if (ct.getIdSize().equals(chiTietSanPham.getIdSize().getId()) && ct.getIdMauSac().equals(chiTietSanPham.getIdMauSac().getId())) {
-                        redirectAttributes.addFlashAttribute("errrorMasage", "Chi tiết sản phẩm đã tồn tại");
+                for (ChiTietSanPham ct : lstCTSP) {
+                    if (ct.getIdSize().getId() == chiTietSanPham.getIdSize().getId()
+                            && ct.getIdMauSac().getId() == chiTietSanPham.getIdMauSac().getId()) {
+                        redirectAttributes.addFlashAttribute("errorMessage", "Chi tiết sản phẩm đã tồn tại");
+                        return "redirect:/sanpham/chitietsanpham/" + idSanPham;
                     }
                 }
+
                 ctsp.setTrongLuong(chiTietSanPham.getTrongLuong());
                 ctsp.setGiaNhap(chiTietSanPham.getGiaNhap());
                 ctsp.setGiaBan(chiTietSanPham.getGiaBan());
                 ctsp.setSoLuong(chiTietSanPham.getSoLuong());
-                ctsp.setHinhAnh(chiTietSanPham.getHinhAnh());
+                ctsp.setHinhAnh(allImages);
                 ctsp.setMoTa(chiTietSanPham.getMoTa());
                 ctsp.setNgayTao(new Date());
                 ctsp.setNgaySua(new Date());
@@ -260,10 +290,14 @@ public class SanPhamController {
             ctsp.setTrangThai(trangThai);
 
             for (ChiTietSanPham ct : lstCTSP) {
-                if (ct.getIdSize().getId().equals(idSize) && ct.getIdMauSac().getId().equals(idMauSac)) {
+                // Nếu không phải bản ghi đang cập nhật thì mới check
+                if (ct.getId() != ctsp.getId()
+                        && ct.getIdSize().getId().equals(idSize)
+                        && ct.getIdMauSac().getId().equals(idMauSac)) {
                     return ResponseEntity.badRequest().body(Collections.singletonMap("message", "Chi tiết sản phẩm đã tồn tại"));
                 }
             }
+
             // Gọi service để cập nhật dữ liệu
             chiTietSanPhamService.update(ctsp);
 

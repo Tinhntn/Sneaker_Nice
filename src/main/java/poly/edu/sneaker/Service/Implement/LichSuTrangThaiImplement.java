@@ -5,6 +5,9 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import poly.edu.sneaker.Model.*;
+import poly.edu.sneaker.Repository.ChiTietSanPhamRepository;
+import poly.edu.sneaker.Repository.HoaDonChiTietRepository;
+import poly.edu.sneaker.Repository.KhuyenMaiRepository;
 import poly.edu.sneaker.Repository.LichSuTrangThaiRepository;
 import poly.edu.sneaker.Service.*;
 
@@ -21,11 +24,12 @@ public class LichSuTrangThaiImplement implements LichSuTrnngThaiService {
     @Autowired
     HoaDonService hoaDonService;
     @Autowired
-    HoaDonChiTietOnlService hoaDonChiTietOnlService;
+    private HoaDonChiTietRepository hoaDonChiTietRepository;
     @Autowired
-    ChiTietSanPhamService chiTietSanPhamService;
+    private ChiTietSanPhamRepository chiTietSanPhamRepository;
     @Autowired
-    KhuyenMaiService khuyenMaiService;
+    private KhuyenMaiRepository khuyenMaiRepository;
+
     @Override
     public Page<TrangThaiDonHang> findAllLichSuTrangThai(Pageable pageable) {
         return lichSuTrangThaiRepository.findAll(pageable);
@@ -59,16 +63,44 @@ public class LichSuTrangThaiImplement implements LichSuTrnngThaiService {
 
     @Override
     public boolean doiTrangThaiDonHang(int idHD, String ghiChu, int trangThai) {
-        HoaDon hoaDon = hoaDonService.findById(idHD);
-        hoaDon.setTrangThai(trangThai);
-        hoaDonService.save(hoaDon);
 
+        HoaDon hoaDon = hoaDonService.findById(idHD);
+        if (trangThai == 4) {
+            List<HoaDonChiTiet> lstHoaDonChiTiet = hoaDonChiTietRepository.findHoaDonChiTietByIdHoaDon_IdAndIdHoaDon_LoaiHoaDon(idHD,true);
+            for (HoaDonChiTiet hoaDonChiTiet : lstHoaDonChiTiet) {
+                ChiTietSanPham chiTietSanPham = chiTietSanPhamRepository.findById(hoaDonChiTiet.getIdChiTietSanPham().getId());
+                chiTietSanPham.setSoLuong(chiTietSanPham.getSoLuong()-hoaDonChiTiet.getSoLuong());
+                chiTietSanPhamRepository.save(chiTietSanPham);
+            }
+        }
+        if (trangThai == 6 || trangThai == 11) {
+            if (hoaDon.getIdKhuyenMai() != null) {
+                KhuyenMai khuyenMai = hoaDon.getIdKhuyenMai();
+                if (khuyenMai != null) {
+                    khuyenMai.setDaSuDung(khuyenMai.getDaSuDung() + 1);
+                    khuyenMai.setNgaySua(new Date());
+                    khuyenMaiRepository.save(khuyenMai);
+
+                }
+            }
+        }
+        if(trangThai==11){
+            List<HoaDonChiTiet> lstHoaDonChiTiet = hoaDonChiTietRepository.findHoaDonChiTietByIdHoaDon_IdAndIdHoaDon_LoaiHoaDon(idHD,true);
+            for (HoaDonChiTiet hoaDonChiTiet : lstHoaDonChiTiet) {
+                ChiTietSanPham chiTietSanPham = chiTietSanPhamRepository.findById(hoaDonChiTiet.getIdChiTietSanPham().getId());
+                chiTietSanPham.setSoLuong(chiTietSanPham.getSoLuong()+hoaDonChiTiet.getSoLuong());
+                chiTietSanPhamRepository.save(chiTietSanPham);
+            }
+        }
         TrangThaiDonHang lichSuTrangThai = new TrangThaiDonHang();
         lichSuTrangThai.setIdHoaDon(hoaDon);
         lichSuTrangThai.setTrangThai(trangThai);
         lichSuTrangThai.setNgayCapNhat(new Date());
         lichSuTrangThai.setGhiChu(ghiChu);
         lichSuTrangThaiRepository.save(lichSuTrangThai);
+        hoaDon.setTrangThai(trangThai);
+        hoaDonService.save(hoaDon);
+
         return true;
     }
 }

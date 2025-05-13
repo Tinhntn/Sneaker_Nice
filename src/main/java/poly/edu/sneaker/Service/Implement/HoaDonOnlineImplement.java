@@ -66,6 +66,11 @@ public class HoaDonOnlineImplement implements HoaDonOnlService {
     }
 
     @Override
+    public Page<HoaDonOnlCustom> getHoaDonCustomTatCaKH(Pageable pageable, Integer idKhachHang) {
+        return hoaDonOnlRepository.getHoaDonCustomTatCaKH(pageable, idKhachHang);
+    }
+
+    @Override
     public Page<HoaDonOnlCustom> getHoaDonCustomDHKH(Pageable pageable, Integer idKhachHang) {
         return hoaDonOnlRepository.getHoaDonCustomDHKH(pageable, idKhachHang);
     }

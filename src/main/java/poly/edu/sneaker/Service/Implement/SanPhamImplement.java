@@ -28,7 +28,10 @@ public class SanPhamImplement implements SanPhamService {
     @Autowired
     private ChiTietSanPhamRepository chiTietSanPhamRepository;
 
-
+    @Override
+    public Page<SanPham> searchSanPham(String keyword, Date startDate, Date endDate, Pageable pageable) {
+        return sanPhamRepository.searchSanPham(keyword, startDate, endDate, pageable);
+    }
     @Override
     public Page<SanPham> findAll(Pageable pageable) {
         return sanPhamRepository.findAll(pageable);

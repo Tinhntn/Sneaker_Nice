@@ -64,7 +64,7 @@ public interface HoaDonOnlRepository extends JpaRepository<HoaDon, Integer> {
             "LEFT JOIN NhanVien nv ON h.idNhanVien.id = nv.id \n " +
             "LEFT JOIN KhachHang kh ON h.idKhachHang.id = kh.id " +
             "LEFT JOIN KhuyenMai km ON h.idKhuyenMai.id = km.id " +
-            "WHERE h.loaiHoaDon = true AND h.trangThai = 1")
+            "WHERE h.loaiHoaDon = true AND h.trangThai = 2")
     Page<HoaDonOnlCustom> getHoaDonCustomCXN(Pageable pageable);
 
     @Query("SELECT h.id AS id, nv.hoVaTen AS tenNhanVien, kh.tenKhachHang AS tenKhachHang, " +
@@ -79,7 +79,7 @@ public interface HoaDonOnlRepository extends JpaRepository<HoaDon, Integer> {
             "LEFT JOIN h.idNhanVien nv " +
             "LEFT JOIN h.idKhachHang kh " +
             "LEFT JOIN h.idKhuyenMai km " +
-            "WHERE h.loaiHoaDon = true AND h.trangThai = 2")
+            "WHERE h.loaiHoaDon = true AND h.trangThai = 3")
     Page<HoaDonOnlCustom> getHoaDonCustomCLH(Pageable pageable);
 
     @Query("SELECT h.id AS id, nv.hoVaTen AS tenNhanVien, kh.tenKhachHang AS tenKhachHang, " +
@@ -94,7 +94,7 @@ public interface HoaDonOnlRepository extends JpaRepository<HoaDon, Integer> {
             "LEFT JOIN h.idNhanVien nv " +
             "LEFT JOIN h.idKhachHang kh " +
             "LEFT JOIN h.idKhuyenMai km " +
-            "WHERE h.loaiHoaDon = true AND h.trangThai = 3")
+            "WHERE h.loaiHoaDon = true AND h.trangThai = 4")
     Page<HoaDonOnlCustom> getHoaDonCustomDG(Pageable pageable);
 
     @Query("SELECT h.id AS id, nv.hoVaTen AS tenNhanVien, kh.tenKhachHang AS tenKhachHang, " +
@@ -109,7 +109,7 @@ public interface HoaDonOnlRepository extends JpaRepository<HoaDon, Integer> {
             "LEFT JOIN h.idNhanVien nv " +
             "LEFT JOIN h.idKhachHang kh " +
             "LEFT JOIN h.idKhuyenMai km " +
-            "WHERE h.loaiHoaDon = true AND h.trangThai = 4")
+            "WHERE h.loaiHoaDon = true AND h.trangThai = 5")
     Page<HoaDonOnlCustom> getHoaDonCustomHT(Pageable pageable);
 
     //Hóa đơn của khách hàng
@@ -125,7 +125,22 @@ public interface HoaDonOnlRepository extends JpaRepository<HoaDon, Integer> {
             "LEFT JOIN h.idNhanVien nv " +
             "LEFT JOIN h.idKhachHang kh " +
             "LEFT JOIN h.idKhuyenMai km " +
-            "WHERE h.loaiHoaDon = true AND h.trangThai = 0 AND h.idKhachHang.id = :idKhachHang")
+            "WHERE h.loaiHoaDon = true AND h.idKhachHang.id = :idKhachHang")
+    Page<HoaDonOnlCustom> getHoaDonCustomTatCaKH(Pageable pageable, Integer idKhachHang);
+
+    @Query("SELECT h.id AS id, nv.hoVaTen AS tenNhanVien, kh.tenKhachHang AS tenKhachHang, " +
+            "km.tenKhuyenMai AS tenKhuyenMai, h.maHoaDon AS maHoaDon, h.tongTien AS tongTien, " +
+            "h.tongTienGiam AS tongTienGiam, h.thanhTien AS thanhTien, h.tienKhachDua AS tienKhachDua, " +
+            "h.tienThua AS tienThua, h.phiShip AS phiShip, h.ngayGiaoHang AS ngayGiaoHang, " +
+            "h.donViGiaoHang AS donViGiaoHang, h.tenNguoiGiao AS tenNguoiGiao, h.sdtNguoiGiao AS sdtNguoiGiao, " +
+            "h.emailNguoiNhan AS emailNguoiNhan, h.diaChiChiTiet AS diaChiChiTiet, " +
+            "h.tinhThanhPho AS tinhThanhPho, h.quanHuyen AS quanHuyen, h.phuongXa AS phuongXa, " +
+            "h.loaiThanhToan AS loaiThanhToan, h.trangThai AS trangThai, h.ngayTao AS ngayTao, h.ngaySua AS ngaySua " +
+            "FROM HoaDon h " +
+            "LEFT JOIN h.idNhanVien nv " +
+            "LEFT JOIN h.idKhachHang kh " +
+            "LEFT JOIN h.idKhuyenMai km " +
+            "WHERE h.loaiHoaDon = true AND h.trangThai = 6 AND h.idKhachHang.id = :idKhachHang")
     Page<HoaDonOnlCustom> getHoaDonCustomDHKH(Pageable pageable, Integer idKhachHang);
 
     @Query("SELECT h.id AS id, nv.hoVaTen AS tenNhanVien, kh.tenKhachHang AS tenKhachHang, " +
@@ -140,7 +155,7 @@ public interface HoaDonOnlRepository extends JpaRepository<HoaDon, Integer> {
             "LEFT JOIN NhanVien nv ON h.idNhanVien.id = nv.id \n " +
             "LEFT JOIN KhachHang kh ON h.idKhachHang.id = kh.id " +
             "LEFT JOIN KhuyenMai km ON h.idKhuyenMai.id = km.id " +
-            "WHERE h.loaiHoaDon = true AND h.trangThai = 1 AND h.idKhachHang.id = :idKhachHang")
+            "WHERE h.loaiHoaDon = true AND h.trangThai = 2 AND h.idKhachHang.id = :idKhachHang")
     Page<HoaDonOnlCustom> getHoaDonCustomCXNKH(Pageable pageable, Integer idKhachHang);
 
     @Query("SELECT h.id AS id, nv.hoVaTen AS tenNhanVien, kh.tenKhachHang AS tenKhachHang, " +
@@ -155,7 +170,7 @@ public interface HoaDonOnlRepository extends JpaRepository<HoaDon, Integer> {
             "LEFT JOIN h.idNhanVien nv " +
             "LEFT JOIN h.idKhachHang kh " +
             "LEFT JOIN h.idKhuyenMai km " +
-            "WHERE h.loaiHoaDon = true AND h.trangThai = 2 AND h.idKhachHang.id = :idKhachHang")
+            "WHERE h.loaiHoaDon = true AND h.trangThai = 3 AND h.idKhachHang.id = :idKhachHang")
     Page<HoaDonOnlCustom> getHoaDonCustomCLHKH(Pageable pageable, Integer idKhachHang);
 
     @Query("SELECT h.id AS id, nv.hoVaTen AS tenNhanVien, kh.tenKhachHang AS tenKhachHang, " +
@@ -170,7 +185,7 @@ public interface HoaDonOnlRepository extends JpaRepository<HoaDon, Integer> {
             "LEFT JOIN h.idNhanVien nv " +
             "LEFT JOIN h.idKhachHang kh " +
             "LEFT JOIN h.idKhuyenMai km " +
-            "WHERE h.loaiHoaDon = true AND h.trangThai = 3 AND h.idKhachHang.id = :idKhachHang")
+            "WHERE h.loaiHoaDon = true AND h.trangThai = 4 AND h.idKhachHang.id = :idKhachHang")
     Page<HoaDonOnlCustom> getHoaDonCustomDGKH(Pageable pageable, Integer idKhachHang);
 
     @Query("SELECT h.id AS id, nv.hoVaTen AS tenNhanVien, kh.tenKhachHang AS tenKhachHang, " +
@@ -185,7 +200,7 @@ public interface HoaDonOnlRepository extends JpaRepository<HoaDon, Integer> {
             "LEFT JOIN h.idNhanVien nv " +
             "LEFT JOIN h.idKhachHang kh " +
             "LEFT JOIN h.idKhuyenMai km " +
-            "WHERE h.loaiHoaDon = true AND h.trangThai = 4 AND h.idKhachHang.id = :idKhachHang")
+            "WHERE h.loaiHoaDon = true AND h.trangThai = 5 AND h.idKhachHang.id = :idKhachHang")
     Page<HoaDonOnlCustom> getHoaDonCustomHTKH(Pageable pageable,Integer idKhachHang);
 
     //End hóa đon của khách hàng

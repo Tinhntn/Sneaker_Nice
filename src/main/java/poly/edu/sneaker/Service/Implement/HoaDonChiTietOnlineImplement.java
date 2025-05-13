@@ -54,11 +54,8 @@ public class HoaDonChiTietOnlineImplement implements HoaDonChiTietOnlService {
         ChiTietSanPham sanPham = chiTietSanPhamRepository.findById(idChiTietSanPham)
               ;
 
-        int soLuongTruoc = chiTiet.getSoLuong();
-        int chenhLech = soLuongMoi - soLuongTruoc;
-
         // Kiểm tra số lượng sản phẩm có đủ không
-        if (sanPham.getSoLuong() < chenhLech) {
+        if (sanPham.getSoLuong() < chiTiet.getSoLuong()) {
             throw new RuntimeException("Số lượng sản phẩm trong kho không đủ!");
         }
 
@@ -66,9 +63,7 @@ public class HoaDonChiTietOnlineImplement implements HoaDonChiTietOnlService {
         chiTiet.setSoLuong(soLuongMoi);
         hoaDonChiTietOnlRepository.save(chiTiet);
 
-        // Cập nhật số lượng sản phẩm chi tiết
-        sanPham.setSoLuong(sanPham.getSoLuong() - chenhLech);
-        chiTietSanPhamRepository.save(sanPham);
+
     }
 
     @Override
@@ -95,7 +90,7 @@ public class HoaDonChiTietOnlineImplement implements HoaDonChiTietOnlService {
                 int tongSoLuongMoi = existingDetail.getSoLuong() + soLuongMua;
 
                 // Kiểm tra số lượng kho có đủ không
-                if (chiTietSanPham.getSoLuong() < soLuongMua) {
+                if (chiTietSanPham.getSoLuong() < tongSoLuongMoi) {
                     return false; // Không đủ hàng
                 }
 
@@ -116,9 +111,7 @@ public class HoaDonChiTietOnlineImplement implements HoaDonChiTietOnlService {
                 hoaDonChiTietOnlRepository.save(hoaDonChiTiet);
             }
 
-            // Trừ số lượng sản phẩm trong kho
-            chiTietSanPham.setSoLuong(chiTietSanPham.getSoLuong() - soLuongMua);
-            chiTietSanPhamRepository.save(chiTietSanPham);
+
 
             return true;
         } catch (Exception e) {
@@ -161,38 +154,41 @@ public class HoaDonChiTietOnlineImplement implements HoaDonChiTietOnlService {
     @Override
     @Transactional
     public void xacNhanHoaDon(int hoaDonId) {
-        HoaDon hoaDon = hoaDonOnlRepository.findById(hoaDonId)
-                .orElseThrow(() -> new RuntimeException("Không tìm thấy hóa đơn"));
+//        HoaDon hoaDon = hoaDonOnlRepository.findById(hoaDonId)
+//                .orElseThrow(() -> new RuntimeException("Không tìm thấy hóa đơn"));
+//
+//        if (hoaDon.getTrangThai() == 6) {
+//            throw new RuntimeException("Hóa đơn này đã được xác nhận trước đó.");
+//        }
+//        if(hoaDon.getIdKhuyenMai()!=null){
+//            KhuyenMai khuyenMai = hoaDon.getIdKhuyenMai();
+//            if(khuyenMai!=null){
+//                khuyenMai.setDaSuDung(khuyenMai.getDaSuDung()+1);
+//                khuyenMaiService.updateKhuyenMai(khuyenMai,khuyenMai.getId());
+//                return;
+//            }
+//        }
+//        if(hoaDon.getTrangThai()==4){
+//            // Lấy danh sách chi tiết hóa đơn
+//            List<HoaDonChiTiet> chiTietList = hoaDonChiTietOnlRepository.findHoaDonChiTietByHoaDonId(hoaDonId);
+//
+//            for (HoaDonChiTiet chiTiet : chiTietList) {
+//                ChiTietSanPham sanPham = chiTietSanPhamRepository.findById(chiTiet.getIdChiTietSanPham().getId());
+//                if (sanPham == null) {
+//                    throw new RuntimeException("Không tìm thấy sản phẩm");
+//                }
+//
+//                if (sanPham.getSoLuong() < chiTiet.getSoLuong()) {
+//                    throw new RuntimeException("Không đủ số lượng trong kho cho sản phẩm: " + sanPham.getIdSanPham().getTenSanPham());
+//                }
+//                // Trừ số lượng sản phẩm
+//                sanPham.setSoLuong(sanPham.getSoLuong() - chiTiet.getSoLuong());
+//                chiTietSanPhamRepository.save(sanPham);
+//            }
+//            hoaDonOnlRepository.save(hoaDon);
+//
+//        }
 
-        if (hoaDon.getTrangThai() == 6) {
-            throw new RuntimeException("Hóa đơn này đã được xác nhận trước đó.");
-        }
-
-        // Lấy danh sách chi tiết hóa đơn
-        List<HoaDonChiTiet> chiTietList = hoaDonChiTietOnlRepository.findHoaDonChiTietByHoaDonId(hoaDonId);
-
-        for (HoaDonChiTiet chiTiet : chiTietList) {
-            ChiTietSanPham sanPham = chiTietSanPhamRepository.findById(chiTiet.getIdChiTietSanPham().getId());
-            if (sanPham == null) {
-                throw new RuntimeException("Không tìm thấy sản phẩm");
-            }
-
-            if (sanPham.getSoLuong() < chiTiet.getSoLuong()) {
-                throw new RuntimeException("Không đủ số lượng trong kho cho sản phẩm: " + sanPham.getIdSanPham().getTenSanPham());
-            }
-            // Trừ số lượng sản phẩm
-            sanPham.setSoLuong(sanPham.getSoLuong() - chiTiet.getSoLuong());
-            chiTietSanPhamRepository.save(sanPham);
-        }
-        hoaDonOnlRepository.save(hoaDon);
-        if(hoaDon.getIdKhuyenMai()!=null){
-            KhuyenMai khuyenMai = hoaDon.getIdKhuyenMai();
-            if(khuyenMai!=null){
-                khuyenMai.setDaSuDung(khuyenMai.getDaSuDung()+1);
-                khuyenMaiService.updateKhuyenMai(khuyenMai,khuyenMai.getId());
-                return;
-            }
-        }
     }
 
 
