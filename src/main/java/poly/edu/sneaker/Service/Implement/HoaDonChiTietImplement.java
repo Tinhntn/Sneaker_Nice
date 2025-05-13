@@ -16,4 +16,17 @@ public class HoaDonChiTietImplement implements HoaDonChiTietService {
         hoaDonChiTietRepository.save(hoaDonChiTiet);
 
     }
+
+    @Override
+    public HoaDonChiTiet findHoaDonChiTietByID(int id) {
+        return hoaDonChiTietRepository.findById(id).get();
+    }
+
+    @Override
+    public boolean deleteHoaDonChiTiet(int id) {
+        hoaDonChiTietRepository.deleteById(id);
+        return true;
+    }
+
+
 }

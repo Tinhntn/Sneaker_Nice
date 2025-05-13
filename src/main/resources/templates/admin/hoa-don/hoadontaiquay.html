@@ -1,6 +1,6 @@
 <!doctype html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-      layout:decorate="~{layout/main.html}">
+    layout:decorate="~{layout/main.html}">
 
 <head>
     <meta charset="UTF-8">
@@ -19,6 +19,7 @@
             background-color: #f8f9fa;
             padding: 10px;
         }
+
         .tab {
             background-color: white;
             padding: 5px 15px;
@@ -27,10 +28,12 @@
             cursor: pointer;
             transition: all 0.3s ease-in-out;
         }
+
         .tab.active {
             background-color: #ddbc7e;
             font-weight: bold;
         }
+
         .invoice-section {
             background-color: #fff;
             padding: 20px;
@@ -38,15 +41,18 @@
             border-radius: 10px;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
         }
+
         .table thead th {
             background-color: #f0f0f0;
         }
+
         .pagination {
             display: flex;
             justify-content: center;
             gap: 5px;
             margin-top: 20px;
         }
+
         .pagination .btn.current-page {
             background-color: #ffc107;
             font-weight: bold;
@@ -55,98 +61,104 @@
 </head>
 
 <body>
-<div layout:fragment="content">
-    <script th:if="${success != null}" th:inline="javascript">
-        Swal.fire({ icon: 'success', title: 'Thành công', text: '[[${success}]]', timer: 3000, showConfirmButton: false });
-    </script>
-    <script th:if="${error != null}" th:inline="javascript">
-        Swal.fire({ icon: 'error', title: 'Lỗi', text: '[[${error}]]', timer: 3000, showConfirmButton: false });
-    </script>
-    <script th:if="${warning != null}" th:inline="javascript">
-        Swal.fire({ icon: 'warning', title: 'Lưu ý', text: '[[${warning}]]', timer: 3000, showConfirmButton: false });
-    </script>
+    <div layout:fragment="content">
+        <script th:if="${success != null}" th:inline="javascript">
+            Swal.fire({ icon: 'success', title: 'Thành công', text: '[[${success}]]', timer: 3000, showConfirmButton: false });
+        </script>
+        <script th:if="${error != null}" th:inline="javascript">
+            Swal.fire({ icon: 'error', title: 'Lỗi', text: '[[${error}]]', timer: 3000, showConfirmButton: false });
+        </script>
+        <script th:if="${warning != null}" th:inline="javascript">
+            Swal.fire({ icon: 'warning', title: 'Lưu ý', text: '[[${warning}]]', timer: 3000, showConfirmButton: false });
+        </script>
 
-    <div class="container-fluid mt-4">
-        <div class="invoice-section">
-            <h2 class="mb-4">Danh sách hóa đơn tại quầy</h2>
-            <div class="row mb-4 g-3">
-                <div class="col-md-6">
-                    <form class="d-flex mb-3" method="get" th:action="@{/hoadontaiquay/search}">
-                        <input type="text" class="form-control me-2" name="keyword" placeholder="Tìm theo mã HĐ">
-                        <button class="btn btn-primary" type="submit">
-                            <i class="fas fa-search"></i> Tìm kiếm
-                        </button>
-                    </form>
-
-                </div>
-                <div class="col-md-6">
-                    <form class="row g-2" method="get" th:action="@{/hoadontaiquay/search-date}">
-                        <div class="col">
-                            <input type="date" class="form-control" name="startDate" >
-                        </div>
-                        <div class="col">
-                            <input type="date" class="form-control" name="endDate" >
-                        </div>
-                        <div class="col-auto">
-                            <button class="btn btn-success" type="submit">
-                                <i class="fas fa-filter"></i> Lọc
+        <div class="container-fluid mt-4">
+            <div class="invoice-section">
+                <h2 class="mb-4">Danh sách hóa đơn tại quầy</h2>
+                <div class="row mb-4 g-3">
+                    <div class="col-md-6">
+                        <form class="d-flex mb-3" method="get" th:action="@{/hoadontaiquay/search}">
+                            <input type="text" class="form-control me-2" name="keyword" placeholder="Tìm theo mã HĐ">
+                            <button class="btn btn-primary" type="submit">
+                                <i class="fas fa-search"></i> Tìm kiếm
                             </button>
-                        </div>
-                        <div class="col-auto">
-                            <a class="btn btn-secondary" th:href="@{/hoadontaiquay/hienthi}">
-                                <i class="fas fa-sync-alt"></i> Reset
-                            </a>
-                        </div>
-                    </form>
+                        </form>
+
+                    </div>
+                    <div class="col-md-6">
+                        <form class="row g-2" method="get" th:action="@{/hoadontaiquay/search-date}">
+                            <div class="col">
+                                <input type="date" class="form-control" name="startDate">
+                            </div>
+                            <div class="col">
+                                <input type="date" class="form-control" name="endDate">
+                            </div>
+                            <div class="col-auto">
+                                <button class="btn btn-success" type="submit">
+                                    <i class="fas fa-filter"></i> Lọc
+                                </button>
+                            </div>
+                            <div class="col-auto">
+                                <a class="btn btn-secondary" th:href="@{/hoadontaiquay/hienthi}">
+                                    <i class="fas fa-sync-alt"></i> Reset
+                                </a>
+                            </div>
+                        </form>
+
+                    </div>
 
                 </div>
 
-            </div>
+                <table class="table table-bordered table-hover">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Mã hóa đơn</th>
+                            <th>Nhân viên</th>
+                            <th>Khách hàng</th>
+                            <th>Ngày tạo</th>
+                            <th>Giảm giá</th>
+                            <th>Tổng tiền hàng</th>
+                            <th>Trạng thái</th>
+                            <th>Chức năng</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="hd : ${hd}">
+                            <td th:text="${hd.maHoaDon}"></td>
+                            <td th:text="${hd.idNhanVien.hoVaTen}"></td>
+                            <td
+                                th:text="${hd.idKhachHang != null and hd.idKhachHang.tenKhachHang != null ? hd.idKhachHang.tenKhachHang : 'Khách lẻ'}">
+                            </td>
+                            <td th:text="${hd.ngayTao}"></td>
+                            <td
+                                th:text="${hd.tongTienGiam != null ? #numbers.formatDecimal(hd.tongTienGiam, 0, 'COMMA', 0, 'POINT') + ' đ' : '0 đ'}">
+                            </td>
+                            <td th:text="${#numbers.formatDecimal(hd.thanhTien, 0, 'COMMA', 0, 'POINT') + ' đ'}"></td>
+                            <td th:text="${hd.trangThai == 1 ? 'Đã thanh toán' : 'Chưa thanh toán'}"></td>
+                            <td>
+                                <a th:href="@{'/hoadontaiquay/hienthichitiet/' + ${hd.id}}"
+                                    class="btn btn-info btn-sm">Chi tiết</a>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
 
-            <table class="table table-bordered table-hover">
-                <thead class="table-light">
-                <tr>
-                    <th>Mã hóa đơn</th>
-                    <th>Nhân viên</th>
-                    <th>Khách hàng</th>
-                    <th>Ngày tạo</th>
-                    <th>Giảm giá</th>
-                    <th>Tổng tiền hàng</th>
-                    <th>Trạng thái</th>
-                    <th>Chức năng</th>
-                </tr>
-                </thead>
-                <tbody>
-                <tr th:each="hd : ${hd}">
-                    <td th:text="${hd.maHoaDon}"></td>
-                    <td th:text="${hd.idNhanVien.hoVaTen}"></td>
-                    <td th:text="${hd.idKhachHang != null and hd.idKhachHang.tenKhachHang != null ? hd.idKhachHang.tenKhachHang : 'Khách lẻ'}"></td>
-                    <td th:text="${hd.ngayTao}"></td>
-                    <td th:text="${hd.tongTienGiam != null ? #numbers.formatDecimal(hd.tongTienGiam, 0, 'COMMA', 0, 'POINT') + ' đ' : '0 đ'}"></td>
-                    <td th:text="${#numbers.formatDecimal(hd.thanhTien, 0, 'COMMA', 0, 'POINT') + ' đ'}"></td>
-                    <td th:text="${hd.trangThai == 1 ? 'Đã thanh toán' : 'Chưa thanh toán'}"></td>
-                    <td>
-                        <a th:href="@{'/hoadontaiquay/hienthichitiet/' + ${hd.id}}" class="btn btn-info btn-sm">Chi tiết</a>
-                    </td>
-                </tr>
-                </tbody>
-            </table>
-
-            <div class="pagination">
-                <button class="btn btn-dark" th:disabled="${currentPage == 0}"
+                <div class="pagination">
+                    <button class="btn btn-dark" th:disabled="${currentPage == 0}"
                         th:onclick="|window.location.href='/hoadontaiquay/hienthi?page=${currentPage - 1}'|">&laquo;</button>
 
-                <div th:each="i : ${#numbers.sequence(0, totalPages - 1)}">
-                    <button class="btn btn-dark" th:classappend="${i == currentPage} ? ' current-page' : ''"
+                    <div th:each="i : ${#numbers.sequence(0, totalPages - 1)}">
+                        <button class="btn btn-dark" th:classappend="${i == currentPage} ? ' current-page' : ''"
                             th:onclick="|window.location.href='/hoadontaiquay/hienthi?page=${i}'|">
-                        <span th:text="${i + 1}"></span>
-                    </button>
-                </div>
-                <button class="btn btn-dark" th:disabled="${currentPage == totalPages - 1}"
+                            <span th:text="${i + 1}"></span>
+                        </button>
+                    </div>
+                    <button class="btn btn-dark" th:disabled="${currentPage == totalPages - 1}"
                         th:onclick="|window.location.href='/hoadontaiquay/hienthi?page=${currentPage + 1}'|">&raquo;</button>
+                </div>
             </div>
         </div>
     </div>
-</div>
 </body>
+
 </html>

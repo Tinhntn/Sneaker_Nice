@@ -11,7 +11,9 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import poly.edu.sneaker.DAO.KhuyenMaiCustom;
+import poly.edu.sneaker.Model.HoaDon;
 import poly.edu.sneaker.Model.KhuyenMai;
+import poly.edu.sneaker.Service.HoaDonService;
 import poly.edu.sneaker.Service.KhuyenMaiService;
 
 import java.util.*;
@@ -22,6 +24,8 @@ public class KhuyenMaiController {
 
     @Autowired
     KhuyenMaiService khuyenMaiService;
+    @Autowired
+    HoaDonService hoaDonService;
 
     @GetMapping("/hienthi")
     public String hienthi(Model model,
@@ -32,6 +36,7 @@ public class KhuyenMaiController {
         Pageable pageable = PageRequest.of(page, size);
 
         Page<KhuyenMaiCustom> pageKhuyenMaiCustoms;
+
         if (keyword != null && !keyword.isEmpty()) {
             pageKhuyenMaiCustoms = khuyenMaiService.findKhuyenMaiByMaKhuyenMaiContainingOrTenKhuyenMaiContaining(keyword, keyword,pageable);
             model.addAttribute("keyword", keyword);
@@ -179,8 +184,23 @@ public class KhuyenMaiController {
 
 
     @GetMapping("/detail/{id}")
-    public String updateKhuyenMai(@PathVariable("id") int id, Model model) {
+    public String updateKhuyenMai(@PathVariable("id") int id,
+                                  @RequestParam(defaultValue = "0") int page,Model model) {
+        int size = 15;
         KhuyenMai khuyenMai = khuyenMaiService.detailKhuyenMai(id);
+        Page<HoaDon> hd = hoaDonService.timHoaDonTheoIdKhuyenMai(id,page,size);
+        model.addAttribute("hoaDonPage", hd);
+        System.out.println("Danh sách hóa đơn áp dụng khuyến mãi ID = " + id);
+        System.out.println("Tổng số hóa đơn: " + hd.getTotalElements());
+        System.out.println("Tổng số trang: " + hd.getTotalPages());
+        System.out.println("Trang hiện tại: " + hd.getNumber());
+
+        for (HoaDon hoaDon : hd.getContent()) {
+            System.out.println("Hóa đơn ID: " + hoaDon.getId() +
+                    ", Ngày tạo: " + hoaDon.getMaHoaDon() +
+                    ", Tổng tiền: " + hoaDon.getTongTien());
+        }
+
         if (khuyenMai != null) {
             model.addAttribute("khuyenMai", khuyenMai);
             return "admin/khuyenmai/updatekhuyenmai";
@@ -279,8 +299,8 @@ public class KhuyenMaiController {
         } else {
             khuyenMai.setTrangThai(false);
         }
-            khuyenMaiService.updateKhuyenMai(khuyenMai, id);
-            redirectAttributes.addFlashAttribute("success", "Khuyến mại đã được cập nhật thành công!");
+        khuyenMaiService.updateKhuyenMai(khuyenMai, id);
+        redirectAttributes.addFlashAttribute("success", "Khuyến mại đã được cập nhật thành công!");
         return "redirect:/khuyenmai/hienthi";
     }
 

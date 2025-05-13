@@ -79,6 +79,11 @@ public class HoaDonImplement implements HoaDonService {
         return hoaDonRepository.findByNgayTaoBetween(startDate,endDate,PageRequest.of(page,size));
     }
 
+    @Override
+    public Page<HoaDon> timHoaDonTheoIdKhuyenMai(Integer idkm, int page, int size) {
+        return hoaDonRepository.timHoaDonTheoIdKhuyenMai(idkm,PageRequest.of(page,size));
+    }
+
     //code quan
 
 }

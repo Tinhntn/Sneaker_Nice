@@ -13,7 +13,7 @@ import java.util.List;
 
 @Repository
 public interface HoaDonRepository  extends JpaRepository<HoaDon, Integer> {
-    @Query(value = "select * from hoadon where trang_thai = 0 ", nativeQuery = true)
+    @Query(value = "select * from hoadon where trang_thai = 10 ", nativeQuery = true)
     List<HoaDon> getAllHoaDon();
 
     @Query(value = "SELECT * FROM hoadon WHERE id = :id", nativeQuery = true)
@@ -34,7 +34,8 @@ public interface HoaDonRepository  extends JpaRepository<HoaDon, Integer> {
     Page<HoaDon> findByNgayTaoBetween(@Param("startDate") String startDate,
                                       @Param("endDate") String endDate,
                                       Pageable pageable);
-
+    @Query("SELECT hd FROM HoaDon hd WHERE hd.idKhuyenMai.id = :idkm")
+    Page<HoaDon> timHoaDonTheoIdKhuyenMai(@Param("idkm") Integer idkm,Pageable pageable);
 
 
 }

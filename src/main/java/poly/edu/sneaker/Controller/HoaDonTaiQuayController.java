@@ -33,7 +33,7 @@ public class HoaDonTaiQuayController {
 
     @GetMapping("/hienthichitiet/{id}")
     public String chitiet(@PathVariable("id") Integer id, Model model) {
-      HoaDon hd =   hoaDonService.findById(id);
+        HoaDon hd =   hoaDonService.findById(id);
         model.addAttribute("hd", hd);
 
         List<HoaDonChiTiet> hdct = hoaDonService.danhSachChiTietHoaDonByIDHD(id);

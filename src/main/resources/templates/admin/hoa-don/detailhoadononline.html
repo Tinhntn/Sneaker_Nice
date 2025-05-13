@@ -153,25 +153,26 @@
                 <div class="card-header">
                     <h5 class="mb-0">Chi tiết hóa đơn #<span th:text="${hoaDon.maHoaDon}"></span></h5>
                     <div class="d-flex flex-wrap">
-                        <form th:action="@{/hoadononline/huydh/{id}(id = ${hoaDon.id})}" method="post">
-                            <input type="hidden" th:name="idHoaDon" th:value="${hoaDon.id}" />
-                            <button type="submit" class="btn btn-danger btn-action" id="huydhuyhoadonon"
-                                    th:disabled="${hoaDon.trangThai == 4 or hoaDon.trangThai == 5 or hoaDon.trangThai == 0}">
-                                <i class="fas fa-times-circle me-1"></i> Hủy đơn
-                            </button>
-                        </form>
+                        <input type="hidden" th:name="idHoaDon" th:value="${hoaDon.id}" />
+                        <button type="submit" class="btn btn-danger btn-action" data-bs-toggle="modal"
+                            data-bs-target="#modalhuyhoadon"
+                            th:unless="${hoaDon.trangThai == 4 or hoaDon.trangThai == 5 or hoaDon.trangThai == 6 or hoaDon.trangThai==11}">
+                            <i class="fas fa-times-circle me-1"></i> Hủy đơn
+                        </button>
 
-                        </form>
                         <button class="btn btn-success btn-action" id="xacnhan" data-bs-toggle="modal"
-                            data-bs-target="#exampleModal" th:disabled="${hoaDon.trangThai == 0 or hoaDon.trangThai == 5}"
+                            data-bs-target="#exampleModal"
+                            th:unless="${hoaDon.trangThai == 6 or hoaDon.trangThai == 5 or hoaDon.trangThai==11}"
                             onclick="xacNhanHoaDon()">
                             <i class="fas fa-check-circle me-1"></i> Đổi trạng thái
                         </button>
-                        <button class="btn btn-warning btn-action" id="inhoadon" th:disabled="${hoaDon.trangThai == 2}"
+                        <button class="btn btn-warning btn-action" id="inhoadon" th:unless="${hoaDon.trangThai != 3}"
                             th:value="${hoaDon.id}" onclick="openInvoicePage(this)">
                             <i class="fas fa-print me-1"></i> In Hóa Đơn
                         </button>
-                        <button class="btn btn-info btn-action" id="muaLaiDonHang" th:disabled="${hoaDon.trangThai!=5}">
+                        <button class="btn btn-info btn-action" id="muaLaiDonHang"
+                            th:if="${hoaDon.trangThai == 5 or hoaDon.trangThai == 6 or hoaDon.trangThai == 11}"
+                            th:data-id="${hoaDon.id}">
                             <i class="fas fa-redo me-1"></i> Mua lại
                         </button>
                     </div>
@@ -195,6 +196,8 @@
                                 <i th:if="${ls.trangThai == 5}" class="fas fa-check-square"></i>
                                 <i th:if="${ls.trangThai == 6}" class="fas fa-times-circle"></i>
                                 <i th:if="${ls.trangThai == 10}" class="fas fa-venus-double"></i>
+                                <i th:if="${ls.trangThai == 11}" class="fas fa-ban" style="color: red;"></i>
+
                             </div>
                             <div class="timeline-content">
                                 <div class="d-flex justify-content-between">
@@ -205,7 +208,8 @@
                                     (ls.trangThai == 4 ? 'Đang giao' :
                                     (ls.trangThai == 5 ? 'Đã giao' :
                                     (ls.trangThai == 10 ? 'Đã thanh toán - chờ xác nhận':
-                                    'Đã hủy'))))))}"></span>
+                                    (ls.trangThai == 11 ? 'Giao thất bại':
+                                    'Đã hủy')))))))}"></span>
                                     <span class="timeline-date"
                                         th:text="${#dates.format(ls.ngayCapNhat,'dd/MM/yyyy HH:mm:ss')}"></span>
                                 </div>
@@ -225,8 +229,8 @@
                     <div class="card mb-4">
                         <div class="card-header d-flex justify-content-between align-items-center">
                             <h5 class="mb-0">Thông tin khách hàng</h5>
-                            <button th:disabled="${hoaDon == null or(hoaDon.trangThai != 2 and hoaDon.trangThai !=3)}"
-                                class="btn btn-sm btn-warning" data-bs-toggle="modal" data-bs-target="#capnhatlichsu">
+                            <button th:unless="${hoaDon.trangThai != 2 }" class="btn btn-sm btn-warning"
+                                data-bs-toggle="modal" data-bs-target="#capnhatlichsu">
                                 <i class="fas fa-edit me-1"></i> Cập nhật
                             </button>
                         </div>
@@ -261,7 +265,12 @@
                     <div class="card mb-4">
                         <div class="card-header">
                             <h5 class="mb-0">Thông tin vận chuyển</h5>
+                            <button th:unless="${ hoaDon.trangThai !=3}" class="btn btn-sm btn-warning"
+                                data-bs-toggle="modal" data-bs-target="#capnhatlichsu">
+                                <i class="fas fa-edit me-1"></i> Cập nhật
+                            </button>
                         </div>
+
                         <div class="card-body">
                             <div class="mb-3">
                                 <label class="text-muted small">Người giao hàng</label>
@@ -286,7 +295,7 @@
                     <h5 class="mb-0">Danh sách sản phẩm</h5>
                     <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal"
                         data-bs-target="#modalSanPham"
-                        th:disabled="${hoaDon == null or(hoaDon.trangThai != 2 and hoaDon.trangThai!=3)}">
+                        th:unless="${hoaDon == null or(hoaDon.trangThai != 2 and hoaDon.trangThai!=3)}">
                         <i class="fas fa-plus me-1"></i> Thêm sản phẩm
                     </button>
                 </div>
@@ -315,10 +324,9 @@
                                         th:text="${#numbers.formatDecimal(cthd.donGia, 0, 'COMMA', 0, 'POINT')} + ' VNĐ'">
                                     </td>
                                     <td class="text-center">
-                                        <input type="hidden" th:value="${cthd.id}" class="chiTietHoaDonId" />
-                                        <input type="hidden" th:value="${cthd.idChiTietSanPham.id}"
-                                            class="chiTietSanPhamId" />
-                                        <input type="number" class="form-control d-inline-block text-center"
+
+                                        <input type="number"
+                                            class="form-control d-inline-block text-center soLuongInput"
                                             style="width: 70px;" th:value="${cthd.soLuong}" min="1"
                                             th:disabled="${hoaDon == null or (hoaDon.trangThai != 2 and hoaDon.trangThai!=3)}" />
                                     </td>
@@ -329,13 +337,13 @@
                                     <td class="text-center">
                                         <button class="btn btn-sm btn-outline-primary btnCapNhatSanPham me-1"
                                             th:data-id-hoa-don="${cthd.idHoaDon.id}"
-                                            th:data-id-san-pham="${cthd.idChiTietSanPham.id}"
+                                            th:data-id-hoa-don-chi-tiet="${cthd.id}"
                                             th:disabled="${hoaDon == null or (hoaDon.trangThai != 2 and hoaDon.trangThai!=3)}">
                                             <i class="fas fa-sync-alt"></i>
                                         </button>
                                         <button class="btn btn-sm btn-outline-danger btnXoaSanPham"
                                             th:data-id-hoa-don="${cthd.idHoaDon.id}"
-                                            th:data-id-san-pham="${cthd.idChiTietSanPham.id}"
+                                            th:data-id-hoa-don-chi-tiet="${cthd.id}"
                                             th:disabled="${hoaDon == null or (hoaDon.trangThai != 2 and hoaDon.trangThai!=3)}">
                                             <i class="fas fa-trash-alt"></i>
                                         </button>
@@ -356,8 +364,8 @@
                         <div class="card-body">
                             <div class="mb-3">
                                 <label class="text-muted small">Phương thức thanh toán</label>
-                                <p class="mb-0"
-                                    th:text="${hoaDon.loaiThanhToan == 1 ? 'Tiền mặt' : 'Chuyển khoản'}"></p>
+                                <p class="mb-0" th:text="${hoaDon.loaiThanhToan == 1 ? 'Chuyển khoản' : 'Tiền mặt'}">
+                                </p>
                             </div>
                             <div class="mb-3">
                                 <label class="text-muted small">Trạng thái thanh toán</label>
@@ -430,6 +438,7 @@
                                             lấy hàng</option>
                                         <option th:if="${hoaDon.trangThai == 4}" th:value="4">Đã
                                             giao</option>
+                                        <option th:if="${hoaDon.trangThai == 4}" th:value="11">Giao thất bại</option>
                                     </select>
                                 </div>
                             </form>
@@ -628,21 +637,18 @@
         </div>
 
         <!-- Các script JavaScript (giữ nguyên từ code gốc) -->
-        <script>
-            // Các script xử lý giữ nguyên
-        </script>
+
         <!--    Cập nhật số lượng-->
         <script>
             document.addEventListener("DOMContentLoaded", function () {
                 document.querySelectorAll(".btnCapNhatSanPham").forEach(button => {
                     button.addEventListener("click", function () {
                         let row = this.closest("tr");
-
-                        let idChiTietHoaDon = row.querySelector(".chiTietHoaDonId")?.value || null;
-                        let idChiTietSanPham = row.querySelector(".chiTietSanPhamId")?.value || null;
+                        let idHoaDon = this.getAttribute("data-id-hoa-don");
+                        let idHoaDonChiTiet = this.getAttribute("data-id-hoa-don-chi-tiet");
                         let soLuongMoi = parseInt(row.querySelector(".soLuongInput").value);
 
-                        if (!idChiTietHoaDon || !idChiTietSanPham) {
+                        if (!idHoaDon || !idHoaDonChiTiet) {
                             notyf.error("Lỗi dữ liệu! Vui lòng thử lại.");
                             return;
                         }
@@ -659,8 +665,8 @@
                                 "Content-Type": "application/json"
                             },
                             body: JSON.stringify({
-                                idChiTietHoaDon: idChiTietHoaDon,
-                                idChiTietSanPham: idChiTietSanPham,
+                                idHoaDon: idHoaDon,
+                                idHoaDonChiTiet: idHoaDonChiTiet,
                                 soLuongMoi: soLuongMoi
 
                             })
@@ -669,8 +675,16 @@
                             .then(data => {
                                 if (data.success) {
                                     notyf.success("Cập nhật thành công!");
+                                    setTimeout(() => {
+                                        window.location.reload()
+                                    }, 2000)
+
                                 } else {
                                     notyf.error(data.message);
+                                    setTimeout(() => {
+                                        window.location.reload()
+                                    }, 2000)
+
                                 }
                             })
                             .catch(error => {
@@ -706,7 +720,43 @@
             }
 
 
+            $(document).ready(function () {
+                $('#muaLaiDonHang').click(function () {
+                    const idHoaDon = $(this).data('id');
 
+                    Swal.fire({
+                        title: 'Xác nhận?',
+                        text: "Bạn có chắc muốn mua lại đơn hàng này?",
+                        icon: 'question',
+                        showCancelButton: true,
+                        confirmButtonText: 'Mua lại',
+                        cancelButtonText: 'Hủy',
+                        reverseButtons: true
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            $.ajax({
+                                url: '/hoadononline/MuaLai',
+                                method: 'POST',
+                                contentType: 'application/json',
+                                data: JSON.stringify(idHoaDon),
+                                success: function (response) {
+                                    notyf.success("Mua lại thành công");
+                                    notyf.success("Sản phẩm đã hến"+response.spHet)
+                                    notyf.success("Sản phẩm không đủ số lượng"+response.spKhongDu)
+                                    if (response.URL) {
+                                        setTimeout(() => {
+                                            window.location.href = '/' + response.URL;
+                                        }, 2000);
+                                    }
+                                },
+                                error: function (xhr) {
+                                    notyf.error("Mua lại thất bại");
+                                }
+                            });
+                        }
+                    });
+                });
+            });
             document.addEventListener("DOMContentLoaded", function () {
                 document.querySelectorAll(".btnThemVaoHoaDon").forEach(button => {
                     button.addEventListener("click", function () {
@@ -714,7 +764,6 @@
                         let tenSanPham = this.getAttribute("data-ten");
                         let giaBan = parseFloat(this.getAttribute("data-gia"));
                         let hinhAnh = this.getAttribute("data-hinh");
-
                         let soLuong = 1; // Mặc định là 1
                         let idHoaDon = getIdHoaDonFromPath(); // Lấy ID từ URL
 
@@ -737,30 +786,19 @@
                             .then(response => response.json()) // Chuyển response thành JSON
                             .then(data => {
                                 if (data.success) {
-                                    alert("Thêm sản phẩm thành công!");
 
                                     let tbody = document.querySelector("tbody");
                                     let existingRow = tbody.querySelector(`tr[data-id="${idChiTietSanPham}"]`);
-
                                     if (existingRow) {
+                                        notyf.success("Thêm thành công")
                                         // Nếu sản phẩm đã tồn tại, cập nhật số lượng
                                         let input = existingRow.querySelector(".soLuongInput");
                                         input.value = parseInt(input.value) + 1;
                                     } else {
-                                        // Nếu sản phẩm chưa tồn tại, thêm mới
-                                        let newRow = `
-                                        <tr data-id="${idChiTietSanPham}">
-                                            <td><img src="${hinhAnh}" alt="Hình ảnh" style="width:80px;height:50px;"></td>
-                                            <td>${tenSanPham}</td>
-                                            <td>${giaBan.toLocaleString()} VNĐ</td>
-                                            <td>
-                                                <input type="number" class="form-control soLuongInput" style="width: 80px;" value="1" min="1"/>
-                                            </td>
-                                            <td>
-                                                <button class="btn btn-danger btnXoaSanPham">Xóa</button>
-                                            </td>
-                                        </tr>`;
-                                        tbody.insertAdjacentHTML("beforeend", newRow);
+                                        notyf.success("Thêm thành công")
+                                        setTimeout(() => {
+                                            window.location.reload()
+                                        }, 2000)
                                     }
                                 } else {
                                     throw new Error(data.message || "Lỗi không xác định!");
@@ -768,7 +806,10 @@
                             })
                             .catch(error => {
                                 console.error("Lỗi:", error);
-                                alert("Lỗi: " + error.message);
+                                notyf.error(error.message)
+                                setTimeout(() => {
+                                    window.location.reload()
+                                }, 2000)
                             });
 
                         // Đóng modal sau khi thêm
@@ -777,51 +818,44 @@
                     });
                 });
             });
-            document.getElementById('huyhoadon').addEventListener('click', function () {
-                var idHD = getIdHoaDonFromPath();
-                var note = document.getElementById('notehuyhoadon').value;
-                if (note.trim() === '') {
-                    alert('Không được để trống ghi chú');
-                    return;
-                }
-                if (confirm('Bạn có chắc muốn hủy hóa đơn không?')) {
-                    let formData = {
-                        idhoadon: idHD,
-                        ghichu: note,
-                        trangthai: 6
-                    }
-                    $.ajax({
-                        type: 'POST',
-                        contentType: 'application/json',
-                        url: '/hoadononline/doi-trang-thai', // Đường dẫn đến endpoint của controller Spring
-                        data: JSON.stringify(formData), // Chuyển đổi đối tượng thành JSON
-                        success: function (response) {
-                            $('#cancelModal').modal('hide');
-                            // Đăng ký sự kiện chỉ 1 lần ngoài Ajax
-                            document.getElementById("confirmCancel").addEventListener("click", function () {
-                                document.getElementById("note").value = "";
-                            });
-                            // Chuyển hướng trang
-                            window.location.href = '/hoadononline/detailhoadononlinect/' + idHD;
-                            // Thực hiện các thao tác khác nếu cần
-                        },
-                        error: function (error) {
-                            if (error.responseJSON && error.responseJSON.message) {
-                                alert(error.responseJSON.message);
-                            } else if (error.responseText) {
-                                alert(error.responseText)
-                            } else {
-                                alert("Đã xảy ra lỗi, vui lòng thử lại");
-                            }; document.getElementById("confirmCancel").addEventListener("click", function () {
-                                document.getElementById("note").value = "";
-                            });
-                            window.location.href = '/hoadononline/detailhoadononlinect/' + idHD;
-                            // Đăng ký sự kiện chỉ 1 lần ngoài Ajax
-                        }
-                    });
-                }
 
-            });
+            document.getElementById('huyhoadon').addEventListener('click', function () {
+                    var idHD = getIdHoaDonFromPath();
+                    var note = document.getElementById('notehuyhoadon').value;
+
+                    if (note.trim() === '') {
+                        alert('Không được để trống ghi chú');
+                        return;
+                    }
+
+                    var formData = {
+                        idHoaDon: idHD,
+                        ghiChu: note,
+                        trangThai: 6
+                    };
+
+                    if (confirm('Bạn có chắc muốn hủy hóa đơn không?')) {
+                        $.ajax({
+                            type: 'POST',
+                            url: '/hoadononline/doi-trang-thai',
+                            contentType: 'application/json',
+                            data: JSON.stringify(formData),
+                            success: function (response) {
+                                $('#modalhuyhoadon').modal('hide');
+                                window.location.href = '/hoadononline/detailhoadononlinect/' + idHD;
+                            },
+                            error: function (error) {
+                                if (error.responseJSON && error.responseJSON.message) {
+                                    alert(error.responseJSON.message);
+                                } else {
+                                    alert("Đã xảy ra lỗi, vui lòng thử lại");
+                                }
+                                window.location.href = '/hoadononline/detailhoadononlinect/' + idHD;
+                            }
+                        });
+                    }
+                });
+
             document.getElementById('confirmCancel').addEventListener('click', function () {
                 var note = document.getElementById('note').value;
                 var status = parseInt(document.getElementById('status').value);
@@ -844,7 +878,10 @@
                     ttdoi = 4;
                 } else if (status === 4) {
                     ttdoi = 5;
-                } else {
+                } else if (status == 11) {
+                    ttdoi = 11;
+                }
+                else {
                     // Trường hợp mặc định nếu không khớp với bất kỳ giá trị nào
                     notyf.error("Trạng thía không hợp lệ")
                     return;
@@ -895,7 +932,6 @@
             });
             document.getElementById("btn-luu-thay-doi").addEventListener("click", function (e) {
                 let isValid = true;
-
                 document.querySelectorAll("input[required]").forEach(input => {
                     if (!input.value.trim()) {
                         input.classList.add("is-invalid"); // Hiển thị lỗi
@@ -990,9 +1026,9 @@
                 document.querySelectorAll(".btnXoaSanPham").forEach(button => {
                     button.addEventListener("click", function () {
                         let idHoaDon = this.getAttribute("data-id-hoa-don");
-                        let idChiTietSanPham = this.getAttribute("data-id-san-pham");
+                        let idHoaDonChiTiet = this.getAttribute("data-id-hoa-don-chi-tiet");
 
-                        if (!idHoaDon || !idChiTietSanPham) {
+                        if (!idHoaDon || !idHoaDonChiTiet) {
                             alert("Lỗi: Không lấy được ID sản phẩm hoặc hóa đơn!");
                             return;
                         }
@@ -1001,16 +1037,20 @@
                             return;
                         }
 
-                        fetch(`/hoadononline/xoa-chi-tiet/${idHoaDon}/${idChiTietSanPham}`, {
+                        fetch(`/hoadononline/xoa-chi-tiet/${idHoaDon}/${idHoaDonChiTiet}`, {
                             method: "DELETE"
                         })
                             .then(response => response.json())
                             .then(data => {
                                 if (data.success) {
-                                    alert("Xóa thành công!");
+                                    notyf.success("Xóa thành công")
                                     this.closest("tr").remove(); // Xóa dòng khỏi bảng
+                                    setTimeout(() => {
+                                        window.location.reload()
+                                    }, 2000)
+
                                 } else {
-                                    alert("Lỗi: " + data.message);
+                                    notyf.error(data.message || "Xóa thất bại")
                                 }
                             })
                             .catch(error => {
@@ -1020,31 +1060,6 @@
                     });
                 });
             });
-
-        </script>
-
-
-        <!--        Xác nhận hóa đơn chi tiết-->
-        <script th:inline="javascript">
-            function xacNhanHoaDon() {
-                let hoaDonId = [[${ hoaDon.id }]]; // Lấy ID hóa đơn từ Thymeleaf
-
-                fetch('/hoadononline/xacnhan/' + hoaDonId, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                })
-                    .then(response => response.json())
-                    .then(data => {
-                        if (!data.success) {
-                            alert('Lỗi: ' + data.message);
-                        }
-                    })
-                    .catch(error => console.error('Lỗi:', error));
-            }
-        </script>
-
-        <!--        In hóa đơn-->
-        <script>
             function openInvoicePage(button) {
                 var hoaDonId = button.value; // Lấy ID hóa đơn từ value của nút
                 if (hoaDonId) {
@@ -1054,17 +1069,7 @@
                     alert("Không tìm thấy hóa đơn!");
                 }
             }
-        </script>
 
-        //hủy đơn hàng
-        <script th:if="${thanhcong != null}">
-            Swal.fire({
-                icon: 'success',
-                title: 'Thành công',
-                text: [[${thanhcong}]],
-                timer: 2000,
-                showConfirmButton: false
-            });
         </script>
 
     </div>

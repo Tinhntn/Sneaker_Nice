@@ -19,25 +19,32 @@
     <!-- Thanh tìm kiếm và bộ lọc -->
     <div class="card shadow-sm mb-4">
         <div class="card-body ">
-            <form th:action="@{/sanpham/hienthi}" method="get" class="row g-3" >
-                <div class="col-md-4">
-                    <input type="text" class="form-control " placeholder="Tìm kiếm sản phẩm" name="keyword"
-                           th:value="${keyword}">
-                </div>
-                <div class="col-md-3">
-                    <input type="date" name="startDate" th:value="${#dates.format(startDate, 'yyyy-MM-dd')}"
-                           class="form-control">
-                </div>
-                <div class="col-md-3">
-                    <input type="date" name="endDate" th:value="${#dates.format(endDate, 'yyyy-MM-dd')}"
-                           class="form-control">
-                </div>
-
-                <div class="col-md-2">
-                    <button class="btn btn-primary  w-100" type="submit"><i class="fas fa-search me-2"></i>Tìm kiếm
-                    </button>
-                </div>
-            </form>
+        <form th:action="@{/sanpham/hienthi}" method="get" class="row g-3">
+            <!-- Ô tìm kiếm theo mã hoặc tên sản phẩm -->
+            <div class="col-md-4">
+                <input type="text" class="form-control" placeholder="Tìm theo mã hoặc tên sản phẩm" name="keyword"
+                    th:value="${keyword != null ? keyword : ''}">
+            </div>
+        
+            <!-- Ngày bắt đầu -->
+            <div class="col-md-3">
+                <input type="date" name="startDate" class="form-control"
+                    th:value="${startDate != null ? #dates.format(startDate, 'yyyy-MM-dd') : ''}">
+            </div>
+        
+            <!-- Ngày kết thúc -->
+            <div class="col-md-3">
+                <input type="date" name="endDate" class="form-control"
+                    th:value="${endDate != null ? #dates.format(endDate, 'yyyy-MM-dd') : ''}">
+            </div>
+        
+            <!-- Nút tìm kiếm -->
+            <div class="col-md-2">
+                <button class="btn btn-primary w-100" type="submit">
+                    <i class="fas fa-search me-2"></i> Tìm kiếm
+                </button>
+            </div>
+        </form>
         </div>
     </div>
     <div class="container-fluid card p-7">

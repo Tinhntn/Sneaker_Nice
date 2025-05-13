@@ -117,7 +117,7 @@
                                 </td>
                                 <td th:text="${hdtatca.ngayTao}"></td>
                                 <td class="text-center">
-                                    <a th:href="@{/hoadononline/detailhoadononlinect/{id}(id=${hdtatca.id})}"
+                                    <a th:href="@{/hoadononlinekhachhang/detailhoadononlinect/{id}(id=${hdtatca.id})}"
                                        class="btn btn-sm btn-outline-primary">
                                         <i class="fas fa-eye me-1"></i> Chi tiết
                                     </a>
@@ -157,7 +157,7 @@
                                 </td>
                                 <td th:text="${hdcxn.ngayTao}"></td>
                                 <td class="text-center">
-                                    <a th:href="@{/hoadononline/detailhoadononlinect/{id}(id=${hdcxn.id})}"
+                                    <a th:href="@{/hoadononlinekhachhang/detailhoadononlinect/{id}(id=${hdcxn.id})}"
                                        class="btn btn-sm btn-outline-primary">
                                         <i class="fas fa-eye me-1"></i> Chi tiết
                                     </a>
@@ -198,7 +198,7 @@
                                 </td>
                                 <td th:text="${hdclh.ngayTao}"></td>
                                 <td class="text-center">
-                                    <a th:href="@{/hoadononline/detailhoadononlinect/{id}(id=${hdclh.id})}"
+                                    <a th:href="@{/hoadononlinekhachhang/detailhoadononlinect/{id}(id=${hdclh.id})}"
                                        class="btn btn-sm btn-outline-primary">
                                         <i class="fas fa-eye me-1"></i> Chi tiết
                                     </a>
@@ -237,7 +237,7 @@
                                     th:text="${#numbers.formatInteger(hddg.thanhTien,3,'COMMA')} + ' VND'"></td>
                                 <td th:text="${hddg.ngayTao}"></td>
                                 <td class="text-center">
-                                    <a th:href="@{/hoadononline/detailhoadononlinect/{id}(id=${hddg.id})}"
+                                    <a th:href="@{/hoadononlinekhachhang/detailhoadononlinect/{id}(id=${hddg.id})}"
                                        class="btn btn-sm btn-outline-primary">
                                         <i class="fas fa-eye me-1"></i> Chi tiết
                                     </a>
@@ -276,7 +276,7 @@
                                     th:text="${#numbers.formatInteger(hdht.thanhTien,3,'COMMA')} + ' VND'"></td>
                                 <td th:text="${hdht.ngayTao}"></td>
                                 <td class="text-center">
-                                    <a th:href="@{/hoadononline/detailhoadononlinect/{id}(id=${hdht.id})}"
+                                    <a th:href="@{/hoadononlinekhachhang/detailhoadononlinect/{id}(id=${hdht.id})}"
                                        class="btn btn-sm btn-outline-primary">
                                         <i class="fas fa-eye me-1"></i> Chi tiết
                                     </a>
@@ -315,7 +315,7 @@
                                     th:text="${#numbers.formatInteger(hddh.thanhTien,3,'COMMA')} + ' VND'"></td>
                                 <td th:text="${hddh.ngayTao}"></td>
                                 <td class="text-center">
-                                    <a th:href="@{/hoadononline/detailhoadononlinect/{id}(id=${hddh.id})}"
+                                    <a th:href="@{/hoadononlinekhachhang/detailhoadononlinect/{id}(id=${hddh.id})}"
                                        class="btn btn-sm btn-outline-primary">
                                         <i class="fas fa-eye me-1"></i> Chi tiết
                                     </a>
@@ -330,16 +330,6 @@
     </div>
 </div>
     
-<!--hủy đơn hàng-->
-<script th:if="${thanhcong != null}">
-    Swal.fire({
-        icon: 'success',
-        title: 'Thành công',
-        text: [[${thanhcong}]],
-        timer: 2000,
-        showConfirmButton: false
-    });
-</script>
 </div>
 
 </body>

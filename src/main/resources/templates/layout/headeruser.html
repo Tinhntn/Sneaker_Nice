@@ -276,18 +276,15 @@
                 .then(response => response.json())
                 .then(data => {
                     if (!data || !Array.isArray(data.items)) {
-                        console.error("Lỗi: Dữ liệu giỏ hàng không hợp lệ", data);
-                        cartList.innerHTML = "<p>Lỗi tải giỏ hàng. Vui lòng thử lại.</p>";
+                        cartList.innerHTML = "<p>Bạn cần đăng nhập để mua sắm.</p>";
                         totalPriceElement.innerText = "0đ";
                         checkoutButton.disabled = true;
                         checkoutButton.classList.add("disabled");
                         return;
                     }
-
                     let items = data.items;
                     let totalPrice = data.totalPrice || 0;
                     let hasOutOfStock = false;
-
                     if (items.length === 0) {
                         cartList.innerHTML = "<p>Chưa có sản phẩm nào trong giỏ hàng</p>";
                         totalPriceElement.innerText = "0đ";
@@ -318,7 +315,7 @@
                             <p>Size: ${item.size}</p>
                             <p>Màu: ${item.mauSac}</p>
                             <p>Đơn giá :${(item.gia || 0).toLocaleString()}đ</p>
-                            <p style="color:red;">Thành tiền :${(item.gia*item.soLuong || 0).toLocaleString()}đ</p>
+                            <p style="color:red;">Thành tiền :${(item.gia * item.soLuong || 0).toLocaleString()}đ</p>
                             <div class="quantity-controls">
                                 <button ${item.soLuong <= 1 ? "disabled" : ""} ${disableIncreaseButton}  onclick="updateQuantity(${item.idGioHangChiTiet}, -1)">-</button>
                                 <span  id="quantity-${item.idGioHangChiTiet}">${item.soLuong || 0}</span>
@@ -369,8 +366,9 @@
                 .then(response => {
                     if (!response.ok) {
                         return response.json().then(err => {
-                            throw new Error(notyf.error(err.message || "Cập nhật sản phẩm thất bại"));
-                            return;
+                            notyf.error(err.message || "Cập nhật sản phẩm thất bại");
+                            loadCartItems();
+                            loadCheckout();
                         });
                     }
                     return response.json();
@@ -379,10 +377,14 @@
                     if (data.success) {
                         loadCartItems();
                         loadCheckout();
-                        const event = new CustomEvent('cartUpdated',{detail:{idGHCT,newQuantity}});
+                        const event = new CustomEvent('cartUpdated', { detail: { idGHCT, newQuantity } });
                         document.dispatchEvent(event);
                     } else if (data.message) {
                         notyf.error(message + "cập nhật số lượng thất bại")
+                        setTimeout(() => {
+                            window.location.reload()
+                        }, 2000)
+                        return;
                     }
                 })
                 .catch(error => console.error("Lỗi cập nhật số lượng:", error));

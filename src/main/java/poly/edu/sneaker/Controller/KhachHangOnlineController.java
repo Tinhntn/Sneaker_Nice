@@ -57,10 +57,21 @@ public class KhachHangOnlineController {
             @RequestParam("quanHuyen") String quanHuyen,
             @RequestParam("phuongXa") String phuongXa,
             RedirectAttributes redirectAttributes) {
+        KhachHang khachHang1 = khachHangService.findByEmail(getCurrentUserEmail());
+        // ⚠️ Kiểm tra dữ liệu đầu vào
+        if (tenKhachHang == null || tenKhachHang.trim().isEmpty() ||
+                email == null || email.trim().isEmpty() ||
+                sdt == null || sdt.trim().isEmpty() ||
+                tinhThanhPho == null || tinhThanhPho.trim().isEmpty() ||
+                quanHuyen == null || quanHuyen.trim().isEmpty() ||
+                phuongXa == null || phuongXa.trim().isEmpty()) {
 
-        // Lấy khách hàng từ database (giả sử đang cập nhật khách hàng có ID = 1)
-        KhachHang khachHang = khachHangOnlineService.layKhachHangQuaid(1);
+            redirectAttributes.addFlashAttribute("error", "Vui lòng điền đầy đủ thông tin khách hàng!");
+            return "redirect:/khachhangonline/hienthi";
+        }
 
+        // Các bước xử lý tiếp theo...
+        KhachHang khachHang = khachHangOnlineService.layKhachHangQuaid(khachHang1.getId());
         if (khachHang != null) {
             khachHang.setTenKhachHang(tenKhachHang);
             khachHang.setEmail(email);
@@ -70,7 +81,6 @@ public class KhachHangOnlineController {
             khachHang.setQuanHuyen(quanHuyen);
             khachHang.setPhuongXa(phuongXa);
 
-            // Lưu khách hàng vào database
             khachHangOnlineService.saveKH(khachHang);
             redirectAttributes.addFlashAttribute("success", "Cập nhật thông tin thành công!");
         } else {
@@ -79,6 +89,7 @@ public class KhachHangOnlineController {
 
         return "redirect:/khachhangonline/hienthi";
     }
+
 
 
 }
