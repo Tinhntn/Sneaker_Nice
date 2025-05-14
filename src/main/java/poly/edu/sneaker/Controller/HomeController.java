@@ -55,6 +55,9 @@ public class HomeController {
     HoaDonChiTietOnlService hoaDonChiTietOnlService;
     @Autowired
     KhachHangService khachHangService;
+    @Autowired
+    private HangService hangService;
+
     public String getCurrentUserEmail() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication != null && authentication.isAuthenticated()) {
@@ -62,11 +65,15 @@ public class HomeController {
         }
         return null; // Nếu chưa đăng nhập, trả về null hoặc giá trị mặc định
     }
+
     @GetMapping("/hienthi")
     public String hienthi(Model model, @RequestParam(defaultValue = "0") int page) {
+
+
         KhachHang khachHangSession = khachHangService.findByEmail(getCurrentUserEmail());
         int size = 12;
         Page<ChiTietSanPham> lstCTSP = chiTietSanPhamService.findChiTietSanPhamJustOne(PageRequest.of(page, size));
+        List<Hang> hangs = hangService.getAllHangs();
         int soLuongSanPhamTrongGioHang = 0;
         if (khachHangSession != null) {
             model.addAttribute("khachHang", khachHangSession);
@@ -85,10 +92,11 @@ public class HomeController {
             for (GioHangChiTiet ghct
                     : lstGioHangChiTiet
             ) {
-                soLuongSanPhamTrongGioHang  += ghct.getSoLuong();
+                soLuongSanPhamTrongGioHang += ghct.getSoLuong();
             }
             model.addAttribute("soLuongSanPhamTrongGioHang", soLuongSanPhamTrongGioHang);
         }
+        model.addAttribute("listHang", hangs);
         model.addAttribute("listSanPham", lstCTSP);
         model.addAttribute("currentPage", lstCTSP.getNumber());
         model.addAttribute("totalPages", lstCTSP.getTotalPages());
@@ -172,9 +180,10 @@ public class HomeController {
 
         return "user/sanpham/trangchu";
     }
+
     @GetMapping("/lay-combination")
     @ResponseBody
-    public ResponseEntity<?> checkSoLuongSanPham(@RequestParam("idSanPham")int idSanPham,@RequestParam("idSize")int idSize,@RequestParam("idMauSac")int idMauSac) {
+    public ResponseEntity<?> checkSoLuongSanPham(@RequestParam("idSanPham") int idSanPham, @RequestParam("idSize") int idSize, @RequestParam("idMauSac") int idMauSac) {
         try {
 
             ChiTietSanPham chiTietSanPham = chiTietSanPhamService.findCTSPByIdSPAndIdMauSacAndIdSize(idSanPham, idMauSac, idSize);

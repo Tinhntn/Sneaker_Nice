@@ -1,11 +1,11 @@
 <!doctype html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-      layout:decorate="~{layout/main.html}">
+    layout:decorate="~{layout/main.html}">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport"
-          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+        content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Document</title>
     <link rel="stylesheet" type="text/css" href="./styles/main.css">
@@ -22,51 +22,51 @@
 </head>
 
 <body>
-<div layout:fragment="content">
-    <!-- Hiển thị thông báo thành công nếu có -->
-    <script th:if="${success != null}" th:inline="javascript">
-        /*<![CDATA[*/
-        Swal.fire({
-            icon: 'success',
-            title: 'Thành công',
-            text: '[[${success}]]',
-            position: 'center',
-            timer: 3000,
-            timerProgressBar: true,
-            showConfirmButton: false
-        });
-        /*]]>*/
-    </script>
+    <div layout:fragment="content">
+        <!-- Hiển thị thông báo thành công nếu có -->
+        <script th:if="${success != null}" th:inline="javascript">
+            /*<![CDATA[*/
+            Swal.fire({
+                icon: 'success',
+                title: 'Thành công',
+                text: '[[${success}]]',
+                position: 'center',
+                timer: 3000,
+                timerProgressBar: true,
+                showConfirmButton: false
+            });
+            /*]]>*/
+        </script>
 
-    <!-- Hiển thị thông báo lỗi nếu có -->
-    <script th:if="${error != null}" th:inline="javascript">
-        /*<![CDATA[*/
-        Swal.fire({
-            icon: 'error',
-            title: 'Lỗi',
-            text: '[[${error}]]',
-            position: 'center',
-            timer: 3000,
-            timerProgressBar: true,
-            showConfirmButton: false
-        });
-        /*]]>*/
-    </script>
+        <!-- Hiển thị thông báo lỗi nếu có -->
+        <script th:if="${error != null}" th:inline="javascript">
+            /*<![CDATA[*/
+            Swal.fire({
+                icon: 'error',
+                title: 'Lỗi',
+                text: '[[${error}]]',
+                position: 'center',
+                timer: 3000,
+                timerProgressBar: true,
+                showConfirmButton: false
+            });
+            /*]]>*/
+        </script>
 
-    <!-- Hiển thị cảnh báo nếu có -->
-    <script th:if="${warning != null}" th:inline="javascript">
-        /*<![CDATA[*/
-        Swal.fire({
-            icon: 'warning',
-            title: 'Lưu ý',
-            text: '[[${warning}]]',
-            position: 'center',
-            timer: 3000,
-            timerProgressBar: true,
-            showConfirmButton: false
-        });
-        /*]]>*/
-    </script>
+        <!-- Hiển thị cảnh báo nếu có -->
+        <script th:if="${warning != null}" th:inline="javascript">
+            /*<![CDATA[*/
+            Swal.fire({
+                icon: 'warning',
+                title: 'Lưu ý',
+                text: '[[${warning}]]',
+                position: 'center',
+                timer: 3000,
+                timerProgressBar: true,
+                showConfirmButton: false
+            });
+            /*]]>*/
+        </script>
 
 
 
@@ -85,7 +85,7 @@
                 <div class="row mb-3">
                     <div class="col-md-4"><span class="label-title">Khách hàng:</span></div>
                     <div class="col-md-8"><span class="value-text"
-                                                th:text="${hd.idKhachHang != null ? hd.idKhachHang.tenKhachHang : 'Khách lẻ'}"></span></div>
+                            th:text="${hd.idKhachHang != null ? hd.idKhachHang.tenKhachHang : 'Khách lẻ'}"></span></div>
                 </div>
                 <div class="row mb-3">
                     <div class="col-md-4"><span class="label-title">Ngày tạo:</span></div>
@@ -94,9 +94,9 @@
                 <div class="row mb-3">
                     <div class="col-md-4"><span class="label-title">Trạng thái:</span></div>
                     <div class="col-md-8">
-                    <span class="badge"
-                          th:classappend="${hd.trangThai == 1} ? 'bg-success' : 'bg-warning text-dark'"
-                          th:text="${hd.trangThai == 1 ? 'Đã thanh toán' : 'Chưa thanh toán'}"></span>
+                        <span class="badge"
+                            th:classappend="${hd.trangThai == 1} ? 'bg-success' : 'bg-warning text-dark'"
+                            th:text="${hd.trangThai == 1 ? 'Đã thanh toán' : 'Chưa thanh toán'}"></span>
                     </div>
                 </div>
 
@@ -105,17 +105,20 @@
                 <div class="row mb-3">
                     <div class="col-md-4"><span class="label-title">Tổng tiền hàng:</span></div>
                     <div class="col-md-8"><span class="value-text"
-                                                th:text="${#numbers.formatDecimal(hd.tongTien, 0, 'COMMA', 0, 'POINT') + ' đ'}"></span></div>
+                            th:text="${#numbers.formatDecimal(hd.tongTien, 0, 'COMMA', 0, 'POINT') + ' đ'}"></span>
+                    </div>
                 </div>
                 <div class="row mb-3">
                     <div class="col-md-4"><span class="label-title">Giảm giá:</span></div>
                     <div class="col-md-8"><span class="value-text"
-                                                th:text="${hd.tongTienGiam != null ? #numbers.formatDecimal(hd.tongTienGiam, 0, 'COMMA', 0, 'POINT') + ' đ' : '0 đ'}"></span></div>
+                            th:text="${hd.tongTienGiam != null ? #numbers.formatDecimal(hd.tongTienGiam, 0, 'COMMA', 0, 'POINT') + ' đ' : '0 đ'}"></span>
+                    </div>
                 </div>
                 <div class="row mb-3">
                     <div class="col-md-4"><span class="label-title">Tổng thanh toán:</span></div>
                     <div class="col-md-8"><strong class="text-success"
-                                                  th:text="${#numbers.formatDecimal(hd.thanhTien, 0, 'COMMA', 0, 'POINT') + ' đ'}"></strong></div>
+                            th:text="${#numbers.formatDecimal(hd.thanhTien, 0, 'COMMA', 0, 'POINT') + ' đ'}"></strong>
+                    </div>
                 </div>
 
                 <!-- Nếu có danh sách sản phẩm -->
@@ -124,33 +127,37 @@
                     <table class="table table-bordered table-hover text-center">
                         <thead style="background-color: #ddbc7e; color: white;">
 
-                        <tr>
-                            <th>Tên sản phẩm</th>
-                            <th>Hình ảnh</th>
-                            <th>Tên hãng</th>
-                            <th>Tên size</th>
-                            <th>Màu sắc</th>
-                            <th>Tên danh mục</th>
-                            <th>Tên chất liệu</th>
-                            <th>Số lượng</th>
-                            <th>Đơn giá</th>
-                            <th>Tổng tiền</th>
-                        </tr>
+                            <tr>
+                                <th>Tên sản phẩm</th>
+                                <th>Hình ảnh</th>
+                                <th>Tên hãng</th>
+                                <th>Tên size</th>
+                                <th>Màu sắc</th>
+                                <th>Tên danh mục</th>
+                                <th>Tên chất liệu</th>
+                                <th>Số lượng</th>
+                                <th>Đơn giá</th>
+                                <th>Tổng tiền</th>
+                            </tr>
                         </thead>
                         <tbody>
-                        <tr th:each="hdct : ${hdct}">
-                            <td th:text="${hdct.idChiTietSanPham.idSanPham.tenSanPham}"></td>
-                            <td><img th:src="${hdct.idChiTietSanPham.hinhAnh}" alt="Hình ảnh" style="width:50px;height:50px;"></td>
-                            <td th:text="${hdct.idChiTietSanPham.idSanPham.idHang.tenHang}"></td>
-                            <td th:text="${hdct.idChiTietSanPham.idSize.tenSize}"></td>
-                            <td th:text="${hdct.idChiTietSanPham.idMauSac.tenMauSac}"></td>
-                            <td th:text="${hdct.idChiTietSanPham.idSanPham.idDanhMuc.tenDanhMuc}"></td>
-                            <td th:text="${hdct.idChiTietSanPham.idSanPham.idChatLieu.tenChatLieu}"></td>
-                            <td th:text="${hdct.soLuong}"></td>
-                            <td th:text="${#numbers.formatDecimal(hdct.donGia, 0, 'COMMA', 0, 'POINT')} + ' đ'"></td>
-                            <td th:text="${#numbers.formatDecimal(hdct.soLuong * hdct.donGia, 0, 'COMMA', 0, 'POINT')} + ' đ'"></td>
+                            <tr th:each="hdct : ${hdct}">
+                                <td th:text="${hdct.idChiTietSanPham.idSanPham.tenSanPham}"></td>
+                                <td><img th:src="${hdct.idChiTietSanPham.hinhAnh}" alt="Hình ảnh"
+                                        style="width:50px;height:50px;"></td>
+                                <td th:text="${hdct.idChiTietSanPham.idSanPham.idHang.tenHang}"></td>
+                                <td th:text="${hdct.idChiTietSanPham.idSize.tenSize}"></td>
+                                <td th:text="${hdct.idChiTietSanPham.idMauSac.tenMauSac}"></td>
+                                <td th:text="${hdct.idChiTietSanPham.idSanPham.idDanhMuc.tenDanhMuc}"></td>
+                                <td th:text="${hdct.idChiTietSanPham.idSanPham.idChatLieu.tenChatLieu}"></td>
+                                <td th:text="${hdct.soLuong}"></td>
+                                <td th:text="${#numbers.formatDecimal(hdct.donGia, 0, 'COMMA', 0, 'POINT')} + ' đ'">
+                                </td>
+                                <td
+                                    th:text="${#numbers.formatDecimal(hdct.soLuong * hdct.donGia, 0, 'COMMA', 0, 'POINT')} + ' đ'">
+                                </td>
 
-                        </tr>
+                            </tr>
                         </tbody>
                     </table>
                 </div>
@@ -158,6 +165,9 @@
                 <div class="mt-4 text-end">
                     <a href="/hoadontaiquay/hienthi" class="btn btn-secondary">
                         <i class="fas fa-arrow-left"></i> Quay lại
+                    </a>
+                    <a th:href="@{'/banhangtaiquay/in/' + ${hd.id}}" class="btn btn-primary" target="_blank">
+                        📄 In Hóa Đơn (PDF)
                     </a>
                 </div>
             </div>
@@ -168,4 +178,5 @@
 
 
 </body>
+
 </html>

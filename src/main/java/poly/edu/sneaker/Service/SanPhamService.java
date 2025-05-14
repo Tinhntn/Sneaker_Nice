@@ -7,6 +7,7 @@ import poly.edu.sneaker.Model.Interface.SanPhamInterface;
 import poly.edu.sneaker.Model.SanPham;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 public interface SanPhamService {
@@ -20,6 +21,7 @@ public interface SanPhamService {
     Page<SanPham> findByMaSanPhamOrTenSanPham(String maSanPham, String tenSanPham, Pageable pageable);
 
     ArrayList<ChiTietSanPham> createProductValidations(int idSanPham);
+    Page<SanPham> searchSanPham(String keyword, Date startDate, Date endDate, Pageable pageable);
 
 
 }

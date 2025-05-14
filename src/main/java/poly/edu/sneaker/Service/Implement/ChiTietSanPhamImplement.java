@@ -101,7 +101,7 @@ public class ChiTietSanPhamImplement implements ChiTietSanPhamService {
     }
 
     @Override
-    public ChiTietSanPham findCTSPByIdSPAndIdMauSacAndIdSize(int idSanPham, int idMauSac, int idSize) {
+    public ChiTietSanPham findCTSPByIdSPAndIdMauSacAndIdSize(int idSanPham, int idSize, int idMauSac) {
         return chiTietSanPhamRepository.findChiTietSanPhamByIdSanPham_IdAndIdSize_IdAndIdMauSac_Id(idSanPham, idSize, idMauSac);
     }
 

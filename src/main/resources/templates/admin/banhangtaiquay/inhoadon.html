@@ -1,7 +1,6 @@
 <!doctype html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org"
-      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-      layout:decorate="~{layout/main.html}">
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+    layout:decorate="~{layout/main.html}">
 
 <head>
     <meta charset="UTF-8">
@@ -13,106 +12,115 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/js/all.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/dom-to-image/2.6.0/dom-to-image.min.js"></script>
+
 </head>
 
 <body>
-<div layout:fragment="content">
+    <div layout:fragment="content">
 
-    <!-- Thông báo -->
-    <script th:if="${success != null}" th:inline="javascript">
-        Swal.fire({
-            icon: 'success',
-            title: 'Thành công',
-            text: '[[${success}]]',
-            position: 'center',
-            timer: 3000,
-            timerProgressBar: true,
-            showConfirmButton: false
-        });
-    </script>
-    <script th:if="${error != null}" th:inline="javascript">
-        Swal.fire({
-            icon: 'error',
-            title: 'Lỗi!',
-            text: '[[${error}]]',
-            position: 'center',
-            timer: 3000,
-            timerProgressBar: true,
-            showConfirmButton: false
-        });
-    </script>
+        <!-- Thông báo -->
+        <script th:if="${success != null}" th:inline="javascript">
+            Swal.fire({
+                icon: 'success',
+                title: 'Thành công',
+                text: '[[${success}]]',
+                position: 'center',
+                timer: 3000,
+                timerProgressBar: true,
+                showConfirmButton: false
+            });
+        </script>
+        <script th:if="${error != null}" th:inline="javascript">
+            Swal.fire({
+                icon: 'error',
+                title: 'Lỗi!',
+                text: '[[${error}]]',
+                position: 'center',
+                timer: 3000,
+                timerProgressBar: true,
+                showConfirmButton: false
+            });
+        </script>
 
-    <div class="container mt-5">
-        <div class="card shadow p-4 bg-white">
-            <h2 class="text-center text-uppercase mb-4">Thông tin hóa đơn</h2>
+        <div class="container mt-5">
+            <div class="card shadow p-4 bg-white">
+                <h2 class="text-center text-uppercase mb-4">Thông tin hóa đơn</h2>
 
-            <div class="row mb-3">
-                <div class="col-md-4 fw-bold">Mã hóa đơn:</div>
-                <div class="col-md-8" th:text="${hoaDon.maHoaDon}"></div>
-            </div>
-            <div class="row mb-3">
-                <div class="col-md-4 fw-bold">Nhân viên bán:</div>
-                <div class="col-md-8" th:text="${hoaDon.idNhanVien != null ? hoaDon.idNhanVien.hoVaTen : ''}"></div>
-            </div>
-            <div class="row mb-3">
-                <div class="col-md-4 fw-bold">Trạng thái:</div>
-                <div class="col-md-8">
-                    <span class="badge"
-                          th:classappend="${hoaDon.trangThai == 1} ? 'bg-success' : 'bg-warning text-dark'"
-                          th:text="${hoaDon.trangThai == 1 ? 'Đã thanh toán' : 'Chưa thanh toán'}"></span>
+                <div class="row mb-3">
+                    <div class="col-md-4 fw-bold">Mã hóa đơn:</div>
+                    <div class="col-md-8" th:text="${hoaDon.maHoaDon}"></div>
                 </div>
-            </div>
-
-            <div class="row mb-3">
-                <div class="col-md-4 fw-bold">Giảm giá:</div>
-                <div class="col-md-8">
-                    <span th:text="${hoaDon.tongTienGiam != null ? #numbers.formatDecimal(hoaDon.tongTienGiam, 0, 'COMMA', 0, 'POINT') + ' đ' : '0 đ'}"></span>
+                <div class="row mb-3">
+                    <div class="col-md-4 fw-bold">Nhân viên bán:</div>
+                    <div class="col-md-8" th:text="${hoaDon.idNhanVien != null ? hoaDon.idNhanVien.hoVaTen : ''}"></div>
                 </div>
-            </div>
-            <div class="row mb-3">
-                <div class="col-md-4 fw-bold">Tổng tiền thanh toán:</div>
-                <div class="col-md-8 text-success fw-bold"
-                     th:text="${#numbers.formatDecimal(hoaDon.thanhTien, 0, 'COMMA', 0, 'POINT') + ' đ'}"></div>
-            </div>
+                <div class="row mb-3">
+                    <div class="col-md-4 fw-bold">Trạng thái:</div>
+                    <div class="col-md-8">
+                        <span class="badge"
+                            th:classappend="${hoaDon.trangThai == 1} ? 'bg-success' : 'bg-warning text-dark'"
+                            th:text="${hoaDon.trangThai == 1 ? 'Đã thanh toán' : 'Chưa thanh toán'}"></span>
+                    </div>
+                </div>
 
-            <hr>
+                <div class="row mb-3">
+                    <div class="col-md-4 fw-bold">Giảm giá:</div>
+                    <div class="col-md-8">
+                        <span
+                            th:text="${hoaDon.tongTienGiam != null ? #numbers.formatDecimal(hoaDon.tongTienGiam, 0, 'COMMA', 0, 'POINT') + ' đ' : '0 đ'}"></span>
+                    </div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-md-4 fw-bold">Tổng tiền thanh toán:</div>
+                    <div class="col-md-8 text-success fw-bold"
+                        th:text="${#numbers.formatDecimal(hoaDon.thanhTien, 0, 'COMMA', 0, 'POINT') + ' đ'}"></div>
+                </div>
 
-            <h5 class="fw-bold text-uppercase border-bottom pb-2 mb-3">Danh sách sản phẩm</h5>
-            <div class="table-responsive">
-                <table class="table table-bordered table-hover align-middle text-center">
-                    <thead class="table-dark">
-                    <tr>
-                        <th>Tên Sản Phẩm</th>
-                        <th>Số Lượng</th>
-                        <th>Đơn Giá</th>
-                        <th>Thành Tiền</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    <tr th:each="ct : ${hdct}">
-                        <td th:text="${ct.idChiTietSanPham.idSanPham.tenSanPham}"></td>
-                        <td>
-                            <span class="badge bg-primary fs-6 px-3 py-2" th:text="${ct.soLuong}"></span>
-                        </td>
-                        <td th:text="${#numbers.formatDecimal(ct.donGia, 0, 'COMMA', 0, 'POINT')} + ' đ'"></td>
-                        <td th:text="${#numbers.formatDecimal(ct.soLuong * ct.donGia, 0, 'COMMA', 0, 'POINT')} + ' đ'"></td>
-                    </tr>
-                    </tbody>
-                </table>
-            </div>
+                <hr>
 
-            <div class="d-flex justify-content-between mt-4">
-                <a href="/banhangtaiquay/hienthi" class="btn btn-outline-secondary px-4">
-                    <i class="fas fa-arrow-left me-2"></i> Trở lại bán hàng
-                </a>
-                <a th:href="@{'/banhangtaiquay/export/pdf/' + ${hoaDon.id}}" target="_blank"
-                   class="btn btn-primary px-4">
-                    <i class="fas fa-print me-2"></i> In hóa đơn (PDF)
-                </a>
+                <h5 class="fw-bold text-uppercase border-bottom pb-2 mb-3">Danh sách sản phẩm</h5>
+                <div class="table-responsive">
+                    <table class="table table-bordered table-hover align-middle text-center">
+                        <thead class="table-dark">
+                            <tr>
+                                <th>Tên Sản Phẩm</th>
+                                <th>Số Lượng</th>
+                                <th>Đơn Giá</th>
+                                <th>Thành Tiền</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="ct : ${hdct}">
+                                <td th:text="${ct.idChiTietSanPham.idSanPham.tenSanPham}"></td>
+                                <td>
+                                    <span class="badge bg-primary fs-6 px-3 py-2" th:text="${ct.soLuong}"></span>
+                                </td>
+                                <td th:text="${#numbers.formatDecimal(ct.donGia, 0, 'COMMA', 0, 'POINT')} + ' đ'"></td>
+                                <td
+                                    th:text="${#numbers.formatDecimal(ct.soLuong * ct.donGia, 0, 'COMMA', 0, 'POINT')} + ' đ'">
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Thêm nút in -->
+                <div class="d-flex justify-content-between mt-4">
+                    <a href="/banhangtaiquay/hienthi" class="btn btn-outline-secondary px-4">
+                        <i class="fas fa-arrow-left me-2"></i> Trở lại bán hàng
+                    </a>
+                    <a th:href="@{'/banhangtaiquay/in/' + ${hoaDon.id}}" class="btn btn-primary" target="_blank">
+                        📄 In Hóa Đơn (PDF)
+                    </a>
+                </div>
             </div>
         </div>
     </div>
 
-</div>
+
+    </div>
 </body>
+
 </html>
