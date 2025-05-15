@@ -13,7 +13,6 @@ import java.util.*;
 @Service
 public class VnPay {
     public String createOrder(int total, String orderInfor, String urlReturn,HttpServletRequest request) throws UnsupportedEncodingException {
-
         String vnp_Version = "2.1.0";
         String vnp_Command = "pay";
         String orderType = "other";

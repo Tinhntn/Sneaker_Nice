@@ -302,7 +302,7 @@
                         li.classList.add("cart-item");
 
                         let outOfStockWarning = item.isOutOfStock ? `<p class="out-of-stock-warning">Hết hàng</p>` : "";
-                        let disableIncreaseButton = item.isOutOfStock ? "disabled" : "";
+                        let disableIncreaseButton = item.isOutOfStock ? "hidden" : "";
 
                         if (item.isOutOfStock) {
                             hasOutOfStock = true;
@@ -317,9 +317,10 @@
                             <p>Đơn giá :${(item.gia || 0).toLocaleString()}đ</p>
                             <p style="color:red;">Thành tiền :${(item.gia * item.soLuong || 0).toLocaleString()}đ</p>
                             <div class="quantity-controls">
-                                <button ${item.soLuong <= 1 ? "disabled" : ""} ${disableIncreaseButton}  onclick="updateQuantity(${item.idGioHangChiTiet}, -1)">-</button>
+                                <button class =" ${disableIncreaseButton}" ${item.soLuong <= 1 ? "disabled" : ""} onclick="updateQuantity(${item.idGioHangChiTiet}, -1)">-</button>
                                 <span  id="quantity-${item.idGioHangChiTiet}">${item.soLuong || 0}</span>
-                                <button ${disableIncreaseButton} onclick="updateQuantity(${item.idGioHangChiTiet}, 1)">+</button>
+                                <button class =" ${disableIncreaseButton}" onclick="updateQuantity(${item.idGioHangChiTiet}, 1)">+</button>
+
                             </div>
                             ${outOfStockWarning}
                         </div>
@@ -331,12 +332,12 @@
 
                     totalPriceElement.innerText = totalPrice.toLocaleString() + "đ";
 
-                    // Nếu có sản phẩm hết hàng, disable nút thanh toán
-                    if (hasOutOfStock) {
-                        checkoutButton.disabled = true;
-                        checkoutButton.classList.add("disabled");
-                        notyf.error("Có sản phẩm hết hàng, vui lòng kiểm tra lại!");
-                    }
+                    // // Nếu có sản phẩm hết hàng, disable nút thanh toán
+                    // if (hasOutOfStock) {
+                    //     checkoutButton.disabled = true;
+                    //     checkoutButton.classList.add("disabled");
+                    //     notyf.error("Có sản phẩm hết hàng, vui lòng kiểm tra lại!");
+                    // }
                 })
                 .catch(error => {
                     console.error("Lỗi khi tải giỏ hàng:", error);
