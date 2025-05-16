@@ -549,6 +549,7 @@
 			});
 			document.getElementById("apMaGiamGia").addEventListener("click", function () {
 				const voucherId = getSelectedVoucherId();
+				console.log("id khuyen mai" + voucherId)
 				if (voucherId) {
 					let tongTien = parseFloat(document.getElementById("tong").innerText.replace(/[^\d]/g, ""));
 					const checkedCheckboxes = document.querySelectorAll('.cart-checkbox:checked');
@@ -558,6 +559,7 @@
 						tongTien: tongTien,
 						selectedIds: selectedIds
 					}
+					console.log(formData)
 					fetch('/gio-hang/addVoucher', {
 						method: 'POST',
 						headers: { 'Content-Type': 'application/json' },
@@ -567,17 +569,22 @@
 							if (!response.ok) {
 								return response.json().then(err => {
 									loadCheckout();
+									console.log(err.message)
 									throw new Error(err.message || "Thêm voucher thất bại");
 								});
 							}
 							return response.json(); // ✅ chỉ cần dòng này sau xử lý lỗi
 						})
 						.then(data => {
-							document.getElementById("disscount-price").innerText = data.tongTienGiam.toLocaleString("vi-VN") + "₫";
-							document.getElementById("final-price").innerText = (tongTien - data.tongTienGiam).toLocaleString("vi-VN") + "₫";
+							notyf.success(data.message || "Áp dụng voucher thành công");
+							if (data.tongTienGiam != null) {
+								document.getElementById("disscount-price").innerText = data.tongTienGiam.toLocaleString("vi-VN") + "₫";
+								document.getElementById("final-price").innerText = (tongTien - data.tongTienGiam).toLocaleString("vi-VN") + "₫";
+							}
 							document.getElementById("btnCloseModal").click();
 						})
 						.catch(error => {
+							console.log(error.message)
 							notyf.error(error.message || "Đã xãy ra lỗi");
 						})
 					// Gửi lên server hoặc xử lý tiếp...
@@ -685,6 +692,11 @@
 									if (!response.ok) {
 										return response.json().then(err => {
 											loadCheckout();
+											let itemsAll = Array.from(document.querySelectorAll('.cart-checkbox')).
+												map(checkbox => parseInt(checkbox.getAttribute('data-id')));
+											if (itemsAll.length == 0) {
+												window.location.reload();
+											}
 											throw new Error(notyf.error(err.message || "Thanh toán thất bại!"));
 											return;
 										});
@@ -714,20 +726,22 @@
 									if (!response.ok) {
 										return response.json().then(err => {
 											loadCheckout();
+											let itemsAll = Array.from(document.querySelectorAll('.cart-checkbox')).
+												map(checkbox => parseInt(checkbox.getAttribute('data-id')));
+											if (itemsAll.length == 0) {
+												window.location.reload();
+											}
 											throw new Error(notyf.error(err.message || `Lỗi HTTP: ${response.status}`));
-											return ;
+											return;
 										});
 									}
 									return response.json();
 								})
 								.then(data => {
-									if (data.redirectUrl) {
-										setTimeout(function () {
-											window.location.href = data.redirectUrl; // Điều hướng đến trang thanh toán VNPAY
-										}, 2000)
-									} else {
-										throw new Error(data.message || "Lỗi không xác định khi tạo đơn hàng!");
-									}
+									notyf.success(data.message || "Thanh toán thành côngcông")
+									setTimeout(function () {
+										window.location.href = "/gio-hang/checkout-success"; // Điều hướng đến trang thanh toán VNPAY
+									}, 2000)
 								})
 								.catch(error => {
 									setTimeout(() => {
@@ -740,46 +754,7 @@
 
 
 			});
-			document.getElementById("apply-discount-btn").addEventListener("click", function () {
-				let maKhuyenMai = document.getElementById("discount-code").value;
-				let totalPrice = /*[[${totalPrice}]]*/ 0;
-				Swal.fire({
-					title: "Xác nhận dùng mã giảm giá",
-					text: "Bạn có muốn dùng mã giảm giá này không?",
-					icon: "warning",
-					showCancelButton: true,
-					confirmButtonColor: "#3085d6",
-					cancelButtonColor: "#d33",
-					confirmButtonText: "Xác nhận",
-					cancelButtonText: "Hủy"
-				}).then((result) => { // Đã sửa lỗi cú pháp
-					if (result.isConfirmed) { // Nếu người dùng bấm "Xác nhận"
-						fetch("/gio-hang/ma-giam-gia", {
-							method: "POST",
-							headers: { "Content-Type": "application/json" },
-							body: JSON.stringify({ maKhuyenMai, totalPrice })
-						})
-							.then(response => response.json())
-							.then(data => {
-								if (data.giaGiam !== undefined) {
-									let giaGiam = parseFloat(data.giaGiam);
-									let finalPrice = totalPrice - giaGiam;
 
-									document.getElementById("discount-price").textContent = giaGiam.toLocaleString("vi-VN") + "đ";
-									document.getElementById("final-price").textContent = finalPrice.toLocaleString("vi-VN") + "đ";
-
-									Swal.fire("Thành công!", "Mã giảm giá đã được áp dụng!", "success");
-								} else {
-									Swal.fire("Lỗi!", data.message, "error");
-								}
-							})
-							.catch(error => {
-								console.error("Lỗi:", error);
-								Swal.fire("Lỗi!", "Đã có lỗi xảy ra, vui lòng thử lại!", "error");
-							});
-					}
-				});
-			});
 
 			function loadCheckout() {
 				updateCartCount();

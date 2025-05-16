@@ -293,9 +293,6 @@
 
     fixedContentPos: false
   });
-
-
-
 	var goHere = function() {
 
 		$('.mouse-icon').on('click', function(event){

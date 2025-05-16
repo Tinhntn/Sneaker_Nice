@@ -302,12 +302,11 @@
                         li.classList.add("cart-item");
 
                         let outOfStockWarning = item.isOutOfStock ? `<p class="out-of-stock-warning">Hết hàng</p>` : "";
-                        let disableIncreaseButton = item.isOutOfStock ? "hidden" : "";
-
+                        let spKhongHoatDong = item.checkSP? `<p class="out-of-stock-warning">Ngừng hoạt động</p>` : "";
+                        let disableIncreaseButton = item.isOutOfStock || item.checkSP ? "hidden" : "";
                         if (item.isOutOfStock) {
                             hasOutOfStock = true;
                         }
-
                         li.innerHTML = `
                         <img src="${item.hinhAnh}" alt="">
                         <div class="item-details">
@@ -323,6 +322,7 @@
 
                             </div>
                             ${outOfStockWarning}
+                            ${spKhongHoatDong}
                         </div>
                         <button class="remove-item" onclick="removeFromCart(${item.idGioHangChiTiet})">✕</button>
                     `;
