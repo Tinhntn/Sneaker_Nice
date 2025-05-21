@@ -113,4 +113,11 @@ public interface ChiTietSanPhamRepository extends JpaRepository<ChiTietSanPham, 
                                                @Param("idChatLieu") Integer idChatLieu,
                                                Pageable pageable);
 
+
+    // an
+
+    @Query("SELECT c FROM ChiTietSanPham c WHERE c.soLuong >= 0 AND c.soLuong <= 5 AND c.trangThai = true ORDER BY c.soLuong ASC")
+    Page<ChiTietSanPham> findSanPhamSapHetHang(Pageable pageable);
+
+
 }
