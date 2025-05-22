@@ -41,7 +41,7 @@ public interface ChiTietSanPhamRepository extends JpaRepository<ChiTietSanPham, 
 
 
     // Lấy danh sách chi tiết sản phẩm theo id sản phẩm với trạng thái đang hoạt động
-    ArrayList<ChiTietSanPham> findByIdSanPham_IdAndTrangThai(int idSanPham, boolean trangThai);
+    ArrayList<ChiTietSanPham> findChiTietSanPhamByIdSanPham_IdAndTrangThai(int idSanPham, boolean trangThai);
 
     // Tìm chi tiết sản phẩm theo id sản phẩm, id size và id màu sắc
     ChiTietSanPham findChiTietSanPhamByIdSanPham_IdAndIdSize_IdAndIdMauSac_Id(int idSanPham, int idSize, int idMauSac);
@@ -113,11 +113,12 @@ public interface ChiTietSanPhamRepository extends JpaRepository<ChiTietSanPham, 
                                                @Param("idChatLieu") Integer idChatLieu,
                                                Pageable pageable);
 
-
     // an
+
 
     @Query("SELECT c FROM ChiTietSanPham c WHERE c.soLuong >= 0 AND c.soLuong <= 5 AND c.trangThai = true ORDER BY c.soLuong ASC")
     Page<ChiTietSanPham> findSanPhamSapHetHang(Pageable pageable);
+
 
 
 }

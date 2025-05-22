@@ -1,118 +1,808 @@
 <!doctype html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-      layout:decorate="~{layout/main.html}">
+    layout:decorate="~{layout/main.html}">
 
 <head>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/notyf@3/notyf.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdn.jsdelivr.net/npm/notyf@3/notyf.min.js"></script>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Document</title>
-    <link rel="stylesheet" type="text/css" href="./styles/main.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quản lý Sản phẩm</title>
+    <style>
+        :root {
+            --primary-color: #4361ee;
+            --secondary-color: #3f37c9;
+            --success-color: #4cc9f0;
+            --light-color: #f8f9fa;
+            --dark-color: #212529;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f5f7fa;
+        }
+
+        .card {
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            border: none;
+            transition: transform 0.2s;
+        }
+
+        .card:hover {
+            transform: translateY(-2px);
+        }
+
+        .table-responsive {
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .table {
+            margin-bottom: 0;
+        }
+
+        .table thead th {
+            background-color: var(--primary-color);
+            color: white;
+            font-weight: 500;
+            vertical-align: middle;
+        }
+
+        .table-hover tbody tr:hover {
+            background-color: rgba(67, 97, 238, 0.05);
+        }
+
+        .btn-primary {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+        }
+
+        .btn-primary:hover {
+            background-color: var(--secondary-color);
+            border-color: var(--secondary-color);
+        }
+
+        .btn-sm {
+            padding: 0.25rem 0.5rem;
+            font-size: 0.875rem;
+        }
+
+        .status-toggle {
+            position: relative;
+            display: inline-block;
+            width: 50px;
+            height: 24px;
+        }
+
+        .status-toggle input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .status-slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 24px;
+        }
+
+        .status-slider:before {
+            position: absolute;
+            content: "";
+            height: 16px;
+            width: 16px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+
+        input:checked+.status-slider {
+            background-color: var(--success-color);
+        }
+
+        input:checked+.status-slider:before {
+            transform: translateX(26px);
+        }
+
+        .status-label {
+            margin-left: 10px;
+            font-weight: 500;
+        }
+
+        .active-status {
+            color: #2ecc71;
+        }
+
+        .inactive-status {
+            color: #e74c3c;
+        }
+
+        .search-card {
+            background-color: white;
+            border-left: 4px solid var(--primary-color);
+        }
+
+        .pagination .page-item.active .page-link {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+        }
+
+        .pagination .page-link {
+            color: var(--primary-color);
+        }
+
+        .modal-header {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .form-control:focus,
+        .form-select:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 0.25rem rgba(67, 97, 238, 0.25);
+        }
+
+        .input-group-text {
+            background-color: var(--light-color);
+        }
+
+        @media (max-width: 768px) {
+            .table-responsive {
+                overflow-x: auto;
+                -webkit-overflow-scrolling: touch;
+            }
+
+            .btn-sm {
+                padding: 0.2rem 0.4rem;
+                font-size: 0.75rem;
+            }
+        }
+
+        /* Optional: Add some spacing between filter rows */
+        .form-label {
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+        }
+    </style>
 </head>
 
 <body>
-<div layout:fragment="content">
-
-    <!-- Thanh tìm kiếm và bộ lọc -->
-    <div class="card shadow-sm mb-4">
-        <div class="card-body ">
-        <form th:action="@{/sanpham/hienthi}" method="get" class="row g-3">
-            <!-- Ô tìm kiếm theo mã hoặc tên sản phẩm -->
-            <div class="col-md-4">
-                <input type="text" class="form-control" placeholder="Tìm theo mã hoặc tên sản phẩm" name="keyword"
-                    th:value="${keyword != null ? keyword : ''}">
-            </div>
-        
-            <!-- Ngày bắt đầu -->
-            <div class="col-md-3">
-                <input type="date" name="startDate" class="form-control"
-                    th:value="${startDate != null ? #dates.format(startDate, 'yyyy-MM-dd') : ''}">
-            </div>
-        
-            <!-- Ngày kết thúc -->
-            <div class="col-md-3">
-                <input type="date" name="endDate" class="form-control"
-                    th:value="${endDate != null ? #dates.format(endDate, 'yyyy-MM-dd') : ''}">
-            </div>
-        
-            <!-- Nút tìm kiếm -->
-            <div class="col-md-2">
-                <button class="btn btn-primary w-100" type="submit">
-                    <i class="fas fa-search me-2"></i> Tìm kiếm
-                </button>
-            </div>
-        </form>
+    <div layout:fragment="content">
+        <!-- Page Header -->
+        <div class="d-flex justify-content-between align-items-center mb-4" style="padding: 20px;">
+            <h2 class="mb-0"><i class="fas fa-boxes me-2"></i>Quản lý Sản phẩm</h2>
+            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#themSanPhamModal">
+                <i class="fas fa-plus me-2"></i>Thêm sản phẩm
+            </button>
         </div>
+
+        <!-- Search and Filter Card -->
+        <div class="card search-card mb-4">
+            <div class="card-body">
+                <form th:action="@{/sanpham/hienthi}" method="get" class="row g-3 align-items-end" id="formFilter">
+                    <!-- Row 1: Tìm kiếm và ngày tháng -->
+                    <div class="col-md-4">
+                        <label for="keyword" class="form-label">Tìm kiếm</label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="fas fa-search"></i></span>
+                            <input type="text" id="keyword" class="form-control" placeholder="Mã hoặc tên sản phẩm..."
+                                name="keyword" th:value="${keyword}">
+                        </div>
+                    </div>
+
+                    <div class="col-md-4">
+                        <label class="form-label">Ngày tạo</label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="far fa-calendar-alt"></i></span>
+                            <input type="date" name="startDate" class="form-control"
+                                th:value="${startDate != null ? #temporals.format(startDate, 'yyyy-MM-dd') : ''}">
+                            <span class="input-group-text">đến</span>
+                            <input type="date" name="endDate" class="form-control"
+                                th:value="${endDate != null ? #temporals.format(endDate, 'yyyy-MM-dd') : ''}">
+                        </div>
+                    </div>
+
+                    <!-- Row 2: Bộ lọc -->
+                    <div class="col-md-4">
+                        <label for="idHang" class="form-label">Hãng</label>
+                        <select id="idHang" class="form-select" name="idHang">
+                            <option value="">-- Tất cả --</option>
+                            <option th:each="hang : ${lstHang}" th:value="${hang.id}" th:text="${hang.tenHang}"
+                                th:selected="${idHang != null and idHang == hang.id}">
+                            </option>
+                        </select>
+                    </div>
+
+                    <div class="col-md-4">
+                        <label for="idDanhMuc" class="form-label">Danh mục</label>
+                        <select id="idDanhMuc" class="form-select" name="idDanhMuc">
+                            <option value="">-- Tất cả --</option>
+                            <option th:each="danhMuc : ${lstDanhMuc}" th:value="${danhMuc.id}"
+                                th:text="${danhMuc.tenDanhMuc}"
+                                th:selected="${idDanhMuc != null and idDanhMuc == danhMuc.id}">
+                            </option>
+                        </select>
+                    </div>
+
+                    <div class="col-md-4">
+                        <label for="idChatLieu" class="form-label">Chất liệu</label>
+                        <select id="idChatLieu" class="form-select" name="idChatLieu">
+                            <option value="">-- Tất cả --</option>
+                            <option th:each="chatLieu : ${lstChatLieu}" th:value="${chatLieu.id}"
+                                th:text="${chatLieu.tenChatLieu}"
+                                th:selected="${idChatLieu != null and idChatLieu == chatLieu.id}">
+                            </option>
+                        </select>
+                    </div>
+
+                    <!-- Row 3: Nút điều khiển -->
+                    <div class="col-md-2">
+                        <button type="submit" class="btn btn-primary w-100">
+                            <i class="fas fa-filter me-2"></i> Lọc
+                        </button>
+                    </div>
+
+                    <div class="col-md-2">
+                        <button type="button" id="clearFilters"  class="btn btn-outline-secondary w-100">
+                            <i class="fas fa-times me-2"></i> Xóa lọc
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Products Table -->
+        <div class="card">
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle">
+                        <thead>
+                            <tr>
+                                <th scope="col" width="10%">Mã SP</th>
+                                <th scope="col" width="20%">Tên sản phẩm</th>
+                                <th scope="col" width="12%">Hãng</th>
+                                <th scope="col" width="12%">Chất liệu</th>
+                                <th scope="col" width="12%">Danh mục</th>
+                                <th scope="col" width="10%">Ngày tạo</th>
+                                <th scope="col" width="10%">Ngày sửa</th>
+                                <th scope="col" width="8%">Trạng thái</th>
+                                <th scope="col" width="6%">Thao tác</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="sanPham : ${lstSanPham}">
+                                <td th:text="${sanPham.maSanPham}" class="fw-bold"></td>
+                                <td th:text="${sanPham.tenSanPham}"></td>
+                                <td th:text="${sanPham.idHang != null ? sanPham.idHang.tenHang : 'N/A'}"></td>
+                                <td th:text="${sanPham.idChatLieu != null ? sanPham.idChatLieu.tenChatLieu : 'N/A'}">
+                                </td>
+                                <td th:text="${sanPham.idDanhMuc != null ? sanPham.idDanhMuc.tenDanhMuc : 'N/A'}"></td>
+                                <td
+                                    th:text="${sanPham.ngayTao!=null?#dates.format(sanPham.ngayTao, 'dd/MM/yyyy'):'N/A'}">
+                                </td>
+                                <td
+                                    th:text="${sanPham.ngaySua!=null?#dates.format(sanPham.ngaySua, 'dd/MM/yyyy'):'N/A'}">
+                                </td>
+                                <td>
+                                    <label class="status-toggle">
+                                        <input type="checkbox" class="toggle-status" th:checked="${sanPham.trangThai}"
+                                            th:attr="data-id=${sanPham.id}">
+                                        <span class="status-slider"></span>
+                                    </label>
+                                    <span class="status-label"
+                                        th:classappend="${sanPham.trangThai} ? 'active-status' : 'inactive-status'"
+                                        th:text="${sanPham.trangThai ? 'Hoạt động' : 'Không HĐ'}"></span>
+                                </td>
+                                <td class="text-center">
+                                    <a th:href="@{/sanpham/chitietsanpham/{id}(id=${sanPham.id})}"
+                                        class="btn btn-sm btn-outline-primary" title="Cập nhật">
+                                        <i class="fas fa-edit"></i>
+                                    </a>
+                                </td>
+                            </tr>
+                            <tr th:if="${lstSanPham.empty}">
+                                <td colspan="9" class="text-center text-muted py-4">
+                                    <i class="fas fa-box-open fa-2x mb-2"></i><br>
+                                    Không tìm thấy sản phẩm nào
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Pagination -->
+                <nav aria-label="Page navigation" class="mt-4">
+                    <ul class="pagination justify-content-center">
+                        <li class="page-item" th:classappend="${currentPage == 0} ? 'disabled' : ''">
+                            <a th:href="@{/sanpham/hienthi(page=${currentPage - 1}, size=${10})}" class="page-link">
+                                <i class="fas fa-chevron-left"></i>
+                            </a>
+                        </li>
+                        <li class="page-item" th:each="i : ${#numbers.sequence(0, totalPages - 1)}"
+                            th:classappend="${i == currentPage} ? 'active' : ''">
+                            <a th:href="@{/sanpham/hienthi(page=${i}, size=${10})}" class="page-link"
+                                th:text="${i + 1}"></a>
+                        </li>
+                        <li class="page-item" th:classappend="${currentPage + 1 == totalPages} ? 'disabled' : ''">
+                            <a th:href="@{/sanpham/hienthi(page=${currentPage+1}, size=${10})}" class="page-link">
+                                <i class="fas fa-chevron-right"></i>
+                            </a>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+        </div>
+
+        <!-- Add Product Modal -->
+        <div class="modal fade" id="themSanPhamModal" tabindex="-1" aria-labelledby="themSanPhamModalLabel"
+            aria-hidden="true">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <form id="sanPhamForm">
+                        <div class="modal-header">
+                            <h5 class="modal-title"><i class="fas fa-plus-circle me-2"></i>Thêm sản phẩm mới</h5>
+                            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                                aria-label="Đóng"></button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="row g-3">
+                                <!-- Product Name -->
+                                <div class="col-md-12">
+                                    <label for="tenSanPham" class="form-label">Tên sản phẩm <span
+                                            class="text-danger">*</span></label>
+                                    <input type="text" id="tenSanPham" name="tenSanPham" class="form-control" required
+                                        placeholder="Nhập tên sản phẩm">
+                                </div>
+
+                                <!-- Brand -->
+                                <div class="col-md-6">
+                                    <label for="hang" class="form-label">Hãng <span class="text-danger">*</span></label>
+                                    <div class="input-group">
+                                        <select id="hang" name="hang" class="form-select" required>
+                                            <option value="" selected disabled>Chọn hãng</option>
+                                            <option th:each="hang : ${lstHang}" th:value="${hang.id}"
+                                                th:text="${hang.tenHang}"></option>
+                                        </select>
+                                        <button type="button" class="btn btn-outline-primary" data-bs-toggle="modal"
+                                            data-bs-target="#themHangModal" title="Thêm hãng mới">
+                                            <i class="fas fa-plus"></i>
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <!-- Category -->
+                                <div class="col-md-6">
+                                    <label for="danhMuc" class="form-label">Danh mục <span
+                                            class="text-danger">*</span></label>
+                                    <div class="input-group">
+                                        <select id="danhMuc" name="danhMuc" class="form-select" required>
+                                            <option value="" selected disabled>Chọn danh mục</option>
+                                            <option th:each="danhMuc : ${lstDanhMuc}" th:value="${danhMuc.id}"
+                                                th:text="${danhMuc.tenDanhMuc}"></option>
+                                        </select>
+                                        <button type="button" class="btn btn-outline-primary" data-bs-toggle="modal"
+                                            data-bs-target="#themDanhMucModal" title="Thêm danh mục mới">
+                                            <i class="fas fa-plus"></i>
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <!-- Material -->
+                                <div class="col-md-6">
+                                    <label for="chatLieu" class="form-label">Chất liệu <span
+                                            class="text-danger">*</span></label>
+                                    <div class="input-group">
+                                        <select id="chatLieu" name="chatLieu" class="form-select" required>
+                                            <option value="" selected disabled>Chọn chất liệu</option>
+                                            <option th:each="chatLieu : ${lstChatLieu}" th:value="${chatLieu.id}"
+                                                th:text="${chatLieu.tenChatLieu}"></option>
+                                        </select>
+                                        <button type="button" class="btn btn-outline-primary" data-bs-toggle="modal"
+                                            data-bs-target="#themChatLieuModal" title="Thêm chất liệu mới">
+                                            <i class="fas fa-plus"></i>
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <!-- Status -->
+                                <div class="col-md-6">
+                                    <label class="form-label">Trạng thái <span class="text-danger">*</span></label>
+                                    <div class="form-check form-switch">
+                                        <input class="form-check-input" type="checkbox" id="trangThai" name="trangThai"
+                                            checked>
+                                        <label class="form-check-label" for="trangThai">Hoạt động</label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                                <i class="fas fa-times me-2"></i>Hủy bỏ
+                            </button>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save me-2"></i>Lưu sản phẩm
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Add Brand Modal -->
+        <div class="modal fade" id="themHangModal" tabindex="-1" aria-labelledby="themHangModalLabel"
+            data-parent="#themSanPhamModal" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title"><i class="fas fa-tag me-2"></i>Thêm hãng mới</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="themHangForm">
+                            <div class="mb-3">
+                                <label for="tenHang" class="form-label">Tên hãng <span
+                                        class="text-danger">*</span></label>
+                                <input type="text" class="form-control" id="tenHang" name="tenHang" required
+                                    placeholder="Nhập tên hãng">
+                            </div>
+                            <div class="d-flex justify-content-end">
+                                <button type="button" class="btn btn-secondary me-2"
+                                    data-bs-dismiss="modal">Hủy</button>
+                                <button type="submit" class="btn btn-primary">Lưu</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Add Material Modal -->
+        <div class="modal fade" id="themChatLieuModal" tabindex="-1" aria-labelledby="themChatLieuModalLabel"
+            data-parent="#themSanPhamModal" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title"><i class="fas fa-tshirt me-2"></i>Thêm chất liệu mới</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="themChatLieuForm">
+                            <div class="mb-3">
+                                <label for="tenChatLieu" class="form-label">Tên chất liệu <span
+                                        class="text-danger">*</span></label>
+                                <input type="text" class="form-control" id="tenChatLieu" name="tenChatLieu" required
+                                    placeholder="Nhập tên chất liệu">
+                            </div>
+                            <div class="d-flex justify-content-end">
+                                <button type="button" class="btn btn-secondary me-2"
+                                    data-bs-dismiss="modal">Hủy</button>
+                                <button type="submit" class="btn btn-primary">Lưu</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Add Category Modal -->
+        <div class="modal fade" id="themDanhMucModal" tabindex="-1" aria-labelledby="themDanhMucModalLabel"
+            data-parent="#themSanPhamModal" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title"><i class="fas fa-list-alt me-2"></i>Thêm danh mục mới</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="themDanhMucForm">
+                            <div class="mb-3">
+                                <label for="tenDanhMuc" class="form-label">Tên danh mục <span
+                                        class="text-danger">*</span></label>
+                                <input type="text" class="form-control" id="tenDanhMuc" name="tenDanhMuc" required
+                                    placeholder="Nhập tên danh mục">
+                            </div>
+                            <div class="d-flex justify-content-end">
+                                <button type="button" class="btn btn-secondary me-2"
+                                    data-bs-dismiss="modal">Hủy</button>
+                                <button type="submit" class="btn btn-primary">Lưu</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <script>
+            // Khởi tạo Notyf
+            const notyf = new Notyf({
+                duration: 3000,
+                position: {
+                    x: 'right',
+                    y: 'top'
+                },
+                types: [
+                    {
+                        type: 'success',
+                        background: '#4cc9f0',
+                        icon: {
+                            className: 'fas fa-check',
+                            tagName: 'i',
+                            color: '#fff'
+                        }
+                    },
+                    {
+                        type: 'error',
+                        background: '#f44336',
+                        icon: {
+                            className: 'fas fa-times',
+                            tagName: 'i',
+                            color: '#fff'
+                        }
+                    }
+                ]
+            });
+
+            // Khởi tạo các modal
+            document.addEventListener('DOMContentLoaded', function () {
+                // Khởi tạo tất cả modal
+                const modalElements = document.querySelectorAll('.modal');
+                modalElements.forEach(function (modalEl) {
+                    new bootstrap.Modal(modalEl);
+                });
+
+                // Xử lý khi modal nhỏ đóng lại
+                document.querySelectorAll('[data-parent="#themSanPhamModal"]').forEach(modal => {
+                    modal.addEventListener('hidden.bs.modal', function () {
+                        const parentModal = bootstrap.Modal.getInstance(document.getElementById('themSanPhamModal'));
+                        if (parentModal) {
+                            parentModal.show();
+                        }
+                    });
+                });
+            });
+
+            // Toggle status switch functionality
+            document.querySelectorAll('.toggle-status').forEach(checkbox => {
+                checkbox.addEventListener('change', function () {
+                    const productId = this.getAttribute('data-id');
+                    const isActive = this.checked;
+                    const statusLabel = this.parentElement.nextElementSibling;
+
+                    // Cập nhật giao diện ngay lập tức
+                    if (isActive) {
+                        statusLabel.textContent = 'Hoạt động';
+                        statusLabel.classList.remove('inactive-status');
+                        statusLabel.classList.add('active-status');
+                    } else {
+                        statusLabel.textContent = 'Không HĐ';
+                        statusLabel.classList.remove('active-status');
+                        statusLabel.classList.add('inactive-status');
+                    }
+
+                    // Gửi request cập nhật trạng thái
+                    fetch(`/sanpham/update-status?id=${productId}&status=${isActive}`, {
+                        method: 'POST'
+                    })
+                        .then(response => {
+                            if (!response.ok) {
+                                return response.json().then(error => {
+                                    throw new Error(error.message || "Lỗi không xác định");
+                                });
+                            }
+                            return response.json();
+                        })
+                        .then(data => {
+                            // Hiển thị thông báo thành công
+                            notyf.success(data.message || 'Cập nhật trạng thái thành công');
+                        })
+                        .catch(error => {
+                            // Nếu thất bại, hoàn tác checkbox và UI
+                            console.error('Lỗi:', error);
+                            this.checked = !isActive;
+
+                            if (isActive) {
+                                statusLabel.textContent = 'Không HĐ';
+                                statusLabel.classList.remove('active-status');
+                                statusLabel.classList.add('inactive-status');
+                            } else {
+                                statusLabel.textContent = 'Hoạt động';
+                                statusLabel.classList.remove('inactive-status');
+                                statusLabel.classList.add('active-status');
+                            }
+
+                            notyf.error(error.message || 'Có lỗi xảy ra khi cập nhật trạng thái');
+                        });
+                });
+            });
+            // Form thêm sản phẩm
+            document.getElementById('sanPhamForm').addEventListener('submit', function (e) {
+                e.preventDefault();
+
+                const formData = {
+                    tenSanPham: document.getElementById('tenSanPham').value,
+                    idHang: document.getElementById('hang').value,
+                    idDanhMuc: document.getElementById('danhMuc').value,
+                    idChatLieu: document.getElementById('chatLieu').value,
+                    trangThai: document.getElementById('trangThai').checked
+                };
+
+                // Validate form
+                if (!formData.tenSanPham) {
+                    notyf.error('Vui lòng nhập tên sản phẩm');
+                    return;
+                }
+                if (!formData.idHang) {
+                    notyf.error('Vui lòng chọn hãng');
+                    return;
+                }
+                if (!formData.idDanhMuc) {
+                    notyf.error('Vui lòng chọn danh mục');
+                    return;
+                }
+                if (!formData.idChatLieu) {
+                    notyf.error('Vui lòng chọn chất liệu');
+                    return;
+                }
+
+                fetch('/sanpham/themsanpham', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(formData)
+                })
+                    .then(response => {
+                        if (!response.ok) {
+                            return response.json().then(err => {
+                                throw new Error(err.message || 'Có lỗi xảy ra');
+                            });
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        if (data.success) {
+                            notyf.success(data.message || 'Thêm sản phẩm thành công');
+                            setTimeout(() => {
+                                window.location.reload();
+                            }, 1500);
+                        } else {
+                            notyf.error(data.message || 'Có lỗi xảy ra');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        notyf.error(error.message || 'Có lỗi xảy ra khi thêm sản phẩm');
+                    });
+            });
+
+            // Form thêm hãng
+            document.getElementById('themHangForm').addEventListener('submit', function (e) {
+                e.preventDefault();
+                handleQuickAddForm(this, '/hang/them_nhanh', 'hãng');
+            });
+
+            // Form thêm chất liệu
+            document.getElementById('themChatLieuForm').addEventListener('submit', function (e) {
+                e.preventDefault();
+                handleQuickAddForm(this, '/chat_lieu/them_nhanh', 'chất liệu');
+            });
+
+            // Form thêm danh mục
+            document.getElementById('themDanhMucForm').addEventListener('submit', function (e) {
+                e.preventDefault();
+                handleQuickAddForm(this, '/danh_muc/them_nhanh', 'danh mục');
+            });
+
+            // Hàm xử lý chung cho các form thêm nhanh
+            function handleQuickAddForm(form, url, type) {
+                const formData = new FormData(form);
+                const inputField = form.querySelector('input[type="text"]');
+
+                if (!inputField.value.trim()) {
+                    notyf.error(`Vui lòng nhập tên ${type}`);
+                    return;
+                }
+
+                fetch(url, {
+                    method: 'POST',
+                    body: formData
+                })
+                    .then(response => {
+                        if (!response.ok) {
+                            return response.json().then(err => {
+                                throw new Error(err.message || `Có lỗi khi thêm ${type}`);
+                            });
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        if (data.success) {
+                            notyf.success(data.message || `Thêm ${type} thành công`);
+                            form.reset();
+                            setTimeout(() => {
+                                window.location.reload();
+                            }, 1500);
+                        } else {
+                            notyf.error(data.message || `Có lỗi khi thêm ${type}`);
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        notyf.error(error.message || `Có lỗi khi thêm ${type}`);
+                    });
+            }
+            document.getElementById('clearFilters').addEventListener('click', function () {
+                // Reset all form inputs
+                document.getElementById('keyword').value = '';
+                document.querySelector('input[name="startDate"]').value = '';
+                document.querySelector('input[name="endDate"]').value = '';
+                document.getElementById('idHang').value = '';
+                document.getElementById('idDanhMuc').value = '';
+                document.getElementById('idChatLieu').value = '';
+
+                // Submit the form to reload with cleared filters
+                document.querySelector('form').submit();
+            });
+            document.addEventListener('DOMContentLoaded', function () {
+                const formFilter = document.getElementById("formFilter"); // Sửa lại ID form
+
+                if (formFilter) {
+                    formFilter.addEventListener("submit", function (e) {
+                        const startDateInput = document.querySelector('input[name="startDate"]'); // Sửa tên thành startDate
+                        const endDateInput = document.querySelector('input[name="endDate"]');
+
+                        const startDate = startDateInput?.value;
+                        const endDate = endDateInput?.value;
+                        if ((startDate && !endDate) || (!startDate && endDate)) {
+                            notyf.error("Vui lòng chọn cả ngày bắt đầu và ngày kết thúc");
+                            e.preventDefault();
+                            return false;
+                        }
+                        console.log("Start Date:", startDateInput);
+                        console.log("End Date:", endDateInput);
+
+                        // Chỉ validate nếu cả 2 ngày đều có giá trị
+                        if (startDate && endDate) {
+                            const start = new Date(startDate);
+                            const end = new Date(endDate);
+
+                            // Reset validation UI
+                            startDateInput.classList.remove('is-invalid');
+                            endDateInput.classList.remove('is-invalid');
+
+                            if (start > end) {
+                                notyf.error("Ngày bắt đầu không được lớn hơn ngày kết thúc");
+
+                                // Thêm class invalid để highlight lỗi
+                                startDateInput.classList.add('is-invalid');
+                                endDateInput.classList.add('is-invalid');
+
+                                e.preventDefault();
+                                return false;
+                            }
+                        }
+
+                        return true;
+                    });
+                } else {
+                    console.error("Không tìm thấy form với ID 'formFilter'");
+                }
+            });
+        </script>
     </div>
-    <div class="container-fluid card p-7">
-        <div class="d-flex justify-content-between align-items-center mb-3" style="margin: 10px;">
-            <a th:href="@{/sanpham/themsanpham}" class="btn btn-primary">Thêm +</a>
-
-        </div>
-
-        <h2 class="text-center mb-3" >Danh Sách Sản Phẩm</h2>
-
-        <div class="table-responsive">
-            <table class="table table-bordered table-hover">
-                <thead class="table-hover">
-                <tr>
-                    <th scope="col">Mã sản phẩm</th>
-                    <th scope="col">Tên sản phẩm</th>
-                    <th scope="col">Hãng</th>
-                    <th scope="col">Chất liệu</th>
-                    <th scope="col">Danh mục</th>
-                    <th scope="col">Ngày tạo</th>
-                    <th scope="col">Ngày sửa</th>
-                    <th scope="col">Trạng thái</th>
-                    <th scope="col">Thao tác</th>
-                </tr>
-                </thead>
-                <tbody>
-                <tr th:each="sanPham : ${lstSanPham}">
-                    <td th:text="${sanPham.maSanPham}"></td>
-                    <td th:text="${sanPham.tenSanPham}"></td>
-                    <td th:text="${sanPham.idHang != null ? sanPham.idHang.tenHang : 'Không có'}"></td>
-                    <td th:text="${sanPham.idChatLieu != null ? sanPham.idChatLieu.tenChatLieu : 'Không có'}">
-                    </td>
-                    <td th:text="${sanPham.idDanhMuc != null ? sanPham.idDanhMuc.tenDanhMuc : 'Không có'}"></td>
-                    <td  th:text="${sanPham.ngayTao!=null?#dates.format(sanPham.ngayTao, 'dd/MM/yyyy'):'Không có'}"></td>
-                    <td th:text="${sanPham.ngayTao!=null?#dates.format(sanPham.ngaySua, 'dd/MM/yyyy'):'Không có'}"></td>
-                    <td class="text-center" disabled>
-                        <input type="checkbox" style="font-size: 11px;" class="toggle-status" th:checked="${sanPham.trangThai}"
-                               th:attr="data-id=${sanPham.id}" />
-                        <span class="status-label" style="font-size: 11px;"
-                              th:text="${sanPham.trangThai ? 'Hoạt động' : 'Không hoạt động'}"></span>
-                    </td>
-                    <td>
-                        <a th:href="@{/sanpham/chitietsanpham/{id}(id=${sanPham.id})}"
-                           class="btn btn-primary btn-sm">Cập nhật</a>
-                    </td>
-                </tr>
-                </tbody>
-            </table>
-        </div>
-
-        <!-- Phân trang -->
-        <nav aria-label="Page navigation" class="mt-3">
-            <ul class="pagination justify-content-center">
-                <li class="page-item" th:classappend="${currentPage == 0} ? 'disabled' : ''">
-                    <a th:href="@{/sanpham/hienthi(page=${currentPage - 1}, size=${10})}" class="page-link">«</a>
-                </li>
-                <li class="page-item" th:each="i : ${#numbers.sequence(0, totalPages - 1)}"
-                    th:classappend="${i == currentPage} ? 'active' : ''">
-                    <a th:href="@{/sanpham/hienthi(page=${i}, size=${10})}" class="page-link"
-                       th:text="${i + 1}"></a>
-                </li>
-                <li class="page-item" th:classappend="${currentPage + 1 == totalPages} ? 'disabled' : ''">
-                    <a th:href="@{/sanpham/hienthi(page=${currentPage+1}, size=${10})}" class="page-link">»</a>
-                </li>
-            </ul>
-        </nav>
-    </div>
-</div>
 </body>
 
 </html>

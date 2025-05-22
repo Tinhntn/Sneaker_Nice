@@ -24,23 +24,13 @@
         <div class="container-fluid">
             <div class="row justify-content-center">
                 <div class="col-lg-8">
-                    <form th:action="@{/sanpham/themsanpham}" th:object="${sanPham}" method="post" >
-                    
-                        <div class="container p-4 row" style="background-color: #f8f9fa; border-radius: 10px; border: 1px solid #ddd;">
+                    <div class="container p-4 row" style="background-color: #f8f9fa; border-radius: 10px; border: 1px solid #ddd;">
                             <h4 class="text-center mb-4">Thêm Sản Phẩm</h4>
-                    
-                            <!-- Mã Sản Phẩm (Không cho chỉnh sửa) -->
-                            <div class=" col-6 mb-3">
-                                <label for="maSanPham" class="form-label">Mã sản phẩm<span class="text-danger">*</span></label>
-                                <input type="text" id="maSanPham" name="maSanPham" class="form-control" th:value="${maSanPham}" readonly>
-                            </div>
-                    
                             <!-- Tên sản phẩm -->
                             <div class=" col-6 mb-3">
                                 <label for="tenSanPham" class="form-label">Tên sản phẩm<span class="text-danger">*</span></label>
                                 <input type="text" id="tenSanPham" name="tenSanPham" class="form-control" required>
                             </div>
-                    
                             <!-- Hãng (Combobox) -->
                             <div class="col-md-6">
                                 <label for="hang" class="form-label">Hãng<span class="text-danger">*</span></label>
@@ -97,92 +87,18 @@
                                 <a href="/sanpham/hienthi" class="btn btn-secondary">Hủy</a>
                             </div>
                         </div>
-                    
-                    </form>
                 </div>
             </div>
          
         </div>
 
-        <div class="modal fade" id="themHangModal" tabindex="-1" aria-labelledby="themHangModalLabel"
-            aria-hidden="true">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="themHangModalLabel">Thêm Hãng Mới</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    <div class="modal-body">
-                        <form id="themHangForm" method="post" action="/hang/add">
-                            <div class="mb-3">
-                                <label for="tenHangMoi" class="form-label">Tên Hãng<span
-                                        class="text-danger">*</span></label>
-                                <input type="text" class="form-control" id="tenHang" name="tenHang" required>
-                            </div>
-                            <button type="submit" class="btn btn-primary">Lưu</button>
-                        </form>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="modal fade" id="themChatLieuModal" tabindex="-1" aria-labelledby="themHangModalLabel"
-            aria-hidden="true">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="themChatLieuModalLabel">Thêm Chất Liệu Mới</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    <div class="modal-body">
-                        <form id="themChatLieuForm" method="post" action="/chat_lieu/add">
-                            <div class="mb-3">
-                                <label for="tenChatLieu" class="form-label">Tên Chất Liệu<span
-                                        class="text-danger">*</span></label>
-                                <input type="text" class="form-control" id="tenChatLieu" name="tenChatLieu" required>
-                            </div>
-                            <button type="submit" class="btn btn-primary">Lưu</button>
-                        </form>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="modal fade" id="themDanhMucModal" tabindex="-1" aria-labelledby="themDanhMucModalLabel"
-            aria-hidden="true">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="themDanhMucModalLabel">Thêm Danh Mục Mới</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    <div class="modal-body">
-                        <form id="themDanhMucForm" method="post" action="/danh_muc/add">
-                            <div class="mb-3">
-                                <label for="tenDanhMucMoi" class="form-label">Tên Danh Mục<span
-                                        class="text-danger">*</span></label>
-                                <input type="text" class="form-control" id="tenDanhMuc" name="tenDanhMuc" required>
-                            </div>
-                            <button type="submit" class="btn btn-primary">Lưu</button>
-                        </form>
-                    </div>
-                </div>
-            </div>
-        </div>
+        
 
     </div>
-
-    <!-- Hiển thị thông báo thành công -->
-    <script th:inline="javascript">
-        /*<![CDATA[*/
-        var successMessage = /*[[${successMessage}]]*/ 'null';
-        if (successMessage !== 'null') {
-            Swal.fire({
-                icon: 'success',
-                title: 'Thành công',
-                text: successMessage,
-                confirmButtonText: 'OK'
-            });
-        }
-        /*]]>*/
+    <script>
+      
+        const notyf = new Notyf();
+        document.getElementById()
     </script>
 
 </body>

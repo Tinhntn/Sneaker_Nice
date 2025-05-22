@@ -127,6 +127,8 @@ public class GioHangController {
             }
             //Kiểm tra giá của sản phẩm có thay đổi không
             boolean isChaged = false;
+            //kiểm tra trạng thái giỏ hàng có còn giỏ hàng true không
+
             StringBuilder thayDoi = new StringBuilder();
             for (GioHangChiTiet gh : lstGioHangChiTiet) {
                 if (Math.abs(gh.getIdChiTietSanPham().getGiaBan() - gh.getDonGia()) > 0.001f) {
@@ -140,8 +142,9 @@ public class GioHangController {
             if (isChaged) {
                 tinhLaiGiaTien(gioHang);
             }
+
             if (!thayDoi.toString().isBlank()) {
-                return ResponseEntity.badRequest().body(Map.of("message", "Sản phẩm " + thayDoi.toString() + "có thay đổi thay đổi", "load", true));
+                return ResponseEntity.badRequest().body(Map.of("message", "Sản phẩm " + thayDoi.toString() + "có thay đổi thay đổi"));
             }
             float tongTien = (float) lstGioHangChiTiet.stream().filter(item -> item.getTrangThai() && item.getIdChiTietSanPham().getTrangThai() && item.getIdChiTietSanPham().getIdSanPham().getTrangThai()).mapToDouble(GioHangChiTiet::getTongTien).sum();
             if (tongTien > 20000000) {
@@ -607,7 +610,10 @@ public class GioHangController {
         }
         GioHang gioHang = gioHangService.findGioHangByIDKH(khachHangService.findByEmail(getCurrentUserEmail()).getId());
         // Lấy danh sách sản phẩm
-        List<GioHangChiTiet> lstGioHangChiTiet = gioHangChiTietService.findByIdGioHang(gioHang.getId());
+        List<GioHangChiTiet> lstGioHangChiTiet = gioHangChiTietService.findByIdGioHang(gioHang.getId())
+                .stream()
+                .filter(item -> item.getTrangThai())
+                .collect(Collectors.toList());
         boolean isChaged = false;
         StringBuilder thayDoi = new StringBuilder();
         for (GioHangChiTiet gh : lstGioHangChiTiet) {
@@ -615,7 +621,8 @@ public class GioHangController {
                 thayDoi.append("").append(gh.getIdChiTietSanPham().getIdSanPham().getTenSanPham());
                 isChaged = true;
             } else if (!gh.getTrangThai() || !gh.getIdChiTietSanPham().getTrangThai() || !gh.getIdChiTietSanPham().getIdSanPham().getTrangThai()) {
-                thayDoi.append("").append(gh.getIdChiTietSanPham().getIdSanPham());
+                thayDoi.append("").append(gh.getIdChiTietSanPham().getIdSanPham().getTenSanPham()
+                );
             }
         }
         if (isChaged) {
