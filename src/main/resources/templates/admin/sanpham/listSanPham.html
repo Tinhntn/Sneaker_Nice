@@ -170,6 +170,12 @@
                 font-size: 0.75rem;
             }
         }
+
+        /* Optional: Add some spacing between filter rows */
+        .form-label {
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+        }
     </style>
 </head>
 
@@ -186,34 +192,72 @@
         <!-- Search and Filter Card -->
         <div class="card search-card mb-4">
             <div class="card-body">
-                <form th:action="@{/sanpham/hienthi}" method="get" class="row g-3 align-items-end">
-                    <!-- Search by code or name -->
+                <form th:action="@{/sanpham/hienthi}" method="get" class="row g-3 align-items-end" id="formFilter">
+                    <!-- Row 1: Tìm kiếm và ngày tháng -->
                     <div class="col-md-4">
                         <label for="keyword" class="form-label">Tìm kiếm</label>
                         <div class="input-group">
                             <span class="input-group-text"><i class="fas fa-search"></i></span>
                             <input type="text" id="keyword" class="form-control" placeholder="Mã hoặc tên sản phẩm..."
-                                name="keyword" th:value="${keyword != null ? keyword : ''}">
+                                name="keyword" th:value="${keyword}">
                         </div>
                     </div>
 
-                    <!-- Date range filter -->
-                    <div class="col-md-5">
-                        <label class="form-label">Lọc theo ngày tạo</label>
+                    <div class="col-md-4">
+                        <label class="form-label">Ngày tạo</label>
                         <div class="input-group">
                             <span class="input-group-text"><i class="far fa-calendar-alt"></i></span>
-                            <input type="date" name="startDate" class="form-control" placeholder="Từ ngày"
-                                th:value="${startDate != null ? #dates.format(startDate, 'yyyy-MM-dd') : ''}">
+                            <input type="date" name="startDate" class="form-control"
+                                th:value="${startDate != null ? #temporals.format(startDate, 'yyyy-MM-dd') : ''}">
                             <span class="input-group-text">đến</span>
-                            <input type="date" name="endDate" class="form-control" placeholder="Đến ngày"
-                                th:value="${endDate != null ? #dates.format(endDate, 'yyyy-MM-dd') : ''}">
+                            <input type="date" name="endDate" class="form-control"
+                                th:value="${endDate != null ? #temporals.format(endDate, 'yyyy-MM-dd') : ''}">
                         </div>
                     </div>
 
-                    <!-- Search button -->
-                    <div class="col-md-3">
-                        <button class="btn btn-primary w-100" type="submit">
-                            <i class="fas fa-filter me-2"></i> Lọc kết quả
+                    <!-- Row 2: Bộ lọc -->
+                    <div class="col-md-4">
+                        <label for="idHang" class="form-label">Hãng</label>
+                        <select id="idHang" class="form-select" name="idHang">
+                            <option value="">-- Tất cả --</option>
+                            <option th:each="hang : ${lstHang}" th:value="${hang.id}" th:text="${hang.tenHang}"
+                                th:selected="${idHang != null and idHang == hang.id}">
+                            </option>
+                        </select>
+                    </div>
+
+                    <div class="col-md-4">
+                        <label for="idDanhMuc" class="form-label">Danh mục</label>
+                        <select id="idDanhMuc" class="form-select" name="idDanhMuc">
+                            <option value="">-- Tất cả --</option>
+                            <option th:each="danhMuc : ${lstDanhMuc}" th:value="${danhMuc.id}"
+                                th:text="${danhMuc.tenDanhMuc}"
+                                th:selected="${idDanhMuc != null and idDanhMuc == danhMuc.id}">
+                            </option>
+                        </select>
+                    </div>
+
+                    <div class="col-md-4">
+                        <label for="idChatLieu" class="form-label">Chất liệu</label>
+                        <select id="idChatLieu" class="form-select" name="idChatLieu">
+                            <option value="">-- Tất cả --</option>
+                            <option th:each="chatLieu : ${lstChatLieu}" th:value="${chatLieu.id}"
+                                th:text="${chatLieu.tenChatLieu}"
+                                th:selected="${idChatLieu != null and idChatLieu == chatLieu.id}">
+                            </option>
+                        </select>
+                    </div>
+
+                    <!-- Row 3: Nút điều khiển -->
+                    <div class="col-md-2">
+                        <button type="submit" class="btn btn-primary w-100">
+                            <i class="fas fa-filter me-2"></i> Lọc
+                        </button>
+                    </div>
+
+                    <div class="col-md-2">
+                        <button type="button" id="clearFilters"  class="btn btn-outline-secondary w-100">
+                            <i class="fas fa-times me-2"></i> Xóa lọc
                         </button>
                     </div>
                 </form>
@@ -700,6 +744,63 @@
                         notyf.error(error.message || `Có lỗi khi thêm ${type}`);
                     });
             }
+            document.getElementById('clearFilters').addEventListener('click', function () {
+                // Reset all form inputs
+                document.getElementById('keyword').value = '';
+                document.querySelector('input[name="startDate"]').value = '';
+                document.querySelector('input[name="endDate"]').value = '';
+                document.getElementById('idHang').value = '';
+                document.getElementById('idDanhMuc').value = '';
+                document.getElementById('idChatLieu').value = '';
+
+                // Submit the form to reload with cleared filters
+                document.querySelector('form').submit();
+            });
+            document.addEventListener('DOMContentLoaded', function () {
+                const formFilter = document.getElementById("formFilter"); // Sửa lại ID form
+
+                if (formFilter) {
+                    formFilter.addEventListener("submit", function (e) {
+                        const startDateInput = document.querySelector('input[name="startDate"]'); // Sửa tên thành startDate
+                        const endDateInput = document.querySelector('input[name="endDate"]');
+
+                        const startDate = startDateInput?.value;
+                        const endDate = endDateInput?.value;
+                        if ((startDate && !endDate) || (!startDate && endDate)) {
+                            notyf.error("Vui lòng chọn cả ngày bắt đầu và ngày kết thúc");
+                            e.preventDefault();
+                            return false;
+                        }
+                        console.log("Start Date:", startDateInput);
+                        console.log("End Date:", endDateInput);
+
+                        // Chỉ validate nếu cả 2 ngày đều có giá trị
+                        if (startDate && endDate) {
+                            const start = new Date(startDate);
+                            const end = new Date(endDate);
+
+                            // Reset validation UI
+                            startDateInput.classList.remove('is-invalid');
+                            endDateInput.classList.remove('is-invalid');
+
+                            if (start > end) {
+                                notyf.error("Ngày bắt đầu không được lớn hơn ngày kết thúc");
+
+                                // Thêm class invalid để highlight lỗi
+                                startDateInput.classList.add('is-invalid');
+                                endDateInput.classList.add('is-invalid');
+
+                                e.preventDefault();
+                                return false;
+                            }
+                        }
+
+                        return true;
+                    });
+                } else {
+                    console.error("Không tìm thấy form với ID 'formFilter'");
+                }
+            });
         </script>
     </div>
 </body>

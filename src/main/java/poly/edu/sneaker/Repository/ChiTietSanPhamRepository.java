@@ -113,4 +113,5 @@ public interface ChiTietSanPhamRepository extends JpaRepository<ChiTietSanPham, 
                                                @Param("idChatLieu") Integer idChatLieu,
                                                Pageable pageable);
 
+
 }

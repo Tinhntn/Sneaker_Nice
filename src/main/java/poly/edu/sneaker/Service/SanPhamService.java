@@ -6,6 +6,7 @@ import poly.edu.sneaker.Model.ChiTietSanPham;
 import poly.edu.sneaker.Model.Interface.SanPhamInterface;
 import poly.edu.sneaker.Model.SanPham;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -20,8 +21,8 @@ public interface SanPhamService {
     List<SanPham> getAllSanPhams();
     Page<SanPham> findByMaSanPhamOrTenSanPham(String maSanPham, String tenSanPham, Pageable pageable);
 
-    ArrayList<ChiTietSanPham> createProductValidations(int idSanPham);
-    Page<SanPham> searchSanPham(String keyword, Date startDate, Date endDate, Pageable pageable);
-
+    Page<SanPham> filterSanPham(String keyword, LocalDate startDate, LocalDate endDate,
+                                Integer idDanhMuc, Integer idChatLieu, Integer idHang,
+                                int page, int size);
 
 }
