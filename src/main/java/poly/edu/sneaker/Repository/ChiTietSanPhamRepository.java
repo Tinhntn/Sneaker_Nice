@@ -41,7 +41,7 @@ public interface ChiTietSanPhamRepository extends JpaRepository<ChiTietSanPham, 
 
 
     // Lấy danh sách chi tiết sản phẩm theo id sản phẩm với trạng thái đang hoạt động
-    ArrayList<ChiTietSanPham> findByIdSanPham_IdAndTrangThai(int idSanPham, boolean trangThai);
+    ArrayList<ChiTietSanPham> findChiTietSanPhamByIdSanPham_IdAndTrangThai(int idSanPham, boolean trangThai);
 
     // Tìm chi tiết sản phẩm theo id sản phẩm, id size và id màu sắc
     ChiTietSanPham findChiTietSanPhamByIdSanPham_IdAndIdSize_IdAndIdMauSac_Id(int idSanPham, int idSize, int idMauSac);

@@ -16,6 +16,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import poly.edu.sneaker.Model.*;
 import poly.edu.sneaker.Service.*;
 
+import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Array;
 import java.nio.file.Files;
@@ -66,14 +67,18 @@ public class SanPhamController {
             cal.add(Calendar.DATE, -30);
             startDate = cal.getTime();
         }
-
+        List<Hang> lstHang = hangService.getAllHangs();
+        List<DanhMuc> lstDanhMuc = danhMucService.getAllDanhMucs();
+        List<ChatLieu> lstChatLieu = chatLieuService.getAllChatLieus();
         Page<SanPham> lstSanPham = sanPhamService.searchSanPham(keyword, startDate, endDate, pageable);
 
         // Truyền lại dữ liệu tìm kiếm cho view
         model.addAttribute("keyword", keyword);
         model.addAttribute("startDate", startDate);
         model.addAttribute("endDate", endDate);
-
+        model.addAttribute("lstHang", lstHang);
+        model.addAttribute("lstDanhMuc", lstDanhMuc);
+        model.addAttribute("lstChatLieu", lstChatLieu);
         if (lstSanPham.isEmpty()) {
             model.addAttribute("message", "Không tìm thấy sản phẩm.");
         }
@@ -84,7 +89,18 @@ public class SanPhamController {
 
         return "admin/sanpham/listSanPham";
     }
+    @PostMapping("/update-status")
+    @ResponseBody
+    public ResponseEntity<?> updateStatus(@RequestParam("id")int id,@RequestParam("status")boolean status) {
+        SanPham sanPham = sanPhamService.findById(id);
+        if(sanPham == null) {
+            return ResponseEntity.badRequest().body(Collections.singletonMap("message","Không tìm thấy sản phẩm"));
+        }
+        sanPham.setTrangThai(status);
+        sanPhamService.save(sanPham);
+        return ResponseEntity.ok().body(Collections.singletonMap("message",status?"Mở trạng thái hoạt động":"Tắt trạng thái hoạt động"));
 
+    }
     @GetMapping("/themsanpham")
     public String hienThiFormThem(Model model) {
         model.addAttribute("sanPham", new SanPham()); // Đối tượng rỗng để Thymeleaf bind dữ liệu
@@ -108,31 +124,39 @@ public class SanPhamController {
     }
 
     @PostMapping("/themsanpham")
-    public String them(@ModelAttribute SanPham sanPham,
-                       @RequestParam("hang") int idHang,
-                       @RequestParam("danhMuc") int idDanhMuc,
-                       @RequestParam("chatLieu") int idChatLieu,
-                       RedirectAttributes redirectAttributes) {
+    @ResponseBody
+    public ResponseEntity<?> them(@RequestBody Map<String, Object> sanPhamRQ) {
         // Gán giá trị từ combobox vào sản phẩm
-        sanPham.setIdHang(hangService.getHangById(idHang));
-        sanPham.setIdDanhMuc(danhMucService.findDanhMucById(idDanhMuc));
-        sanPham.setIdChatLieu(chatLieuService.getChatLieuById(idChatLieu));
-        List<SanPham> lstSP = sanPhamService.getAllSanPhams();
-        for (SanPham sp : lstSP) {
-            if (sp.getTenSanPham().trim().equalsIgnoreCase(sanPham.getTenSanPham().trim())) {
-                redirectAttributes.addFlashAttribute("errorMessage", "Sản phẩm đã tồn tại!");
-                return "redirect:/sanpham/themsanpham";
-            }
+        if (sanPhamRQ.isEmpty()) {
+            return ResponseEntity.badRequest().body(Collections.singletonMap("message", "Dữ liệu truyền vào không hợp lệ"));
         }
-
+        if (sanPhamRQ.get("idHang").equals("") || hangService.getHangById(Integer.parseInt(sanPhamRQ.get("idHang").toString())) == null) {
+            return ResponseEntity.badRequest().body(Collections.singletonMap("message", "Không tìm thấy hãng"));
+        }
+        if (sanPhamRQ.get("idDanhMuc").equals("") || danhMucService.findDanhMucById(Integer.parseInt(sanPhamRQ.get("idDanhMuc").toString())) == null) {
+            return ResponseEntity.badRequest().body(Collections.singletonMap("message", "Không tìm thấy danh mục"));
+        }
+        if (sanPhamRQ.get("idChatLieu").equals("") || chatLieuService.getChatLieuById(Integer.parseInt(sanPhamRQ.get("idChatLieu").toString())) == null) {
+            return ResponseEntity.badRequest().body(Collections.singletonMap("message", "Không tìm thấy chất liệu"));
+        }
+        SanPham sanPham = new SanPham();
+        sanPham.setTenSanPham((String) sanPhamRQ.get("tenSanPham"));
+        sanPham.setIdHang(hangService.getHangById(Integer.parseInt(sanPhamRQ.get("idHang").toString())));
+        sanPham.setIdDanhMuc(danhMucService.findDanhMucById(Integer.parseInt(sanPhamRQ.get("idDanhMuc").toString())));
+        sanPham.setIdChatLieu(chatLieuService.getChatLieuById(Integer.parseInt(sanPhamRQ.get("idChatLieu").toString())));
         sanPham.setTrangThai(true);
         sanPham.setNgaySua(new Date());
         sanPham.setNgayTao(new Date());
+        List<SanPham> lstSP = sanPhamService.getAllSanPhams();
+        for (SanPham sp : lstSP) {
+            if (sp.getTenSanPham().trim().equalsIgnoreCase(sanPham.getTenSanPham().trim())) {
+                return ResponseEntity.badRequest().body(Collections.singletonMap("message", "Tên phẩm đã tồn tại"));
+            }
+        }
         // Lưu sản phẩm vào database
         sanPhamService.save(sanPham);
         // Thông báo thành công
-        redirectAttributes.addFlashAttribute("successMessage", "Thêm sản phẩm thành công!");
-        return "redirect:/sanpham/hienthi";
+        return ResponseEntity.ok().body(Map.of("message", "Thêm sản phẩm thành công","success",true));
 
     }
 
@@ -162,109 +186,153 @@ public class SanPhamController {
         return "admin/sanpham/updateSanPham";
     }
 
-    @PostMapping("/capnhatsanpham/{id}")
-    public String updateSanPham(@PathVariable("id") int id, @ModelAttribute("sanPham") SanPham sanPham, RedirectAttributes redirectAttributes
+    @PutMapping("/capnhatsanpham/{idSanPham}")
+    @ResponseBody
+    public ResponseEntity<?> updateSanPham(@PathVariable("idSanPham") int id, @RequestBody Map<String, Object> sanPham
     ) {
         try {
             SanPham existingSanPham = sanPhamService.findById(id);
-            if (sanPham.getTrangThai() == null) {
-                sanPham.setTrangThai(false);
-            }
             if (existingSanPham != null) {
-                existingSanPham.setTenSanPham(sanPham.getTenSanPham());
-                existingSanPham.setIdHang(sanPham.getIdHang());
-                existingSanPham.setIdChatLieu(sanPham.getIdChatLieu());
-                existingSanPham.setIdDanhMuc(sanPham.getIdDanhMuc());
+                List<SanPham> lstSanPham = sanPhamService.getAllSanPhams();
+                String tenSanPham = sanPham.get("tenSanPham").toString();
+                int idHang = Integer.parseInt((String) sanPham.get("idHang"));
+                int idDanhMuc = Integer.parseInt((String) sanPham.get("idDanhMuc"));
+                int idChatLieu = Integer.parseInt((String) sanPham.get("idChatLieu"));
+                boolean trangThai = (boolean) sanPham.get("trangThai");
+                for (SanPham sp : lstSanPham) {
+                    if (sp.getId() != existingSanPham.getId() && sp.getTenSanPham().equalsIgnoreCase(tenSanPham)
+                    ) {
+                        return ResponseEntity.badRequest().body(Collections.singletonMap("message", "Tên sản phẩm đã tồn tại"));
+                    }
+                }
+                existingSanPham.setTenSanPham(tenSanPham);
+                existingSanPham.setIdHang(hangService.getHangById(idHang));
+                existingSanPham.setIdChatLieu(chatLieuService.getChatLieuById(idChatLieu));
+                existingSanPham.setIdDanhMuc(danhMucService.findDanhMucById(idDanhMuc));
                 existingSanPham.setNgaySua(new Date());
-                existingSanPham.setTrangThai(sanPham.getTrangThai() ? true : false);
+                existingSanPham.setTrangThai(trangThai);
                 sanPhamService.update(existingSanPham);
-                redirectAttributes.addFlashAttribute("", "Cập nhật sản phẩm thành công!");
+                return ResponseEntity.ok().body(Collections.singletonMap("message", "Cập nhật sản phẩm thành công"));
             } else {
-                redirectAttributes.addFlashAttribute("errorMessage", "Sản phẩm không tồn tại!");
+                return ResponseEntity.badRequest().body(Collections.singletonMap("message", "Không tìm thấy sản phẩm"));
+
             }
         } catch (Exception e) {
-            redirectAttributes.addFlashAttribute("errorMessage", "Có lỗi xảy ra khi cập nhật sản phẩm!");
+            e.printStackTrace();
+            return ResponseEntity.badRequest().body(Collections.singletonMap("message", "Cập nhật sản phẩm thất bại"));
         }
 
-        return "redirect:/sanpham/chitietsanpham/" + id;
     }
 
     @PostMapping("/addctsanpham/{id}")
-    public String themChiTietSanPham(@PathVariable("id") int idSanPham,
-                                     @RequestParam("img") MultipartFile img,
-                                     @ModelAttribute ChiTietSanPham chiTietSanPham, RedirectAttributes redirectAttributes) {
+    @ResponseBody
+    public ResponseEntity<?> themChiTietSanPham(@PathVariable("id") int idSanPham,
+                                                @RequestParam("img") MultipartFile img,
+                                                @RequestParam("idSize") int idSize,
+                                                @RequestParam("idMauSac") int idMauSac,
+                                                @RequestParam("trongLuong") float trongLuong,
+                                                @RequestParam("giaNhap") float giaNhap,
+                                                @RequestParam("giaBan") float giaBan,
+                                                @RequestParam("soLuong") int soLuong,
+                                                @RequestParam(value = "moTa", required = false) String moTa) {
         try {
-
             List<ChiTietSanPham> lstCTSP = chiTietSanPhamService.findByIdSanPham(idSanPham);
-            String fileName =null;
-            if (chiTietSanPham != null) {
-                List<String> paths = new ArrayList<>();
-                if (!img.isEmpty()) {
-                    // Lưu file vào thư mục static/images
-                     fileName = img.getOriginalFilename();
-
-
-                    String uploadDir = "src/main/resources/static/images/";
-                    Path path = Paths.get(uploadDir + fileName);
-                    try {
-                        Files.copy(img.getInputStream(), path, StandardCopyOption.REPLACE_EXISTING);
-                        paths.add(fileName); // Lưu đường dẫn ảnh để lưu DB
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                    // Ghép đường dẫn ảnh thành 1 chuỗi (ngăn cách bởi ,)
-                }
-                String allImages = ("/images/"+fileName);
-
-                ChiTietSanPham ctsp = new ChiTietSanPham();
-                ctsp.setIdSanPham(sanPhamService.findById(idSanPham));
-                ctsp.setIdSize(chiTietSanPham.getIdSize());
-                ctsp.setIdMauSac(chiTietSanPham.getIdMauSac());
-                for (ChiTietSanPham ct : lstCTSP) {
-                    if (ct.getIdSize().getId() == chiTietSanPham.getIdSize().getId()
-                            && ct.getIdMauSac().getId() == chiTietSanPham.getIdMauSac().getId()) {
-                        redirectAttributes.addFlashAttribute("errorMessage", "Chi tiết sản phẩm đã tồn tại");
-                        return "redirect:/sanpham/chitietsanpham/" + idSanPham;
-                    }
-                }
-
-                ctsp.setTrongLuong(chiTietSanPham.getTrongLuong());
-                ctsp.setGiaNhap(chiTietSanPham.getGiaNhap());
-                ctsp.setGiaBan(chiTietSanPham.getGiaBan());
-                ctsp.setSoLuong(chiTietSanPham.getSoLuong());
-                ctsp.setHinhAnh(allImages);
-                ctsp.setMoTa(chiTietSanPham.getMoTa());
-                ctsp.setNgayTao(new Date());
-                ctsp.setNgaySua(new Date());
-                ctsp.setTrangThai(true);
-                chiTietSanPhamService.saveChiTietSanPham(ctsp);
-                redirectAttributes.addFlashAttribute("successMessage", "Thêm chi tiết sản phẩm thành công");
-
-            } else {
-                redirectAttributes.addFlashAttribute("errrorMasage", "Có lỗi xảy ra khi thêm chi tiết sản phẩm");
+            if (sizeService.findById(idSize) == null) {
+                return ResponseEntity.badRequest().body(Map.of("message", "Size không tồn tại"));
             }
+            if (mauSacService.findById(idMauSac) == null) {
+                return ResponseEntity.badRequest().body(Map.of("message", "Màu sắc không tồn tại"));
+            }
+            String fileName = null;
+            List<String> paths = new ArrayList<>();
+            if (!img.isEmpty()) {
+                // Lưu file vào thư mục static/images
+                fileName = img.getOriginalFilename();
+                String uploadDir = "src/main/resources/static/images/";
+// Tạo thư mục nếu chưa tồn tại
+                File dir = new File(uploadDir);
+                if (!dir.exists()) {
+                    dir.mkdirs();
+                }
+                Path path = Paths.get(uploadDir + fileName);
+                try {
+                    Files.copy(img.getInputStream(), path, StandardCopyOption.REPLACE_EXISTING);
+                    paths.add(fileName); // Lưu đường dẫn ảnh để lưu DB
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                // Ghép đường dẫn ảnh thành 1 chuỗi (ngăn cách bởi ,)
+            }
+            String allImages = ("/images/" + fileName);
+            ChiTietSanPham ctsp = new ChiTietSanPham();
+            ctsp.setIdSanPham(sanPhamService.findById(idSanPham));
+            ctsp.setIdSize(sizeService.findById(idSize));
+            ctsp.setIdMauSac(mauSacService.findById(idMauSac));
+            if (lstCTSP.size() > 0) {
+                for (ChiTietSanPham ct : lstCTSP) {
+                    if (ct.getIdSize().getId() == idSize
+                            && ct.getIdMauSac().getId() == idMauSac) {
+                        return ResponseEntity.badRequest().body(Map.of("message", "Sản phẩm đã tồn tại", "success", false));
+                    }
+                }
+            }
+            ctsp.setTrongLuong(trongLuong);
+            ctsp.setGiaNhap(giaNhap);
+            ctsp.setGiaBan(giaBan);
+            ctsp.setSoLuong(soLuong);
+            ctsp.setHinhAnh(allImages);
+            ctsp.setMoTa(moTa);
+            ctsp.setNgayTao(new Date());
+            ctsp.setNgaySua(new Date());
+            ctsp.setTrangThai(true);
+            chiTietSanPhamService.saveChiTietSanPham(ctsp);
+            return ResponseEntity.ok().body(Map.of("message", "Thêm sản phẩm thành công", "success", true));
         } catch (Exception e) {
-            redirectAttributes.addFlashAttribute("errrorMasage", "Có lỗi xảy ra khi thêm chi tiết sản phẩm");
+            return ResponseEntity.badRequest().body(Map.of("message", "Thêm sản phẩm thất bại", "success", false));
         }
 
-        return "redirect:/sanpham/chitietsanpham/" + idSanPham;
+    }
+
+    @GetMapping("/chitietsanpham/fragment/{id}")
+    public String getTableFragment(
+            @PathVariable("id") int id,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            Model model
+    ) {
+        Pageable pages = PageRequest.of(page, size);
+        Page<ChiTietSanPham> pageCTSP = chiTietSanPhamService.findChiTietSanPhamByIDSanPham(id, pages);
+        model.addAttribute("lstCTSP", pageCTSP.getContent());
+        model.addAttribute("currentPage", page);
+        model.addAttribute("totalPages", pageCTSP.getTotalPages());
+        model.addAttribute("lstSize", sizeService.findAll());
+        model.addAttribute("lstMauSac", mauSacService.findAll());
+        return "fragments/chitietsanpham-table :: tableFragment";
     }
 
 
     @PutMapping("/updateCTSP/{id}")
-    public ResponseEntity<?> updateSanPham(@PathVariable int id, @RequestBody Map<String, Object> chiTietSanPham) {
+    public ResponseEntity<?> updateChiTietSanPham(@PathVariable int id, @RequestBody Map<String, Object> chiTietSanPham) {
         try {
             // Tìm sản phẩm theo ID
-            List<ChiTietSanPham> lstCTSP = chiTietSanPhamService.findByIdSanPham(id);
-
             ChiTietSanPham ctsp = chiTietSanPhamService.findById(id);
+
             if (ctsp == null) {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND)
                         .body(Collections.singletonMap("message", "Không tìm thấy sản phẩm!"));
             }
+            List<ChiTietSanPham> lstCTSP = chiTietSanPhamService.findByIdSanPham(ctsp.getIdSanPham().getId());
+
             // Ép kiểu dữ liệu an toàn
-            Integer idSize = convertToInt(chiTietSanPham.get("idSize"));
-            Integer idMauSac = convertToInt(chiTietSanPham.get("idMauSac"));
+            int idSize = convertToInt(chiTietSanPham.get("idSize"));
+            int idMauSac = convertToInt(chiTietSanPham.get("idMauSac"));
+            for (ChiTietSanPham ct : lstCTSP) {
+                // Nếu không phải bản ghi đang cập nhật thì mới check
+                if (ctsp.getId() != ct.getId() && ct.getIdSize().getId() == idSize
+                        && ct.getIdMauSac().getId() == idMauSac) {
+                    return ResponseEntity.badRequest().body(Map.of("message", "Chi tiết sản phẩm đã tồn tại", "success", false));
+                }
+            }
             Float trongLuong = convertToFloat(chiTietSanPham.get("trongLuong"));
             Float giaNhap = convertToFloat(chiTietSanPham.get("giaNhap"));
             Float giaBan = convertToFloat(chiTietSanPham.get("giaBan"));
@@ -272,15 +340,11 @@ public class SanPhamController {
             String moTa = (chiTietSanPham.get("moTa") != null) ? chiTietSanPham.get("moTa").toString() : "";
             Boolean trangThai = (chiTietSanPham.get("trangThai") != null) ?
                     Boolean.parseBoolean(chiTietSanPham.get("trangThai").toString()) : false;
-            // Cập nhật thông tin
-            if (idSize != null) {
-                ctsp.setIdSize(sizeService.findById(idSize));
-                Size size = sizeService.findById(idSize);
-                size.getMaSize();
+            ctsp.setIdSize(sizeService.findById(idSize));
+            ctsp.setIdMauSac(mauSacService.findById(idMauSac));
 
-            }
-            if (idMauSac != null) {
-                ctsp.setIdMauSac(mauSacService.findById(idMauSac));
+            if (giaNhap <= 0 || giaBan <= 0 || soLuong <= 0 || trongLuong <= 0) {
+                return ResponseEntity.badRequest().body(Collections.singletonMap("message", "Giá trị nhập vào phải lớn hơn 0"));
             }
             ctsp.setTrongLuong((trongLuong != null) ? trongLuong : 0.0f);
             ctsp.setGiaNhap((giaNhap != null) ? giaNhap : 0.0f);
@@ -288,30 +352,16 @@ public class SanPhamController {
             ctsp.setSoLuong((soLuong != null) ? soLuong : 0);
             ctsp.setMoTa(moTa);
             ctsp.setTrangThai(trangThai);
-
-            for (ChiTietSanPham ct : lstCTSP) {
-                // Nếu không phải bản ghi đang cập nhật thì mới check
-                if (ct.getId() != ctsp.getId()
-                        && ct.getIdSize().getId().equals(idSize)
-                        && ct.getIdMauSac().getId().equals(idMauSac)) {
-                    return ResponseEntity.badRequest().body(Collections.singletonMap("message", "Chi tiết sản phẩm đã tồn tại"));
-                }
-            }
-
+            ctsp.setNgaySua(new Date());
             // Gọi service để cập nhật dữ liệu
             chiTietSanPhamService.update(ctsp);
-
             return ResponseEntity.ok(Collections.singletonMap("success", true));
-
-
         } catch (Exception e) {
             e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(Collections.singletonMap("message", "Lỗi khi cập nhật sản phẩm!"));
         }
     }
-
-
 
 
     private int convertToInt(Object value) {

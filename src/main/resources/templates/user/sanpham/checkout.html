@@ -254,7 +254,7 @@
 								<div class="mb-3 d-flex">
 									<input id="inputMaKhuyenMai" type="text" class="form-control me-2"
 										placeholder="Mã Voucher">
-									<button id="searchMaGiamGia" type="submit" class="btn btn-primary">Áp dụng</button>
+									<button id="searchMaGiamGia" type="submit" class="btn btn-primary">Tìm kiếm</button>
 								</div>
 								<h6 class="text-muted">Mã giảm giá</h6>
 								<div id="voucher-list">
@@ -295,8 +295,22 @@
 				</div>
 		</section>
 		<script>
+
 			document.addEventListener("DOMContentLoaded", function () {
 				updateTotalPrice();
+				const notyf = new Notyf({
+					dismissible: true,
+					duration: 3000,
+					ripple: true,
+					types: [
+						{
+							type: 'error',
+							background: 'red',
+							duration: 3000,
+							dismissible: true
+						}
+					]
+				});
 			});
 			async function capNhatGiaGiam(tongTien) {
 				const response = await fetch(`/gio-hang/changeChoice?tongTien=${encodeURIComponent(tongTien)}`);
@@ -340,7 +354,6 @@
 
 
 			async function updateTotalPrice(event) {
-				const notyf = new Notyf(); // đưa vào trong hàm để không phụ thuộc DOMContentLoaded
 				let shippingFeeElement = document.getElementById("shipping-fee");
 				let disscountPrice = document.getElementById("disscount-price");
 				let finalPriceElement = document.getElementById("final-price");
@@ -357,7 +370,6 @@
 				checkedItems.forEach(c => {
 					total += parseFloat(c.getAttribute("data-price")) || 0;
 				});
-				console.log(total)
 				let shippingFee = parseFloat(shippingFeeElement.innerText.replace(/[^0-9]/g, "")) || 0;
 				let totalPrice = total + shippingFee;
 				const giamGia = await capNhatGiaGiam(totalPrice);
@@ -549,7 +561,6 @@
 			});
 			document.getElementById("apMaGiamGia").addEventListener("click", function () {
 				const voucherId = getSelectedVoucherId();
-				console.log("id khuyen mai" + voucherId)
 				if (voucherId) {
 					let tongTien = parseFloat(document.getElementById("tong").innerText.replace(/[^\d]/g, ""));
 					const checkedCheckboxes = document.querySelectorAll('.cart-checkbox:checked');
@@ -569,7 +580,6 @@
 							if (!response.ok) {
 								return response.json().then(err => {
 									loadCheckout();
-									console.log(err.message)
 									throw new Error(err.message || "Thêm voucher thất bại");
 								});
 							}
@@ -595,7 +605,6 @@
 			document.getElementById("thanhToanDonHang").addEventListener("click", function (e) {
 				e.preventDefault(); // Ngăn chặn hành vi mặc định của nút bấm
 				let isValid = true;
-				let notyf = new Notyf(); // Đảm bảo thư viện Notyf được khởi tạo
 				let selectedItems = Array.from(document.querySelectorAll('.cart-checkbox:checked'))
 					.map(checkbox => parseInt(checkbox.getAttribute('data-id')));
 				if (selectedItems.length === 0) {
@@ -692,9 +701,7 @@
 									if (!response.ok) {
 										return response.json().then(err => {
 											loadCheckout();
-											let itemsAll = Array.from(document.querySelectorAll('.cart-checkbox')).
-												map(checkbox => parseInt(checkbox.getAttribute('data-id')));
-											if (itemsAll.length == 0) {
+											if (err.checkTTGH == false) {
 												window.location.reload();
 											}
 											throw new Error(notyf.error(err.message || "Thanh toán thất bại!"));
@@ -726,11 +733,6 @@
 									if (!response.ok) {
 										return response.json().then(err => {
 											loadCheckout();
-											let itemsAll = Array.from(document.querySelectorAll('.cart-checkbox')).
-												map(checkbox => parseInt(checkbox.getAttribute('data-id')));
-											if (itemsAll.length == 0) {
-												window.location.reload();
-											}
 											throw new Error(notyf.error(err.message || `Lỗi HTTP: ${response.status}`));
 											return;
 										});
@@ -774,6 +776,13 @@
 						}
 						let totalPrice = data.totalPrice || 0;
 						cartList.innerHTML = "";
+						let countItems = items.filter(item => !item.isOutOfStock);
+						if (countItems <= 0) {
+							notyf.error("Các sản phẩm trong giỏ hàng đã hết")
+							setTimeout(() => {
+								window.location.reload()
+							})
+						}
 						items
 							.filter(item => !item.isOutOfStock)
 							.forEach(item => {

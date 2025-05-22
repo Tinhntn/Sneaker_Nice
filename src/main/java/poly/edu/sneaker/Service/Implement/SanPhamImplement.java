@@ -39,6 +39,8 @@ public class SanPhamImplement implements SanPhamService {
 
     @Override
     public void save(SanPham sanPham) {
+        sanPham.setMaSanPham(taoMaSanPham());
+        System.out.println(sanPham);
         sanPhamRepository.save(sanPham);
     }
 

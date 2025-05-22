@@ -97,7 +97,7 @@ public class ChiTietSanPhamImplement implements ChiTietSanPhamService {
 
     @Override
     public ArrayList<ChiTietSanPham> findByIdSanPham(int idSanPham) {
-        return chiTietSanPhamRepository.findByIdSanPham_IdAndTrangThai(idSanPham, true);
+        return chiTietSanPhamRepository.findChiTietSanPhamByIdSanPham_IdAndTrangThai(idSanPham, true);
     }
 
     @Override
