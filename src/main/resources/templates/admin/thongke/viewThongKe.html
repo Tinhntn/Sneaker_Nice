@@ -83,7 +83,8 @@
                 max-width: 100%;
             }
         }
-        .th{
+
+        .th {
             width: 50px;
         }
     </style>
@@ -190,7 +191,7 @@
                                 const startDate = document.getElementById('startDate').value;
                                 const endDate = document.getElementById('endDate').value;
                                 // Nếu có bộ lọc theo khoảng ngày thì gửi startDate & endDate, ngược lại có thể gửi loaiLoc
-                                if(startDate && endDate) {
+                                if (startDate && endDate) {
                                     window.location.href = `/thongke/export?startDate=${startDate}&endDate=${endDate}`;
                                 } else {
                                     // Ví dụ: nếu bạn có một bộ lọc loại và lưu giá trị ở biến global currentLoaiLoc
@@ -223,7 +224,8 @@
                                 <tr th:each="sanPham : ${lstSanPhamBanChay}">
                                     <td th:text="${sanPham.tenSanPham}">Tên sản phẩm</td>
                                     <td>
-                                        <img th:src="${sanPham.hinhAnh}" alt="Ảnh sản phẩm" style="width: 50px; height: 50px;">
+                                        <img th:src="${sanPham.hinhAnh}" alt="Ảnh sản phẩm"
+                                             style="width: 50px; height: 50px;">
                                     </td>
                                     <td th:text="${sanPham.giaBan} + ' VNĐ'">Đơn giá</td>
                                     <td th:text="${sanPham.soLuongBan}">Số lượng đã bán</td>
@@ -234,6 +236,59 @@
                     </div>
                 </div>
             </div>
+            <div class="mt-4">
+                <h4 class="text-danger"><b>Sản phẩm sắp hết hàng</b>  </h4>
+                <table class="table table-bordered table-hover text-center">
+                    <thead style="background-color: #f8d7da;">
+                    <tr>
+                        <th>Tên sản phẩm</th>
+                        <th>Size</th>
+                        <th>Hãng</th>
+                        <th>Chất liệu</th>
+                        <th>Màu sắc</th>
+                        <th>Số lượng</th>
+                        <th>Trạng thái</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="ctsp : ${sanPhamSapHetHangPage.content}">
+                        <td th:text="${ctsp.idSanPham.tenSanPham}"></td>
+                        <td th:text="${ctsp.idSize.tenSize}"></td>
+                        <td th:text="${ctsp.idSanPham.idHang.tenHang}"></td>
+                        <td th:text="${ctsp.idSanPham.idChatLieu.tenChatLieu}"></td>
+                        <td th:text="${ctsp.idMauSac.tenMauSac}"></td>
+                        <td th:text="${ctsp.soLuong}"></td>
+                        <td>
+                            <span th:text="${ctsp.soLuong > 0 ? 'Còn hàng' : 'Hết hàng'}"
+                                  th:classappend="${ctsp.soLuong > 0} ? 'text-success' : 'text-danger'"></span>
+                        </td>
+                    </tr>
+                    <tr th:if="${#lists.isEmpty(sanPhamSapHetHangPage.content)}">
+                        <td colspan="7">Không có sản phẩm nào sắp hết hàng.</td>
+                    </tr>
+                    </tbody>
+                </table>
+                <!-- Phân trang -->
+                <nav th:if="${sanPhamSapHetHangPage.totalPages > 1}">
+                    <ul class="pagination justify-content-center">
+                        <li class="page-item" th:classappend="${sanPhamSapHetHangPage.first} ? 'disabled'">
+                            <a class="page-link"
+                               th:href="@{/thongke/hienthi(page=${sanPhamSapHetHangPage.number - 1})}">Trước</a>
+                        </li>
+                        <li class="page-item"
+                            th:each="i : ${#numbers.sequence(0, sanPhamSapHetHangPage.totalPages - 1)}"
+                            th:classappend="${i == sanPhamSapHetHangPage.number} ? 'active'">
+                            <a class="page-link" th:href="@{/thongke/hienthi(page=${i})}" th:text="${i + 1}"></a>
+                        </li>
+                        <li class="page-item" th:classappend="${sanPhamSapHetHangPage.last} ? 'disabled'">
+                            <a class="page-link"
+                               th:href="@{/thongke/hienthi(page=${sanPhamSapHetHangPage.number + 1})}">Sau</a>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+            <!-- ...existing code... -->
+
         </div>
     </div>
 </div>
@@ -256,7 +311,7 @@
 
                 fetch('/thongke/khoangngay', {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                    headers: {'Content-Type': 'application/x-www-form-urlencoded'},
                     body: `startDate=${startDate}&endDate=${endDate}`
                 })
                     .then(response => response.json())

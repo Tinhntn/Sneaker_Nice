@@ -19,7 +19,7 @@ public interface ChiTietSanPhamRepository extends JpaRepository<ChiTietSanPham, 
     List<ChiTietSanPham> findChiTietSanPhamByIdSanPham_Id(int idSanPham);
     // Lấy bản ghi mới nhất cho mỗi sản phẩm
     @Query("SELECT ctp FROM ChiTietSanPham ctp " +
-            "WHERE ctp.ngayTao = (SELECT MAX(ctp2.ngayTao) FROM ChiTietSanPham ctp2 WHERE ctp2.idSanPham.id = ctp.idSanPham.id and ctp2.trangThai = true and ctp2.soLuong >0) and ctp.trangThai =true ")
+            "WHERE ctp.idSanPham.trangThai=true and ctp.soLuong>0 and ctp.trangThai =true ")
     Page<ChiTietSanPham> findFirstRecordForEachProduct(Pageable pageable);
 
     @Query(value = "select * from ChiTietSanPham", nativeQuery = true)
@@ -112,5 +112,12 @@ public interface ChiTietSanPhamRepository extends JpaRepository<ChiTietSanPham, 
                                                @Param("idHang") Integer idHang,
                                                @Param("idChatLieu") Integer idChatLieu,
                                                Pageable pageable);
+
+
+    // an
+
+    @Query("SELECT c FROM ChiTietSanPham c WHERE c.soLuong >= 0 AND c.soLuong <= 5 AND c.trangThai = true ORDER BY c.soLuong ASC")
+    Page<ChiTietSanPham> findSanPhamSapHetHang(Pageable pageable);
+
 
 }

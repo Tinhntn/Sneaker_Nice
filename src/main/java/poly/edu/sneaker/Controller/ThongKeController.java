@@ -5,8 +5,13 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import poly.edu.sneaker.DAO.SanPhamBanChayResponse;
+import poly.edu.sneaker.Model.ChiTietSanPham;
+import poly.edu.sneaker.Repository.ChiTietSanPhamRepository;
+import poly.edu.sneaker.Service.SanPhamService;
 import poly.edu.sneaker.Service.ThongKeService;
-
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import java.util.List;
 import java.util.Map;
 
@@ -21,9 +26,13 @@ public class ThongKeController {
 
     @Autowired
     private ThongKeService thongKeService;
-
+    @Autowired
+    SanPhamService sanPhamService;
+  @Autowired
+   private ChiTietSanPhamRepository chiTietSanPhamRepository;
     @GetMapping("/hienthi")
-    public String viewThongKe(Model model) {
+    public String viewThongKe(Model model,
+                              @RequestParam(defaultValue = "0") int page) {
         // Lấy dữ liệu mặc định
         Map<String, Object> defaultStats = thongKeService.getDefaultThongKe();
         model.addAllAttributes(defaultStats);
@@ -37,9 +46,14 @@ public class ThongKeController {
         Date todayEnd = new Date();   // Ngày hiện tại
         List<SanPhamBanChayResponse> top5 = thongKeService.getTop5SanPhamBanChay(todayStart, todayEnd, null);
         model.addAttribute("lstSanPhamBanChay", top5);
-
+        // Phân trang sản phẩm sắp hết hàng
+        int pageSize = 5;
+        Pageable pageable = PageRequest.of(page, pageSize);
+        Page<ChiTietSanPham> sanPhamSapHetHangPage = thongKeService.getSanPhamSapHetHang(pageable);
+        model.addAttribute("sanPhamSapHetHangPage", sanPhamSapHetHangPage);
         return "admin/thongke/viewThongKe";
     }
+
     // Lọc theo loại (0 - ngày, 1 - tuần, 2 - tháng, 3 - năm)
     @PostMapping("/loc")
     @ResponseBody
@@ -95,4 +109,6 @@ public class ThongKeController {
             return response;
         }
     }
+
+
 }

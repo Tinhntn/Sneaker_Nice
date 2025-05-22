@@ -22,4 +22,7 @@ public interface SanPhamRepository extends JpaRepository<SanPham, Integer> {
                                 @Param("startDate") Date startDate,
                                 @Param("endDate") Date endDate,
                                 Pageable pageable);
+
+
+
 }

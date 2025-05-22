@@ -3,11 +3,14 @@ package poly.edu.sneaker.Service.Implement;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import poly.edu.sneaker.DAO.SanPhamBanChayResponse;
+import poly.edu.sneaker.Model.ChiTietSanPham;
+import poly.edu.sneaker.Repository.ChiTietSanPhamRepository;
 import poly.edu.sneaker.Repository.HoaDonChiTietOnlRepository;
 import poly.edu.sneaker.Repository.ThongKeResponsitory;
 import poly.edu.sneaker.Service.ThongKeService;
 import poly.edu.sneaker.DAO.ThongKeDTO;
-
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -18,7 +21,8 @@ import java.util.*;
     private ThongKeResponsitory thongKeResponsitory;
     @Autowired
     private HoaDonChiTietOnlRepository hoaDonChiTietOnlRepository;
-
+    @Autowired
+    private ChiTietSanPhamRepository chiTietSanPhamRepository;
     @Override
     public Map<String, Object> getDefaultThongKe() {
         Map<String, Object> stats = new HashMap<>();
@@ -109,13 +113,20 @@ import java.util.*;
         // Lấy danh sách top 5 sản phẩm bán chạy trong ngày hôm nay
         List<SanPhamBanChayResponse> listSanPhamBanChay = hoaDonChiTietOnlRepository.getTop5SanPhamBanChay(todayStart, todayEnd, null);
         stats.put("lstSanPhamBanChay", listSanPhamBanChay);
-
+//        // Lấy danh sách sản phẩm sắp hết hàng
+//            List<ChiTietSanPham> sanPhamSapHetHang = chiTietSanPhamRepository   .findSanPhamSapHetHang();
+//            stats.put("sanPhamSapHetHang", sanPhamSapHetHang);
         return stats;
     }
 
     @Override
     public List<SanPhamBanChayResponse> getTop5SanPhamBanChay(Date startDate, Date endDate, Long loaiSanPham) {
         return hoaDonChiTietOnlRepository.getTop5SanPhamBanChay(startDate, endDate, loaiSanPham);
+    }
+
+    @Override
+    public Page<ChiTietSanPham> getSanPhamSapHetHang(Pageable pageable) {
+        return chiTietSanPhamRepository.findSanPhamSapHetHang(pageable);
     }
 
     @Override

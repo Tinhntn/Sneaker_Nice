@@ -72,53 +72,24 @@ public class GioHangController {
         Map<String, Object> response = new HashMap<>();
         KhuyenMai khuyenMai = khuyenMaiService.findByMaKhuyenMai(maKhuyenMai);
         if (khuyenMai != null) {
-            response.put("khuyenMai", khuyenMai);
-            return ResponseEntity.ok(response);
+            if (khuyenMai.getNgayKetThuc().before(new Date())) {
+                khuyenMai.setTrangThai(false);
+                khuyenMaiService.updateKhuyenMai(khuyenMai, khuyenMai.getId());
+                response.put("message", "Mã khuyến mãi không còn hoạt động");
+                return ResponseEntity.badRequest().body(response);
+            }
+            if (khuyenMai.getTrangThai() || khuyenMai.getSoLuong() - khuyenMai.getDaSuDung() > 0) {
+                response.put("khuyenMai", khuyenMai);
+                return ResponseEntity.ok(response);
+            }
+            response.put("message", "Mã giảm giá không còn hoạt động");
+            return ResponseEntity.badRequest().body(response);
         }
         response.put("message", "Mã giảm giá không tồn tại");
         return ResponseEntity.badRequest().body(response);
     }
 
-    @PostMapping("/ma-giam-gia")
-    @ResponseBody
-    public ResponseEntity<Map<String, Object>> layMaGiamGia(@RequestBody Map<String, String> request) {
-        Map<String, Object> response = new HashMap<>();
-        String maKm = request.get("maKhuyenMai");
-        if (maKm == null || maKm.isEmpty()) {
-            response.put("message", "Mã khuyến mãi không hợp lệ");
-            return ResponseEntity.badRequest().body(response);
-        }
-        double tongTien;
-        try {
-            tongTien = Double.parseDouble(request.get("totalPrice"));
-        } catch (NumberFormatException | NullPointerException e) {
-            response.put("message", "Tổng tiền không hợp lệ");
-            return ResponseEntity.badRequest().body(response);
-        }
-
-        KhuyenMai khuyenMai = khuyenMaiService.findByMaKm(maKm);
-        if (khuyenMai != null) {
-            if (khuyenMai.getDieuKienApDung() > tongTien) {
-                response.put("message", "Đơn hàng chưa đủ điều kiện dùng mã giảm giá");
-                return ResponseEntity.badRequest().body(response);
-            }
-            double giaGiam;
-            if (khuyenMai.getLoaiKhuyenMai()) { // Giảm giá theo số tiền
-                giaGiam = khuyenMai.getGiaTriGiam();
-            } else { // Giảm giá theo %
-                double giamGiaPhanTram = (tongTien * khuyenMai.getGiaTriGiam()) / 100;
-                giaGiam = Math.min(giamGiaPhanTram, khuyenMai.getMucGiamGiaToiDa()); // Không vượt quá mức giảm tối đa
-            }
-
-            response.put("message", "Thêm mã khuyến mãi thành công");
-            response.put("giaGiam", giaGiam);
-            return ResponseEntity.ok(response);
-        }
-
-        response.put("message", "Mã khuyến mãi không tồn tại");
-        return ResponseEntity.badRequest().body(response);
-    }
-
+    //Thanh toán khi nhận hàng
     @PostMapping("/thanh-toan")
     @ResponseBody
     public ResponseEntity<?> thanhToanOnline(@RequestBody Map<String, Object> sanPhamThanhToan) {
@@ -132,9 +103,7 @@ public class GioHangController {
                 return ResponseEntity.badRequest().body(Map.of("message", "Sản phẩm không hợp lệ"));
             }
             Object selectedIdsRaw = sanPhamThanhToan.get("selectedIds");
-
             List<Integer> idGHCT = new ArrayList<>();
-
             if (selectedIdsRaw instanceof List<?>) {
                 for (Object idObj : (List<?>) selectedIdsRaw) {
                     try {
@@ -146,29 +115,38 @@ public class GioHangController {
             } else {
                 return ResponseEntity.badRequest().body(Map.of("message", "Dữ liệu selectedIds không hợp lệ"));
             }
+            if (idGHCT.size() == 0) {
+                return ResponseEntity.badRequest().body((Map.of("message", "Sản phẩm không còn trong giỏ hàng")));
+            }
             List<GioHangChiTiet> lstGioHangChiTiet = new ArrayList<>();
             for (Integer id : idGHCT) {
                 lstGioHangChiTiet.add(gioHangChiTietService.findById(id));
             }
             if (lstGioHangChiTiet.size() == 0) {
-                return ResponseEntity.badRequest().body(Map.of("message", "Chưa chọn sản phẩm"));
+                return ResponseEntity.badRequest().body(Map.of("message", "Chưa chọn sản phẩm","size",lstGioHangChiTiet.size()));
             }
-            boolean isChaged =false;
+            //Kiểm tra giá của sản phẩm có thay đổi không
+            boolean isChaged = false;
             StringBuilder thayDoi = new StringBuilder();
             for (GioHangChiTiet gh : lstGioHangChiTiet) {
                 if (Math.abs(gh.getIdChiTietSanPham().getGiaBan() - gh.getDonGia()) > 0.001f) {
                     thayDoi.append("").append(gh.getIdChiTietSanPham().getIdSanPham().getTenSanPham());
-                    isChaged=true;
+                    isChaged = true;
+                } else if (gh.getSoLuong() > gh.getIdChiTietSanPham().getSoLuong()) {
+                    thayDoi.append("").append(gh.getIdChiTietSanPham().getIdSanPham().getTenSanPham());
+                    isChaged = true;
                 }
             }
             if (isChaged) {
                 tinhLaiGiaTien(gioHang);
             }
             if (!thayDoi.toString().isBlank()) {
-                return ResponseEntity.badRequest().body(Map.of("message", "Giá của "+thayDoi.toString()+" thay đổi", "load", true));
+                return ResponseEntity.badRequest().body(Map.of("message", "Sản phẩm " + thayDoi.toString() + "có thay đổi thay đổi", "load", true));
             }
-
-            float tongTien = (float) lstGioHangChiTiet.stream().mapToDouble(GioHangChiTiet::getTongTien).sum();
+            float tongTien = (float) lstGioHangChiTiet.stream().filter(item -> item.getTrangThai() && item.getIdChiTietSanPham().getTrangThai() && item.getIdChiTietSanPham().getIdSanPham().getTrangThai()).mapToDouble(GioHangChiTiet::getTongTien).sum();
+            if (tongTien > 20000000) {
+                return ResponseEntity.badRequest().body(Map.of("message", "Đơn hàng vượt quá 20 triệu"));
+            }
             float tongTienGiam = 0;
             KhuyenMai khuyenMai = null;
             // Tạo hóa đơn mới
@@ -177,13 +155,18 @@ public class GioHangController {
             if (gioHang.getIdKhuyenMai() != null) {
                 khuyenMai = khuyenMaiService.findById(gioHang.getIdKhuyenMai().getId());
                 if (khuyenMai != null) {
+                    int checkKM = checkKhuyenMai(khuyenMai);
+                    if (checkKM == 1 || checkKM == 4) {
+                        return ResponseEntity.badRequest().body(Map.of("message", "Mã khuyến mãi không còn hoạt động"));
+                    } else if (checkKM == 2) {
+                        return ResponseEntity.badRequest().body(Map.of("message", "Mã khuyến mãi đã được sử dụng hết"));
+                    }
                     if (khuyenMai.getLoaiKhuyenMai()) { // Giảm giá theo số tiền
                         tongTienGiam = khuyenMai.getGiaTriGiam();
                     } else { // Giảm giá theo %
                         double giamGiaPhanTram = (tongTien * khuyenMai.getGiaTriGiam()) / 100;
                         tongTienGiam = (float) Math.min(giamGiaPhanTram, khuyenMai.getMucGiamGiaToiDa()); // Không vượt quá mức giảm tối đa
                     }
-
                     hoaDon.setIdKhuyenMai(khuyenMai);
                 }
             }
@@ -214,13 +197,13 @@ public class GioHangController {
             hoaDon.setLoaiHoaDon(true);
             hoaDon.setLoaiThanhToan(true);
             hoaDon.setTrangThai(2);
+            hoaDon.setGhiChu("Mua hàng ngày " + new Date() + " thanh toán khi nhận hàng");
             // Lưu hóa đơn vào database
             hoaDonService.save(hoaDon);
-            if (khuyenMai != null) {
-                khuyenMai.setDaSuDung(khuyenMai.getDaSuDung() + 1);
-                khuyenMaiService.updateKhuyenMai(khuyenMai, khuyenMai.getId());
-            }
             //Cập nhật số lượng khuyến mại sau khi khách hàng thanh toán
+            khuyenMai.setDaSuDung(khuyenMai.getDaSuDung() + 1);
+            khuyenMaiService.updateKhuyenMai(khuyenMai, khuyenMai.getId());
+            //Cập nhật thông tin vao lich su don hang
             TrangThaiDonHang trangThaiDonHang = new TrangThaiDonHang();
             trangThaiDonHang.setTrangThai(hoaDon.getTrangThai());
             trangThaiDonHang.setGhiChu("Thanh toán khi nhận hàng - Chờ xác nhận");
@@ -228,8 +211,6 @@ public class GioHangController {
             trangThaiDonHang.setNgayCapNhat(new Date());
             lichSuTrnngThaiService.saveLichSuTrangThai(trangThaiDonHang);
             // Lấy danh sách sản phẩm trong giỏ hàng
-
-
             for (GioHangChiTiet ghct : lstGioHangChiTiet) {
                 HoaDonChiTiet hoaDonChiTiet = new HoaDonChiTiet();
                 hoaDonChiTiet.setIdHoaDon(hoaDonService.findById(hoaDon.getId()));
@@ -247,30 +228,69 @@ public class GioHangController {
             return ResponseEntity.ok(Map.of("message", "Đặt hàng thành công", "redirectUrl", "/gio-hang/checkout-success"));
 
         } catch (Exception e) {
-            return ResponseEntity.badRequest().body("Lỗi khi thanh toán: " + e.getMessage());
+            return ResponseEntity.badRequest().body("Thanh toán thất bại");
         }
     }
 
 
     @GetMapping("/vnpay-return")
-    public RedirectView vnpayReturn(HttpServletRequest request) {
+    public ResponseEntity<?> vnpayReturn(HttpServletRequest request) {
         // Kiểm tra tính hợp lệ của giao dịch
-        int paymentStatus = vnPay.orderReturn(request);
-
-        if (paymentStatus == 1) {
-            Map<String, Object> giaoDich = (Map<String, Object>) httpSession.getAttribute("giaoDichTam");
-            if (giaoDich == null) {
-                return new RedirectView("/gio-hang/checkout-failed"); // Chuyển hướng trực tiếp
-
+        // Lấy thông tin khách hàng
+        KhachHang khachHang = khachHangService.findByEmail(getCurrentUserEmail());
+        GioHang gioHang = gioHangService.findGioHangByIDKH(khachHang.getId());
+        Map<String, Object> giaoDich = (Map<String, Object>) httpSession.getAttribute("giaoDichTam");
+        if (giaoDich == null) {
+            // Xóa session sau khi giao dịch hoàn tất
+            httpSession.removeAttribute("giaoDichTam");
+            httpSession.removeAttribute("khachHangSession");
+            return ResponseEntity.badRequest().body(Map.of("message","Thanh toán không thành công"));
+        }
+        //Toan bo gio hang chi tiet
+        List<GioHangChiTiet> lstGioHangThucTe = gioHangChiTietService.findByIdGioHang(gioHang.getId());
+        //Gio hang chi tiet duoc lay de thanh toan
+        List<GioHangChiTiet> lstGioHangChiTiet = (List<GioHangChiTiet>) giaoDich.get("lstGioHangChiTiet");
+        if (lstGioHangChiTiet == null || lstGioHangChiTiet.isEmpty()) {
+            return ResponseEntity.badRequest().body(Map.of("message","Không tồn tại sản phẩm trong giỏ hàng"));
+        }
+        boolean isChaged = false;
+        StringBuilder thayDoi = new StringBuilder();
+        for (GioHangChiTiet ghtt : lstGioHangThucTe) {
+            for (GioHangChiTiet gh : lstGioHangChiTiet) {
+                if (ghtt.getId() == gh.getId()) {
+                    if (Math.abs(ghtt.getIdChiTietSanPham().getGiaBan() - ghtt.getDonGia()) > 0.001f) {
+                        thayDoi.append("").append(ghtt.getIdChiTietSanPham().getIdSanPham().getTenSanPham());
+                        isChaged = true;
+                    } else if (ghtt.getSoLuong()>ghtt.getIdChiTietSanPham().getSoLuong()) {
+                        thayDoi.append(" ").append(ghtt.getIdChiTietSanPham().getIdSanPham().getTenSanPham());
+                        isChaged = true;
+                    }
+                }
             }
+        }
+        if (isChaged) {
+            // Cập nhật lại thông tin giỏ hàng và thông báo người dùng
+            tinhLaiGiaTien(gioHang);
+            // Xóa giao dịch tạm nếu muốn reset
+            httpSession.removeAttribute("giaoDichTam");
+            httpSession.removeAttribute("khachHangSession");
+            // Có thể thêm flash attribute hoặc query param để thông báo lý do
+            return ResponseEntity.badRequest().body(Map.of("message","Sản phẩm "+thayDoi+"thay đổi giá hoặc không còn hoạt động"));
+        }
 
-            // Lấy thông tin khách hàng
-            KhachHang khachHang = khachHangService.findByEmail(getCurrentUserEmail());
-            GioHang gioHang = gioHangService.findGioHangByIDKH(khachHang.getId());
-            // Lấy ID khuyến mãi an toàn
+        int paymentStatus = vnPay.orderReturn(request);
+        if (paymentStatus == 1) {
+            // Lấy danh sách sản phẩm
             Integer idKhuyenMai = (gioHang.getIdKhuyenMai() != null) ? gioHang.getIdKhuyenMai().getId() : null;
             KhuyenMai khuyenMai = (idKhuyenMai != null) ? khuyenMaiService.findById(idKhuyenMai) : null;
-
+            int checkKM =checkKhuyenMai(khuyenMai);
+            if(checkKM == 1||checkKM == 4){
+                //khuyen mai khong con hoat dong
+                return ResponseEntity.badRequest().body(Map.of("message","Mã khuyến mãi không còn hoạt động"));
+            }else if(checkKM==2){
+                //khuyen mai da duoc su dung het
+                return ResponseEntity.badRequest().body(Map.of("message","Mã khuyến mãi đã được sử dụng hết"));
+            }
             // Tạo hóa đơn mới
             HoaDon hoaDon = new HoaDon();
             hoaDon.setMaHoaDon((String) giaoDich.get("maHoaDon"));
@@ -291,15 +311,16 @@ public class GioHangController {
                 hoaDon.setTongTienGiam(Float.parseFloat(giaoDich.get("tongTienGiam").toString()));
                 hoaDon.setThanhTien(Float.parseFloat(giaoDich.get("thanhTien").toString()));
             } catch (NumberFormatException e) {
-                return new RedirectView("/gio-hang/checkout-failed"); // Chuyển hướng trực tiếp
+                return ResponseEntity.badRequest().body(Map.of("message","Thanh toán thất bại, thông tin không hợp lệ"));
             }
-
             hoaDon.setNgayTao(new Date());
             hoaDon.setDonViGiaoHang("Giao hàng tiết kiệm");
             hoaDon.setLoaiHoaDon(true);
             hoaDon.setLoaiThanhToan(false);
             hoaDon.setTrangThai(2);
+            hoaDon.setGhiChu("Đơn hàng ngày "+new Date()+"đã thanh toán vnpay");
             hoaDonService.save(hoaDon);
+            //cap nhat so luong khuyen mai da su dung sau khi lưu hóa đơn thành công
             khuyenMai.setDaSuDung(khuyenMai.getDaSuDung() + 1);
             khuyenMaiService.updateKhuyenMai(khuyenMai, khuyenMai.getId());
             // Lưu lịch sử trạng thái đơn hàng
@@ -309,22 +330,14 @@ public class GioHangController {
             trangThaiDonHang.setIdHoaDon(hoaDon);
             trangThaiDonHang.setNgayCapNhat(new Date());
             lichSuTrnngThaiService.saveLichSuTrangThai(trangThaiDonHang);
-
-            // Lấy danh sách sản phẩm
-            List<GioHangChiTiet> lstGioHangChiTiet = (List<GioHangChiTiet>) giaoDich.get("lstGioHangChiTiet");
-            if (lstGioHangChiTiet == null || lstGioHangChiTiet.isEmpty()) {
-                return new RedirectView("/gio-hang/checkout-failed"); // Chuyển hướng trực tiếp
-            }
-
             for (GioHangChiTiet idGioHangChiTiet : lstGioHangChiTiet) {
-
                 // Kiểm tra số lượng sản phẩm trong kho
                 ChiTietSanPham chiTietSanPham = chiTietSanPhamService.findById(idGioHangChiTiet.getIdChiTietSanPham().getId());
                 if (chiTietSanPham == null) {
-                    return new RedirectView("/gio-hang/checkout-failed"); // Chuyển hướng trực tiếp
+                    return ResponseEntity.badRequest().body(Map.of("message","Chi tiết sản phẩm trong giỏ hàng không tồn tại"));
                 }
                 if (chiTietSanPham.getSoLuong() < idGioHangChiTiet.getSoLuong()) {
-                    return new RedirectView("/gio-hang/checkout-failed"); // Chuyển hướng trực tiếp
+                    return ResponseEntity.badRequest().body(Map.of("message","Số lượng sản phẩm trong kho không đủ"));
                 }
 
                 // Tạo hóa đơn chi tiết
@@ -345,13 +358,13 @@ public class GioHangController {
             httpSession.removeAttribute("giaoDichTam");
             httpSession.removeAttribute("khachHangSession");
 
-            return new RedirectView("/gio-hang/checkout-success"); // Chuyển hướng trực tiếp
+            return ResponseEntity.ok().body(Map.of("message","Thanh toán thành công"));
         } else if (paymentStatus == 0) {
             //giao dich that bai
-            return new RedirectView("/gio-hang/checkout-failed"); // Chuyển hướng trực tiếp
+            return ResponseEntity.badRequest().body(Map.of("message","Giao dịch thất bại"));
         } else {
             //Giao dich khong hop le
-            return new RedirectView("/gio-hang/checkout-failed"); // Chuyển hướng trực tiếp
+            return ResponseEntity.badRequest().body(Map.of("message","Giao dịch không hợp lệ"));
         }
     }
 
@@ -404,16 +417,25 @@ public class GioHangController {
             if (lstGioHangChiTiet.size() == 0) {
                 return ResponseEntity.badRequest().body(Map.of("message", "Chưa chọn sản phẩm"));
             }
+            boolean isChaged = false;
+            StringBuilder thayDoi = new StringBuilder();
             for (GioHangChiTiet gh : lstGioHangChiTiet) {
-                if (gh.getIdChiTietSanPham().getGiaBan() != gh.getDonGia()) {
-                    String thayDoi = "Giá của " + gh.getIdChiTietSanPham().getIdSanPham().getTenSanPham() + " đã thay đổi";
-                    gh.setDonGia(gh.getIdChiTietSanPham().getGiaBan());
-                    gioHangChiTietService.saveGioHangChitiet(gh);
-                    return ResponseEntity.badRequest().body(Map.of("message", thayDoi, "load", true));
+                if (Math.abs(gh.getIdChiTietSanPham().getGiaBan() - gh.getDonGia()) > 0.001f) {
+                    thayDoi.append("").append(gh.getIdChiTietSanPham().getIdSanPham().getTenSanPham());
+                    isChaged = true;
                 }
             }
+            if (isChaged) {
+                tinhLaiGiaTien(gioHang);
+            }
+            if (!thayDoi.toString().isBlank()) {
+                return ResponseEntity.badRequest().body(Map.of("message", "Giá của " + thayDoi.toString() + " thay đổi", "load", true));
+            }
             String maHoaDon = hoaDonService.taoMaHoaDon();
-            float tongTien = (float) lstGioHangChiTiet.stream().mapToDouble(GioHangChiTiet::getTongTien).sum();
+            float tongTien = (float) lstGioHangChiTiet.stream().filter(item -> item.getTrangThai()).mapToDouble(GioHangChiTiet::getTongTien).sum();
+            if (tongTien > 20000000) {
+                return ResponseEntity.badRequest().body(Map.of("message", "Đơn hàng vượt quá 20 triệu"));
+            }
             float tongTienGiam = 0;
             KhuyenMai khuyenMai = null;
 
@@ -462,14 +484,19 @@ public class GioHangController {
         }
 
         GioHang gioHang = gioHangService.findGioHangByIDKH(khachHangSessiong.getId());
-        tinhLaiGiaTien(gioHang);
         if (gioHang == null) {
             model.addAttribute("message", "Giỏ hàng của bạn đang trống!");
             return "redirect:/Sneakers_Nice/hienthi";
         }
-        ArrayList<GioHangChiTiet> lstGioHangChiTiet = gioHangChiTietService.findByIdGioHang(gioHang.getId());
-        if (lstGioHangChiTiet == null || lstGioHangChiTiet.isEmpty()) {
-            model.addAttribute("message", "Giỏ hàng của bạn đang trống!");
+        tinhLaiGiaTien(gioHang);
+        ArrayList<GioHangChiTiet> lstGioHangChiTiet = new ArrayList<>();
+        ArrayList<GioHangChiTiet> lstGHCTALL = gioHangChiTietService.findByIdGioHang(gioHang.getId());
+        for (GioHangChiTiet gh : lstGHCTALL) {
+            if (gh.getTrangThai()) {
+                lstGioHangChiTiet.add(gh);
+            }
+        }
+        if (lstGioHangChiTiet == null || lstGioHangChiTiet.isEmpty()||lstGioHangChiTiet.size()==0) {
             return "redirect:/Sneakers_Nice/hienthi";
         }
         double tien = 0;
@@ -479,7 +506,6 @@ public class GioHangController {
         }
         double shippingFee = 65000; // Giả sử phí ship cố định
         double tongTien = tien + shippingFee;
-        System.out.println("tổng tiền:"+tongTien);
         List<KhuyenMai> lstKhuyenMai = khuyenMaiService.getKhuyenMaiByDieuKienGiam((float) tongTien);
         List<KhuyenMai> filterKhuyenMai = lstKhuyenMai.stream()
                 .filter(Objects::nonNull) // Lọc các phần tử null
@@ -509,9 +535,7 @@ public class GioHangController {
             } else {
                 tongTienGiam = 0;
             }
-
         }
-
         model.addAttribute("lstKhuyenMai", filterKhuyenMai);
         model.addAttribute("giamGia", tongTienGiam);
         model.addAttribute("khachHang", khachHangSessiong);
@@ -574,19 +598,37 @@ public class GioHangController {
         KhuyenMai khuyenMai = khuyenMaiService.findById(Integer.parseInt(String.valueOf(Object.get("idKhuyenMai"))));
         if (khuyenMai == null) {
             return ResponseEntity.badRequest().body(Map.of("message", "Mã khuyến mãi đã hết"));
+        } else if (khuyenMai.getNgayKetThuc().before(new Date())) {
+            khuyenMai.setTrangThai(false);
+            khuyenMaiService.updateKhuyenMai(khuyenMai, khuyenMai.getId());
+            return ResponseEntity.ok(Map.of("message", "Khuyến mãi không còn hoạt động"));
+        } else if (!khuyenMai.getTrangThai() || khuyenMai.getSoLuong() - khuyenMai.getDaSuDung() <= 0) {
+            return ResponseEntity.badRequest().body(Map.of("message", "Khuyến mãi không còn hoạt động"));
         }
         GioHang gioHang = gioHangService.findGioHangByIDKH(khachHangService.findByEmail(getCurrentUserEmail()).getId());
-
+        // Lấy danh sách sản phẩm
+        List<GioHangChiTiet> lstGioHangChiTiet = gioHangChiTietService.findByIdGioHang(gioHang.getId());
+        boolean isChaged = false;
+        StringBuilder thayDoi = new StringBuilder();
+        for (GioHangChiTiet gh : lstGioHangChiTiet) {
+            if (Math.abs(gh.getIdChiTietSanPham().getGiaBan() - gh.getDonGia()) > 0.001f) {
+                thayDoi.append("").append(gh.getIdChiTietSanPham().getIdSanPham().getTenSanPham());
+                isChaged = true;
+            } else if (!gh.getTrangThai() || !gh.getIdChiTietSanPham().getTrangThai() || !gh.getIdChiTietSanPham().getIdSanPham().getTrangThai()) {
+                thayDoi.append("").append(gh.getIdChiTietSanPham().getIdSanPham());
+            }
+        }
+        if (isChaged) {
+            tinhLaiGiaTien(gioHang);
+        }
+        if (!thayDoi.toString().isBlank()) {
+            return ResponseEntity.badRequest().body(Map.of("message", "Giá" + thayDoi.toString() + " thay đổi hoặc sản phẩm ngừng bán", "load", true));
+        }
         try {
-
-            float tongTien = Float.parseFloat(Object.get("tongTien").toString());
-            if (tongTien < khuyenMai.getDieuKienApDung()) {
-                return ResponseEntity.badRequest().body(Map.of("message", "Đơn hàng của bạn không đủ điều kiện"));
-            }
-            if (gioHang.getIdKhuyenMai().getId() == khuyenMai.getId()) {
-                return ResponseEntity.badRequest().body(Map.of("message", "Đã áp dụng mã khuyến mãi"));
-            }
-            List<Integer> lstIdProductsChoice = (List<Integer>) Object.get("selectedIds");
+            List<?> rawList = (List<?>) Object.get("selectedIds");
+            List<Integer> lstIdProductsChoice = rawList.stream()
+                    .map(id -> Integer.parseInt(String.valueOf(id)))
+                    .collect(Collectors.toList());
             float tongTienSanPhamDaChon = 0;
             for (Integer id : lstIdProductsChoice) {
                 GioHangChiTiet gioHangChiTiet = gioHangChiTietService.findById(id);
@@ -595,18 +637,21 @@ public class GioHangController {
             if (tongTienSanPhamDaChon < khuyenMai.getDieuKienApDung()) {
                 return ResponseEntity.badRequest().body(Map.of("message", "Đơn hàng của bạn không đủ điểu kiện"));
             }
+            if (gioHang.getIdKhuyenMai().getId() == khuyenMai.getId()) {
+                return ResponseEntity.ok().body(Map.of("message", "Đã áp dụng mã khuyến mãi"));
+            }
             float tongTienGiam;
             if (khuyenMai.getLoaiKhuyenMai()) {
                 tongTienGiam = khuyenMai.getGiaTriGiam();
             } else {
                 double t1 = khuyenMai.getMucGiamGiaToiDa();
-                double t2 = tongTien * khuyenMai.getGiaTriGiam() / 100;
+                //bổ sung thêm phí ship
+                double t2 = (tongTienSanPhamDaChon) * khuyenMai.getGiaTriGiam() / 100;
                 tongTienGiam = (float) Math.min(t1, t2);
             }
             gioHang.setIdKhuyenMai(khuyenMai);
             gioHangService.save(gioHang);
             return ResponseEntity.ok(Map.of("tongTienGiam", tongTienGiam));
-
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -636,11 +681,7 @@ public class GioHangController {
                     ChiTietSanPham chiTietSanPham = ghct.getIdChiTietSanPham();
                     if (chiTietSanPham == null) return map; // Trả về Map rỗng nếu dữ liệu bị thiếu
                     boolean isOutOfStock = chiTietSanPham.getSoLuong() < ghct.getSoLuong() && chiTietSanPham.getSoLuong() > 0;
-                    if (isOutOfStock) {
-                        ghct.setSoLuong(chiTietSanPham.getSoLuong());
-                        gioHangChiTietService.saveGioHangChitiet(ghct);
-                    }
-                    boolean hetHang = chiTietSanPham.getSoLuong() < 0;
+                    boolean hetHang = chiTietSanPham.getSoLuong() <= 0;
                     map.put("tenSanPham", Optional.ofNullable(ghct.getIdChiTietSanPham().getIdSanPham())
                             .map(SanPham::getTenSanPham).orElse("N/A"));
                     map.put("mauSac", Optional.ofNullable(ghct.getIdChiTietSanPham().getIdMauSac())
@@ -654,15 +695,14 @@ public class GioHangController {
                     map.put("hinhAnh", Optional.ofNullable(ghct.getIdChiTietSanPham().getHinhAnh())
                             .orElse("Không có ảnh"));
                     map.put("isOutOfStock", hetHang); // Cờ báo hết hàng
+                    map.put("checkSP", !chiTietSanPham.getTrangThai() || !chiTietSanPham.getIdSanPham().getTrangThai());
                     return map;
                 })
                 .collect(Collectors.toList());
-
         double totalPrice = items.stream()
                 .filter(i -> !(boolean) i.get("isOutOfStock")) // Chỉ tính tiền cho sản phẩm còn hàng
                 .mapToDouble(i -> ((Number) i.get("gia")).doubleValue() * ((Number) i.get("soLuong")).intValue())
                 .sum();
-
         return ResponseEntity.ok(Map.of("items", items, "totalPrice", totalPrice));
     }
 
@@ -709,14 +749,27 @@ public class GioHangController {
                     return ResponseEntity.badRequest()
                             .body(Collections.singletonMap("message", "Sản phẩm đã hết hàng"));
                 } else if (chiTietSanPham.getSoLuong() < soLuong) {
-                    return ResponseEntity.badRequest()
-                            .body(Collections.singletonMap("message", "Sản phẩm trong kho không đủ"));
+                    return ResponseEntity.badRequest().body(
+                            Map.of("message", "Sản phẩm trong kho không đủ")
+                    );
+                } else if (!chiTietSanPham.getTrangThai() || !chiTietSanPham.getIdSanPham().getTrangThai()) {
+                    return ResponseEntity.badRequest().body(
+                            Map.of("message", "Sản phẩm đã ngừng bán")
+                    );
                 }
                 GioHangChiTiet ghct = gioHangChiTietService.findByIdGioHangAndIDCTSP(
                         gioHangService.findGioHangByIDKH(khachHang.getId()).getId(), chiTietSanPham.getId());
                 if (ghct != null) {
                     int tongSoLuongSanPhamTrongGioHang = ghct.getSoLuong() + soLuong;
                     if (tongSoLuongSanPhamTrongGioHang > chiTietSanPham.getSoLuong()) {
+                        boolean sameProduct = chiTietSanPham.getId() == ghct.getIdChiTietSanPham().getId();
+                        boolean isAvailable = chiTietSanPham.getTrangThai() && ghct.getTrangThai();
+                        boolean quantityMatch = ghct.getSoLuong() == chiTietSanPham.getSoLuong() && ghct.getSoLuong() > 0;
+                        if (sameProduct && isAvailable && quantityMatch) {
+                            return ResponseEntity.ok().body(
+                                    Map.of("message", "Đã toàn bộ sản phẩm trong giỏ hàng", "check", true)
+                            );
+                        }
                         return ResponseEntity.badRequest()
                                 .body(Collections.singletonMap("message", "Số lượng sản phẩm trong kho không đủ"));
                     }
@@ -724,9 +777,10 @@ public class GioHangController {
                     ArrayList<GioHangChiTiet> lstGHCT = gioHangChiTietService.findByIdGioHang(ghct.getIdGioHang().getId());
                     for (GioHangChiTiet gh : lstGHCT
                     ) {
-                        tongTien += gh.getTongTien();
+                        if (gh.getTrangThai()) {
+                            tongTien += gh.getTongTien();
+                        }
                     }
-
                     if (tongTien + chiTietSanPham.getGiaBan() * soLuong > 20000000) {
                         return ResponseEntity.badRequest().body(Collections.singletonMap("message", "Đơn hàng vượt quá 20 triệu vui lòng liên hệ để được hỗ trợ"));
                     }
@@ -742,7 +796,9 @@ public class GioHangController {
                 if (lstGHCT != null) {
                     for (GioHangChiTiet gh : lstGHCT
                     ) {
-                        tongTien += gh.getTongTien();
+                        if (gh.getTrangThai()) {
+                            tongTien += gh.getTongTien();
+                        }
                     }
                     if (tongTien > 20000000) {
                         return ResponseEntity.badRequest().body(Collections.singletonMap("message", "Đơn hàng vượt quá 20 triệu vui lòng liên hệ để được hỗ trợ"));
@@ -773,7 +829,6 @@ public class GioHangController {
 
     @DeleteMapping("/remove/{id}")
     public ResponseEntity<?> removeSanPham(@PathVariable int id) {
-
         gioHangChiTietService.deleteGioHangChitiet(id);
         return ResponseEntity.ok(Collections.singletonMap("message", "Xóa sản phẩm thành công"));
     }
@@ -782,14 +837,22 @@ public class GioHangController {
     public ResponseEntity<?> capNhatSoLuongGioHang(@PathVariable int idGHCT, @RequestParam int soLuong) {
         GioHangChiTiet gioHangChiTiet = gioHangChiTietService.findById(idGHCT);
         if (gioHangChiTiet != null) {
-            ArrayList<GioHangChiTiet> lstGHCT = gioHangChiTietService.findByIdGioHang(gioHangChiTiet.getIdGioHang().getId());
+            ArrayList<GioHangChiTiet> lstGHCT = new ArrayList<>();
+            ArrayList<GioHangChiTiet> lstGHALL = gioHangChiTietService.findByIdGioHang(gioHangChiTiet.getIdGioHang().getId());
+            for (GioHangChiTiet gh : lstGHALL) {
+                if (gh.getTrangThai()) {
+                    lstGHCT.add(gh);
+                }
+            }
             if (soLuong < 1) {
                 return ResponseEntity.badRequest()
                         .body(Collections.singletonMap("message", "Số lượng sản phẩm phải lớn hơn 0"));
             }
             ChiTietSanPham chiTietSanPham = chiTietSanPhamService
                     .findById(gioHangChiTiet.getIdChiTietSanPham().getId());
-            if (chiTietSanPham.getSoLuong() < soLuong) {
+            if (!chiTietSanPham.getTrangThai() || !chiTietSanPham.getIdSanPham().getTrangThai()) {
+                return ResponseEntity.badRequest().body(Collections.singletonMap("message", "Sản phẩm không còn hoạt động"));
+            } else if (chiTietSanPham.getSoLuong() < soLuong) {
                 return ResponseEntity.badRequest()
                         .body(Collections.singletonMap("message", "Số lượng sản phẩm trong kho không đủ"));
             } else if (gioHangChiTiet.getDonGia() * soLuong > 20000000) {
@@ -803,10 +866,12 @@ public class GioHangController {
                         gioHangChiTietService.saveGioHangChitiet(gh);
                         return ResponseEntity.badRequest().body(Map.of("message", sanPhamThayDoiGia));
                     }
-                    if (gh.getId() == idGHCT) {
+                    if (gh.getId() == idGHCT && gh.getTrangThai()) {
                         tongTienGioHang += gh.getDonGia() * soLuong;
                     } else {
-                        tongTienGioHang += gh.getTongTien();
+                        if (gh.getTrangThai()) {
+                            tongTienGioHang += gh.getTongTien();
+                        }
                     }
                 }
                 if (tongTienGioHang > 20000000) {
@@ -830,18 +895,47 @@ public class GioHangController {
     }
 
     private void tinhLaiGiaTien(GioHang gioHang) {
-            if (gioHang != null) {
-                ArrayList<GioHangChiTiet> lstGHCT = gioHangChiTietService.findByIdGioHang(gioHang.getId());
-                for (GioHangChiTiet gioHangChiTiet : lstGHCT) {
-                    gioHangChiTiet.setDonGia(gioHangChiTiet.getIdChiTietSanPham().getGiaBan());
-                    gioHangChiTiet.setSoLuong(Math.min(gioHangChiTiet.getSoLuong(),gioHangChiTiet.getIdChiTietSanPham().getSoLuong()));
-                    if(gioHangChiTiet.getSoLuong()<=0){
-                        gioHangChiTietService.deleteGioHangChitiet(gioHangChiTiet.getId());
-                        continue;
+        if (gioHang != null) {
+            ArrayList<GioHangChiTiet> lstGHCT = gioHangChiTietService.findByIdGioHang(gioHang.getId());
+            for (GioHangChiTiet gioHangChiTiet : lstGHCT) {
+                if (gioHangChiTiet.getSoLuong() <= 0) {
+                    gioHangChiTietService.deleteGioHangChitiet(gioHangChiTiet.getId());
+                    continue;
+                } else if (gioHangChiTiet.getSoLuong() >= gioHangChiTiet.getIdChiTietSanPham().getSoLuong()) {
+                    if (gioHangChiTiet.getIdChiTietSanPham().getSoLuong() > 0 && gioHangChiTiet.getIdChiTietSanPham().getTrangThai() && gioHangChiTiet.getIdChiTietSanPham().getIdSanPham().getTrangThai()) {
+                        gioHangChiTiet.setTrangThai(true);
+                        gioHang.setNgaySua(new Date());
+                        gioHangChiTiet.setSoLuong(Math.min(gioHangChiTiet.getSoLuong(), gioHangChiTiet.getIdChiTietSanPham().getSoLuong()));
+                    } else {
+                        gioHangChiTiet.setTrangThai(false);
                     }
-                    gioHangChiTietService.saveGioHangChitiet(gioHangChiTiet);
+                } else if (gioHangChiTiet.getTongTrongLuong()!=gioHangChiTiet.getIdChiTietSanPham().getTrongLuong()*gioHangChiTiet.getSoLuong()) {
+                    gioHangChiTiet.setTongTrongLuong((int)gioHangChiTiet.getIdChiTietSanPham().getTrongLuong()*gioHangChiTiet.getSoLuong());
                 }
+                gioHangChiTiet.setDonGia(gioHangChiTiet.getIdChiTietSanPham().getGiaBan());
+                gioHangChiTiet.setTongTien(gioHangChiTiet.getDonGia() * gioHangChiTiet.getSoLuong());
+                gioHangChiTietService.saveGioHangChitiet(gioHangChiTiet);
             }
+        }
 
+    }
+
+    //kiểm tra xem khuyến mãi còn hoạt động không
+    private int checkKhuyenMai(KhuyenMai khuyenMai) {
+        if (khuyenMai != null) {
+            if (!khuyenMai.getTrangThai() || khuyenMai.getNgayKetThuc().before(new Date())) {
+                if (khuyenMai.getNgayKetThuc().before(new Date())) {
+                    //nếu khuyến mãi đã hết hạn sử dụng sẽ chuyeern trạng thái
+                    khuyenMai.setTrangThai(false);
+                    khuyenMai.setNgaySua(new Date());
+                    khuyenMaiService.updateKhuyenMai(khuyenMai, khuyenMai.getId());
+                }
+                return 1;
+            } else if (khuyenMai.getSoLuong() - khuyenMai.getDaSuDung() <= 0) {
+                return 2;
+            }
+            return 3;
+        }
+        return 4;
     }
 }
