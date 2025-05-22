@@ -72,7 +72,10 @@ public class HoaDonOnlController {
 
     @GetMapping("/hienthi")
     public String hienthi(Model model, @RequestParam(defaultValue = "0") int page) {
-        int size = 5;
+        if (page < 0) {
+            page = 0;
+        }
+        int size = 1;
 
         Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "ngayTao"));
 
@@ -102,28 +105,28 @@ public class HoaDonOnlController {
 
 
         model.addAttribute("listHoaDonTatCa", listHoaDonTatCa.getContent());
-        model.addAttribute("currentPage", listHoaDonTatCa.getNumber());
-        model.addAttribute("totalPages", listHoaDonTatCa.getTotalPages());
+        model.addAttribute("currentPageTatCa", listHoaDonTatCa.getNumber());
+        model.addAttribute("totalPagesTatCa", listHoaDonTatCa.getTotalPages());
 
         model.addAttribute("listHoaDonDH", listHoaDonDH.getContent());
-        model.addAttribute("currentPage", listHoaDonDH.getNumber());
-        model.addAttribute("totalPages", listHoaDonDH.getTotalPages());
+        model.addAttribute("currentPageDH", listHoaDonDH.getNumber());
+        model.addAttribute("totalPagesDH", listHoaDonDH.getTotalPages());
 
         model.addAttribute("listHoaDonCXN", listHoaDonCXN.getContent());
-        model.addAttribute("currentPage", listHoaDonCXN.getNumber());
-        model.addAttribute("totalPages", listHoaDonCXN.getTotalPages());
+        model.addAttribute("currentPageCXN", listHoaDonCXN.getNumber());
+        model.addAttribute("totalPagesCXN", listHoaDonCXN.getTotalPages());
 
         model.addAttribute("listHoaDonCLH", listHoaDonCLH.getContent());
-        model.addAttribute("currentPage", listHoaDonCLH.getNumber());
-        model.addAttribute("totalPages", listHoaDonCLH.getTotalPages());
+        model.addAttribute("currentPageCLH", listHoaDonCLH.getNumber());
+        model.addAttribute("totalPagesCLH", listHoaDonCLH.getTotalPages());
 
         model.addAttribute("listHoaDonDG", listHoaDonDG.getContent());
-        model.addAttribute("currentPage", listHoaDonDG.getNumber());
-        model.addAttribute("totalPages", listHoaDonDG.getTotalPages());
+        model.addAttribute("currentPageDG", listHoaDonDG.getNumber());
+        model.addAttribute("totalPagesDG", listHoaDonDG.getTotalPages());
 
         model.addAttribute("listHoaDonHT", listHoaDonHT.getContent());
-        model.addAttribute("currentPage", listHoaDonHT.getNumber());
-        model.addAttribute("totalPages", listHoaDonHT.getTotalPages());
+        model.addAttribute("currentPageHT", listHoaDonHT.getNumber());
+        model.addAttribute("totalPagesHT", listHoaDonHT.getTotalPages());
 
         return "admin/hoa-don/hoadononline";
     }

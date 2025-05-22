@@ -9,6 +9,7 @@ import poly.edu.sneaker.Model.SanPham;
 import poly.edu.sneaker.Repository.SanPhamRepository;
 import poly.edu.sneaker.Service.SanPhamService;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Random;
 
@@ -55,8 +56,8 @@ public class SanPhamImplement implements SanPhamService {
     }
 
     @Override
-    public Page<SanPham> findByMaSanPhamOrTenSanPham(String maSanPham, String tenSanPham, Pageable pageable) {
-        return sanPhamRepository.findByMaSanPhamContainingOrTenSanPhamContaining(maSanPham, tenSanPham, pageable);
+    public Page<SanPham> searchSanPham(String keyword, Date startDate, Date endDate, Pageable pageable) {
+        return sanPhamRepository.searchSanPham(keyword, startDate, endDate, pageable);
     }
 
 

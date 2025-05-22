@@ -5,6 +5,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -41,26 +42,49 @@ public class SanPhamController {
 
 
     @GetMapping("/hienthi")
-    public String hienThi(Model model, RedirectAttributes redirectAttributes, @RequestParam(defaultValue = "0") int page, @RequestParam(required = false) String keyword) {
+    public String hienThi(Model model,
+                          @RequestParam(defaultValue = "0") int page,
+                          @RequestParam(required = false) String keyword,
+                          @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Date startDate,
+                          @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Date endDate) {
+
+        if (page < 0) {
+            page = 0;
+        }
+
         int size = 5;
         Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "ngayTao"));
 
-        Page<SanPham> lstSanPham;
-        if (keyword != null && !keyword.isEmpty()) {
-            lstSanPham = sanPhamService.findByMaSanPhamOrTenSanPham(keyword, keyword, pageable);
-            model.addAttribute("keyword", keyword);
-            if (lstSanPham == null) {
-                redirectAttributes.addFlashAttribute("successMessage", "Không tìm thấy sản phẩm");
-                lstSanPham = sanPhamService.findAll(pageable);
-            }
-        } else {
-            lstSanPham = sanPhamService.findAll(pageable);
+        // Xử lý logic mặc định cho ngày
+        Date now = new Date();
+        Calendar cal = Calendar.getInstance();
+
+        if (startDate != null && endDate == null) {
+            endDate = now;
+        } else if (endDate != null && startDate == null) {
+            cal.setTime(endDate);
+            cal.add(Calendar.DATE, -30);
+            startDate = cal.getTime();
         }
+
+        Page<SanPham> lstSanPham = sanPhamService.searchSanPham(keyword, startDate, endDate, pageable);
+
+        // Truyền lại dữ liệu tìm kiếm cho view
+        model.addAttribute("keyword", keyword);
+        model.addAttribute("startDate", startDate);
+        model.addAttribute("endDate", endDate);
+
+        if (lstSanPham.isEmpty()) {
+            model.addAttribute("message", "Không tìm thấy sản phẩm.");
+        }
+
         model.addAttribute("lstSanPham", lstSanPham.getContent());
         model.addAttribute("currentPage", lstSanPham.getNumber());
         model.addAttribute("totalPages", lstSanPham.getTotalPages());
+
         return "admin/sanpham/listSanPham";
     }
+
 
     @GetMapping("/themsanpham")
     public String hienThiFormThem(Model model) {
