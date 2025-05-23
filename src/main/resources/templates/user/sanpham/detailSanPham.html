@@ -27,7 +27,6 @@
                                     style="max-height: 500px; width: auto; object-fit: contain;" alt="Ảnh sản phẩm">
                             </a>
                             
-
                         </div>
                         <div class="d-flex justify-content-center gap-2">
                             <button class="btn btn-sm btn-outline-secondary rounded-circle p-2">
@@ -42,7 +41,6 @@
                     <div class="col-lg-6">
                         <div class="ps-lg-3">
                             <h2 class="fw-bold mb-3" th:text="${chiTietSanPham.idSanPham.tenSanPham}"></h2>
-
                             <div class="d-flex align-items-center mb-3">
                                 <div class="text-warning me-2">
                                     <i class="fas fa-star"></i>
@@ -59,7 +57,7 @@
                             </div>
 
                             <div class="mb-4">
-                                <h3 class="text-danger fw-bold"
+                                <h3 class="text-danger fw-bold" id="giaBan"
                                     th:text="${#numbers.formatInteger(chiTietSanPham.giaBan,1,'POINT')}+' VNĐ'"></h3>
                                 <small class="text-muted">(Chưa bao gồm VAT)</small>
                             </div>
@@ -74,9 +72,7 @@
                                 <h6 class="fw-bold">Danh mục:</h6>
                                 <p th:text="${chiTietSanPham.idSanPham.idDanhMuc.tenDanhMuc}"></p>
                             </div>
-
                             <hr class="my-4">
-
                             <!-- Chọn size -->
                             <div class="mb-4">
                                 <h6 class="fw-bold mb-3">Kích cỡ:</h6>
@@ -87,7 +83,6 @@
                                     </button>
                                 </div>
                             </div>
-
                             <!-- Chọn màu sắc -->
                             <div class="mb-4">
                                 <h6 class="fw-bold mb-3">Màu sắc:</h6>
@@ -171,7 +166,6 @@
             $(document).ready(function () {
                 $("#increment").click(function () {
                     var quantityInput = $("#quantity");
-
                     var soLuong = parseInt($("#spanSoLuong").text());
                     var quantity = parseInt(quantityInput.val());
                     console.log(quantity)
@@ -206,7 +200,6 @@
 
                 // Đánh dấu nút được chọn
                 button.classList.add('active');
-
                 // Cập nhật giá trị size được chọn
                 document.getElementById("selectedSize").value = button.getAttribute("data-idSize");
 
@@ -227,7 +220,6 @@
                 const sizeButtons = document.querySelectorAll(".size-btn");
                 const quantityText = document.getElementById("spanSoLuong");
                 const giaBan = document.getElementById('giaBan');
-
                 let selectedColor = null;
                 let selectedSize = null;
                 function updateQuantity() {
@@ -244,15 +236,14 @@
                         .then(data => {
                             if (data && data.chiTietSanPham !== undefined) {
                                 quantityText.innerText = ` ${data.chiTietSanPham.soLuong}`;
-                                giaBan.innerText = `Giá: ${Number(data.chiTietSanPham.giaBan).toLocaleString('vi-VN')} VNĐ`;
+                                giaBan.innerText = `${Number(data.chiTietSanPham.giaBan).toLocaleString('vi-VN')} VNĐ`;
                                 document.getElementById("idMauSac").innerText = `${data.chiTietSanPham.idMauSac.tenMauSac}`;
                                 document.getElementById("idMauSac").setAttribute("data-mauSac", `${data.chiTietSanPham.idMauSac.id}`);
                             } else {
-                                giaBan.innerText = `Giá: ${Number(data.chiTietSanPham.giaBan).toLocaleString('vi-VN')} VNĐ`;
+                                giaBan.innerText = `${Number(data.chiTietSanPham.giaBan).toLocaleString('vi-VN')} VNĐ`;
                                 document.getElementById("idMauSac").innerText = `${data.chiTietSanPham.idMauSac.tenMauSac}`;
                                 document.getElementById("idMauSac").setAttribute("data-mauSac", `${data.chiTietSanPham.idMauSac.id}`)
                                 quantityText.innerText = "0";
-
                             }
                         })
                         .catch(error => {

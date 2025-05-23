@@ -159,26 +159,57 @@ public class SanPhamController {
     }
 
     @GetMapping("/chitietsanpham/{id}")
-    public String chiTietSanPham(@PathVariable("id") int idSanPham, Model model, @RequestParam(defaultValue = "0") int page
+    public String chiTietSanPham(
+            @PathVariable("id") int idSanPham,
+            Model model,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(required = false) Integer idSize,
+            @RequestParam(required = false) Integer idMauSac,
+            @RequestParam(required = false) Integer trangThai // ✅ Sửa từ `boolean` sang `Boolean`
     ) {
-        int size = 5;
+        int size = 10;
+        Boolean tt = null;
+
+        if(trangThai != null) {
+            if(trangThai==3){
+                tt = false;
+            }else if(trangThai==2){
+                tt = true;
+            }
+        }
         Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "ngayTao"));
-        Page<ChiTietSanPham> lstCTSP = chiTietSanPhamService.findChiTietSanPhamByIDSanPham(idSanPham, pageable);
+        Page<ChiTietSanPham> lstCTSP = chiTietSanPhamService.locChiTietSanPham(idSanPham, idSize, idMauSac, tt, pageable);
+
         model.addAttribute("lstCTSP", lstCTSP.getContent());
         model.addAttribute("currentPage", lstCTSP.getNumber());
         model.addAttribute("totalPages", lstCTSP.getTotalPages());
+
         SanPham sanPham = sanPhamService.findById(idSanPham);
         model.addAttribute("sanPham", sanPham);
-        List<Hang> lstHang = hangService.getAllHangs().stream().sorted(Comparator.comparing(Hang::getTenHang,String.CASE_INSENSITIVE_ORDER)).collect(Collectors.toList());
-        List<DanhMuc> lstDanhMuc = danhMucService.getAllDanhMucs().stream().sorted(Comparator.comparing(DanhMuc::getTenDanhMuc,String.CASE_INSENSITIVE_ORDER)).collect(Collectors.toList());
-        List<ChatLieu> lstChatLieu = chatLieuService.getAllChatLieus().stream().sorted(Comparator.comparing(ChatLieu::getTenChatLieu,String.CASE_INSENSITIVE_ORDER)).collect(Collectors.toList());
+
+        List<Hang> lstHang = hangService.getAllHangs().stream()
+                .sorted(Comparator.comparing(Hang::getTenHang, String.CASE_INSENSITIVE_ORDER))
+                .collect(Collectors.toList());
+
+        List<DanhMuc> lstDanhMuc = danhMucService.getAllDanhMucs().stream()
+                .sorted(Comparator.comparing(DanhMuc::getTenDanhMuc, String.CASE_INSENSITIVE_ORDER))
+                .collect(Collectors.toList());
+
+        List<ChatLieu> lstChatLieu = chatLieuService.getAllChatLieus().stream()
+                .sorted(Comparator.comparing(ChatLieu::getTenChatLieu, String.CASE_INSENSITIVE_ORDER))
+                .collect(Collectors.toList());
+
         List<Size> lstSize = sizeService.findAll().stream()
                 .sorted((s1, s2) -> Integer.compare(
                         Integer.parseInt(s1.getTenSize()),
                         Integer.parseInt(s2.getTenSize())
                 ))
                 .collect(Collectors.toList());
-        List<MauSac> lstMauSac = mauSacService.findAll().stream().sorted(Comparator.comparing(MauSac::getTenMauSac,String.CASE_INSENSITIVE_ORDER)).collect(Collectors.toList());
+
+        List<MauSac> lstMauSac = mauSacService.findAll().stream()
+                .sorted(Comparator.comparing(MauSac::getTenMauSac, String.CASE_INSENSITIVE_ORDER))
+                .collect(Collectors.toList());
+
         model.addAttribute("lstMauSac", lstMauSac);
         model.addAttribute("lstSize", lstSize);
         model.addAttribute("lst", lstDanhMuc);
@@ -187,6 +218,7 @@ public class SanPhamController {
         model.addAttribute("lstChatlieu", lstChatLieu);
         return "admin/sanpham/updateSanPham";
     }
+
 
     @PutMapping("/capnhatsanpham/{idSanPham}")
     @ResponseBody
@@ -599,5 +631,6 @@ public class SanPhamController {
             ));
         }
     }
+
 
 }

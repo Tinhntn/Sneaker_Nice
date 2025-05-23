@@ -9,9 +9,8 @@ import poly.edu.sneaker.Model.DanhMuc;
 import poly.edu.sneaker.Repository.DanhMucRepository;
 import poly.edu.sneaker.Service.DanhMucService;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
+import java.time.LocalDate;
+import java.util.*;
 
 @Service
 public class DanhMucImplement implements DanhMucService {
@@ -79,4 +78,20 @@ public class DanhMucImplement implements DanhMucService {
     public boolean existsByTenDanhMuc(String tenDanhMuc) {
         return danhMucRepository.existsByTenDanhMuc(tenDanhMuc);
     }
+
+    @Override
+    public Page<DanhMuc> locDanhMuc(String keyword, LocalDate startDate, LocalDate endDate, Boolean trangThai, Pageable pageable) {
+        Date start = startDate != null ? java.sql.Date.valueOf(startDate) : null;
+        Date end = endDate != null ? java.sql.Date.valueOf(endDate) : null;
+        if (end != null) {
+            // Gán endDate thành 23:59:59 để bao phủ hết ngày đó
+            Calendar cal = Calendar.getInstance();
+            cal.setTime(end);
+            cal.set(Calendar.HOUR_OF_DAY, 23);
+            cal.set(Calendar.MINUTE, 59);
+            cal.set(Calendar.SECOND, 59);
+            cal.set(Calendar.MILLISECOND, 999);
+            end = cal.getTime();
+        }
+        return danhMucRepository.getDanhMucByKeyword(keyword, start, end, trangThai, pageable);    }
 }

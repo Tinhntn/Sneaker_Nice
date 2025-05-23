@@ -3,7 +3,9 @@ package poly.edu.sneaker.Service;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import poly.edu.sneaker.Model.DanhMuc;
+import poly.edu.sneaker.Model.Hang;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -26,4 +28,6 @@ public interface DanhMucService {
 
     ArrayList<DanhMuc> getAllDanhMucs();
     boolean existsByTenDanhMuc(String tenDanhMuc);
+    Page<DanhMuc> locDanhMuc(String keyword, LocalDate startDate, LocalDate endDate, Boolean trangThai, Pageable pageable);
+
 }

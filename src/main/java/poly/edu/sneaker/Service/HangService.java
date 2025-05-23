@@ -4,6 +4,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import poly.edu.sneaker.Model.Hang;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -23,4 +24,6 @@ public interface HangService {
     void updateHang(Hang hang, int id);
 
     String taoMaHang();
+
+    Page<Hang> locHang(String keyword, LocalDate startDate, LocalDate endDate, Boolean trangThai,Pageable pageable);
 }

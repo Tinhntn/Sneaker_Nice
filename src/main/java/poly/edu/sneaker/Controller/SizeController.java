@@ -5,20 +5,21 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import poly.edu.sneaker.Model.DanhMuc;
 import poly.edu.sneaker.Model.Hang;
 import poly.edu.sneaker.Model.MauSac;
 import poly.edu.sneaker.Model.Size;
 import poly.edu.sneaker.Service.SizeService;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
-import java.util.Map;
+import java.time.LocalDate;
+import java.util.*;
 
 @Controller
 @RequestMapping("/size")
@@ -29,62 +30,55 @@ public class SizeController {
 
 
     @GetMapping("/hienthi")
-    public String hienthi(Model model, @RequestParam(defaultValue = "0") int page){
-        int size = 5;
-
-        Pageable pageable = PageRequest.of(page, size);
-        Page<Size> sizePage = sizeService.getAll(pageable);
-
-        System.out.println("List size: " + sizePage.getContent().size());
-
-        model.addAttribute("sizeCustomList", sizePage.getContent());
+    public String hienthi(Model model, @RequestParam(defaultValue = "0") int page,
+                          @RequestParam(required = false) String keyword,
+                          @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate starDate,
+                          @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd")LocalDate endDate,
+                          @RequestParam(required = false) Integer trangThai) {
+        int size = 10;
+        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "ngayTao"));
+        Boolean tt =null;
+        if(trangThai!=null){
+            if(trangThai==0){
+                tt=true;
+            }else if(trangThai==1){
+                tt=false;
+            }
+        }
+        Page<Size> sizePage = sizeService.locSize(keyword,starDate,endDate,tt,pageable);
+        model.addAttribute("lstSize", sizePage.getContent());
         model.addAttribute("currentPage", sizePage.getNumber());
         model.addAttribute("totalPages", sizePage.getTotalPages());
-
         return "admin/size/ListSize";
     }
 
 
     @PostMapping("/add")
-    public String add(@RequestParam("masize") String maSize,
-                      @RequestParam("tensize") String tenSize,
-                      RedirectAttributes redirectAttributes
-    ){
-
-
-
-        if (maSize == null || maSize.trim().isEmpty()) {
-            redirectAttributes.addFlashAttribute("errorMessage", "Mã size không được để trống.");
-            return "redirect:/size/hienthi";
-        }
-
+    @ResponseBody
+    public ResponseEntity<?> add(
+            @RequestParam("tenSize") String tenSize,
+            @RequestParam("trangThai") Boolean trangThai) {
         if (tenSize == null || tenSize.trim().isEmpty()) {
-            redirectAttributes.addFlashAttribute("errorMessage", "Tên size không được để trống.");
-            return "redirect:/size/hienthi";
+            return ResponseEntity.badRequest().body(Collections.singletonMap("message", "Vui lòng nhập đủ thông tin"));
         }
-         maSize =sizeService.taoMaSize();
-        ArrayList<Size> lstMauSac = sizeService.findAll();
-        for ( Size h : lstMauSac
-        ) {
-            if(h.getMaSize().equals(maSize)){
-                maSize=sizeService.taoMaSize();
+        List<Size> lstSize = sizeService.findAll();
+        for (Size s : lstSize) {
+            if (s.getTenSize().equalsIgnoreCase(tenSize)) {
+                return ResponseEntity.badRequest().body(Collections.singletonMap("message", "Tên size đã tồn tại"));
             }
-
         }
         Size size = new Size();
-        size.setMaSize(maSize);
+        size.setMaSize(sizeService.taoMaSize());
         size.setTenSize(tenSize);
+        size.setTrangThai(trangThai);
         size.setNgayTao(new Date());
-        size.setTrangThai(true);
-
         try {
-            sizeService.saveSize(size);
-            redirectAttributes.addFlashAttribute("successMessage", "Size được thêm thành công!");
+            sizeService.save(size);
         } catch (IllegalArgumentException e) {
-            redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
-            return "redirect:/size/hienthi";
+            e.printStackTrace();
+            return ResponseEntity.badRequest().body(Collections.singletonMap("message", "Thêm thất bại"));
         }
-        return "redirect:/size/hienthi";
+        return ResponseEntity.ok().body(Collections.singletonMap("success", true));
     }
     @PostMapping("/them_nhanh")
     @ResponseBody
@@ -127,37 +121,30 @@ public class SizeController {
     }
 
     @PostMapping("/update/{id}")
-    public String update(@PathVariable("id") Integer idSize,
-                         @RequestParam("masize") String maSize,
-                         @RequestParam("tensize") String tenSize,
-                         @RequestParam("trangthai") Boolean trangThai,
-                         RedirectAttributes redirectAttributes
-    ){
-
-        if (maSize == null || maSize.trim().isEmpty()) {
-            redirectAttributes.addFlashAttribute("errorMessage", "Mã size nkhông được để trống.");
-            return "redirect:/size/hienthi";
-        }
-
+    @ResponseBody
+    public ResponseEntity<?> update(@PathVariable("id") Integer idSize,
+                                    @RequestParam("tenSize") String tenSize,
+                                    @RequestParam("trangThai") Boolean trangThai) {
         if (tenSize == null || tenSize.trim().isEmpty()) {
-            redirectAttributes.addFlashAttribute("errorMessage", "Tên size không được để trống.");
-            return "redirect:/size/hienthi";
+            return ResponseEntity.badRequest().body(Collections.singletonMap("message", "Vui lòng nhập đủ thông tin"));
+        }
+        if (!tenSize.matches("^\\d+(\\.\\d{1})?$")) {
+            return ResponseEntity.badRequest().body(Collections.singletonMap("message","Tên size phải là số và chỉ có 1 chữ số thập phân."));
         }
 
-        Size size = sizeService.getSizeById(idSize);
-        size.setMaSize(maSize);
+        Size size = sizeService.findById(idSize);
         size.setTenSize(tenSize);
         size.setNgaySua(new Date());
         size.setTrangThai(trangThai);
-
         try {
-            sizeService.updateSize(size, idSize);
-            redirectAttributes.addFlashAttribute("successMessage", "Size đã được cập nhật thành công!");
+            sizeService.update(size);
         } catch (IllegalArgumentException e) {
-            redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
-            return "redirect:/size/hienthi";
+            e.printStackTrace();
+            return ResponseEntity.badRequest().body(Collections.singletonMap("message", "Cập nhật thất bại"));
+
         }
-        return "redirect:/size/hienthi";
+        return ResponseEntity.ok().body(Collections.singletonMap("success", true));
+
     }
 
 }

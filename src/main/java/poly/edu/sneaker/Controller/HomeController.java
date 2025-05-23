@@ -152,7 +152,7 @@ public class HomeController {
     public ResponseEntity<?> checkSoLuongSanPham(@RequestParam("idSanPham") int idSanPham, @RequestParam("idSize") int idSize, @RequestParam("idMauSac") int idMauSac) {
         try {
 
-            ChiTietSanPham chiTietSanPham = chiTietSanPhamService.findCTSPByIdSPAndIdMauSacAndIdSize(idSanPham, idMauSac, idSize);
+            ChiTietSanPham chiTietSanPham = chiTietSanPhamService.findCTSPByIdSPAndIdMauSacAndIdSize(idSanPham, idSize, idMauSac);
             if (chiTietSanPham == null) {
                 return ResponseEntity.badRequest().body(Map.of("message", "Không tồn tại sản phẩm"));
             }

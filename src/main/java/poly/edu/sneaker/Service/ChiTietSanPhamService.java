@@ -39,4 +39,5 @@ public interface ChiTietSanPhamService {
     List<ChiTietSanPham> findIDSPByIDMauSac(int idSP, int idMauSac);
     ArrayList<ChiTietSanPham> findByIdSanPham(int idSanPham);
     ChiTietSanPham findCTSPByIdSPAndIdMauSacAndIdSize(int idSanPham, int idSize, int idMauSac);
+    Page<ChiTietSanPham> locChiTietSanPham(int idSanPhan, Integer idSize, Integer idMauSac,Boolean trangThai, Pageable pageable);
 }

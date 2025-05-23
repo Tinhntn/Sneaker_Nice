@@ -605,44 +605,7 @@
                     console.error("Không tìm thấy form với ID 'formFilter'");
                 }
             });
-            // document.addEventListener('DOMContentLoaded', function () {
-
-
-            //     let isOpeningFromChildModal = false; // Thêm biến cờ
-
-            //     // ------ 1. Xử lý sự kiện modal nhỏ ------
-            //     function onChildModalShow() {
-            //         isOpeningFromChildModal = true;
-            //     }
-
-            //     function onChildModalHidden() {
-            //         if (isOpeningFromChildModal) {
-            //             bsthemSanPhamModal.show();
-            //             isOpeningFromChildModal = false;
-            //         }
-            //     }
-
-
-            //     // ------ 2. Sửa lỗi không đóng được modal lớn ------
-            //     // Xử lý khi click nút đóng modal lớn (Close/Đóng)
-            //     const closeButtons = themSanPhamModal.querySelectorAll('[data-bs-dismiss="modal"], .btn-secondary');
-            //     closeButtons.forEach(button => {
-            //         button.addEventListener('click', function () {
-            //             // Đóng modal và dọn dẹp backdrop thủ công
-            //             bsthemSanPhamModal.hide();
-            //             document.body.classList.remove('modal-open');
-            //             const backdrop = document.querySelector('.modal-backdrop');
-            //             if (backdrop) backdrop.remove();
-            //         });
-            //     });
-
-            //     // ------ 3. Ngăn chặn sự kiện ẩn modal lớn khi không cần thiết ------
-            //     exampleModal.addEventListener('hide.bs.modal', function (e) {
-            //         if (isOpeningFromChildModal) {
-            //             e.preventDefault(); // Chặn đóng nếu đang mở modal nhỏ
-            //         }
-            //     });
-            // });
+          
             document.addEventListener('DOMContentLoaded', function () {
                 const themHangModal = document.getElementById('themHangModal');
                 const themDanhMucModal = document.getElementById('themDanhMucModal');

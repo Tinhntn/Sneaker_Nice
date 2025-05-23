@@ -106,6 +106,11 @@ public class ChiTietSanPhamImplement implements ChiTietSanPhamService {
     }
 
     @Override
+    public Page<ChiTietSanPham> locChiTietSanPham(int idSanPhan, Integer idSize, Integer idMauSac,Boolean trangThai, Pageable pageable) {
+        return chiTietSanPhamRepository.locChiTietSanPham(idSanPhan,idSize,idMauSac,trangThai,pageable);
+    }
+
+    @Override
     public List<ChiTietSanPham> searchByMultipleFields(String keyword) {
         List<ChiTietSanPham> list = chiTietSanPhamRepository.searchByMultipleFields(keyword);
         if (list.size() > 5) {
