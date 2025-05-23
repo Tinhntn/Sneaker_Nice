@@ -274,24 +274,43 @@
                     </div>
                     <div class="col-md-6">
                         <label for="hang" class="form-label">Hãng:</label>
-                        <select name="idHang" class="form-select">
-                            <option th:each="hang : ${lstHang}" th:value="${hang.id}" th:text="${hang.tenHang}"
-                                th:selected="${hang.id == sanPham.idHang.id}"></option>
-                        </select>
+                        <div class="input-group">
+                            <select name="idHang" class="form-select">
+                                <option th:each="hang : ${lstHang}" th:value="${hang.id}" th:text="${hang.tenHang}"
+                                    th:selected="${hang.id == sanPham.idHang.id}"></option>
+                            </select>
+                            <button type="button" class="btn btn-outline-primary" data-bs-toggle="modal"
+                                data-bs-target="#themHangModal" title="Thêm hãng mới">
+                                <i class="fas fa-plus"></i>
+                            </button>
+                        </div>
                     </div>
                     <div class="col-md-6">
                         <label for="danhMuc" class="form-label">Danh mục:</label>
-                        <select name="idDanhMuc" class="form-select">
-                            <option th:each="dm : ${lstDanhMuc}" th:value="${dm.id}" th:text="${dm.tenDanhMuc}"
-                                th:selected="${dm.id == sanPham.idDanhMuc.id}"></option>
-                        </select>
+                        <div class="input-group">
+                            <select name="idDanhMuc" class="form-select">
+                                <option th:each="dm : ${lstDanhMuc}" th:value="${dm.id}" th:text="${dm.tenDanhMuc}"
+                                    th:selected="${dm.id == sanPham.idDanhMuc.id}"></option>
+                            </select>
+                            <button type="button" class="btn btn-outline-primary" data-bs-toggle="modal"
+                                data-bs-target="#themDanhMucModal" title="Thêm danh mục mới">
+                                <i class="fas fa-plus"></i>
+                            </button>
+                        </div>
+
                     </div>
                     <div class="col-md-6">
                         <label for="chatLieu" class="form-label">Chất liệu:</label>
-                        <select name="idChatLieu" class="form-select">
-                            <option th:each="cl : ${lstChatlieu}" th:value="${cl.id}" th:text="${cl.tenChatLieu}"
-                                th:selected="${cl.id == sanPham.idChatLieu.id}"></option>
-                        </select>
+                        <div class="input-group">
+                            <select name="idChatLieu" class="form-select">
+                                <option th:each="cl : ${lstChatlieu}" th:value="${cl.id}" th:text="${cl.tenChatLieu}"
+                                    th:selected="${cl.id == sanPham.idChatLieu.id}"></option>
+                            </select>
+                            <button type="button" class="btn btn-outline-primary" data-bs-toggle="modal"
+                                data-bs-target="#themChatLieuModal" title="Thêm chất liệu mới">
+                                <i class="fas fa-plus"></i>
+                            </button>
+                        </div>
                     </div>
                     <div class="col-md-6">
                         <label class="form-label">Trạng thái:</label>
@@ -425,60 +444,7 @@
                     </table>
                 </div>
 
-                <!-- Modal them nhanh chi tiet san pham -->
-                <div class="modal fade" id="themNhanhModal" tabindex="-1" aria-labelledby="themNhanhModalLabel"
-                    aria-hidden="true">
-                    <div class="modal-dialog modal-lg">
-                        <div class="modal-content">
-                            <form id="themNhanhForm">
-                                <div class="modal-header">
-                                    <h5 class="modal-title" id="themNhanhModalLabel">Thêm nhanh biến thể sản phẩm</h5>
-                                    <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                        aria-label="Đóng"></button>
-                                </div>
-                                <div class="modal-body">
-                                    <div class="row mb-3">
-                                        <div class="col-md-6">
-                                            <label for="mauSacChon" class="form-label">Màu sắc <span
-                                                    class="text-danger">*</span></label>
-                                            <select id="mauSacChon" class="form-select" required>
-                                                <option value="">-- Chọn màu --</option>
-                                                <option th:each="mauSac : ${lstMauSac}" th:value="${mauSac.id}"
-                                                    th:text="${mauSac.tenMauSac}">
-                                                </option>
-                                            </select>
-                                        </div>
-                                        <div class="col-md-6">
-                                            <label for="hinhAnhMau" class="form-label">Hình ảnh (tối đa 5) <span
-                                                    class="text-danger">*</span></label>
-                                            <input type="file" class="form-control" id="hinhAnhMau" name="hinhAnh"
-                                                multiple accept="image/*" required>
-                                            <small class="text-muted">Chỉ chấp nhận JPG/PNG, tối đa 5MB/ảnh</small>
-                                            <div id="previewHinhAnhMau" class="d-flex flex-wrap mt-2"></div>
-                                        </div>
-                                    </div>
 
-                                    <div class="mb-3">
-                                        <label class="form-label">Thông tin biến thể theo Size</label>
-                                        <div id="listSizeInputs">
-                                            <!-- Các dòng nhập sẽ được thêm vào đây -->
-                                        </div>
-                                        <button type="button" class="btn btn-sm btn-secondary mt-2" id="themSizeMoi">
-                                            <i class="fas fa-plus me-1"></i> Thêm size
-                                        </button>
-                                    </div>
-                                </div>
-                                <div class="modal-footer">
-                                    <button type="button" class="btn btn-secondary"
-                                        data-bs-dismiss="modal">Đóng</button>
-                                    <button type="submit" class="btn btn-primary">
-                                        <i class="fas fa-save me-1"></i> Lưu biến thể
-                                    </button>
-                                </div>
-                            </form>
-                        </div>
-                    </div>
-                </div>
 
                 <!-- Pagination -->
                 <th:block th:if="${totalPages > 0}">
@@ -505,8 +471,203 @@
                     </nav>
                 </th:block>
             </div>
+
+
+        </div>
+        <!-- Modal them nhanh chi tiet san pham -->
+        <div class="modal fade" id="themNhanhModal" tabindex="-1" aria-labelledby="themNhanhModalLabel"
+            aria-hidden="true">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <form id="themNhanhForm">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="themNhanhModalLabel">Thêm nhanh biến thể sản phẩm</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng"></button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <label for="mauSacChon" class="form-label">Màu sắc <span
+                                            class="text-danger">*</span></label>
+                                    <select id="mauSacChon" class="form-select" required>
+                                        <option value="">-- Chọn màu --</option>
+                                        <option th:each="mauSac : ${lstMauSac}" th:value="${mauSac.id}"
+                                            th:text="${mauSac.tenMauSac}">
+                                        </option>
+                                    </select>
+
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="hinhAnhMau" class="form-label">Hình ảnh (tối đa 5) <span
+                                            class="text-danger">*</span></label>
+                                    <input type="file" class="form-control" id="hinhAnhMau" name="hinhAnh" multiple
+                                        accept="image/*" required>
+                                    <small class="text-muted">Chỉ chấp nhận JPG/PNG, tối đa 5MB/ảnh</small>
+                                    <div id="previewHinhAnhMau" class="d-flex flex-wrap mt-2"></div>
+                                </div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label">Thông tin biến thể theo Size</label>
+                                <div id="listSizeInputs">
+                                    <!-- Các dòng nhập sẽ được thêm vào đây -->
+                                </div>
+
+                                <button type="button" class="btn btn-sm btn-secondary mt-2" id="themSizeMoi">
+                                    <i class="fas fa-plus me-1"></i> Thêm size
+                                </button>
+
+
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save me-1"></i> Lưu biến thể
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <!-- Add Brand Modal -->
+        <div class="modal fade" id="themHangModal" tabindex="-1" aria-labelledby="themHangModalLabel"
+            data-parent="#exampleModal" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title"><i class="fas fa-tag me-2"></i>Thêm hãng mới</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="themHangForm">
+                            <div class="mb-3">
+                                <label for="tenHang" class="form-label">Tên hãng <span
+                                        class="text-danger">*</span></label>
+                                <input type="text" class="form-control" id="tenHang" name="tenHang" required
+                                    placeholder="Nhập tên hãng">
+                            </div>
+                            <div class="d-flex justify-content-end">
+                                <button type="button" class="btn btn-secondary me-2"
+                                    data-bs-dismiss="modal">Hủy</button>
+                                <button type="submit" class="btn btn-primary">Lưu</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
         </div>
 
+        <!-- Add Material Modal -->
+        <div class="modal fade" id="themChatLieuModal" tabindex="-1" aria-labelledby="themChatLieuModalLabel"
+            data-parent="#exampleModal" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title"><i class="fa-solid fa-recycle"></i>Thêm chất liệu mới</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="themChatLieuForm">
+                            <div class="mb-3">
+                                <label for="tenChatLieu" class="form-label">Tên chất liệu <span
+                                        class="text-danger">*</span></label>
+                                <input type="text" class="form-control" id="tenChatLieu" name="tenChatLieu" required
+                                    placeholder="Nhập tên chất liệu">
+                            </div>
+                            <div class="d-flex justify-content-end">
+                                <button type="button" class="btn btn-secondary me-2"
+                                    data-bs-dismiss="modal">Hủy</button>
+                                <button type="submit" class="btn btn-primary">Lưu</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Add Category Modal -->
+        <div class="modal fade" id="themDanhMucModal" tabindex="-1" aria-labelledby="themDanhMucModalLabel"
+            data-parent="#exampleModal" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title"><i class="fas fa-list-alt me-2"></i>Thêm danh mục mới</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="themDanhMucForm">
+                            <div class="mb-3">
+                                <label for="tenDanhMuc" class="form-label">Tên danh mục <span
+                                        class="text-danger">*</span></label>
+                                <input type="text" class="form-control" id="tenDanhMuc" name="tenDanhMuc" required
+                                    placeholder="Nhập tên danh mục">
+                            </div>
+                            <div class="d-flex justify-content-end">
+                                <button type="button" class="btn btn-secondary me-2"
+                                    data-bs-dismiss="modal">Hủy</button>
+                                <button type="submit" class="btn btn-primary">Lưu</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Modal thêm size -->
+        <div class="modal fade" id="themSizeModal" tabindex="-1" aria-labelledby="themSizeModalLabel"
+            aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title"><i class="fa-solid fa-up-right-and-down-left-from-center"></i>
+                            Thêm size mới</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="themSizeForm">
+                            <div class="mb-3">
+                                <label for="tenSize" class="form-label">Tên size <span
+                                        class="text-danger">*</span></label>
+                                <input type="text" class="form-control" id="tenSize" name="tenSize" required
+                                    placeholder="Nhập tên size">
+                            </div>
+                            <div class="d-flex justify-content-end">
+                                <button type="button" class="btn btn-secondary me-2"
+                                    data-bs-dismiss="modal">Hủy</button>
+                                <button type="submit" class="btn btn-primary">Lưu</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Modal thêm màu sắc -->
+        <div class="modal fade" id="themMauSacModal" tabindex="-1" aria-labelledby="themMauSacModalLabel"
+            aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title"><i class="fa-solid fa-palette"></i>Thêm màu sắc mới</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="themMauSacForm">
+                            <div class="mb-3">
+                                <label for="tenSize" class="form-label">Tên màu sắc <span
+                                        class="text-danger">*</span></label>
+                                <input type="text" class="form-control" id="tenMauSac" name="tenMauSac" required
+                                    placeholder="Nhập tên màu sắc">
+                            </div>
+                            <div class="d-flex justify-content-end">
+                                <button type="button" class="btn btn-secondary me-2"
+                                    data-bs-dismiss="modal">Hủy</button>
+                                <button type="submit" class="btn btn-primary">Lưu</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
         <!-- Add Product Detail Modal -->
         <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
             <div class="modal-dialog modal-lg">
@@ -525,20 +686,32 @@
                             <div class="row g-3">
                                 <div class="col-md-6">
                                     <label class="form-label">Size<span class="text-danger">*</span></label>
-                                    <select name="idSize" class="form-select" required>
-                                        <option value="">-- Chọn size --</option>
-                                        <option th:each="size : ${lstSize}" th:value="${size.id}"
-                                            th:text="${size.tenSize}"></option>
-                                    </select>
+                                    <div class="input-group">
+                                        <select name="idSize" class="form-select" required>
+                                            <option value="">-- Chọn size --</option>
+                                            <option th:each="size : ${lstSize}" th:value="${size.id}"
+                                                th:text="${size.tenSize}"></option>
+                                        </select>
+                                        <button type="button" class="btn btn-outline-primary" data-bs-toggle="modal"
+                                            data-bs-target="#themSizeModal" title="Thêm size mới">
+                                            <i class="fas fa-plus"></i>
+                                        </button>
+                                    </div>
                                     <div class="invalid-feedback">Vui lòng chọn size</div>
                                 </div>
                                 <div class="col-md-6">
                                     <label class="form-label">Màu sắc<span class="text-danger">*</span></label>
-                                    <select class="form-select" name="idMauSac" required>
-                                        <option value="">-- Chọn màu --</option>
-                                        <option th:each="mauSac : ${lstMauSac}" th:value="${mauSac.id}"
-                                            th:text="${mauSac.tenMauSac}"></option>
-                                    </select>
+                                    <div class="input-group">
+                                        <select class="form-select" name="idMauSac" required>
+                                            <option value="">-- Chọn màu --</option>
+                                            <option th:each="mauSac : ${lstMauSac}" th:value="${mauSac.id}"
+                                                th:text="${mauSac.tenMauSac}"></option>
+                                        </select>
+                                        <button type="button" class="btn btn-outline-primary" data-bs-toggle="modal"
+                                            data-bs-target="#themMauSacModal" title="Thêm màu sắc mới">
+                                            <i class="fas fa-plus"></i>
+                                        </button>
+                                    </div>
                                     <div class="invalid-feedback">Vui lòng chọn màu sắc</div>
                                 </div>
                             </div>
@@ -1172,6 +1345,116 @@
                 document.getElementById('themNhanhForm').reset();
                 document.getElementById('listSizeInputs').innerHTML = '';
                 document.getElementById('previewHinhAnhMau').innerHTML = '';
+            });
+
+            // Form thêm hãng
+            document.getElementById('themHangForm').addEventListener('submit', function (e) {
+                e.preventDefault();
+                handleQuickAddForm(this, '/hang/them_nhanh', 'hãng');
+            });
+
+            // Form thêm chất liệu
+            document.getElementById('themChatLieuForm').addEventListener('submit', function (e) {
+                e.preventDefault();
+                handleQuickAddForm(this, '/chat_lieu/them_nhanh', 'chất liệu');
+            });
+
+            // Form thêm danh mục
+            document.getElementById('themDanhMucForm').addEventListener('submit', function (e) {
+                e.preventDefault();
+                handleQuickAddForm(this, '/danh_muc/them_nhanh', 'danh mục');
+            });
+            // Form thêm size
+            document.getElementById('themSizeForm').addEventListener('submit', function (e) {
+                e.preventDefault();
+                handleQuickAddForm(this, '/size/them_nhanh', 'size');
+            });
+            // Form thêm danh mục
+            document.getElementById('themMauSacForm').addEventListener('submit', function (e) {
+                e.preventDefault();
+                handleQuickAddForm(this, '/mau_sac/them_nhanh', 'màu sắc');
+            });
+
+            // Hàm xử lý chung cho các form thêm nhanh
+            function handleQuickAddForm(form, url, type) {
+                const formData = new FormData(form);
+                const inputField = form.querySelector('input[type="text"]');
+
+                if (!inputField.value.trim()) {
+                    notyf.error(`Vui lòng nhập tên ${type}`);
+                    return;
+                }
+
+                fetch(url, {
+                    method: 'POST',
+                    body: formData
+                })
+                    .then(response => {
+                        if (!response.ok) {
+                            return response.json().then(err => {
+                                throw new Error(err.message || `Có lỗi khi thêm ${type}`);
+                            });
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        if (data.success) {
+                            notyf.success(data.message || `Thêm ${type} thành công`);
+                            form.reset();
+                            setTimeout(() => {
+                                window.location.reload();
+                            }, 1500);
+                        } else {
+                            notyf.error(data.message || `Có lỗi khi thêm ${type}`);
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        notyf.error(error.message || `Có lỗi khi thêm ${type}`);
+                    });
+            }
+
+            document.addEventListener('DOMContentLoaded', function () {
+                const themSizeModal = document.getElementById('themSizeModal');
+                const themMauSacModal = document.getElementById('themMauSacModal');
+                const exampleModal = document.getElementById('exampleModal');
+                const bsExampleModal = new bootstrap.Modal(exampleModal);
+
+                let shouldRestoreParentModal = false; // flag chính xác
+
+                function onChildModalShow() {
+                    shouldRestoreParentModal = true;
+                    bsExampleModal.hide(); // Ẩn modal cha trước khi hiện modal con
+                }
+
+                function onChildModalHidden() {
+                    if (shouldRestoreParentModal) {
+                        shouldRestoreParentModal = false;
+                        bsExampleModal.show(); // Mở lại modal cha sau khi modal con đóng
+                    }
+                }
+
+                if (themSizeModal) {
+                    const bsThemSizeModal = new bootstrap.Modal(themSizeModal);
+                    themSizeModal.addEventListener('show.bs.modal', onChildModalShow);
+                    themSizeModal.addEventListener('hidden.bs.modal', onChildModalHidden);
+                }
+
+                if (themMauSacModal) {
+                    const bsThemMauSacModal = new bootstrap.Modal(themMauSacModal);
+                    themMauSacModal.addEventListener('show.bs.modal', onChildModalShow);
+                    themMauSacModal.addEventListener('hidden.bs.modal', onChildModalHidden);
+                }
+
+                // Không cần tự can thiệp backdrop trừ khi Bootstrap bị lỗi
+                const closeButtons = exampleModal.querySelectorAll('[data-bs-dismiss="modal"], .btn-secondary');
+                closeButtons.forEach(button => {
+                    button.addEventListener('click', function () {
+                        bsExampleModal.hide();
+                    });
+                });
+
+                // Không cần chặn hide nữa nếu đã điều khiển logic mở/ẩn đúng
             });
 
 

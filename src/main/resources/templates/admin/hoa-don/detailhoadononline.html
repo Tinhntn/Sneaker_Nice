@@ -316,7 +316,7 @@
                             <tbody>
                                 <tr th:each="cthd : ${chiTietHoaDon}">
                                     <td>
-                                        <img th:src="${cthd.idChiTietSanPham.hinhAnh}" class="product-img"
+                                        <img th:src="${cthd.idChiTietSanPham.hinhAnh!=null?cthd.idChiTietSanPham.hinhAnh.split(',')[0].trim():'/images/defaul-product.png'}" class="product-img"
                                             alt="Sản phẩm">
                                     </td>
                                     <td th:text="${cthd.idChiTietSanPham.idSanPham.tenSanPham}"></td>
@@ -501,8 +501,8 @@
                                 </thead>
                                 <tbody>
                                     <tr th:each="sanPhamChiTiet : ${sanPhamChiTiet}">
-                                        <td><img th:src="${sanPhamChiTiet.hinhAnh}" alt="Hình ảnh"
-                                                style="width:80px;height:50px;">
+                                        <td><img th:src="${sanPhamChiTiet.hinhAnh!=null?sanPhamChiTiet.hinhAnh.split(',')[0].trim():'/images/defaul-product.png'}" alt="Hình ảnh"
+                                                style="width:100px;height:100px;">
                                         </td>
                                         <td th:text="${sanPhamChiTiet.idSanPham.tenSanPham}"></td>
                                         <td

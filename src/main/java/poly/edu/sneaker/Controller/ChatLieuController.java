@@ -84,7 +84,7 @@ public class ChatLieuController {
     @ResponseBody
     public ResponseEntity<?> themNhanh(@ModelAttribute ChatLieu chatLieu) {
 
-        if (chatLieu == null) {
+        if (chatLieu == null|| chatLieu.getTenChatLieu() == null || chatLieu.getTenChatLieu().trim().isEmpty()) {
             return ResponseEntity.badRequest().body(Collections.singletonMap("message", "Bạn cần nhập đủ thông tin"));
         }
         String tenChatLieu = chatLieu.getTenChatLieu();

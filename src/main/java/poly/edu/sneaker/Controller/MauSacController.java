@@ -4,17 +4,22 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import poly.edu.sneaker.Model.DanhMuc;
 import poly.edu.sneaker.Model.MauSac;
 import poly.edu.sneaker.Service.MauSacService;
 
 import jakarta.validation.Valid;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Date;
+import java.util.Map;
 
 @Controller
 @RequestMapping("/mau_sac")
@@ -60,7 +65,28 @@ public class MauSacController {
         }
         return "redirect:/mau_sac/hienthi";
     }
+    @PostMapping("/them_nhanh")
+    @ResponseBody
+    public ResponseEntity<?> themNhanh(@ModelAttribute MauSac mauSac) {
 
+        if(mauSac==null|| mauSac.getTenMauSac() == null || mauSac.getTenMauSac().trim().isEmpty()){
+            return ResponseEntity.badRequest().body(Collections.singletonMap("message","Bạn cần nhập đủ thông tin"));
+        }
+        String tenMauSac = mauSac.getTenMauSac();
+        ArrayList<MauSac> mauSacs = mauSacService.findAll();
+        for(MauSac ms : mauSacs){
+            if (ms.getTenMauSac().trim().equalsIgnoreCase(tenMauSac.trim())) {
+                return ResponseEntity.badRequest().body(Collections.singletonMap("message", "Tên màu sắc đã tồn tại"));
+            }
+        }
+        MauSac newMS = new MauSac();
+        newMS.setTenMauSac(tenMauSac);
+        newMS.setNgayTao(new Date());
+        newMS.setTrangThai(true);
+        newMS.setMaMauSac(mauSacService.taoMaMauSac());
+        mauSacService.save(newMS);
+        return ResponseEntity.ok().body(Map.of("message","Thêm màu sắc mới thành công","success",true));
+    }
     @GetMapping("/edit/{id}")
     public String showEditForm(@PathVariable("id") Integer id, Model model, RedirectAttributes redirectAttributes) {
         MauSac mauSac = mauSacService.findMauSacById(id);

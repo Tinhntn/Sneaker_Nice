@@ -77,7 +77,7 @@ public class DanhMucController {
     @ResponseBody
     public ResponseEntity<?> themNhanh(@ModelAttribute DanhMuc danhMuc) {
 
-        if(danhMuc==null){
+        if (danhMuc == null|| danhMuc.getTenDanhMuc() == null || danhMuc.getTenDanhMuc().trim().isEmpty()){
             return ResponseEntity.badRequest().body(Collections.singletonMap("message","Bạn cần nhập đủ thông tin"));
         }
         String tenDanhMuc = danhMuc.getTenDanhMuc();

@@ -158,8 +158,8 @@
 								<div class="cart-item-thanhtoan" th:each="item : ${lstGioHangChiTiet}">
 									<input type="checkbox" class="cart-checkbox mr-2" th:data-id="${item.id}"
 										th:data-price="${item.tongTien}" checked>
-									<img th:src="${item.idChiTietSanPham.hinhAnh}" alt=""
-										style="width: 50px; height: 50px; margin-right: 10px;">
+									<img th:src="@{'/images/' + ${#strings.arraySplit(item.idChiTietSanPham.hinhAnh, ',')[0].trim()}}"
+										alt="" style="width: 50px; height: 50px; margin-right: 10px;">
 									<div class="cart-item-info-thanhtoan">
 										<span
 											th:text="${item.idChiTietSanPham.idSanPham.tenSanPham +' Size: ' + item.idChiTietSanPham.idSize.tenSize + ', Màu: ' + item.idChiTietSanPham.idMauSac.tenMauSac}"></span>
@@ -790,7 +790,7 @@
                     <div class="cart-item-thanhtoan">
                         <input type="checkbox" class="cart-checkbox mr-2" data-id="${item.idGioHangChiTiet}"
                                data-price="${item.tongTien}" checked>
-                        <img src="${item.hinhAnh}" alt=""
+                        <img src="${item.hinhAnh!=null?item.hinhAnh.split(',')[0].trim():'/images/defaul-product.png'}" alt=""
                              style="width: 50px; height: 50px; margin-right: 10px;">
                         <div class="cart-item-info-thanhtoan">
                            <span> ${item.tenSanPham} </span>

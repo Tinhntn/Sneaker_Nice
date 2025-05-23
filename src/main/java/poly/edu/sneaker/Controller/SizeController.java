@@ -5,16 +5,20 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import poly.edu.sneaker.Model.Hang;
+import poly.edu.sneaker.Model.MauSac;
 import poly.edu.sneaker.Model.Size;
 import poly.edu.sneaker.Service.SizeService;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
+import java.util.Map;
 
 @Controller
 @RequestMapping("/size")
@@ -82,7 +86,35 @@ public class SizeController {
         }
         return "redirect:/size/hienthi";
     }
+    @PostMapping("/them_nhanh")
+    @ResponseBody
+    public ResponseEntity<?> themNhanh(@ModelAttribute Size size) {
 
+        if (size == null || size.getTenSize() == null || size.getTenSize().trim().isEmpty()) {
+            return ResponseEntity.badRequest().body(Collections.singletonMap("message", "Bạn cần nhập đủ thông tin"));
+        }
+
+        String tenSize = size.getTenSize().trim();
+
+        // Regex: chỉ cho phép số nguyên hoặc số có 1 chữ số thập phân (.5)
+        if (!tenSize.matches("^\\d+(\\.5)?$")) {
+            return ResponseEntity.badRequest().body(Collections.singletonMap("message", "Tên size chỉ được là số nguyên hoặc .5 (ví dụ: 37 hoặc 37.5)"));
+        }
+
+        ArrayList<Size> sizes = sizeService.findAll();
+        for(Size size1 : sizes){
+            if (size1.getTenSize().trim().equalsIgnoreCase(tenSize.trim())) {
+                return ResponseEntity.badRequest().body(Collections.singletonMap("message", "Tên size đã tồn tại"));
+            }
+        }
+        Size newSize = new Size();
+        newSize.setTenSize(tenSize);
+        newSize.setNgayTao(new Date());
+        newSize.setTrangThai(true);
+        newSize.setMaSize(sizeService.taoMaSize());
+        sizeService.save(newSize);
+        return ResponseEntity.ok().body(Map.of("message","Thêm size mới thành công","success",true));
+    }
     @GetMapping("/detail/{id}")
     public String detail(@PathVariable("id") int id, Model model){
 

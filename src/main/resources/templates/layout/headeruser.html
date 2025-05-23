@@ -308,7 +308,7 @@
                             hasOutOfStock = true;
                         }
                         li.innerHTML = `
-                        <img src="${item.hinhAnh}" alt="">
+                        <img src="${item.hinhAnh!=null?item.hinhAnh.split(',')[0].trim():'/images/default-product.png'}" alt="">
                         <div class="item-details">
                             <h4>${item.tenSanPham}</h4>
                             <p>Size: ${item.size}</p>

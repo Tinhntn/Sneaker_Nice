@@ -79,7 +79,7 @@ public class HangController {
     @ResponseBody
     public ResponseEntity<?> themNhanh(@ModelAttribute Hang hang) {
 
-        if(hang==null){
+        if (hang == null|| hang.getTenHang() == null || hang.getTenHang().trim().isEmpty()){
             return ResponseEntity.badRequest().body(Collections.singletonMap("message","Bạn cần nhập đủ thông tin"));
         }
         String tenHang = hang.getTenHang();

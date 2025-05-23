@@ -26,7 +26,7 @@ public class SizeImplement implements SizeService {
 
     @Override
     public Size save(Size size) {
-        return null;
+        return sizeRepository.save(size);
     }
 
     @Override
