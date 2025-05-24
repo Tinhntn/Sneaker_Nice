@@ -10,9 +10,8 @@ import poly.edu.sneaker.Repository.ChatLieuRepository;
 import poly.edu.sneaker.Repository.SanPhamRepository;
 import poly.edu.sneaker.Service.ChatLieuService;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
+import java.time.LocalDate;
+import java.util.*;
 
 @Service
 public class ChatLieuImplement implements ChatLieuService {
@@ -85,5 +84,22 @@ public class ChatLieuImplement implements ChatLieuService {
     @Override
     public boolean existsByTenChatLieu(String tenChatLieu) {
         return chatLieuRepository.existsByTenChatLieu(tenChatLieu);
+    }
+
+    @Override
+    public Page<ChatLieu> locChatLieu(String keyword, LocalDate startDate, LocalDate endDate, Boolean trangThai, Pageable pageable) {
+        Date start = startDate != null ? java.sql.Date.valueOf(startDate) : null;
+        Date end = endDate != null ? java.sql.Date.valueOf(endDate) : null;
+        if (end != null) {
+            // Gán endDate thành 23:59:59 để bao phủ hết ngày đó
+            Calendar cal = Calendar.getInstance();
+            cal.setTime(end);
+            cal.set(Calendar.HOUR_OF_DAY, 23);
+            cal.set(Calendar.MINUTE, 59);
+            cal.set(Calendar.SECOND, 59);
+            cal.set(Calendar.MILLISECOND, 999);
+            end = cal.getTime();
+        }
+        return chatLieuRepository.getChatLieuByKeyword(keyword, start, end, trangThai, pageable);
     }
 }

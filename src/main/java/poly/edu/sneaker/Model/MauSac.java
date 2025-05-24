@@ -35,5 +35,5 @@ public class MauSac {
     private Date ngaySua;
 
     @Column(name = "trang_thai", nullable = false)
-    private Boolean trangThai = true;
+    private Boolean trangThai;
 }

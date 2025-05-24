@@ -4,6 +4,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -16,10 +18,8 @@ import poly.edu.sneaker.Service.MauSacService;
 
 import jakarta.validation.Valid;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
-import java.util.Map;
+import java.time.LocalDate;
+import java.util.*;
 
 @Controller
 @RequestMapping("/mau_sac")
@@ -29,41 +29,54 @@ public class MauSacController {
     private MauSacService mauSacService;
 
     @GetMapping("/hienthi")
-    public String hienThiMauSac(Model model, @RequestParam(defaultValue = "0") int page, @RequestParam(required = false) String keyword) {
-        int size = 5;
-        Pageable pageable = PageRequest.of(page, size);
-        Page<MauSac> mauSacPage;
-
-        if (keyword != null && !keyword.isEmpty()) {
-            mauSacPage = mauSacService.search(keyword, pageable);
-            model.addAttribute("keyword", keyword);
-        } else {
-            mauSacPage = mauSacService.getAll(pageable);
+    public String hienthi(Model model, @RequestParam(defaultValue = "0") int page,
+                          @RequestParam(required = false) String keyword,
+                          @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate starDate,
+                          @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd")LocalDate endDate,
+                          @RequestParam(required = false) Integer trangThai) {
+        int size = 10;
+        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "ngayTao"));
+        Boolean tt =null;
+        if(trangThai!=null){
+            if(trangThai==0){
+                tt=true;
+            }else if(trangThai==1){
+                tt=false;
+            }
         }
-
-        model.addAttribute("listMS", mauSacPage.getContent());
+        Page<MauSac> mauSacPage = mauSacService.locMauSac(keyword,starDate,endDate,tt,pageable);
+        model.addAttribute("lstMauSac", mauSacPage.getContent());
         model.addAttribute("currentPage", mauSacPage.getNumber());
         model.addAttribute("totalPages", mauSacPage.getTotalPages());
         return "admin/mau_sac/ListMauSac";
     }
 
     @PostMapping("/add")
-    public String addMauSac(@Valid @ModelAttribute("mauSac") MauSac mauSac, BindingResult bindingResult, RedirectAttributes redirectAttributes) {
-        if (bindingResult.hasErrors()) {
-            return "admin/mau_sac/add";
+    @ResponseBody
+    public ResponseEntity<?> add(
+            @RequestParam("tenMauSac") String tenMauSac,
+            @RequestParam("trangThai") Boolean trangThai) {
+        if (tenMauSac == null || tenMauSac.trim().isEmpty()) {
+            return ResponseEntity.badRequest().body(Collections.singletonMap("message", "Vui lòng nhập đủ thông tin"));
         }
-        try {
-            String maMauSac = mauSacService.taoMaMauSac();
-            while (mauSacService.findByMaMauSac(maMauSac) != null) {
-                maMauSac = mauSacService.taoMaMauSac();
+        List<MauSac> lstMauSac = mauSacService.findAll();
+        for (MauSac ms : lstMauSac) {
+            if (ms.getTenMauSac().equalsIgnoreCase(tenMauSac)) {
+                return ResponseEntity.badRequest().body(Collections.singletonMap("message", "Tên màu sắc đã tồn tại"));
             }
-            mauSac.setMaMauSac(maMauSac);
-            mauSacService.save(mauSac);
-            redirectAttributes.addFlashAttribute("successMessage", "Màu sắc được thêm thành công!");
-        } catch (Exception e) {
-            redirectAttributes.addFlashAttribute("errorMessage", "Lỗi khi thêm màu sắc!");
         }
-        return "redirect:/mau_sac/hienthi";
+        MauSac mauSac = new MauSac();
+        mauSac.setMaMauSac(mauSacService.taoMaMauSac());
+        mauSac.setTenMauSac(tenMauSac);
+        mauSac.setTrangThai(trangThai);
+        mauSac.setNgayTao(new Date());
+        try {
+            mauSacService.save(mauSac);
+        } catch (IllegalArgumentException e) {
+            e.printStackTrace();
+            return ResponseEntity.badRequest().body(Collections.singletonMap("message", "Thêm thất bại"));
+        }
+        return ResponseEntity.ok().body(Collections.singletonMap("success", true));
     }
     @PostMapping("/them_nhanh")
     @ResponseBody
@@ -87,36 +100,35 @@ public class MauSacController {
         mauSacService.save(newMS);
         return ResponseEntity.ok().body(Map.of("message","Thêm màu sắc mới thành công","success",true));
     }
-    @GetMapping("/edit/{id}")
-    public String showEditForm(@PathVariable("id") Integer id, Model model, RedirectAttributes redirectAttributes) {
-        MauSac mauSac = mauSacService.findMauSacById(id);
-        if (mauSac == null) {
-            redirectAttributes.addFlashAttribute("errorMessage", "Màu sắc không tồn tại!");
-            return "redirect:/mau_sac/hienthi";
-        }
-        model.addAttribute("mauSac", mauSac);
-        return "admin/mau_sac/update";
-    }
+
 
     @PostMapping("/update/{id}")
-    public String editMauSac(@PathVariable("id") Integer id, @Valid @ModelAttribute("mauSac") MauSac mauSac, BindingResult bindingResult, RedirectAttributes redirectAttributes) {
-        if (bindingResult.hasErrors()) {
-            return "admin/mau_sac/update";
+    @ResponseBody
+    public ResponseEntity<?> update(@PathVariable("id") Integer idMauSac,
+                                    @RequestParam("tenMauSac") String tenMauSac,
+                                    @RequestParam("trangThai") Boolean trangThai) {
+        if (tenMauSac == null || tenMauSac.trim().isEmpty()) {
+            return ResponseEntity.badRequest().body(Collections.singletonMap("message", "Vui lòng nhập đủ thông tin"));
         }
-        try {
-            MauSac existingMauSac = mauSacService.findMauSacById(id);
-            if (existingMauSac != null) {
-                mauSac.setId(id);
-                mauSac.setNgayTao(existingMauSac.getNgayTao());
-                mauSacService.update(mauSac, id);
-                redirectAttributes.addFlashAttribute("successMessage", "Cập nhật màu sắc thành công!");
-            } else {
-                redirectAttributes.addFlashAttribute("errorMessage", "Màu sắc không tồn tại!");
+        List<MauSac> lstMauSac = mauSacService.findAll();
+        for (MauSac ms : lstMauSac) {
+            if (ms.getId()!=idMauSac&&ms.getTenMauSac().equalsIgnoreCase(tenMauSac)) {
+                return ResponseEntity.badRequest().body(Collections.singletonMap("message", "Tên màu sắc đã tồn tại"));
             }
-        } catch (Exception e) {
-            redirectAttributes.addFlashAttribute("errorMessage", "Lỗi khi cập nhật màu sắc!");
         }
-        return "redirect:/mau_sac/hienthi";
+        MauSac mauSac = mauSacService.findMauSacById(idMauSac);
+        mauSac.setTenMauSac(tenMauSac);
+        mauSac.setNgaySua(new Date());
+        mauSac.setTrangThai(trangThai);
+        try {
+            mauSacService.update(mauSac);
+        } catch (IllegalArgumentException e) {
+            e.printStackTrace();
+            return ResponseEntity.badRequest().body(Collections.singletonMap("message", "Cập nhật thất bại"));
+
+        }
+        return ResponseEntity.ok().body(Collections.singletonMap("success", true));
+
     }
 
     @PostMapping("/toggleStatus/{id}")
@@ -136,15 +148,4 @@ public class MauSacController {
         return "redirect:/mau_sac/hienthi";
     }
 
-    @GetMapping("/add")
-    public String showAddForm(Model model) {
-        MauSac mauSac = new MauSac();
-        String maMauSac = mauSacService.taoMaMauSac();
-        while (mauSacService.findByMaMauSac(maMauSac) != null) {
-            maMauSac = mauSacService.taoMaMauSac();
-        }
-        mauSac.setMaMauSac(maMauSac);
-        model.addAttribute("mauSac", mauSac);
-        return "admin/mau_sac/add";
-    }
 }

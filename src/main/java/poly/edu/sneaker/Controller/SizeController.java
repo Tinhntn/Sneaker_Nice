@@ -61,6 +61,9 @@ public class SizeController {
         if (tenSize == null || tenSize.trim().isEmpty()) {
             return ResponseEntity.badRequest().body(Collections.singletonMap("message", "Vui lòng nhập đủ thông tin"));
         }
+        if (!tenSize.matches("^\\d+(\\.\\d{1})?$")) {
+            return ResponseEntity.badRequest().body(Collections.singletonMap("message","Tên size phải là số và chỉ có 1 chữ số thập phân."));
+        }
         List<Size> lstSize = sizeService.findAll();
         for (Size s : lstSize) {
             if (s.getTenSize().equalsIgnoreCase(tenSize)) {
@@ -109,16 +112,7 @@ public class SizeController {
         sizeService.save(newSize);
         return ResponseEntity.ok().body(Map.of("message","Thêm size mới thành công","success",true));
     }
-    @GetMapping("/detail/{id}")
-    public String detail(@PathVariable("id") int id, Model model){
 
-        System.out.println("idHang: " + id);
-        Size detailSize = sizeService.getSizeById(id);
-
-        System.out.println("ten: " + detailSize.getTenSize());
-        model.addAttribute("detailSize", detailSize);
-        return "admin/size/UpdateSize";
-    }
 
     @PostMapping("/update/{id}")
     @ResponseBody
@@ -131,7 +125,12 @@ public class SizeController {
         if (!tenSize.matches("^\\d+(\\.\\d{1})?$")) {
             return ResponseEntity.badRequest().body(Collections.singletonMap("message","Tên size phải là số và chỉ có 1 chữ số thập phân."));
         }
-
+        List<Size> lstSize = sizeService.findAll();
+        for (Size s : lstSize) {
+            if (s.getId()!=idSize&&s.getTenSize().equalsIgnoreCase(tenSize)) {
+                return ResponseEntity.badRequest().body(Collections.singletonMap("message", "Tên size đã tồn tại"));
+            }
+        }
         Size size = sizeService.findById(idSize);
         size.setTenSize(tenSize);
         size.setNgaySua(new Date());

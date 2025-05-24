@@ -110,6 +110,12 @@ public class DanhMucController {
         if (tenDanhMuc == null || tenDanhMuc.trim().isEmpty()) {
             return ResponseEntity.badRequest().body(Collections.singletonMap("message", "Vui lòng nhập đủ thông tin"));
         }
+        List<DanhMuc> lstDanhMuc = danhMucService.getAllDanhMucs();
+        for (DanhMuc dn : lstDanhMuc) {
+            if (dn.getId()!=idDanhMuc&&dn.getTenDanhMuc().equalsIgnoreCase(tenDanhMuc)) {
+                return ResponseEntity.badRequest().body(Collections.singletonMap("message", "Tên danh mục đã tồn tại"));
+            }
+        }
         DanhMuc danhMuc = danhMucService.findDanhMucById(idDanhMuc);
         danhMuc.setTenDanhMuc(tenDanhMuc);
         danhMuc.setNgaySua(new Date());

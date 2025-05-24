@@ -109,6 +109,12 @@ public class HangController {
         if (tenHang == null || tenHang.trim().isEmpty()) {
             return ResponseEntity.badRequest().body(Collections.singletonMap("message", "Vui lòng nhập đủ thông tin"));
         }
+        List<Hang> lstHang = hangService.getAllHangs();
+        for (Hang hang : lstHang) {
+            if (hang.getId()!=idHang&&hang.getTenHang().equalsIgnoreCase(tenHang)) {
+                return ResponseEntity.badRequest().body(Collections.singletonMap("message", "Tên hãng đã tồn tại"));
+            }
+        }
         Hang hang = hangService.getHangById(idHang);
         hang.setTenHang(tenHang);
         hang.setNgaySua(new Date());
