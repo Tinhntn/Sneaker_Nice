@@ -3,73 +3,83 @@
       layout:decorate="~{layout/main.html}">
 
 <head>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Thêm Chức Vụ</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <!-- Custom CSS -->
     <link rel="stylesheet" type="text/css" href="./styles/main.css">
 </head>
-
 <body>
 <div layout:fragment="content">
-    <div class="container-fluid">
-        <h1>Thêm Chức Vụ</h1>
-        <form th:action="@{/chuc_vu/add}" th:object="${chucVu}" method="post" class="needs-validation" novalidate>
-            <input type="hidden" th:field="*{maChucVu}">
-            <div class="mb-3">
-                <label for="tenChucVu" class="form-label">Tên Chức Vụ</label>
-                <input type="text" class="form-control" id="tenChucVu" th:field="*{tenChucVu}" placeholder="Nhập tên chức vụ" required>
-                <div th:if="${#fields.hasErrors('tenChucVu')}" class="text-danger" th:errors="*{tenChucVu}">Tên chức vụ không hợp lệ</div>
+    <div class="container my-4">
+        <h1 class="text-center mb-4">Thêm Chức Vụ</h1>
+        <div class="card shadow-sm mx-auto" style="max-width: 600px;">
+            <div class="card-body">
+                <!-- Form thêm chức vụ -->
+                <form th:action="@{/chuc_vu/add}" th:object="${chucVu}" method="post">
+                    <!-- Mã Chức Vụ -->
+                    <div class="mb-3">
+                        <label for="maChucVu" class="form-label">Mã Chức Vụ</label>
+                        <input type="text" class="form-control" id="maChucVu" th:field="*{maChucVu}" readonly>
+                        <div class="text-danger" th:if="${#fields.hasErrors('maChucVu')}" th:errors="*{maChucVu}"></div>
+                    </div>
+                    <!-- Tên Chức Vụ -->
+                    <div class="mb-3">
+                        <label for="tenChucVu" class="form-label">Tên Chức Vụ</label>
+                        <input type="text" class="form-control" id="tenChucVu" th:field="*{tenChucVu}" required>
+                        <div class="text-danger" th:if="${#fields.hasErrors('tenChucVu')}" th:errors="*{tenChucVu}"></div>
+                    </div>
+                    <!-- Nút Submit và Hủy -->
+                    <div class="text-center">
+                        <button type="submit" class="btn btn-primary">Thêm</button>
+                        <a th:href="@{/chuc_vu/hienthi}" class="btn btn-secondary ms-2">Hủy</a>
+                    </div>
+                </form>
             </div>
-            <button type="submit" class="btn btn-primary">Thêm</button>
-            <button type="button" class="btn btn-secondary" onclick="history.back()">Trở lại</button>
-        </form>
-
-        <!-- Hiển thị thông báo thành công -->
-        <div th:if="${successMessage}">
-            <script th:inline="javascript">
-                /*<![CDATA[*/
-                var successMessage = /*[[${successMessage}]]*/ 'null';
-                if (successMessage !== 'null') {
-                    Swal.fire({
-                        icon: 'success',
-                        title: 'Thành công',
-                        text: successMessage,
-                        confirmButtonText: 'OK'
-                    }).then(() => {
-                        // Xóa successMessage sau khi hiển thị thông báo
-                        history.replaceState(null, '', location.pathname);
-                    });
-                }
-                /*]]>*/
-            </script>
-        </div>
-
-        <!-- Hiển thị thông báo lỗi -->
-        <div th:if="${errorMessage}">
-            <script th:inline="javascript">
-                /*<![CDATA[*/
-                var errorMessage = /*[[${errorMessage}]]*/ 'null';
-                if (errorMessage !== 'null') {
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Lỗi',
-                        text: errorMessage,
-                        confirmButtonText: 'OK'
-                    }).then(() => {
-                        // Xóa errorMessage sau khi hiển thị thông báo
-                        history.replaceState(null, '', location.pathname);
-                    });
-                }
-                /*]]>*/
-            </script>
         </div>
     </div>
 </div>
 
-</body>
+<!-- Thông báo thành công -->
+<div th:if="${successMessage}">
+    <script th:inline="javascript">
+        /*<![CDATA[*/
+        var successMessage = /*[[${successMessage}]]*/ 'null';
+        if (successMessage !== 'null') {
+            Swal.fire({
+                icon: 'success',
+                title: 'Thành công',
+                text: successMessage,
+                confirmButtonText: 'OK'
+            }).then(() => {
+                history.replaceState(null, '', location.pathname);
+            });
+        }
+        /*]]>*/
+    </script>
+</div>
 
+<!-- Thông báo lỗi -->
+<div th:if="${errorMessage}">
+    <script th:inline="javascript">
+        /*<![CDATA[*/
+        var errorMessage = /*[[${errorMessage}]]*/ 'null';
+        if (errorMessage !== 'null') {
+            Swal.fire({
+                icon: 'error',
+                title: 'Lỗi',
+                text: errorMessage,
+                confirmButtonText: 'OK'
+            }).then(() => {
+                history.replaceState(null, '', location.pathname);
+            });
+        }
+        /*]]>*/
+    </script>
+</div>
+</body>
 </html>

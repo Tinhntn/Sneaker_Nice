@@ -21,4 +21,6 @@ public interface DanhMucRepository extends JpaRepository<DanhMuc, Integer> {
             nativeQuery = true)
     List<DanhMuc> getAllDanhMucTimKiem();
     // code cua quan end
+
+    boolean existsByTenDanhMuc(String tenDanhMuc);
 }

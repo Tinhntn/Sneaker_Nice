@@ -16,16 +16,10 @@ public interface ChiTietSanPhamRepository extends JpaRepository<ChiTietSanPham, 
 
     // Lấy sản phẩm theo id của sản phẩm (SanPham)
     Page<ChiTietSanPham> findChiTietSanPhamByIdSanPham_Id(int idSanPham, Pageable pageable);
-
+    List<ChiTietSanPham> findChiTietSanPhamByIdSanPham_Id(int idSanPham);
     // Lấy bản ghi mới nhất cho mỗi sản phẩm
     @Query("SELECT ctp FROM ChiTietSanPham ctp " +
-            "WHERE ctp.ngayTao = (" +
-            "   SELECT MAX(ctp2.ngayTao) " +
-            "   FROM ChiTietSanPham ctp2 " +
-            "   WHERE ctp2.idSanPham.id = ctp.idSanPham.id " +
-            "   AND ctp2.trangThai = true" +
-            ") " +
-            "AND ctp.soLuong > 0")
+            "WHERE ctp.idSanPham.trangThai=true and ctp.soLuong>0 and ctp.trangThai =true ")
     Page<ChiTietSanPham> findFirstRecordForEachProduct(Pageable pageable);
 
     @Query(value = "select * from ChiTietSanPham", nativeQuery = true)
@@ -41,14 +35,13 @@ public interface ChiTietSanPhamRepository extends JpaRepository<ChiTietSanPham, 
     List<ChiTietSanPham> findTop10NewestProducts(Pageable pageable);
     // code hung end
 
-    // Tìm chi tiết sản phẩm theo id sản phẩm và id màu sắc, với trạng thái đang hoạt động
-    @Query("SELECT c FROM ChiTietSanPham c WHERE c.idSanPham.id = :idSanPham AND c.idMauSac.id = :idMauSac and c.trangThai = true")
-    ChiTietSanPham findChiTietSanPhamByIdAndIdMauSacAndTrangThai(@Param("idSanPham") int idSanPham,
-                                                                 @Param("idMauSac") int idMauSac,
-                                                                 @Param("trangThai") boolean trangThai);
+    @Query("SELECT c FROM ChiTietSanPham c WHERE c.idSanPham.id = :id AND c.idMauSac.id = :idMauSac AND c.trangThai = true")
+    List<ChiTietSanPham> findChiTietSanPhamByIdSPAndIdMauSac(@Param("id") int id,
+                                                     @Param("idMauSac") int idMauSac);
+
 
     // Lấy danh sách chi tiết sản phẩm theo id sản phẩm với trạng thái đang hoạt động
-    ArrayList<ChiTietSanPham> findByIdSanPham_IdAndTrangThai(int idSanPham, boolean trangThai);
+    ArrayList<ChiTietSanPham> findChiTietSanPhamByIdSanPham_IdAndTrangThai(int idSanPham, boolean trangThai);
 
     // Tìm chi tiết sản phẩm theo id sản phẩm, id size và id màu sắc
     ChiTietSanPham findChiTietSanPhamByIdSanPham_IdAndIdSize_IdAndIdMauSac_Id(int idSanPham, int idSize, int idMauSac);
@@ -72,7 +65,9 @@ public interface ChiTietSanPhamRepository extends JpaRepository<ChiTietSanPham, 
             "JOIN sp.idChatLieu cl " +
             "WHERE (:tenHang IS NULL OR h.tenHang = :tenHang) " +
             "AND (:chatLieu IS NULL OR cl.tenChatLieu = :chatLieu) " +
-            "AND ctp.giaBan BETWEEN :minPrice AND :maxPrice")
+            "AND ctp.giaBan BETWEEN :minPrice AND :maxPrice " +
+            "AND ctp.soLuong > 0 " + // Thêm điều kiện kiểm tra số lượng
+            "AND ctp.trangThai = true") // Thêm điều kiện kiểm tra trạng thái
     Page<ChiTietSanPham> filterByHangAndPrice(
             @Param("tenHang") String tenHang,
             @Param("chatLieu") String chatLieu,
@@ -103,12 +98,13 @@ public interface ChiTietSanPhamRepository extends JpaRepository<ChiTietSanPham, 
     ChiTietSanPham getChiTietSanPhamById(@Param("id") Integer id);
 
     @Query("SELECT c FROM ChiTietSanPham c WHERE " +
-            "( c.idSanPham.tenSanPham LIKE CONCAT('%', :tenSanPham, '%')) OR " +
+            "c.trangThai = true AND (" +
+            "(:tenSanPham IS NOT NULL AND :tenSanPham <> '' AND c.idSanPham.tenSanPham LIKE CONCAT('%', :tenSanPham, '%')) OR " +
             "(:idSize IS NOT NULL AND c.idSize.id = :idSize) OR " +
             "(:idMauSac IS NOT NULL AND c.idMauSac.id = :idMauSac) OR " +
             "(:idDanhMuc IS NOT NULL AND c.idSanPham.idDanhMuc.id = :idDanhMuc) OR " +
             "(:idHang IS NOT NULL AND c.idSanPham.idHang.id = :idHang) OR " +
-            "(:idChatLieu IS NOT NULL AND c.idSanPham.idChatLieu.id = :idChatLieu)")
+            "(:idChatLieu IS NOT NULL AND c.idSanPham.idChatLieu.id = :idChatLieu))")
     Page<ChiTietSanPham> timKiemSanPhamQuaCTSP(@Param("tenSanPham") String tenSanPham,
                                                @Param("idSize") Integer idSize,
                                                @Param("idMauSac") Integer idMauSac,
@@ -117,5 +113,4 @@ public interface ChiTietSanPhamRepository extends JpaRepository<ChiTietSanPham, 
                                                @Param("idChatLieu") Integer idChatLieu,
                                                Pageable pageable);
 
-    //code quan end
 }

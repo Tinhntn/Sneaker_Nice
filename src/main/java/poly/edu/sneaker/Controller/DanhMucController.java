@@ -4,15 +4,19 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import poly.edu.sneaker.Model.DanhMuc;
+import poly.edu.sneaker.Model.Hang;
 import poly.edu.sneaker.Service.DanhMucService;
 
 import jakarta.validation.Valid;
+
+import java.util.*;
 
 @Controller
 @RequestMapping("/danh_muc")
@@ -42,9 +46,20 @@ public class DanhMucController {
 
     @PostMapping("/add")
     public String addDanhMuc(@Valid @ModelAttribute("danhMuc") DanhMuc danhMuc, BindingResult bindingResult, RedirectAttributes redirectAttributes) {
+        // Kiểm tra trùng tên danh mục
+        if (danhMucService.getAllDanhMucs().stream().anyMatch(dm -> dm.getTenDanhMuc().equalsIgnoreCase(danhMuc.getTenDanhMuc()))) {
+            bindingResult.rejectValue("tenDanhMuc", "error.danhMuc", "Tên danh mục đã tồn tại");
+        }
+
+        // Kiểm tra trùng mã danh mục
+        if (danhMucService.findByMaDanhMuc(danhMuc.getMaDanhMuc()) != null) {
+            bindingResult.rejectValue("maDanhMuc", "error.danhMuc", "Mã danh mục đã tồn tại");
+        }
+
         if (bindingResult.hasErrors()) {
             return "admin/danh_muc/add";
         }
+
         try {
             String maDanhMuc = danhMucService.taoMaDanhMuc();
             while (danhMucService.findByMaDanhMuc(maDanhMuc) != null) {
@@ -58,7 +73,28 @@ public class DanhMucController {
         }
         return "redirect:/danh_muc/hienthi";
     }
+    @PostMapping("/them_nhanh")
+    @ResponseBody
+    public ResponseEntity<?> themNhanh(@ModelAttribute DanhMuc danhMuc) {
 
+        if(danhMuc==null){
+            return ResponseEntity.badRequest().body(Collections.singletonMap("message","Bạn cần nhập đủ thông tin"));
+        }
+        String tenDanhMuc = danhMuc.getTenDanhMuc();
+        ArrayList<DanhMuc> danhMucs = danhMucService.getAllDanhMucs();
+        for(DanhMuc danhMuc1 : danhMucs){
+            if (danhMuc1.getTenDanhMuc().trim().equalsIgnoreCase(tenDanhMuc.trim())) {
+                return ResponseEntity.badRequest().body(Collections.singletonMap("message", "Tên danh mục đã tồn tại"));
+            }
+        }
+        DanhMuc newDM = new DanhMuc();
+        newDM.setTenDanhMuc(tenDanhMuc);
+        newDM.setNgayTao(new Date());
+        newDM.setTrangThai(true);
+        newDM.setMaDanhMuc(danhMucService.taoMaDanhMuc());
+        danhMucService.save(newDM);
+        return ResponseEntity.ok().body(Map.of("message","Thêm hãng mới thành công","success",true));
+    }
     @GetMapping("/edit/{id}")
     public String showEditForm(@PathVariable("id") Integer id, Model model, RedirectAttributes redirectAttributes) {
         DanhMuc danhMuc = danhMucService.findDanhMucById(id);
@@ -72,9 +108,16 @@ public class DanhMucController {
 
     @PostMapping("/update/{id}")
     public String editDanhMuc(@PathVariable("id") Integer id, @Valid @ModelAttribute("danhMuc") DanhMuc danhMuc, BindingResult bindingResult, RedirectAttributes redirectAttributes) {
+        // Kiểm tra trùng tên danh mục (ngoại trừ chính nó)
+        if (danhMucService.getAllDanhMucs().stream()
+                .anyMatch(dm -> !dm.getId().equals(id) && dm.getTenDanhMuc().equalsIgnoreCase(danhMuc.getTenDanhMuc()))) {
+            bindingResult.rejectValue("tenDanhMuc", "error.danhMuc", "Tên danh mục đã tồn tại");
+        }
+
         if (bindingResult.hasErrors()) {
             return "admin/danh_muc/update";
         }
+
         try {
             DanhMuc existingDanhMuc = danhMucService.findDanhMucById(id);
             if (existingDanhMuc != null) {
@@ -90,7 +133,6 @@ public class DanhMucController {
         }
         return "redirect:/danh_muc/hienthi";
     }
-
     @PostMapping("/toggleStatus/{id}")
     public String toggleStatus(@PathVariable("id") Integer id, RedirectAttributes redirectAttributes) {
         try {

@@ -4,19 +4,30 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import poly.edu.sneaker.Model.ChiTietSanPham;
 import poly.edu.sneaker.Model.Interface.SanPhamInterface;
+import poly.edu.sneaker.Model.MauSac;
 import poly.edu.sneaker.Model.SanPham;
+import poly.edu.sneaker.Model.Size;
+import poly.edu.sneaker.Repository.ChiTietSanPhamRepository;
+import poly.edu.sneaker.Repository.MauSacRepository;
 import poly.edu.sneaker.Repository.SanPhamRepository;
+import poly.edu.sneaker.Repository.SizeRepository;
 import poly.edu.sneaker.Service.SanPhamService;
 
-import java.util.Date;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 
 @Service
 public class SanPhamImplement implements SanPhamService {
     @Autowired
     private SanPhamRepository sanPhamRepository;
+    @Autowired
+    private SizeRepository sizeRepository;
+    @Autowired
+    private MauSacRepository mauSacRepository;
+    @Autowired
+    private ChiTietSanPhamRepository chiTietSanPhamRepository;
+
 
     @Override
     public Page<SanPham> findAll(Pageable pageable) {
@@ -25,6 +36,8 @@ public class SanPhamImplement implements SanPhamService {
 
     @Override
     public void save(SanPham sanPham) {
+        sanPham.setMaSanPham(taoMaSanPham());
+        System.out.println(sanPham);
         sanPhamRepository.save(sanPham);
     }
 
@@ -62,12 +75,6 @@ public class SanPhamImplement implements SanPhamService {
 
 
 
-//    // ...
-//    @Override
-//    public List<SanPham> searchByNameOrHang(String keyword) {
-//        if (keyword == null || keyword.trim().isEmpty()) {
-//            return List.of();
-//        }
-//        return sanPhamRepository.findByTenSanPhamOrTenHang(keyword.trim());
-//    }
+
+
 }

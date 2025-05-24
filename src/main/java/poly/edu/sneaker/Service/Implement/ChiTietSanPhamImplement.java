@@ -91,17 +91,17 @@ public class ChiTietSanPhamImplement implements ChiTietSanPhamService {
         chiTietSanPham.setSoLuong(chiTietSanPham.getSoLuong() + soLuong);
     }
     @Override
-    public ChiTietSanPham findCTSPByIDMauSac(int idCTSP, int idMauSac) {
-        return chiTietSanPhamRepository.findChiTietSanPhamByIdAndIdMauSacAndTrangThai(idCTSP,idMauSac,true);
+    public List<ChiTietSanPham> findIDSPByIDMauSac(int idSP, int idMauSac) {
+        return chiTietSanPhamRepository.findChiTietSanPhamByIdSPAndIdMauSac(idSP,idMauSac);
     }
 
     @Override
     public ArrayList<ChiTietSanPham> findByIdSanPham(int idSanPham) {
-        return chiTietSanPhamRepository.findByIdSanPham_IdAndTrangThai(idSanPham, true);
+        return chiTietSanPhamRepository.findChiTietSanPhamByIdSanPham_IdAndTrangThai(idSanPham, true);
     }
 
     @Override
-    public ChiTietSanPham findCTSPByIdSPAndIdMauSacAndIdSize(int idSanPham, int idMauSac, int idSize) {
+    public ChiTietSanPham findCTSPByIdSPAndIdMauSacAndIdSize(int idSanPham, int idSize, int idMauSac) {
         return chiTietSanPhamRepository.findChiTietSanPhamByIdSanPham_IdAndIdSize_IdAndIdMauSac_Id(idSanPham, idSize, idMauSac);
     }
 

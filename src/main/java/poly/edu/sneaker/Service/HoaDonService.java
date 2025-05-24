@@ -1,6 +1,7 @@
 package poly.edu.sneaker.Service;
 
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import poly.edu.sneaker.Model.HoaDon;
 import poly.edu.sneaker.Model.HoaDonChiTiet;
@@ -16,4 +17,9 @@ public interface HoaDonService {
     Page<HoaDon> getAllHoaDonTaiQuay(int page, int size);
     List<HoaDonChiTiet> danhSachChiTietHoaDonByIDHD(Integer id);
     String taoMaHoaDon();
+
+    Page<HoaDon> timkiemhoadon(String keyword, int page, int size);
+
+    Page<HoaDon> searchHoaDonByDateRange(String startDate, String endDate, int page,int size);
+    Page<HoaDon> timHoaDonTheoIdKhuyenMai(Integer idkm, int page,int size);
 }

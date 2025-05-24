@@ -1,6 +1,5 @@
 package poly.edu.sneaker.Controller;
 
-
 import com.itextpdf.io.font.PdfEncodings;
 import com.itextpdf.io.font.constants.StandardFonts;
 import com.itextpdf.kernel.font.PdfFont;
@@ -9,8 +8,28 @@ import com.itextpdf.kernel.geom.PageSize;
 import com.itextpdf.kernel.pdf.canvas.draw.SolidLine;
 import com.itextpdf.layout.borders.Border;
 import com.itextpdf.layout.property.HorizontalAlignment;
+import com.itextpdf.kernel.pdf.PdfDocument;
+import com.itextpdf.kernel.pdf.PdfWriter;
+import com.itextpdf.kernel.font.PdfFont;
+import com.itextpdf.kernel.font.PdfFontFactory;
+import com.itextpdf.kernel.geom.PageSize;
+import com.itextpdf.layout.Document;
+import com.itextpdf.layout.element.Paragraph;
+import com.itextpdf.layout.element.Table;
+import com.itextpdf.layout.element.Cell;
+import com.itextpdf.layout.element.Text;
 import com.itextpdf.layout.property.TextAlignment;
 import com.itextpdf.layout.property.UnitValue;
+import com.itextpdf.layout.borders.Border;
+import com.itextpdf.layout.property.HorizontalAlignment;
+import com.itextpdf.io.font.PdfEncodings;
+import com.itextpdf.io.font.FontProgram;
+import com.itextpdf.io.font.FontProgramFactory;
+
+import com.itextpdf.io.font.constants.StandardFonts;
+import com.itextpdf.kernel.pdf.canvas.draw.SolidLine;
+import com.itextpdf.layout.element.LineSeparator;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -27,9 +46,7 @@ import poly.edu.sneaker.Model.*;
 import poly.edu.sneaker.Service.BanHangTaiQuayService;
 import poly.edu.sneaker.Service.HoaDonService;
 
-import com.itextpdf.kernel.pdf.*;
-import com.itextpdf.layout.Document;
-import com.itextpdf.layout.element.*;
+
 import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
 import poly.edu.sneaker.Service.NhanVienService;
@@ -40,6 +57,7 @@ import java.io.*;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.time.format.DateTimeFormatter;
+import java.util.Date;
 import java.util.List;
 import java.util.Random;
 
@@ -47,11 +65,12 @@ import java.util.Random;
 @RequestMapping("/banhangtaiquay")
 public class BanHangTaiQuayController {
     @Autowired
-    BanHangTaiQuayService banHangTaiQuayService ;
+    BanHangTaiQuayService banHangTaiQuayService;
     @Autowired
     HoaDonService hoaDonService;
     @Autowired
     NhanVienService nhanVienService;
+
     public String getCurrentUserEmail() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication != null && authentication.isAuthenticated()) {
@@ -59,13 +78,14 @@ public class BanHangTaiQuayController {
         }
         return null; // Nếu chưa đăng nhập, trả về null hoặc giá trị mặc định
     }
+
     @GetMapping("/hienthi")
     public String bhtq(Model model, @RequestParam(defaultValue = "0") int page) {
         int size = 5;
         //list chitietsanpham phan trang
 
-
         Page<ChiTietSanPham> CTSP = banHangTaiQuayService.DanhSachSanPhamPhanTrang(page,size);
+
         model.addAttribute("CTSP", CTSP.getContent());
         model.addAttribute("currentPage", page);
         model.addAttribute("totalPages", CTSP.getTotalPages());
@@ -131,8 +151,6 @@ public class BanHangTaiQuayController {
     }
 
 
-
-
     @PostMapping("/taohoadoncho")
     public String taoHoaDon(@ModelAttribute("hoadon") HoaDon hd, Model model,
                             RedirectAttributes redirectAttributes,
@@ -157,7 +175,7 @@ public class BanHangTaiQuayController {
             hd.setTienThua(0);
             hd.setTongTien(0);
             hd.setTongTienGiam(0);
-            hd.setTrangThai(0);
+            hd.setTrangThai(10);
             banHangTaiQuayService.taoHoaDonCho(hd); // Lưu hóa đơn
             return "redirect:/banhangtaiquay/hienthi";
         }
@@ -165,7 +183,7 @@ public class BanHangTaiQuayController {
 
     @GetMapping("/showhoadoncho/{id}")
     public String detailHD(@PathVariable Integer id, Model model, @RequestParam(defaultValue = "0") int page
-                           ) {
+    ) {
         int size = 5;
         Page<ChiTietSanPham> CTSP = banHangTaiQuayService.DanhSachSanPhamPhanTrang(page, size);
         model.addAttribute("CTSP", CTSP.getContent());
@@ -178,9 +196,9 @@ public class BanHangTaiQuayController {
         List<HoaDon> list = banHangTaiQuayService.getAllHoaDon();
         model.addAttribute("listHoaDon", list);
         List<HoaDonChiTiet> listHDCT = banHangTaiQuayService.danhSachChiTietHoaDonByIDHD(id);
-        model.addAttribute("listHDCT",listHDCT);
+        model.addAttribute("listHDCT", listHDCT);
         Double tongtiencthd = banHangTaiQuayService.tongTienCTHD(id);
-        model.addAttribute("tongtiencthd",tongtiencthd);
+        model.addAttribute("tongtiencthd", tongtiencthd);
 
         List<ChatLieu> lstChatLieu = banHangTaiQuayService.getAllChatLieuTimKiem();
         model.addAttribute("lstChatLieu", lstChatLieu);
@@ -200,7 +218,7 @@ public class BanHangTaiQuayController {
             @PathVariable("ctspid") Integer ctspid,   // Lấy id của chi tiết sản phẩm từ URL
             @RequestParam("soluong1") Integer soluong,   // Lấy số lượng từ form
             @RequestParam("idhd") Integer idhd,              // Lấy id của hóa đơn từ form
-            RedirectAttributes redirectAttributes){
+            RedirectAttributes redirectAttributes) {
         try {
             ChiTietSanPham chiTietSanPham = banHangTaiQuayService.danhSachChiTietSPID(ctspid);
             HoaDon hd = banHangTaiQuayService.getHoaDonByID(idhd);
@@ -216,10 +234,10 @@ public class BanHangTaiQuayController {
             hdct.setDonGia(chiTietSanPham.getGiaBan());
             hdct.setIdHoaDon(hd);
             hdct.setSoLuong(1);
-            chiTietSanPham.setSoLuong(chiTietSanPham.getSoLuong()-1);
+            chiTietSanPham.setSoLuong(chiTietSanPham.getSoLuong() - 1);
             banHangTaiQuayService.saveCTSP(chiTietSanPham);
             banHangTaiQuayService.addHoaDonCT(hdct);
-            if(chiTietSanPham.getSoLuong()==0){
+            if (chiTietSanPham.getSoLuong() == 0) {
                 chiTietSanPham.setTrangThai(false);
                 banHangTaiQuayService.saveCTSP(chiTietSanPham);
             }
@@ -230,23 +248,24 @@ public class BanHangTaiQuayController {
         // Chuyển hướng về trang hiển thị hóa đơn đang chọn
         return "redirect:/banhangtaiquay/showhoadoncho/" + idhd;
     }
+
     @GetMapping("/deletehdc/{id}")
-    public String deletehdc(Model model, @PathVariable Integer id,RedirectAttributes redirectAttributes) {
+    public String deletehdc(Model model, @PathVariable Integer id, RedirectAttributes redirectAttributes) {
         List<HoaDonChiTiet> listHDCT = banHangTaiQuayService.danhSachChiTietHoaDonByIDHD(id);
-        for (HoaDonChiTiet ct : listHDCT){
+        for (HoaDonChiTiet ct : listHDCT) {
             ChiTietSanPham idctsp = ct.getIdChiTietSanPham();
             Integer slCTHD = ct.getSoLuong();
-           ChiTietSanPham chiTietSanPham = banHangTaiQuayService.danhSachChiTietSPID(idctsp.getId());
+            ChiTietSanPham chiTietSanPham = banHangTaiQuayService.danhSachChiTietSPID(idctsp.getId());
             if (chiTietSanPham != null) {
                 int soLuongBanDau = chiTietSanPham.getSoLuong();
                 // Tính toán và cập nhật số lượng mới
                 int soLuongMoi = soLuongBanDau + slCTHD;
                 chiTietSanPham.setSoLuong(soLuongMoi);
-                if (soLuongMoi>0){
+                if (soLuongMoi > 0) {
                     chiTietSanPham.setTrangThai(true);
                 }
                 // Lưu thay đổi vào cơ sở dữ liệu
-               banHangTaiQuayService.saveCTSP(chiTietSanPham);
+                banHangTaiQuayService.saveCTSP(chiTietSanPham);
             }
         }
         banHangTaiQuayService.xoaHD(id);
@@ -261,7 +280,7 @@ public class BanHangTaiQuayController {
         List<HoaDonChiTiet> listHDCT = banHangTaiQuayService.danhSachChiTietHoaDonByID(id);
         System.out.println("Danh sách HDCT: " + listHDCT.size());
 
-        for (HoaDonChiTiet ct : listHDCT){
+        for (HoaDonChiTiet ct : listHDCT) {
             ChiTietSanPham idctsp = ct.getIdChiTietSanPham();
             Integer slCTHD = ct.getSoLuong();
             ChiTietSanPham chiTietSanPham = banHangTaiQuayService.danhSachChiTietSPID(idctsp.getId());
@@ -270,7 +289,7 @@ public class BanHangTaiQuayController {
                 int soLuongBanDau = chiTietSanPham.getSoLuong();
                 int soLuongMoi = soLuongBanDau + slCTHD;
                 chiTietSanPham.setSoLuong(soLuongMoi);
-                if (soLuongMoi>0){
+                if (soLuongMoi > 0) {
                     chiTietSanPham.setTrangThai(true);
                 }
                 banHangTaiQuayService.saveCTSP(chiTietSanPham);
@@ -280,6 +299,7 @@ public class BanHangTaiQuayController {
         redirectAttributes.addFlashAttribute("success", "Xóa hóa đơn thành công!");
         return "redirect:/banhangtaiquay/showhoadoncho/" + idhd;
     }
+
     @PostMapping("/updatehdct/{id}")
     public String updateSoLuong(@PathVariable("id") Integer id,
                                 RedirectAttributes redirectAttributes,
@@ -342,58 +362,101 @@ public class BanHangTaiQuayController {
 
         return "redirect:/banhangtaiquay/showhoadoncho/" + idhd;
     }
+
     @PostMapping("/thanhtoan")
     public String thanhtoan(@RequestParam("idHoaDon") Integer idhd,
-                                RedirectAttributes redirectAttributes,
+                            RedirectAttributes redirectAttributes,
                             @RequestParam(value = "tienKhachDua", defaultValue = "0") float tienKhachDua,
                             @RequestParam(value = "tienThua", defaultValue = "0") float tienThua,
-                                 @RequestParam("tongtiencthd") Float tongtiencthd,
-                                 @RequestParam("tongtiencthddatru") Float tongtiencthddatru,
-                                 @RequestParam("sotiengiam") Float sotiengiam) {
-        System.out.println(tongtiencthd);
-        System.out.println(tongtiencthddatru);
-        System.out.println(sotiengiam);
-        // Kiểm tra nếu số lượng không hợp lệ (chứa chữ hoặc số âm)
-        if (tienKhachDua <= 0) {
-            redirectAttributes.addFlashAttribute("error", "Vui lòng nhập tiền khách đưa!");
-            return "redirect:/banhangtaiquay/showhoadoncho/" + idhd;
-        }
+                            @RequestParam(value = "tongtiencthd", defaultValue = "0") Float tongtiencthd,
+                            @RequestParam(value = "tongtiencthddatru", defaultValue = "0") Float tongtiencthddatru,
+                            @RequestParam(value = "sotiengiam",defaultValue = "0") Float sotiengiam
+    ) {
 
-        // Kiểm tra nếu số tiền khách đưa nhỏ hơn tổng tiền cần thanh toán
-
-        // Tìm hóa đơn chi tiết theo ID
-
-        HoaDon hd = banHangTaiQuayService.getHoaDonByID(idhd);
-        if(hd.getIdKhuyenMai()!= null){
-            KhuyenMai km = banHangTaiQuayService.timKhuyenMaiQuaMa(hd.getIdKhuyenMai().getMaKhuyenMai());
-            if(km.getDaSuDung()>= km.getSoLuong()){
-                redirectAttributes.addFlashAttribute("error", "Khuyến mãi này không đủ số lượng");
+        try {
+            if (tongtiencthd <= 0) {
+                redirectAttributes.addFlashAttribute("error", "Chưa có sản phẩm trong hóa đơn!");
                 return "redirect:/banhangtaiquay/showhoadoncho/" + idhd;
             }
-            km.setDaSuDung(km.getDaSuDung()+1);
-            banHangTaiQuayService.saveKM(km);
-        }
-        hd.setTrangThai(1);
-        hd.setThanhTien(tongtiencthddatru);
-        hd.setTongTienGiam(sotiengiam);
-        hd.setTongTien(tongtiencthd); // Cập nhật tổng doanh thu cho hóa đơn
-        if (tongtiencthd<=0){
-            redirectAttributes.addFlashAttribute("error", "Chưa có sản phẩm!");
+
+            if (tienKhachDua <= 0) {
+                redirectAttributes.addFlashAttribute("error", "Vui lòng nhập số tiền khách đưa!");
+                return "redirect:/banhangtaiquay/showhoadoncho/" + idhd;
+            }
+
+            if (tienKhachDua < tongtiencthddatru) {
+                redirectAttributes.addFlashAttribute("error", "Số tiền khách đưa không đủ để thanh toán!");
+                return "redirect:/banhangtaiquay/showhoadoncho/" + idhd;
+            }
+
+            HoaDon hd = banHangTaiQuayService.getHoaDonByID(idhd);
+            if (hd == null) {
+                redirectAttributes.addFlashAttribute("error", "Không tìm thấy hóa đơn!");
+                return "redirect:/banhangtaiquay";
+            }
+
+            // Kiểm tra khuyến mãi (nếu có)
+            if (hd.getIdKhuyenMai() != null) {
+                KhuyenMai km = banHangTaiQuayService.timKhuyenMaiQuaMa(hd.getIdKhuyenMai().getMaKhuyenMai());
+
+                if (km != null) {
+                    Date now = new Date();
+
+                    if (Boolean.FALSE.equals(km.getTrangThai())) {
+                        redirectAttributes.addFlashAttribute("error", "Mã khuyến mãi không còn hoạt động!");
+                        return "redirect:/banhangtaiquay/showhoadoncho/" + idhd;
+                    }
+
+                    if (km.getNgayBatDau() != null && km.getNgayBatDau().after(now)) {
+                        redirectAttributes.addFlashAttribute("error", "Mã khuyến mãi chưa được áp dụng!");
+                        return "redirect:/banhangtaiquay/showhoadoncho/" + idhd;
+                    }
+
+                    if (km.getNgayKetThuc() != null && km.getNgayKetThuc().before(now)) {
+                        redirectAttributes.addFlashAttribute("error", "Mã khuyến mãi đã hết hạn!");
+                        return "redirect:/banhangtaiquay/showhoadoncho/" + idhd;
+                    }
+
+                    if (km.getDaSuDung() >= km.getSoLuong()) {
+                        redirectAttributes.addFlashAttribute("error", "Mã khuyến mãi đã được sử dụng hết!");
+                        return "redirect:/banhangtaiquay/showhoadoncho/" + idhd;
+                    }
+
+                    // Cập nhật số lần sử dụng khuyến mãi
+                    km.setDaSuDung(km.getDaSuDung() + 1);
+                    banHangTaiQuayService.saveKM(km);
+                }
+            }
+
+            // Cập nhật thông tin hóa đơn
+            hd.setTrangThai(1); // Đánh dấu là đã thanh toán
+            hd.setThanhTien(tongtiencthddatru); // Số tiền sau khi giảm
+            hd.setTongTienGiam(sotiengiam);
+            hd.setTongTien(tongtiencthd); // Tổng tiền chưa giảm
+            hd.setTienKhachDua(tienKhachDua);
+            hd.setTienThua(tienThua);
+
+            banHangTaiQuayService.saveHoaDon(hd);
+
+            redirectAttributes.addFlashAttribute("success", "Thanh toán thành công!");
+            return "redirect:/banhangtaiquay/in-hoadon/" + idhd;
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            redirectAttributes.addFlashAttribute("error", "Đã xảy ra lỗi khi thanh toán!");
             return "redirect:/banhangtaiquay/showhoadoncho/" + idhd;
         }
-        banHangTaiQuayService.saveHoaDon(hd);
-        redirectAttributes.addFlashAttribute("success", "Thanh Toán Thành Công");
-        return "redirect:/banhangtaiquay/in-hoadon/" + idhd;
     }
+
+
     @PostMapping("/timkiemidquasdtkh")
-    public String timsdtkh( Model model,@RequestParam("idHoaDon") Integer idhd,
-                                    @RequestParam("sdt") String sdt,
-                            RedirectAttributes redirectAttributes) {
+    public String timsdtkh(Model model, @RequestParam("idHoaDon") Integer idhd,
+                           @RequestParam("sdt") String sdt,
+                           RedirectAttributes redirectAttributes) {
         KhachHang khachHang = banHangTaiQuayService.timIDQuaSDTKH(sdt);
         HoaDon hd = banHangTaiQuayService.getHoaDonByID(idhd);
         if (khachHang != null) {
             hd.setIdKhachHang(khachHang);
-            System.out.println(khachHang);
             banHangTaiQuayService.saveHoaDon(hd);
             redirectAttributes.addFlashAttribute("success", "Thêm khách hàng " + khachHang.getTenKhachHang() + " vào hóa đơn thành công");
             return "redirect:/banhangtaiquay/showhoadoncho/" + idhd;
@@ -401,44 +464,76 @@ public class BanHangTaiQuayController {
             redirectAttributes.addFlashAttribute("error", "Không tìm thấy khách hàng với số điện thoại: " + sdt);
             return "redirect:/banhangtaiquay/showhoadoncho/" + idhd;
         }
-        }
-        @PostMapping("/xoakhachhangkhoihoadon")
-    public String xoakh( Model model,@RequestParam("idHoaDon") Integer idhd,
-                            RedirectAttributes redirectAttributes) {
-        HoaDon hd = banHangTaiQuayService.getHoaDonByID(idhd);
-            hd.setIdKhachHang(null);
-            banHangTaiQuayService.saveHoaDon(hd);
-            redirectAttributes.addFlashAttribute("success", "Bạn đã hủy khách hàng khỏi hóa đơn");
-            return "redirect:/banhangtaiquay/showhoadoncho/" + idhd;
-        }
-    @PostMapping("/timkiemKhuyenMaiQuaMaKM")
-    public String timkm( Model model,@RequestParam("idHoaDon") Integer idhd,
-                            @RequestParam("makm") String makm,
-                            RedirectAttributes redirectAttributes) {
-        KhuyenMai km = banHangTaiQuayService.timKhuyenMaiQuaMa(makm);
-        HoaDon hd = banHangTaiQuayService.getHoaDonByID(idhd);
-        Double tongtiencthd = banHangTaiQuayService.tongTienCTHD(idhd);
+    }
 
-        if (km != null) {
-            if (km.getSoLuong()<1){
-                redirectAttributes.addFlashAttribute("error", "Số lượng mã khuyến mãi không đủ bạn hãy chọn mã khác");
-                return "redirect:/banhangtaiquay/showhoadoncho/" + idhd;
-            }else if (km.getDieuKienApDung()>tongtiencthd){
-                redirectAttributes.addFlashAttribute("error", "Hóa đơn của bạn chưa đủ điều kiện để dùng");
+    @PostMapping("/xoakhachhangkhoihoadon")
+    public String xoakh(Model model, @RequestParam("idHoaDon") Integer idhd,
+                        RedirectAttributes redirectAttributes) {
+        HoaDon hd = banHangTaiQuayService.getHoaDonByID(idhd);
+        hd.setIdKhachHang(null);
+        banHangTaiQuayService.saveHoaDon(hd);
+        redirectAttributes.addFlashAttribute("success", "Bạn đã hủy khách hàng khỏi hóa đơn");
+        return "redirect:/banhangtaiquay/showhoadoncho/" + idhd;
+    }
+
+    @PostMapping("/timkiemKhuyenMaiQuaMaKM")
+    public String timkm(Model model,
+                        @RequestParam("idHoaDon") Integer idhd,
+                        @RequestParam("makm") String makm,
+                        RedirectAttributes redirectAttributes) {
+        try {
+            KhuyenMai km = banHangTaiQuayService.timKhuyenMaiQuaMa(makm);
+            HoaDon hd = banHangTaiQuayService.getHoaDonByID(idhd);
+            Double tongtiencthd = banHangTaiQuayService.tongTienCTHD(idhd);
+            if (hd == null) {
+                redirectAttributes.addFlashAttribute("error", "Không tìm thấy hóa đơn.");
+                return "redirect:/banhangtaiquay";
+            }
+            if (km == null) {
+                redirectAttributes.addFlashAttribute("error", "Không tìm thấy mã khuyến mãi này.");
                 return "redirect:/banhangtaiquay/showhoadoncho/" + idhd;
             }
+            // Kiểm tra trạng thái hoạt động
+            if (Boolean.FALSE.equals(km.getTrangThai())) {
+                redirectAttributes.addFlashAttribute("error", "Mã khuyến mãi không hoạt động.");
+                return "redirect:/banhangtaiquay/showhoadoncho/" + idhd;
+            }
+            // Kiểm tra ngày bắt đầu và kết thúc
+            Date now = new Date();
+            if (km.getNgayBatDau() != null && km.getNgayBatDau().after(now)) {
+                redirectAttributes.addFlashAttribute("error", "Mã khuyến mãi chưa bắt đầu.");
+                return "redirect:/banhangtaiquay/showhoadoncho/" + idhd;
+            }
+            if (km.getNgayKetThuc() != null && km.getNgayKetThuc().before(now)) {
+                redirectAttributes.addFlashAttribute("error", "Mã khuyến mãi đã hết hạn.");
+                return "redirect:/banhangtaiquay/showhoadoncho/" + idhd;
+            }
+            // Kiểm tra số lượng mã khuyến mãi
+            if (km.getSoLuong() < 1) {
+                redirectAttributes.addFlashAttribute("error", "Số lượng mã khuyến mãi không đủ. Hãy chọn mã khác.");
+                return "redirect:/banhangtaiquay/showhoadoncho/" + idhd;
+            }
+            // Kiểm tra điều kiện áp dụng
+            if (km.getDieuKienApDung() > tongtiencthd) {
+                redirectAttributes.addFlashAttribute("error", "Hóa đơn của bạn chưa đủ điều kiện để áp dụng mã khuyến mãi.");
+                return "redirect:/banhangtaiquay/showhoadoncho/" + idhd;
+            }
+            // Gán khuyến mãi vào hóa đơn
             hd.setIdKhuyenMai(km);
             banHangTaiQuayService.saveHoaDon(hd);
-            redirectAttributes.addFlashAttribute("success", "Thêm" + km.getMaKhuyenMai() + " vào hóa đơn thành công");
+            redirectAttributes.addFlashAttribute("success", "Thêm mã " + km.getMaKhuyenMai() + " vào hóa đơn thành công.");
             return "redirect:/banhangtaiquay/showhoadoncho/" + idhd;
-        } else {
-            redirectAttributes.addFlashAttribute("error", "Không tìm thấy mã khuyến mãi này");
+        } catch (Exception e) {
+            e.printStackTrace(); // hoặc log lỗi bằng Logger
+            redirectAttributes.addFlashAttribute("error", "Đã xảy ra lỗi khi áp dụng mã khuyến mãi.");
             return "redirect:/banhangtaiquay/showhoadoncho/" + idhd;
         }
     }
+
+
     @PostMapping("/xoakhuyenmaikhoihoadon")
-    public String xoakm( Model model,@RequestParam("idHoaDon") Integer idhd,
-                         RedirectAttributes redirectAttributes) {
+    public String xoakm(Model model, @RequestParam("idHoaDon") Integer idhd,
+                        RedirectAttributes redirectAttributes) {
         HoaDon hd = banHangTaiQuayService.getHoaDonByID(idhd);
         hd.setIdKhuyenMai(null);
         banHangTaiQuayService.saveHoaDon(hd);
@@ -449,29 +544,51 @@ public class BanHangTaiQuayController {
     @PostMapping("/tienkhachdua")
     public String xuLyTienKhachDua(
             @RequestParam("idHoaDon") Integer idhd,
-            @RequestParam("tongtiencthd") float tongTienCTHD,
             @RequestParam(value = "tienKhachDua", defaultValue = "0") float tienKhachDua,
             RedirectAttributes redirectAttributes) {
-        System.out.println("id hoa don"+idhd);
-        System.out.println("tien cthd "+tongTienCTHD);
-        System.out.println("tien khach dua "+tienKhachDua);
+
+        // Lấy hóa đơn và tổng tiền ban đầu
+        HoaDon hoaDon = banHangTaiQuayService.getHoaDonByID(idhd);
+        Double tongTienGoc = banHangTaiQuayService.tongTienCTHD(idhd);
+        if (hoaDon == null || tongTienGoc == null) {
+            redirectAttributes.addFlashAttribute("error", "Không tìm thấy hóa đơn hoặc dữ liệu không hợp lệ.");
+            return "redirect:/banhangtaiquay";
+        }
+
+        float tongTienSauGiam = tongTienGoc.floatValue();
+
+        // Áp dụng khuyến mãi nếu có
+        if (hoaDon.getIdKhuyenMai() != null) {
+            KhuyenMai km = hoaDon.getIdKhuyenMai();
+            if (Boolean.TRUE.equals(km.getLoaiKhuyenMai())) {
+                // Giảm theo số tiền
+                tongTienSauGiam -= km.getGiaTriGiam();
+            } else {
+                // Giảm theo %
+                float tienGiam = tongTienSauGiam * (km.getGiaTriGiam() / 100f);
+                float mucGiamToiDa = km.getMucGiamGiaToiDa();
+                tongTienSauGiam -= Math.min(tienGiam, mucGiamToiDa);
+            }
+        }
+
+        // Đảm bảo không bị âm
+        if (tongTienSauGiam < 0) tongTienSauGiam = 0;
 
         // Tính tiền thừa
-        float tienThua = tienKhachDua - tongTienCTHD;
-        System.out.println("tien thừa " + tienThua);
+        float tienThua = tienKhachDua - tongTienSauGiam;
 
-        if (tienThua<0){
-            redirectAttributes.addFlashAttribute("error", "tiền khách đưa đang nhỏ hơn tiền cần thanh toán");
+        if (tienThua < 0) {
+            redirectAttributes.addFlashAttribute("error", "Tiền khách đưa nhỏ hơn số tiền cần thanh toán.");
             return "redirect:/banhangtaiquay/showhoadoncho/" + idhd;
         }
 
-        // Đưa dữ liệu vào redirectAttributes để hiển thị lại trên giao diện
+        // Truyền lại dữ liệu
         redirectAttributes.addFlashAttribute("idHoaDon", idhd);
-        redirectAttributes.addFlashAttribute("tongTienCTHD", tongTienCTHD);
+        redirectAttributes.addFlashAttribute("tongTienCTHD", tongTienGoc);
+        redirectAttributes.addFlashAttribute("tongTienSauGiam", tongTienSauGiam);
         redirectAttributes.addFlashAttribute("tienKhachDua", tienKhachDua);
         redirectAttributes.addFlashAttribute("tienThua", tienThua);
 
-        // Điều hướng về trang bán hàng tại quầy
         return "redirect:/banhangtaiquay/showhoadoncho/" + idhd;
     }
 
@@ -490,23 +607,33 @@ public class BanHangTaiQuayController {
         return "admin/banhangtaiquay/inhoadon";
     }
 
-
-    @GetMapping("/export/pdf/{id}")
+    @GetMapping("/in/{id}")
     public ResponseEntity<byte[]> exportHoaDonPDF(@PathVariable Integer id) throws IOException {
         HoaDon hoaDon = banHangTaiQuayService.getHoaDonByID(id);
         List<HoaDonChiTiet> hdct = banHangTaiQuayService.danhSachChiTietHoaDonByIDHD(id);
+        for (HoaDonChiTiet d: hdct){
+            System.out.println(d.getSoLuong());
+        }
         SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm");
-
         ByteArrayOutputStream out = new ByteArrayOutputStream();
+        // Sử dụng PdfWriter cho iText 7
         PdfWriter writer = new PdfWriter(out);
         PdfDocument pdfDoc = new PdfDocument(writer);
         Document document = new Document(pdfDoc, PageSize.A4);
         document.setMargins(50, 50, 50, 50);
 
-        // Font setup
-        PdfFont boldFont = PdfFontFactory.createFont(ResourceUtils.getFile("classpath:static/fonts/Flaticon.ttf").getAbsolutePath(), PdfEncodings.IDENTITY_H, true);
 
-        // Header
+
+        // Font
+        PdfFont boldFont = PdfFontFactory.createFont(
+                ResourceUtils.getFile("classpath:static/fonts/Roboto-Regular.ttf").getAbsolutePath(),
+                PdfEncodings.IDENTITY_H, true
+        );
+
+        DecimalFormat currencyFormat = new DecimalFormat("#,##0");
+
+
+        // Tiêu đề
         Paragraph header = new Paragraph("HÓA ĐƠN BÁN HÀNG")
                 .setFont(boldFont)
                 .setFontSize(20)
@@ -514,47 +641,62 @@ public class BanHangTaiQuayController {
                 .setMarginBottom(20);
         document.add(header);
 
-        // Company info
+
+
+        // Thông tin công ty
         Paragraph companyInfo = new Paragraph()
-                .add(new Text("Tiệm giày Sneakers_Nice\n").setFont(boldFont).setFontSize(12))
-                .add("Địa chỉ: Phú Đô, Mỹ Đình, Từ Liêm, Hà Nội\n")
-                .add("Điện thoại: 0123 456 789\n")
+                .add(new Text("Shop giày Sneakers_Nice\n").setFont(boldFont).setFontSize(12))
                 .add("Email: Sneakers_Nice@gmail.com")
                 .setTextAlignment(TextAlignment.CENTER)
                 .setMarginBottom(20);
         document.add(companyInfo);
 
-        // Invoice info - 2 columns
+
+
         float[] columnWidths = {1, 1};
         Table invoiceInfoTable = new Table(columnWidths);
         invoiceInfoTable.setWidth(UnitValue.createPercentValue(100));
 
+        String maHD = hoaDon.getMaHoaDon() != null ? hoaDon.getMaHoaDon() : "";
+        String ngayTao = hoaDon.getNgayTao() != null ? sdf.format(hoaDon.getNgayTao()) : "";
+        String nhanVien = (hoaDon.getIdNhanVien() != null && hoaDon.getIdNhanVien().getHoVaTen() != null)
+                ? hoaDon.getIdNhanVien().getHoVaTen() : "Không có";
+
+        String tenKH = (hoaDon.getIdKhachHang() != null && hoaDon.getIdKhachHang().getTenKhachHang() != null)
+                ? hoaDon.getIdKhachHang().getTenKhachHang()
+                : "Khach Le";
+
+        String sdtKH = (hoaDon.getIdKhachHang() != null && hoaDon.getIdKhachHang().getSdt() != null)
+                ? hoaDon.getIdKhachHang().getSdt()
+                : "Không có";
+
+        String diaChiKH = hoaDon.getDiaChiChiTiet() != null ? hoaDon.getDiaChiChiTiet() : "Không có";
+
+
         Cell leftCell = new Cell()
-                .add(new Paragraph("Mã hóa đơn: ").setFont(boldFont))
-                .add(new Paragraph(hoaDon.getMaHoaDon()))
-                .add(new Paragraph("Ngày tạo: ").setFont(boldFont))
-                .add(new Paragraph(sdf.format(hoaDon.getNgayTao())))
-                .add(new Paragraph("Nhân viên: ").setFont(boldFont))
-                .add(new Paragraph(hoaDon.getIdNhanVien() != null ? hoaDon.getIdNhanVien().getHoVaTen() : "Không có"))
+                .add(new Paragraph().add(new Text("Mã hóa đơn: ").setFont(boldFont)).add(maHD))
+                .add(new Paragraph().add(new Text("Ngày tạo: ").setFont(boldFont)).add(ngayTao))
+                .add(new Paragraph().add(new Text("Nhân viên: ").setFont(boldFont)).add(nhanVien))
                 .setBorder(Border.NO_BORDER);
 
+// ======= Cột PHẢI: thông tin khách hàng =======
         Cell rightCell = new Cell()
-                .add(new Paragraph("Khách hàng: ").setFont(boldFont))
-                .add(new Paragraph(hoaDon.getTenNguoiNhan()))
-                .add(new Paragraph("Điện thoại: ").setFont(boldFont))
-                .add(new Paragraph(hoaDon.getSdtNguoiNhan()))
-                .add(new Paragraph("Địa chỉ: ").setFont(boldFont))
-                .add(new Paragraph(hoaDon.getDiaChiChiTiet()))
+                .add(new Paragraph().add(new Text("Khách hàng: ").setFont(boldFont)).add(tenKH))
+                .add(new Paragraph().add(new Text("Điện thoại: ").setFont(boldFont)).add(sdtKH))
+                .add(new Paragraph().add(new Text("Địa chỉ: ").setFont(boldFont)).add(diaChiKH))
                 .setBorder(Border.NO_BORDER);
+
+
 
         invoiceInfoTable.addCell(leftCell);
         invoiceInfoTable.addCell(rightCell);
         document.add(invoiceInfoTable);
 
-        // Line separator
+
+
+        // Dòng phân cách
         document.add(new LineSeparator(new SolidLine()).setMarginTop(10).setMarginBottom(10));
 
-        // Products table
         Table productsTable = new Table(new float[]{3, 1, 1, 1});
         productsTable.setWidth(UnitValue.createPercentValue(100));
 
@@ -563,42 +705,55 @@ public class BanHangTaiQuayController {
         productsTable.addHeaderCell(new Cell().add(new Paragraph("Đơn giá").setFont(boldFont)).setTextAlignment(TextAlignment.RIGHT));
         productsTable.addHeaderCell(new Cell().add(new Paragraph("Thành tiền").setFont(boldFont)).setTextAlignment(TextAlignment.RIGHT));
 
-        DecimalFormat currencyFormat = new DecimalFormat("#,##0");
-
         for (HoaDonChiTiet ct : hdct) {
-            productsTable.addCell(new Cell().add(new Paragraph(ct.getIdChiTietSanPham().getIdSanPham().getTenSanPham())));
-            productsTable.addCell(new Cell().add(new Paragraph(String.valueOf(ct.getSoLuong()))).setTextAlignment(TextAlignment.CENTER));
-            productsTable.addCell(new Cell().add(new Paragraph(currencyFormat.format(ct.getDonGia()) + " đ")).setTextAlignment(TextAlignment.RIGHT));
-            productsTable.addCell(new Cell().add(new Paragraph(currencyFormat.format(ct.getSoLuong() * ct.getDonGia()) + " đ")).setTextAlignment(TextAlignment.RIGHT));
+            String tenSP = ct.getIdChiTietSanPham() != null &&
+                    ct.getIdChiTietSanPham().getIdSanPham() != null &&
+                    ct.getIdChiTietSanPham().getIdSanPham().getTenSanPham() != null
+                    ? ct.getIdChiTietSanPham().getIdSanPham().getTenSanPham()
+                    : "Không rõ";
+
+            int soLuong = ct.getSoLuong();
+            System.out.println(soLuong);
+            Float donGia = ct.getDonGia() != 0 ? ct.getDonGia() : 0;
+            Float thanhTien = soLuong * donGia;
+
+            productsTable.addCell(new Cell().add(new Paragraph(tenSP)));
+            productsTable.addCell(new Cell().add(new Paragraph(String.valueOf(soLuong))).setTextAlignment(TextAlignment.CENTER));
+            productsTable.addCell(new Cell().add(new Paragraph(currencyFormat.format(donGia) + " đ")).setTextAlignment(TextAlignment.RIGHT));
+            productsTable.addCell(new Cell().add(new Paragraph(currencyFormat.format(thanhTien) + " đ")).setTextAlignment(TextAlignment.RIGHT));
+
         }
 
         document.add(productsTable);
 
-        // Summary
+
         Table summaryTable = new Table(new float[]{3, 1});
         summaryTable.setWidth(UnitValue.createPercentValue(50));
         summaryTable.setHorizontalAlignment(HorizontalAlignment.RIGHT);
         summaryTable.setMarginTop(20);
 
+        // Kiểm tra null trước khi so sánh
+        // Kiểm tra null trước khi gán giá trị và sử dụng giá trị mặc định là 0.0f nếu null
+        Float tongTien = hoaDon.getTongTien() != 0 ? hoaDon.getTongTien() : 0.0f;
+        Float giamGia = hoaDon.getTongTienGiam() != 0 ? hoaDon.getTongTienGiam() : 0.0f;
+        Float thanhToan = hoaDon.getThanhTien() != 0 ? hoaDon.getThanhTien() : 0.0f;
+
+
+
+
         summaryTable.addCell(new Cell().add(new Paragraph("Tổng tiền hàng:").setFont(boldFont)).setBorder(Border.NO_BORDER));
-        summaryTable.addCell(new Cell().add(new Paragraph(currencyFormat.format(hoaDon.getTongTien()) + " đ")).setTextAlignment(TextAlignment.RIGHT).setBorder(Border.NO_BORDER));
-
+        summaryTable.addCell(new Cell().add(new Paragraph(currencyFormat.format(tongTien) + " đ")).setTextAlignment(TextAlignment.RIGHT).setBorder(Border.NO_BORDER));
         summaryTable.addCell(new Cell().add(new Paragraph("Giảm giá:").setFont(boldFont)).setBorder(Border.NO_BORDER));
-        summaryTable.addCell(new Cell().add(new Paragraph("-" + currencyFormat.format(hoaDon.getTongTienGiam()) + " đ")).setTextAlignment(TextAlignment.RIGHT).setBorder(Border.NO_BORDER));
-
-        summaryTable.addCell(new Cell().add(new Paragraph("Phí vận chuyển:").setFont(boldFont)).setBorder(Border.NO_BORDER));
-        summaryTable.addCell(new Cell().add(new Paragraph(currencyFormat.format(hoaDon.getPhiShip()) + " đ")).setTextAlignment(TextAlignment.RIGHT).setBorder(Border.NO_BORDER));
-
+        summaryTable.addCell(new Cell().add(new Paragraph("-" + currencyFormat.format(giamGia) + " đ")).setTextAlignment(TextAlignment.RIGHT).setBorder(Border.NO_BORDER));
         summaryTable.addCell(new Cell().add(new Paragraph("Tổng thanh toán:").setFont(boldFont).setFontSize(14)).setBorder(Border.NO_BORDER));
-        summaryTable.addCell(new Cell().add(new Paragraph(currencyFormat.format(hoaDon.getThanhTien()) + " đ").setFont(boldFont).setFontSize(14)).setTextAlignment(TextAlignment.RIGHT).setBorder(Border.NO_BORDER));
+        summaryTable.addCell(new Cell().add(new Paragraph(currencyFormat.format(thanhToan) + " đ").setFont(boldFont).setFontSize(14)).setTextAlignment(TextAlignment.RIGHT).setBorder(Border.NO_BORDER));
 
         document.add(summaryTable);
 
         // Footer
+
+        String ngayHieuLuc = hoaDon.getNgayTao() != null ? sdf.format(hoaDon.getNgayTao()) : "N/A";
         Paragraph footer = new Paragraph()
-                .add("\n\nCảm ơn quý khách đã sử dụng dịch vụ!\n")
-                .add("Hóa đơn có giá trị từ ngày " +
-                        (hoaDon.getNgayTao() != null ? sdf.format(hoaDon.getNgayTao()) : "N/A"))
                 .setTextAlignment(TextAlignment.CENTER)
                 .setFontSize(10)
                 .setMarginTop(30);
@@ -610,11 +765,16 @@ public class BanHangTaiQuayController {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_PDF);
         headers.setContentDisposition(ContentDisposition.builder("attachment")
-                .filename("hoadon_" + hoaDon.getMaHoaDon() + ".pdf")
+                .filename("hoadon_" + maHD + ".pdf")
                 .build());
-
         return new ResponseEntity<>(pdfBytes, headers, HttpStatus.OK);
     }
+
+
+
+
+
+
 
 
 

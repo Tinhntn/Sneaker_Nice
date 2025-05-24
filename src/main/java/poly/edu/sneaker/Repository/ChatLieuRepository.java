@@ -16,10 +16,12 @@ public interface ChatLieuRepository extends JpaRepository<ChatLieu, Integer> {
 
     ChatLieu findByMaChatLieu(String maChatLieu);
     ChatLieu findById(int id);
+
     //Code cua quan start
     @Query(value = "SELECT * FROM ChatLieu cl " +
             "WHERE cl.trang_thai = 1;",
             nativeQuery = true)
     List<ChatLieu> getAllChatLieuTimKiem();
     //Code cua quan end
+    boolean existsByTenChatLieu(String tenChatLieu);
 }

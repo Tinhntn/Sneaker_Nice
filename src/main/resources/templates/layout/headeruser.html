@@ -1,44 +1,59 @@
 <div th:fragment="header">
-<!--  cs Tìm Kiem an-->
+    <!--  cs Tìm Kiem an-->
     <style>
         /* Trạng thái mặc định (chưa cuộn) */
         #ftco-navbar .input-group-text,
         #ftco-navbar .form-control {
-            background-color: #5a5c69 !important; /* Màu nền tối của navbar */
-            color: #333 !important; /* Màu chữ trắng */
-            border: 1px solid  #5a5c69; /* Viền đồng bộ với navbar */
+            background-color: #5a5c69 !important;
+            /* Màu nền tối của navbar */
+            color: #333 !important;
+            /* Màu chữ trắng */
+            border: 1px solid #5a5c69;
+            /* Viền đồng bộ với navbar */
         }
 
         #ajaxSearchResults {
             position: absolute;
-            z-index: 9999; /* Hiển thị trên các phần tử khác */
-            background-color:  #5a5c69; /* Màu nền đồng bộ với navbar */
-            color: #333; /* Màu chữ đồng bộ */
-            border: 1px solid  #5a5c69; /* Viền đồng bộ với navbar */
+            z-index: 9999;
+            /* Hiển thị trên các phần tử khác */
+            background-color: #5a5c69;
+            /* Màu nền đồng bộ với navbar */
+            color: #333;
+            /* Màu chữ đồng bộ */
+            border: 1px solid #5a5c69;
+            /* Viền đồng bộ với navbar */
         }
 
         /* Khi cuộn, navbar có class .scrolled -> form đổi sang màu sáng */
         #ftco-navbar.scrolled .input-group-text,
         #ftco-navbar.scrolled .form-control {
-            background-color: #ffffff !important; /* Màu nền trắng */
-            color: #333 !important; /* Màu chữ đen */
-            border: 1px solid #ffffff; /* Viền trắng */
+            background-color: #ffffff !important;
+            /* Màu nền trắng */
+            color: #333 !important;
+            /* Màu chữ đen */
+            border: 1px solid #ffffff;
+            /* Viền trắng */
             transition: background-color 0.3s, color 0.3s, border 0.3s;
         }
 
         #ftco-navbar.scrolled #ajaxSearchResults {
-            background-color: #ffffff; /* Màu nền trắng khi cuộn */
-            color: #333; /* Màu chữ đen khi cuộn */
-            border: 1px solid #ffffff; /* Viền trắng khi cuộn */
+            background-color: #ffffff;
+            /* Màu nền trắng khi cuộn */
+            color: #333;
+            /* Màu chữ đen khi cuộn */
+            border: 1px solid #ffffff;
+            /* Viền trắng khi cuộn */
         }
 
         /* Placeholder màu sắc đồng bộ */
         #ftco-navbar .form-control::placeholder {
-            color: #333; /* Placeholder màu trắng */
+            color: #333;
+            /* Placeholder màu trắng */
         }
 
         #ftco-navbar.scrolled .form-control::placeholder {
-            color: #333; /* Placeholder màu đen khi cuộn */
+            color: #333;
+            /* Placeholder màu đen khi cuộn */
         }
 
         /* Điều chỉnh kích thước của icon tìm kiếm */
@@ -113,7 +128,7 @@
         <div class="container">
             <a class="navbar-brand" href="/Sneakers_Nice/hienthi">Sneakers Nice</a>
             <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#ftco-nav"
-                    aria-controls="ftco-nav" aria-expanded="false" aria-label="Toggle navigation">
+                aria-controls="ftco-nav" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="oi oi-menu"></span> Menu
             </button>
             <div class="collapse navbar-collapse" id="ftco-nav">
@@ -121,7 +136,7 @@
                     <li class="nav-item active"><a href="/Sneakers_Nice/hienthi" class="nav-link">Trang chủ</a></li>
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" href="#" id="dropdown04" data-toggle="dropdown"
-                           aria-haspopup="true" aria-expanded="false">Catalog</a>
+                            aria-haspopup="true" aria-expanded="false">Catalog</a>
                         <div class="dropdown-menu" aria-labelledby="dropdown04">
                             <a class="dropdown-item" href="shop.html">Shop</a>
                             <a class="dropdown-item" href="product-single.html">Single Product</a>
@@ -135,23 +150,21 @@
                     <li class="nav-item"><a href="contact.html" class="nav-link">Liên hệ</a></li>
                     <form action="javascript:void(0);" class="nav-item">
                         <div class="input-group search-group">
-                                  <span class="input-group-text border-0 search-icon" id="searchIcon">
-                                      <i class="fa-solid fa-magnifying-glass"></i>
-                                             </span>
+                            <span class="input-group-text border-0 search-icon" id="searchIcon">
+                                <i class="fa-solid fa-magnifying-glass"></i>
+                            </span>
                             <input type="text" class="form-control border-0 search-input" id="searchInput"
-                                   name="keyword"
-                                   placeholder="Tìm kiếm sản phẩm..." autocomplete="off">
+                                name="keyword" placeholder="Tìm kiếm sản phẩm..." autocomplete="off">
                         </div>
                         <!-- Kết quả Ajax Search sẽ được load vào đây -->
                         <div id="ajaxSearchResults" class="smart-search-wrapper" style="display: none;"></div>
                     </form>
 
                     <li class="nav-item cta cta-colored"><a class="nav-link" id="openModal"
-                                                            onclick="openCartModal()"><span class="icon-shopping_cart"
-                                                                                            cart-count> </span>
-                        <span id="cart-count">0</span>
+                            onclick="openCartModal()"><span class="icon-shopping_cart" cart-count> </span>
+                            <span id="cart-count">0</span>
 
-                    </a></li>
+                        </a></li>
                 </ul>
             </div>
         </div>
@@ -164,10 +177,10 @@
                 <div class="overlay"></div>
                 <div class="container-fluid p-0">
                     <div class="row d-md-flex no-gutters slider-text align-items-center justify-content-end"
-                         data-scrollax-parent="true">
+                        data-scrollax-parent="true">
                         <img class="one-third order-md-last img-fluid" src="/images/bg_1.png" alt="">
                         <div class="one-forth d-flex align-items-center ftco-animate"
-                             data-scrollax=" properties: { translateY: '70%' }">
+                            data-scrollax=" properties: { translateY: '70%' }">
                             <div class="text">
                                 <span class="subheading">#Sản phẩm mới</span>
                                 <div class="horizontal">
@@ -187,11 +200,10 @@
                 <div class="overlay"></div>
                 <div class="container-fluid p-0">
                     <div class="row d-flex no-gutters slider-text align-items-center justify-content-end"
-
-                         data-scrollax-parent="true">
+                        data-scrollax-parent="true">
                         <img class="one-third order-md-last img-fluid" src="/images/bg_2.png" alt="">
                         <div class="one-forth d-flex align-items-center ftco-animate"
-                             data-scrollax=" properties: { translateY: '70%' }">
+                            data-scrollax=" properties: { translateY: '70%' }">
                             <div class="text">
                                 <span class="subheading">#Sản phẩm mới</span>
                                 <div class="horizontal">
@@ -213,12 +225,7 @@
         </div>
     </section>
     <script>
-        var notyf = new Notyf({ripple: true, position: {x: 'right', y: 'top'}});
-        // var message = /*[[${message}]]*/ null;
-        // if (message) {
-        //     notyf.error(message);
-        // }
-
+        var notyf = new Notyf({ ripple: true, position: { x: 'right', y: 'top' } });
         function updateCartCount() {
             fetch('/gio-hang/so-luong')
                 .then(response => {
@@ -269,18 +276,15 @@
                 .then(response => response.json())
                 .then(data => {
                     if (!data || !Array.isArray(data.items)) {
-                        console.error("Lỗi: Dữ liệu giỏ hàng không hợp lệ", data);
-                        cartList.innerHTML = "<p>Lỗi tải giỏ hàng. Vui lòng thử lại.</p>";
+                        cartList.innerHTML = "<p>Bạn cần đăng nhập để mua sắm.</p>";
                         totalPriceElement.innerText = "0đ";
                         checkoutButton.disabled = true;
                         checkoutButton.classList.add("disabled");
                         return;
                     }
-
                     let items = data.items;
                     let totalPrice = data.totalPrice || 0;
                     let hasOutOfStock = false;
-
                     if (items.length === 0) {
                         cartList.innerHTML = "<p>Chưa có sản phẩm nào trong giỏ hàng</p>";
                         totalPriceElement.innerText = "0đ";
@@ -298,25 +302,27 @@
                         li.classList.add("cart-item");
 
                         let outOfStockWarning = item.isOutOfStock ? `<p class="out-of-stock-warning">Hết hàng</p>` : "";
-                        let disableIncreaseButton = item.isOutOfStock ? "disabled" : "";
-
+                        let spKhongHoatDong = item.checkSP? `<p class="out-of-stock-warning">Ngừng hoạt động</p>` : "";
+                        let disableIncreaseButton = item.isOutOfStock || item.checkSP ? "hidden" : "";
                         if (item.isOutOfStock) {
                             hasOutOfStock = true;
                         }
-
                         li.innerHTML = `
                         <img src="${item.hinhAnh}" alt="">
                         <div class="item-details">
                             <h4>${item.tenSanPham}</h4>
                             <p>Size: ${item.size}</p>
                             <p>Màu: ${item.mauSac}</p>
-                            <p>${(item.gia || 0).toLocaleString()}đ</p>
+                            <p>Đơn giá :${(item.gia || 0).toLocaleString()}đ</p>
+                            <p style="color:red;">Thành tiền :${(item.gia * item.soLuong || 0).toLocaleString()}đ</p>
                             <div class="quantity-controls">
-                                <button ${item.soLuong <= 1 ? "disabled" : ""} ${disableIncreaseButton}  onclick="updateQuantity(${item.idGioHangChiTiet}, -1)">-</button>
+                                <button class =" ${disableIncreaseButton}" ${item.soLuong <= 1 ? "disabled" : ""} onclick="updateQuantity(${item.idGioHangChiTiet}, -1)">-</button>
                                 <span  id="quantity-${item.idGioHangChiTiet}">${item.soLuong || 0}</span>
-                                <button ${disableIncreaseButton} onclick="updateQuantity(${item.idGioHangChiTiet}, 1)">+</button>
+                                <button class =" ${disableIncreaseButton}" onclick="updateQuantity(${item.idGioHangChiTiet}, 1)">+</button>
+
                             </div>
                             ${outOfStockWarning}
+                            ${spKhongHoatDong}
                         </div>
                         <button class="remove-item" onclick="removeFromCart(${item.idGioHangChiTiet})">✕</button>
                     `;
@@ -326,27 +332,30 @@
 
                     totalPriceElement.innerText = totalPrice.toLocaleString() + "đ";
 
-                    // Nếu có sản phẩm hết hàng, disable nút thanh toán
-                    if (hasOutOfStock) {
-                        checkoutButton.disabled = true;
-                        checkoutButton.classList.add("disabled");
-                        notyf.error("Có sản phẩm hết hàng, vui lòng kiểm tra lại!");
-                    }
+                    // // Nếu có sản phẩm hết hàng, disable nút thanh toán
+                    // if (hasOutOfStock) {
+                    //     checkoutButton.disabled = true;
+                    //     checkoutButton.classList.add("disabled");
+                    //     notyf.error("Có sản phẩm hết hàng, vui lòng kiểm tra lại!");
+                    // }
                 })
                 .catch(error => {
                     console.error("Lỗi khi tải giỏ hàng:", error);
-                    cartList.innerHTML = "<p>Lỗi kết nối đến server</p>";
+                    cartList.innerHTML = "<p>Chưa có sản phẩm nào trong giỏ hàng</p>";
                     totalPriceElement.innerText = "0đ";
                     checkoutButton.disabled = true;
                     checkoutButton.classList.add("disabled");
-                    notyf.error("Lỗi tải giỏ hàng!");
                 });
         }
 
 
         function removeFromCart(productId) {
-            fetch(`/gio-hang/remove/${productId}`, {method: "DELETE"})
-                .then(() => loadCartItems());
+            fetch(`/gio-hang/remove/${productId}`, { method: "DELETE" })
+                .then(() => {
+                    loadCartItems();
+                    loadCheckout();
+                })
+                .catch(error => console.error("Lỗi khi xoá sản phẩm:", error));
         }
 
 
@@ -354,14 +363,13 @@
             let quantityElement = document.getElementById(`quantity-${idGHCT}`);
             let newQuantity = parseInt(quantityElement.innerText) + change;
 
-           console.log(newQuantity)
-
-            fetch(`/gio-hang/capNhatSoLuongGioHang/${idGHCT}?soLuong=${newQuantity}`, {method: "PUT"})
+            fetch(`/gio-hang/capNhatSoLuongGioHang/${idGHCT}?soLuong=${newQuantity}`, { method: "PUT" })
                 .then(response => {
                     if (!response.ok) {
                         return response.json().then(err => {
-                            throw new Error(notyf.error(err.message || "Cập nhật sản phẩm thất bại"));
-                            return;
+                            notyf.error(err.message || "Cập nhật sản phẩm thất bại");
+                            loadCartItems();
+                            loadCheckout();
                         });
                     }
                     return response.json();
@@ -369,15 +377,22 @@
                 .then(data => {
                     if (data.success) {
                         loadCartItems();
+                        loadCheckout();
+                        const event = new CustomEvent('cartUpdated', { detail: { idGHCT, newQuantity } });
+                        document.dispatchEvent(event);
                     } else if (data.message) {
                         notyf.error(message + "cập nhật số lượng thất bại")
+                        setTimeout(() => {
+                            window.location.reload()
+                        }, 2000)
+                        return;
                     }
                 })
                 .catch(error => console.error("Lỗi cập nhật số lượng:", error));
         }
 
     </script>
-<!--   tìm kiem-->
+    <!--   tìm kiem-->
     <script>
         document.addEventListener('DOMContentLoaded', function () {
             const searchInput = document.getElementById('searchInput');
@@ -426,6 +441,6 @@
 
         });
     </script>
-<!--    tìm kiem -->
+    <!--    tìm kiem -->
 
 </div>

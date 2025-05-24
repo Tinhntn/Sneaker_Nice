@@ -15,6 +15,7 @@ public interface HoaDonChiTietRepository extends JpaRepository<HoaDonChiTiet,Int
             nativeQuery = true)
     List<HoaDonChiTiet> findHoaDonChiTietByIdHoaDon(@Param("idHoaDon") Integer idHoaDon);
 
+    List<HoaDonChiTiet> findHoaDonChiTietByIdHoaDon_IdAndIdHoaDon_LoaiHoaDon(int idHoaDon,boolean loaiHoaDon);
     @Query(value = "SELECT * FROM HoaDonChiTiet " +
             "WHERE HoaDonChiTiet.id_chi_tiet_san_pham = :idChiTietSanPham " +
             "AND HoaDonChiTiet.id_hoa_don = :idHoaDon", nativeQuery = true)

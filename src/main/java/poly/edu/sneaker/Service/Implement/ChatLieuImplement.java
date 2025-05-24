@@ -82,4 +82,8 @@ public class ChatLieuImplement implements ChatLieuService {
         String maCL = "CL" + 1000 + random.nextInt(9000);
         return maCL;
     }
+    @Override
+    public boolean existsByTenChatLieu(String tenChatLieu) {
+        return chatLieuRepository.existsByTenChatLieu(tenChatLieu);
+    }
 }
