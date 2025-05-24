@@ -149,16 +149,38 @@ public class HomeController {
 
     @GetMapping("/lay-combination")
     @ResponseBody
-    public ResponseEntity<?> checkSoLuongSanPham(@RequestParam("idSanPham") int idSanPham, @RequestParam("idSize") int idSize, @RequestParam("idMauSac") int idMauSac) {
+    public ResponseEntity<?> checkSoLuongSanPham(
+            @RequestParam("idSanPham") int idSanPham,
+            @RequestParam("idSize") int idSize,
+            @RequestParam("idMauSac") int idMauSac) {
+
         try {
+            // Kiểm tra các tham số đầu vào
+            if (idSanPham <= 0 || idSize <= 0 || idMauSac <= 0) {
+                return ResponseEntity.badRequest().body(Map.of(
+                        "success", false,
+                        "message", "Thông tin sản phẩm không hợp lệ"
+                ));
+            }
 
             ChiTietSanPham chiTietSanPham = chiTietSanPhamService.findCTSPByIdSPAndIdMauSacAndIdSize(idSanPham, idSize, idMauSac);
+
             if (chiTietSanPham == null) {
-                return ResponseEntity.badRequest().body(Map.of("message", "Không tồn tại sản phẩm"));
+                return ResponseEntity.ok().body(Map.of(
+                        "success", false,
+                        "message", "Sản phẩm không tồn tại với màu sắc và kích cỡ đã chọn"
+                ));
             }
-            return ResponseEntity.ok().body(Collections.singletonMap("chiTietSanPham", chiTietSanPham));
+
+            return ResponseEntity.ok().body(Map.of(
+                    "success", true,
+                    "chiTietSanPham", chiTietSanPham
+            ));
         } catch (Exception e) {
-            return ResponseEntity.badRequest().body(Map.of("message", "Thông tin không hợp lệ"));
+            return ResponseEntity.badRequest().body(Map.of(
+                    "success", false,
+                    "message", "Lỗi hệ thống: " + e.getMessage()
+            ));
         }
     }
 

@@ -21,12 +21,15 @@
                     <!-- Hình ảnh sản phẩm -->
                     <div class="col-lg-6">
                         <div class="border rounded-4 mb-3 d-flex justify-content-center" style="background: #f8f9fa;">
-                            <a class="image-popup" th:href="${chiTietSanPham.hinhAnh != null ? (chiTietSanPham.hinhAnh.split(',')[0].trim()) : '/images/default-product.png'}"
+                            <a class="image-popup"
+                                th:href="${chiTietSanPham.hinhAnh != null ? (chiTietSanPham.hinhAnh.split(',')[0].trim()) : '/images/default-product.png'}"
                                 style="display: block; padding: 2rem;">
-                                <img id="productImage" th:src="${chiTietSanPham.hinhAnh != null ? (chiTietSanPham.hinhAnh.split(',')[0].trim()) : '/images/default-product.png'}" class="img-fluid rounded-3"
+                                <img id="productImage"
+                                    th:src="${chiTietSanPham.hinhAnh != null ? (chiTietSanPham.hinhAnh.split(',')[0].trim()) : '/images/default-product.png'}"
+                                    class="img-fluid rounded-3"
                                     style="max-height: 500px; width: auto; object-fit: contain;" alt="Ảnh sản phẩm">
                             </a>
-                            
+
                         </div>
                         <div class="d-flex justify-content-center gap-2">
                             <button class="btn btn-sm btn-outline-secondary rounded-circle p-2">
@@ -189,19 +192,14 @@
                     }
                 });
             });
-            var notyf = new Notyf({ ripple: true });
 
             function selectSize(button) {
                 // Xóa class active khỏi tất cả các nút size
-
                 document.querySelectorAll('.size-btn').forEach(btn => {
                     btn.classList.remove('active');
                 });
-
                 // Đánh dấu nút được chọn
                 button.classList.add('active');
-                // Cập nhật giá trị size được chọn
-                document.getElementById("selectedSize").value = button.getAttribute("data-idSize");
 
             }
 
@@ -223,31 +221,46 @@
                 let selectedColor = null;
                 let selectedSize = null;
                 function updateQuantity() {
-                    let idMauSac = document.querySelector(".btn-mau-sac.active")?.getAttribute("data-idMauSac") || "";
-                    let idSize = document.querySelector(".size-btn.active")?.getAttribute("data-idSize") || "";
-                    let idSanPham = /*[[${chiTietSanPham != null && chiTietSanPham.idSanPham != null ? chiTietSanPham.idSanPham.id : ''}]]*/ "";
-                    let query = new URLSearchParams({ idSanPham, idSize, idMauSac }).toString();
+                    let idMauSac = document.querySelector(".btn-mau-sac.active")?.getAttribute("data-idMauSac");
+                    let idSize = document.querySelector(".size-btn.active")?.getAttribute("data-idSize");
+                    let idSanPham = /*[[${chiTietSanPham?.idSanPham?.id}]]*/ "";
+
+                    // Validate các tham số bắt buộc
+                    if (!idSanPham || !idMauSac || !idSize) {
+                        notyf.error("Vui lòng chọn đầy đủ màu sắc và kích cỡ");
+                        return;
+                    }
+
+                    let query = new URLSearchParams({
+                        idSanPham: parseInt(idSanPham),
+                        idSize: parseInt(idSize),
+                        idMauSac: parseInt(idMauSac)
+                    }).toString();
 
                     fetch(`/Sneakers_Nice/lay-combination?${query}`, {
                         method: "GET",
                         headers: { "Content-Type": "application/json" }
                     })
-                        .then(response => response.json())
+                        .then(response => {
+                            if (!response.ok) {
+                                return response.json().then(err => {
+                                    throw new Error(err.message || "Lỗi khi tải dữ liệu");
+                                });
+                            }
+                            return response.json();
+                        })
                         .then(data => {
-                            if (data && data.chiTietSanPham !== undefined) {
+                            if (data.chiTietSanPham) {
                                 quantityText.innerText = ` ${data.chiTietSanPham.soLuong}`;
                                 giaBan.innerText = `${Number(data.chiTietSanPham.giaBan).toLocaleString('vi-VN')} VNĐ`;
                                 document.getElementById("idMauSac").innerText = `${data.chiTietSanPham.idMauSac.tenMauSac}`;
                                 document.getElementById("idMauSac").setAttribute("data-mauSac", `${data.chiTietSanPham.idMauSac.id}`);
-                            } else {
-                                giaBan.innerText = `${Number(data.chiTietSanPham.giaBan).toLocaleString('vi-VN')} VNĐ`;
-                                document.getElementById("idMauSac").innerText = `${data.chiTietSanPham.idMauSac.tenMauSac}`;
-                                document.getElementById("idMauSac").setAttribute("data-mauSac", `${data.chiTietSanPham.idMauSac.id}`)
-                                quantityText.innerText = "0";
+                            } else if (data.message) {
+                                notyf.error(data.message);
                             }
                         })
                         .catch(error => {
-                            console.error("Lỗi:", error);
+                            notyf.error("Lỗi khi cập nhật thông tin");
                         });
                 }
 
