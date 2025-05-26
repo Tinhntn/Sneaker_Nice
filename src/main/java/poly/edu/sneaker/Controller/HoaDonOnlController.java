@@ -72,6 +72,14 @@ public class HoaDonOnlController {
     BanHangTaiQuayService banHangTaiQuayService;
     @Autowired
     private HoaDonChiTietService hoaDonChiTietService;
+    @Autowired
+    private MauSacService mauSacService;
+    @Autowired
+    private ChatLieuService chatLieuService;
+    @Autowired
+    private DanhMucService danhMucService;
+    @Autowired
+    private HangService hangService;
 
 
     @PostMapping("/MuaLai")
@@ -148,7 +156,6 @@ public class HoaDonOnlController {
     @GetMapping("/hienthi")
     public String hienthi(Model model, @RequestParam(defaultValue = "0") int page) {
         int size = 5;
-
         Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "ngayTao"));
 
         Page<HoaDonOnlCustom> listHoaDonTatCa = hoaDonOnlService.getHoaDonCustomTatCa(pageable);
@@ -248,7 +255,8 @@ public class HoaDonOnlController {
 
 
     @GetMapping("/detailhoadononlinect/{id}")
-    public String chitiethoadononline(@PathVariable int id, Model model, @RequestParam(defaultValue = "0") int page) {
+    public String chitiethoadononline(@PathVariable int id, Model model, @RequestParam(defaultValue = "0") int page
+                                     ) {
 
         int size = 5;
         Pageable pageable = PageRequest.of(page, size);
@@ -262,28 +270,56 @@ public class HoaDonOnlController {
         }
         List<TrangThaiDonHang> lstTrangThaiDonHang = lichSuTrnngThaiService.getAllByIdHoaDon(id);
         HoaDon hoaDon1 = hoaDonService.findById(id);
+
         model.addAttribute("hoaDon", hoaDon1);
         model.addAttribute("lichSuTrangThai", lstTrangThaiDonHang);
         model.addAttribute("chiTietHoaDon", chiTietHoaDon);
         model.addAttribute("hoaDon", hoaDon);
-        List<Size> lstSize = sizeService.findAll();
-        model.addAttribute("lstSize", lstSize);
-        Page<ChiTietSanPham> chiTietSanPhams = chiTietSanPhamService.findAll(pageable);
-
-// Lọc sản phẩm có số lượng > 0
-        List<ChiTietSanPham> sanPhamCoSoLuong = chiTietSanPhams.getContent()
-                .stream()
-                .filter(ctsp -> ctsp.getSoLuong() > 0)
+        List<MauSac> lstMauSac = mauSacService.findAll().stream()
+                .sorted(Comparator.comparing(MauSac::getTenMauSac, String.CASE_INSENSITIVE_ORDER))
                 .collect(Collectors.toList());
-// Chuyển lại thành Page
-        Page<ChiTietSanPham> sanPhamChiTiet = new PageImpl<>(sanPhamCoSoLuong, pageable, sanPhamCoSoLuong.size());
-        model.addAttribute("sanPhamChiTiet", sanPhamChiTiet);
-        model.addAttribute("currentPageCTSP", sanPhamChiTiet.getNumber());
-        model.addAttribute("totalPagesCTSP", sanPhamChiTiet.getTotalPages());
+        List<Size> lstSize = sizeService.findAll().stream().sorted((s1, s2) -> Integer.compare(
+                Integer.parseInt(s1.getTenSize()),
+                Integer.parseInt(s2.getTenSize())
+        )).collect(Collectors.toList());
+        List<ChatLieu> lstChatLieu = chatLieuService.getAllChatLieus().stream().sorted(Comparator.comparing(ChatLieu::getTenChatLieu, String.CASE_INSENSITIVE_ORDER)).collect(Collectors.toList());
+        List<DanhMuc> lstDanhMuc = danhMucService.getAllDanhMucs().stream().sorted(Comparator.comparing(DanhMuc::getTenDanhMuc, String.CASE_INSENSITIVE_ORDER)).collect(Collectors.toList());
+        List<Hang> lstHang = hangService.getAllHangs().stream().sorted(Comparator.comparing(Hang::getTenHang, String.CASE_INSENSITIVE_ORDER)).collect(Collectors.toList());
+        model.addAttribute("lstSize", lstSize);
+        model.addAttribute("lstMauSac", lstMauSac);
+        model.addAttribute("lstChatLieu", lstChatLieu);
+        model.addAttribute("lstDanhMuc", lstDanhMuc);
+        model.addAttribute("lstHang", lstHang);
+//        Page<ChiTietSanPham> sanPhamChiTiet =  chiTietSanPhamService.findChiTietSanPhamJustOne(keyword,idHang,idDanhMuc,idChatLieu,idMauSac,idSize,PageRequest.of(page, size));
+//        model.addAttribute("sanPhamChiTiet", sanPhamChiTiet);
+//        model.addAttribute("currentPageCTSP", sanPhamChiTiet.getNumber());
+//        model.addAttribute("totalPagesCTSP", sanPhamChiTiet.getTotalPages());
         return "admin/hoa-don/detailhoadononline";
     }
 
+    @GetMapping("/detailhoadononlinect/{id}/products")
+    @ResponseBody
+    public ResponseEntity<Map<String, Object>> getProductsForModal(
+            @PathVariable int id,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(required = false) String keyword,
+            @RequestParam(required = false) Integer locTheoMauSac,
+            @RequestParam(required = false) Integer locTheoSize,
+            @RequestParam(required = false) Integer locTheoDanhMuc,
+            @RequestParam(required = false) Integer locTheoChatLieu,
+            @RequestParam(required = false) Integer locTheoHang,
+            @RequestParam(defaultValue = "5") int size) {
+        Page<ChiTietSanPham> sanPhamChiTiet = chiTietSanPhamService.findChiTietSanPhamJustOne(
+                keyword, locTheoHang, locTheoDanhMuc, locTheoChatLieu, locTheoMauSac, locTheoSize,
+                PageRequest.of(page, size)
+        );
 
+        Map<String, Object> response = new HashMap<>();
+        response.put("products", sanPhamChiTiet.getContent());
+        response.put("currentPage", sanPhamChiTiet.getNumber());
+        response.put("totalPages", sanPhamChiTiet.getTotalPages());
+        return ResponseEntity.ok(response);
+    }
     @PostMapping("/huydh/{id}")
     public String huydonhang(@PathVariable int id, @RequestParam(value = "ghichu", defaultValue = "trong") String ghichu,
                              Model model, RedirectAttributes redirectAttributes) {
@@ -351,14 +387,20 @@ public class HoaDonOnlController {
             }
             int idHoaDonChiTiet = Integer.parseInt(payload.get("idHoaDonChiTiet").toString());
             int soLuongMoi = Integer.parseInt(payload.get("soLuongMoi").toString());
-
             // Gọi service cập nhật số lượng
             HoaDonChiTiet hoaDonChiTiet = hoaDonChiTietService.findHoaDonChiTietByID(idHoaDonChiTiet);
             ChiTietSanPham chiTietSanPham = chiTietSanPhamService.findById(hoaDonChiTiet.getIdChiTietSanPham().getId());
             // xử lí khi số lượng sản phảm trong kho không đủ
-            if (hoaDonChiTiet.getSoLuong() < soLuongMoi && chiTietSanPham.getSoLuong() < soLuongMoi -hoaDonChiTiet.getSoLuong()) {
-                return ResponseEntity.badRequest().body(Map.of("message", "Số lượng sản phẩm trong kho không đủ"));
+            if(hoaDon.getTrangThai()==3){
+                if (chiTietSanPham.getSoLuong()+hoaDonChiTiet.getSoLuong() < soLuongMoi) {
+                    return ResponseEntity.badRequest().body(Map.of("message", "Số lượng sản phẩm trong kho không đủ"));
+                }
+            }else{
+                if(chiTietSanPham.getSoLuong()<soLuongMoi){
+                    return ResponseEntity.badRequest().body(Map.of("message", "Số lượng sản phẩm trong kho không đủ"));
+                }
             }
+
             // xử lí khi sản phẩm không còn hoạt động
             if (!chiTietSanPham.getTrangThai() || !chiTietSanPham.getIdSanPham().getTrangThai()) {
                 return ResponseEntity.badRequest().body(Map.of("message", "Sản phẩm " + chiTietSanPham.getIdSanPham().getTenSanPham() + " ngừng không còn hoạt động"));

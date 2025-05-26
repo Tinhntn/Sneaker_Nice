@@ -91,54 +91,22 @@ public class HoaDonImplement implements HoaDonService {
     @Override
     public void tinhLaiKhuyenMai(HoaDon hoaDon) {
         //Tinh lại phieu giam gia khi khach hang thay doi so luong san pham
-        float tongTienGiamMoi = 0;
-        KhuyenMai khuyenMaiOld = hoaDon.getIdKhuyenMai();
-        KhuyenMai khuyenMaiTotNhat = null;
-
-        List<KhuyenMai> lstKhuyenMai = khuyenMaiRepository.findAll();
-
-        for (KhuyenMai km : lstKhuyenMai) {
-            if (!km.getTrangThai() || km.getDieuKienApDung() > hoaDon.getTongTien()) continue;
-            float tienGiam;
-            if (km.getLoaiKhuyenMai()) {
-                tienGiam = km.getGiaTriGiam();
-            } else {
-                tienGiam = Math.min(km.getMucGiamGiaToiDa(), (hoaDon.getTongTien() * km.getGiaTriGiam() / 100));
-            }
-            if (tienGiam > tongTienGiamMoi) {
-                tongTienGiamMoi = tienGiam;
-                khuyenMaiTotNhat = km;
-            }
-        }
-
-// Xử lý cập nhật hóa đơn và trạng thái mã khuyến mãi
-        if (khuyenMaiTotNhat != null) {
-            hoaDon.setTongTienGiam(tongTienGiamMoi);
-            hoaDon.setIdKhuyenMai(khuyenMaiTotNhat);
-
-            if (khuyenMaiOld == null || khuyenMaiOld.getId() != khuyenMaiTotNhat.getId()) {
-                // Tăng lượt dùng mã mới
-                khuyenMaiTotNhat.setDaSuDung(khuyenMaiTotNhat.getDaSuDung() + 1);
-                khuyenMaiRepository.save(khuyenMaiTotNhat);
-
-                // Giảm lượt dùng mã cũ nếu có
-                if (khuyenMaiOld != null) {
-                    khuyenMaiOld.setDaSuDung(khuyenMaiOld.getDaSuDung() - 1);
-                    khuyenMaiRepository.save(khuyenMaiOld);
+        KhuyenMai khuyenMai = hoaDon.getIdKhuyenMai();
+        if(khuyenMai != null){
+            if(khuyenMai.getDieuKienApDung()>hoaDon.getTongTien()){
+                hoaDon.setTongTienGiam(0);
+                hoaDon.setThanhTien(hoaDon.getTongTien()-hoaDon.getTongTienGiam()+hoaDon.getPhiShip());
+            }else{
+                if(khuyenMai.getLoaiKhuyenMai()){
+                    hoaDon.setTongTienGiam(khuyenMai.getGiaTriGiam());
+                    hoaDon.setThanhTien(hoaDon.getTongTien()-hoaDon.getTongTienGiam()+hoaDon.getPhiShip());
+                }else{
+                    float tienGiamTamTinh = (hoaDon.getTongTien()*khuyenMai.getGiaTriGiam())/100;
+                    hoaDon.setTongTienGiam(Math.min(khuyenMai.getMucGiamGiaToiDa(), tienGiamTamTinh));
+                    hoaDon.setThanhTien(hoaDon.getTongTien()-hoaDon.getTongTienGiam()+hoaDon.getPhiShip());
                 }
             }
-        } else {
-            // Không có mã hợp lệ nào
-            hoaDon.setIdKhuyenMai(null);
-            hoaDon.setTongTienGiam(0);
-            if (khuyenMaiOld != null) {
-                khuyenMaiOld.setDaSuDung(khuyenMaiOld.getDaSuDung() - 1);
-                khuyenMaiRepository.save(khuyenMaiOld);
-            }
+            hoaDonRepository.save(hoaDon);
         }
-        hoaDonRepository.save(hoaDon);
     }
-
-    //code quan
-
 }

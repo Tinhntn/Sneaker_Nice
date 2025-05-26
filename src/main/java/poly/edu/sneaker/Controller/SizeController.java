@@ -12,14 +12,13 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-import poly.edu.sneaker.Model.DanhMuc;
-import poly.edu.sneaker.Model.Hang;
-import poly.edu.sneaker.Model.MauSac;
-import poly.edu.sneaker.Model.Size;
+import poly.edu.sneaker.Model.*;
+import poly.edu.sneaker.Service.ChiTietSanPhamService;
 import poly.edu.sneaker.Service.SizeService;
 
 import java.time.LocalDate;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Controller
 @RequestMapping("/size")
@@ -27,7 +26,8 @@ public class SizeController {
 
     @Autowired
     SizeService sizeService;
-
+    @Autowired
+    ChiTietSanPhamService chiTietSanPhamService;
 
     @GetMapping("/hienthi")
     public String hienthi(Model model, @RequestParam(defaultValue = "0") int page,
@@ -137,6 +137,7 @@ public class SizeController {
         size.setTrangThai(trangThai);
         try {
             sizeService.update(size);
+
         } catch (IllegalArgumentException e) {
             e.printStackTrace();
             return ResponseEntity.badRequest().body(Collections.singletonMap("message", "Cập nhật thất bại"));

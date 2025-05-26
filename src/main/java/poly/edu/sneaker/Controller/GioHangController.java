@@ -137,6 +137,8 @@ public class GioHangController {
                 } else if (gh.getSoLuong() > gh.getIdChiTietSanPham().getSoLuong()) {
                     thayDoi.append("").append(gh.getIdChiTietSanPham().getIdSanPham().getTenSanPham());
                     isChaged = true;
+                }else if(!gh.getTrangThai()||!gh.getIdChiTietSanPham().getTrangThai()||!gh.getIdChiTietSanPham().getIdSanPham().getTrangThai()){
+                    thayDoi.append("").append(gh.getIdChiTietSanPham().getIdSanPham().getTenSanPham());
                 }
             }
             if (isChaged) {
@@ -159,7 +161,7 @@ public class GioHangController {
                 khuyenMai = khuyenMaiService.findById(gioHang.getIdKhuyenMai().getId());
                 if (khuyenMai != null) {
                     int checkKM = checkKhuyenMai(khuyenMai);
-                    if (checkKM == 1 || checkKM == 4) {
+                    if (checkKM == 1 ) {
                         return ResponseEntity.badRequest().body(Map.of("message", "Mã khuyến mãi không còn hoạt động"));
                     } else if (checkKM == 2) {
                         return ResponseEntity.badRequest().body(Map.of("message", "Mã khuyến mãi đã được sử dụng hết"));
@@ -205,9 +207,12 @@ public class GioHangController {
             // Lưu hóa đơn vào database
             hoaDonService.save(hoaDon);
             //Cập nhật số lượng khuyến mại sau khi khách hàng thanh toán
-            khuyenMai.setDaSuDung(khuyenMai.getDaSuDung() + 1);
-            khuyenMaiService.updateKhuyenMai(khuyenMai, khuyenMai.getId());
-            //Cập nhật thông tin vao lich su don hang
+            if(khuyenMai!=null){
+                khuyenMai.setDaSuDung(khuyenMai.getDaSuDung() + 1);
+                khuyenMaiService.updateKhuyenMai(khuyenMai, khuyenMai.getId());
+
+            }
+                       //Cập nhật thông tin vao lich su don hang
             TrangThaiDonHang trangThaiDonHang = new TrangThaiDonHang();
             trangThaiDonHang.setTrangThai(hoaDon.getTrangThai());
             trangThaiDonHang.setGhiChu("Thanh toán khi nhận hàng - Chờ xác nhận");
@@ -271,6 +276,8 @@ public class GioHangController {
                     } else if (ghtt.getSoLuong() > ghtt.getIdChiTietSanPham().getSoLuong()) {
                         thayDoi.append(" ").append(ghtt.getIdChiTietSanPham().getIdSanPham().getTenSanPham());
                         isChaged = true;
+                    }else  if(!ghtt.getTrangThai()||!ghtt.getIdChiTietSanPham().getTrangThai()||!ghtt.getIdChiTietSanPham().getIdSanPham().getTrangThai()){
+                        thayDoi.append("").append(ghtt.getIdChiTietSanPham().getIdSanPham().getTenSanPham());
                     }
                 }
             }
@@ -293,7 +300,7 @@ public class GioHangController {
             Integer idKhuyenMai = (gioHang.getIdKhuyenMai() != null) ? gioHang.getIdKhuyenMai().getId() : null;
             KhuyenMai khuyenMai = (idKhuyenMai != null) ? khuyenMaiService.findById(idKhuyenMai) : null;
             int checkKM = checkKhuyenMai(khuyenMai);
-            if (checkKM == 1 || checkKM == 4) {
+            if (checkKM == 1 ) {
                 //khuyen mai khong con hoat dong
                 request.setAttribute("paymentStatus", "failed");
                 redirectAttribute.addFlashAttribute("error", "Mã khuyến mãi không còn hoạt động");
@@ -337,9 +344,12 @@ public class GioHangController {
             hoaDon.setGhiChu("Đơn hàng ngày " + new Date() + "đã thanh toán vnpay");
             hoaDonService.save(hoaDon);
             //cap nhat so luong khuyen mai da su dung sau khi lưu hóa đơn thành công
-            khuyenMai.setDaSuDung(khuyenMai.getDaSuDung() + 1);
-            khuyenMaiService.updateKhuyenMai(khuyenMai, khuyenMai.getId());
-            // Lưu lịch sử trạng thái đơn hàng
+            if(khuyenMai!=null){
+                khuyenMai.setDaSuDung(khuyenMai.getDaSuDung() + 1);
+                khuyenMaiService.updateKhuyenMai(khuyenMai, khuyenMai.getId());
+
+            }
+                        // Lưu lịch sử trạng thái đơn hàng
             TrangThaiDonHang trangThaiDonHang = new TrangThaiDonHang();
             trangThaiDonHang.setTrangThai(2);
             trangThaiDonHang.setGhiChu("Đã thanh toán VNPay - chờ xác nhận");
@@ -453,6 +463,11 @@ public class GioHangController {
                 if (Math.abs(gh.getIdChiTietSanPham().getGiaBan() - gh.getDonGia()) > 0.001f) {
                     thayDoi.append("").append(gh.getIdChiTietSanPham().getIdSanPham().getTenSanPham());
                     isChaged = true;
+                } else if (gh.getSoLuong() > gh.getIdChiTietSanPham().getSoLuong()) {
+                    thayDoi.append(" ").append(gh.getIdChiTietSanPham().getIdSanPham().getTenSanPham());
+                    isChaged = true;
+                }else  if(!gh.getTrangThai()||!gh.getIdChiTietSanPham().getTrangThai()||!gh.getIdChiTietSanPham().getIdSanPham().getTrangThai()){
+                    thayDoi.append("").append(gh.getIdChiTietSanPham().getIdSanPham().getTenSanPham());
                 }
             }
             if (isChaged) {
@@ -994,8 +1009,7 @@ public class GioHangController {
             } else if (khuyenMai.getSoLuong() - khuyenMai.getDaSuDung() <= 0) {
                 return 2;
             }
-            return 3;
         }
-        return 4;
+        return 3;
     }
 }

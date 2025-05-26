@@ -58,12 +58,12 @@
 
             /* Pagination style */
             #modalSanPham .page-item.active .page-link {
-                background-color: #0d6efd;
-                border-color: #0d6efd;
+                background-color: #d3b788;
+                border-color: #f5f5f5;
             }
 
             #modalSanPham .page-link {
-                color: #0d6efd;
+                color: rgb(36, 34, 34);
             }
 
             /* Responsive */
@@ -110,7 +110,7 @@
 
             /* Payment information section */
             .text-muted.small {
-                font-size: 0.8rem;
+                font-size: 1rem;
                 color: #6c757d !important;
                 font-weight: 500;
                 margin-bottom: 0.25rem;
@@ -432,8 +432,6 @@
 
             /* Đã thanh toán - chờ xác nhận */
         </style>
-
-
         <div class="container-fluid invoice-container">
             <!-- Header và nút hành động -->
             <div class="card mb-4">
@@ -582,10 +580,9 @@
             <div class="card mb-4">
                 <div class="card-header d-flex justify-content-between align-items-center">
                     <h5 class="mb-0">Danh sách sản phẩm</h5>
-                    <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal"
-                        data-bs-target="#modalSanPham"
-                        th:unless="${hoaDon == null or(hoaDon.trangThai != 2 and hoaDon.trangThai!=3)}">
-                        <i class="fas fa-plus me-1"></i> Thêm sản phẩm
+                    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalSanPham"
+                        th:data-hoadonid="${hoaDon.id}">
+                        <i class="fas fa-plus me-1"></i>Thêm sản phẩm
                     </button>
                 </div>
                 <div class="card-body">
@@ -841,7 +838,7 @@
                         <!-- Modal Body -->
                         <div class="modal-body">
                             <!-- Bộ lọc sản phẩm -->
-                            <form th:action="@{/hoaDon/detailhoadononlinect}" method="get" class="mb-4">
+                            <form id="filterForm" class="mb-4">
                                 <div class="row g-3">
                                     <!-- Tìm kiếm -->
                                     <div class="col-md-3">
@@ -851,6 +848,42 @@
                                             <input type="text" id="keyword" class="form-control"
                                                 placeholder="Tên sản phẩm..." name="keyword" th:value="${keyword}">
                                         </div>
+                                    </div>
+
+                                    <!-- Lọc theo danh mục -->
+                                    <div class="col-md-3">
+                                        <label for="danhMucFilter" class="form-label">Danh mục</label>
+                                        <select name="locTheoDanhMuc" class="form-select" id="danhMucFilter">
+                                            <option value="">Tất cả danh mục</option>
+                                            <option th:each="danhMuc : ${lstDanhMuc}" th:value="${danhMuc.id}"
+                                                th:text="${danhMuc.tenDanhMuc}"
+                                                th:selected="${locTheoDanhMuc != null and locTheoDanhMuc == danhMuc.id}">
+                                            </option>
+                                        </select>
+                                    </div>
+
+                                    <!-- Lọc theo chất liệu -->
+                                    <div class="col-md-3">
+                                        <label for="chatLieuFilter" class="form-label">Chất liệu</label>
+                                        <select name="locTheoChatLieu" class="form-select" id="chatLieuFilter">
+                                            <option value="">Tất cả chất liệu</option>
+                                            <option th:each="chatLieu : ${lstChatLieu}" th:value="${chatLieu.id}"
+                                                th:text="${chatLieu.tenChatLieu}"
+                                                th:selected="${locTheoChatLieu != null and locTheoChatLieu == chatLieu.id}">
+                                            </option>
+                                        </select>
+                                    </div>
+
+                                    <!-- Lọc theo hãng -->
+                                    <div class="col-md-3">
+                                        <label for="hangFilter" class="form-label">Hãng</label>
+                                        <select name="locTheoHang" class="form-select" id="hangFilter">
+                                            <option value="">Tất cả hãng</option>
+                                            <option th:each="hang : ${lstHang}" th:value="${hang.id}"
+                                                th:text="${hang.tenHang}"
+                                                th:selected="${locTheoHang != null and locTheoHang == hang.id}">
+                                            </option>
+                                        </select>
                                     </div>
 
                                     <!-- Lọc theo màu -->
@@ -879,7 +912,7 @@
 
                                     <!-- Nút lọc -->
                                     <div class="col-md-3 d-flex align-items-end">
-                                        <button type="submit" class="btn btn-primary me-2 flex-grow-1">
+                                        <button type="button" id="applyFilter" class="btn btn-primary me-2 flex-grow-1">
                                             <i class="fas fa-filter me-2"></i>Lọc
                                         </button>
                                         <button type="button" id="clearFilters" class="btn btn-outline-secondary">
@@ -891,7 +924,7 @@
 
                             <!-- Bảng sản phẩm -->
                             <div class="table-responsive">
-                                <table class="table table-hover table-bordered align-middle">
+                                <table id="productTable" class="table table-hover table-bordered align-middle">
                                     <thead class="table-light">
                                         <tr>
                                             <th width="120">Hình ảnh</th>
@@ -902,37 +935,7 @@
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        <tr th:each="sanPhamChiTiet : ${sanPhamChiTiet}"
-                                            th:classappend="${sanPhamChiTiet.soLuong == 0} ? 'table-danger' : ''">
-                                            <td class="text-center">
-                                                <img th:src="${sanPhamChiTiet.hinhAnh!=null ? sanPhamChiTiet.hinhAnh.split(',')[0].trim() : '/images/defaul-product.png'}"
-                                                    alt="Hình ảnh" class="img-thumbnail"
-                                                    style="width:80px;height:80px;object-fit:cover;">
-                                            </td>
-                                            <td>
-                                                <div class="fw-semibold"
-                                                    th:text="${sanPhamChiTiet.idSanPham.tenSanPham}"></div>
-                                                <div class="small text-muted">
-                                                    <span th:text="${sanPhamChiTiet.idMauSac.tenMauSac}"
-                                                        class="me-2"></span>
-                                                    <span th:text="${sanPhamChiTiet.idSize.tenSize}"></span>
-                                                </div>
-                                            </td>
-                                            <td class="text-end fw-bold text-primary"
-                                                th:text="${#numbers.formatDecimal(sanPhamChiTiet.giaBan, 0, 'COMMA', 0, 'POINT') + ' VNĐ'}">
-                                            </td>
-                                            <td class="text-center" th:text="${sanPhamChiTiet.soLuong}"></td>
-                                            <td class="text-center">
-                                                <button class="btn btn-sm btn-success btnThemVaoHoaDon"
-                                                    th:data-id="${sanPhamChiTiet.id}"
-                                                    th:data-ten="${sanPhamChiTiet.idSanPham.tenSanPham}"
-                                                    th:data-gia="${sanPhamChiTiet.giaBan}"
-                                                    th:data-hinh="${sanPhamChiTiet.hinhAnh}"
-                                                    th:disabled="${sanPhamChiTiet.soLuong == 0}">
-                                                    <i class="fas fa-plus me-1"></i>Thêm
-                                                </button>
-                                            </td>
-                                        </tr>
+                                        <!-- Nội dung sẽ được tải bằng AJAX -->
                                     </tbody>
                                 </table>
                             </div>
@@ -940,26 +943,10 @@
                             <!-- Phân trang -->
                             <nav aria-label="Page navigation" class="mt-4">
                                 <ul class="pagination justify-content-center">
-                                    <li class="page-item" th:classappend="${currentPageCTSP == 0} ? 'disabled' : ''">
-                                        <a th:href="@{/hoaDon/detailhoadononlinect(page=${currentPageCTSP - 1}, size=${10}, keyword=${keyword}, locTheoMauSac=${locTheoMauSac}, locTheoSize=${locTheoSize})}"
-                                            class="page-link">
-                                            <i class="fas fa-angle-left"></i>
-                                        </a>
-                                    </li>
-                                    <li class="page-item" th:each="i : ${#numbers.sequence(0, totalPagesCTSP - 1)}"
-                                        th:classappend="${i == currentPageCTSP} ? 'active' : ''">
-                                        <a th:href="@{/hoaDon/detailhoadononlinect(page=${i}, size=${10}, keyword=${keyword}, locTheoMauSac=${locTheoMauSac}, locTheoSize=${locTheoSize})}"
-                                            class="page-link" th:text="${i + 1}"></a>
-                                    </li>
-                                    <li class="page-item"
-                                        th:classappend="${currentPageCTSP + 1 == totalPagesCTSP} ? 'disabled' : ''">
-                                        <a th:href="@{/hoaDon/detailhoadononlinect(page=${currentPageCTSP+1}, size=${10}, keyword=${keyword}, locTheoMauSac=${locTheoMauSac}, locTheoSize=${locTheoSize})}"
-                                            class="page-link">
-                                            <i class="fas fa-angle-right"></i>
-                                        </a>
-                                    </li>
+                                    <!-- Nội dung sẽ được tải bằng AJAX -->
                                 </ul>
                             </nav>
+
                         </div>
 
                         <!-- Modal Footer -->
@@ -1172,17 +1159,21 @@
                 });
             });
             document.addEventListener("DOMContentLoaded", function () {
-                document.querySelectorAll(".btnThemVaoHoaDon").forEach(button => {
-                    button.addEventListener("click", function () {
-                        let idChiTietSanPham = parseInt(this.getAttribute("data-id"));
-                        let tenSanPham = this.getAttribute("data-ten");
-                        let giaBan = parseFloat(this.getAttribute("data-gia"));
-                        let hinhAnh = this.getAttribute("data-hinh");
-                        let soLuong = 1; // Mặc định là 1
-                        let idHoaDon = getIdHoaDonFromPath(); // Lấy ID từ URL
+                // Sử dụng event delegation thay vì gắn trực tiếp
+                document.addEventListener("click", function (event) {
+                    // Kiểm tra nếu phần tử được click có class btnThemVaoHoaDon hoặc nằm trong phần tử có class đó
+                    const button = event.target.closest('.btnThemVaoHoaDon');
+
+                    if (button && !button.disabled) {
+                        let idChiTietSanPham = parseInt(button.getAttribute("data-id"));
+                        let tenSanPham = button.getAttribute("data-ten");
+                        let giaBan = parseFloat(button.getAttribute("data-gia"));
+                        let hinhAnh = button.getAttribute("data-hinh");
+                        let soLuong = 1;
+                        let idHoaDon = getIdHoaDonFromPath();
 
                         if (!idHoaDon) {
-                            alert("Không tìm thấy ID hóa đơn trên URL. Vui lòng kiểm tra lại!");
+                            notyf.error("Không tìm thấy ID hóa đơn trên URL. Vui lòng kiểm tra lại!");
                             return;
                         }
 
@@ -1190,29 +1181,28 @@
                             method: "POST",
                             headers: { "Content-Type": "application/json" },
                             body: JSON.stringify({
-                                idHoaDon: idHoaDon,  // Truyền ID trực tiếp
+                                idHoaDon: idHoaDon,
                                 idChiTietSanPham: idChiTietSanPham,
                                 soLuong: soLuong,
                                 donGia: giaBan,
                                 trangThai: 1
                             })
                         })
-                            .then(response => response.json()) // Chuyển response thành JSON
+                            .then(response => response.json())
                             .then(data => {
                                 if (data.success) {
-
                                     let tbody = document.querySelector("tbody");
                                     let existingRow = tbody.querySelector(`tr[data-id="${idChiTietSanPham}"]`);
+
                                     if (existingRow) {
-                                        notyf.success("Thêm thành công")
-                                        // Nếu sản phẩm đã tồn tại, cập nhật số lượng
+                                        notyf.success("Thêm thành công");
                                         let input = existingRow.querySelector(".soLuongInput");
                                         input.value = parseInt(input.value) + 1;
                                     } else {
-                                        notyf.success("Thêm thành công")
+                                        notyf.success("Thêm thành công");
                                         setTimeout(() => {
-                                            window.location.reload()
-                                        }, 2000)
+                                            window.location.reload();
+                                        }, 2000);
                                     }
                                 } else {
                                     throw new Error(data.message || "Lỗi không xác định!");
@@ -1220,16 +1210,11 @@
                             })
                             .catch(error => {
                                 console.error("Lỗi:", error);
-                                notyf.error(error.message)
-                                setTimeout(() => {
-                                    window.location.reload()
-                                }, 2000)
+                                notyf.error(error.message);
+                            
                             });
 
-                        // Đóng modal sau khi thêm
-                        var modal = new bootstrap.Modal(document.getElementById('modalSanPham'));
-                        modal.hide();
-                    });
+                    }
                 });
             });
 
@@ -1506,11 +1491,154 @@
                     alert("Không tìm thấy hóa đơn!");
                 }
             }
-            document.getElementById('clearFilters').addEventListener('click', function () {
-                document.getElementById('keyword').value = '';
-                document.getElementById('colorFilter').value = '';
-                document.getElementById('sizeFilter').value = '';
-                document.querySelector('form').submit();
+
+
+            //xử lí phân trang cho modal them san pham 
+            $(document).ready(function () {
+                let currentHoaDonId = null;
+
+                // Mở modal và tải dữ liệu ban đầu
+                $('#modalSanPham').on('show.bs.modal', function (event) {
+                    const button = $(event.relatedTarget);
+                    currentHoaDonId = button.data('hoadonid');
+                    loadProducts(currentHoaDonId, 0);
+                });
+
+                // Xử lý phân trang
+                $(document).on('click', '.page-link:not(.disabled)', function (e) {
+                    e.preventDefault();
+                    const page = $(this).data('page');
+                    loadProducts(currentHoaDonId, page);
+                });
+
+                // Xử lý submit form filter
+                $('#applyFilter').on('click', function (e) {
+                    e.preventDefault();
+                    loadProducts(currentHoaDonId, 0);
+                });
+
+                // Xử lý xóa filter
+                $('#clearFilters').on('click', function () {
+                    $('#filterForm')[0].reset();
+                    loadProducts(currentHoaDonId, 0);
+                });
+
+                // Hàm tải sản phẩm bằng AJAX
+                function loadProducts(hoaDonId, page) {
+                    const formData = $('#filterForm').serialize();
+
+                    $.ajax({
+                        url: `/hoadononline/detailhoadononlinect/${hoaDonId}/products?page=${page}&${formData}`,
+                        type: 'GET',
+                        beforeSend: function () {
+                            $('#productTable tbody').html('<tr><td colspan="5" class="text-center"><div class="spinner-border text-primary" role="status"><span class="visually-hidden">Loading...</span></div></td></tr>');
+                        },
+                        success: function (response) {
+                            renderProducts(response.products);
+                            renderPagination(response.currentPage, response.totalPages);
+                        },
+                        error: function (xhr) {
+                            console.error(xhr);
+                            $('#productTable tbody').html('<tr><td colspan="5" class="text-center text-danger">Đã xảy ra lỗi khi tải dữ liệu</td></tr>');
+                        }
+                    });
+                }
+
+                // Render danh sách sản phẩm
+                function renderProducts(products) {
+                    let html = '';
+
+                    if (products.length === 0) {
+                        html = '<tr><td colspan="5" class="text-center">Không tìm thấy sản phẩm nào</td></tr>';
+                    } else {
+                        products.forEach(product => {
+                            const isOutOfStock = product.soLuong === 0;
+                            const imageUrl = product.hinhAnh ? product.hinhAnh.split(',')[0].trim() : '/images/defaul-product.png';
+
+                            html += `
+                <tr class="${isOutOfStock ? 'table-danger' : ''}">
+                    <td class="text-center">
+                        <img src="${imageUrl}" alt="Hình ảnh" class="img-thumbnail" style="width:80px;height:80px;object-fit:cover;">
+                    </td>
+                    <td>
+                        <div class="fw-semibold" style="font-size:1rem; color:#a81423;">${product.idSanPham.tenSanPham}</div>
+                        <div class="small text-muted" style="font-size:1rem;">
+                            <span class="me-2">màu: ${product.idMauSac.tenMauSac}</span>
+                            <span>size: ${product.idSize.tenSize}</span>
+                        </div>
+                    </td>
+                    <td class="text-end fw-bold" style="font-size:1rem;" >
+                        ${new Intl.NumberFormat('vi-VN').format(product.giaBan)} VNĐ
+                    </td>
+                    <td class="text-center">${product.soLuong}</td>
+                    <td class="text-center">
+                        <button class="btn btn-sm btn-success btnThemVaoHoaDon"
+                            data-id="${product.id}"
+                            data-ten="${product.idSanPham.tenSanPham}"
+                            data-gia="${product.giaBan}"
+                            ${isOutOfStock ? 'disabled' : ''}>
+                            <i class="fas fa-plus me-1"></i>Thêm
+                        </button>
+                    </td>
+                </tr>
+                `;
+                        });
+                    }
+
+                    $('#productTable tbody').html(html);
+                }
+
+                // Render phân trang
+                function renderPagination(currentPage, totalPages) {
+                    let html = '';
+
+                    // Nút Previous
+                    html += `<li class="page-item ${currentPage === 0 ? 'disabled' : ''}">
+        <a class="page-link" data-page="${currentPage - 1}">
+            <i class="fas fa-angle-left"></i>
+        </a>
+    </li>`;
+
+                    // Trang đầu + dấu ...
+                    if (currentPage > 2) {
+                        html += `<li class="page-item">
+            <a class="page-link" data-page="0">1</a>
+        </li>`;
+                        if (currentPage > 3) {
+                            html += `<li class="page-item disabled"><span class="page-link">...</span></li>`;
+                        }
+                    }
+
+                    // Các trang gần currentPage
+                    let startPage = Math.max(0, currentPage - 2);
+                    let endPage = Math.min(totalPages - 1, currentPage + 2);
+
+                    for (let i = startPage; i <= endPage; i++) {
+                        html += `<li class="page-item ${i === currentPage ? 'active' : ''}">
+            <a class="page-link" data-page="${i}">${i + 1}</a>
+        </li>`;
+                    }
+
+                    // Trang cuối + dấu ...
+                    if (currentPage < totalPages - 3) {
+                        if (currentPage < totalPages - 4) {
+                            html += `<li class="page-item disabled"><span class="page-link">...</span></li>`;
+                        }
+                        html += `<li class="page-item">
+            <a class="page-link" data-page="${totalPages - 1}">${totalPages}</a>
+        </li>`;
+                    }
+
+                    // Nút Next
+                    html += `<li class="page-item ${currentPage + 1 === totalPages ? 'disabled' : ''}">
+        <a class="page-link" data-page="${currentPage + 1}">
+            <i class="fas fa-angle-right"></i>
+        </a>
+    </li>`;
+
+                    $('.pagination').html(html);
+                }
+
             });
         </script>
 

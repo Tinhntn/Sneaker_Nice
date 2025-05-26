@@ -12,19 +12,24 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import poly.edu.sneaker.Model.ChiTietSanPham;
 import poly.edu.sneaker.Model.DanhMuc;
 import poly.edu.sneaker.Model.MauSac;
+import poly.edu.sneaker.Service.ChiTietSanPhamService;
 import poly.edu.sneaker.Service.MauSacService;
 
 import jakarta.validation.Valid;
 
 import java.time.LocalDate;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Controller
 @RequestMapping("/mau_sac")
 public class MauSacController {
 
+    @Autowired
+    private ChiTietSanPhamService chiTietSanPhamService;
     @Autowired
     private MauSacService mauSacService;
 
@@ -110,6 +115,7 @@ public class MauSacController {
         if (tenMauSac == null || tenMauSac.trim().isEmpty()) {
             return ResponseEntity.badRequest().body(Collections.singletonMap("message", "Vui lòng nhập đủ thông tin"));
         }
+
         List<MauSac> lstMauSac = mauSacService.findAll();
         for (MauSac ms : lstMauSac) {
             if (ms.getId()!=idMauSac&&ms.getTenMauSac().equalsIgnoreCase(tenMauSac)) {
@@ -120,8 +126,10 @@ public class MauSacController {
         mauSac.setTenMauSac(tenMauSac);
         mauSac.setNgaySua(new Date());
         mauSac.setTrangThai(trangThai);
+
         try {
             mauSacService.update(mauSac);
+
         } catch (IllegalArgumentException e) {
             e.printStackTrace();
             return ResponseEntity.badRequest().body(Collections.singletonMap("message", "Cập nhật thất bại"));

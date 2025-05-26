@@ -19,14 +19,48 @@ public interface ChiTietSanPhamRepository extends JpaRepository<ChiTietSanPham, 
 
     List<ChiTietSanPham> findChiTietSanPhamByIdSanPham_Id(int idSanPham);
 
-    // Lấy bản ghi mới nhất cho mỗi sản phẩm
-    @Query("SELECT ctp FROM ChiTietSanPham ctp " +
-            "WHERE ctp.id IN (" +
-            " SELECT MIN(c.id) FROM ChiTietSanPham c " +
-            " WHERE c.idSanPham.trangThai = true AND c.soLuong > 0 AND c.trangThai = true " +
-            " GROUP BY c.idSanPham" +
-            ")")
-    Page<ChiTietSanPham> findFirstRecordForEachProduct(Pageable pageable);
+    @Query(
+            value = """
+        SELECT ctp.* 
+        FROM ChiTietSanPham ctp
+        JOIN SanPham sp ON ctp.id_san_pham = sp.id
+        WHERE ctp.trang_thai = 1
+          AND ctp.so_luong > 0
+          AND sp.trang_thai = 1
+          AND (:idDanhMuc IS NULL OR sp.id_danh_muc = :idDanhMuc)
+          AND (:idChatLieu IS NULL OR sp.id_chat_lieu = :idChatLieu)
+          AND (:idHang IS NULL OR sp.id_hang = :idHang)
+          AND (:keyword IS NULL OR sp.ten_san_pham LIKE %:keyword% OR sp.ma_san_pham LIKE %:keyword%)
+          AND (:idSize IS NULL OR ctp.id_size = :idSize)
+          AND (:idMauSac IS NULL OR ctp.id_mau_sac = :idMauSac)
+        ORDER BY ctp.ngay_tao DESC
+        """,
+            countQuery = """
+        SELECT COUNT(ctp.id)
+        FROM ChiTietSanPham ctp
+        JOIN SanPham sp ON ctp.id_san_pham = sp.id
+        WHERE ctp.trang_thai = 1
+          AND ctp.so_luong > 0
+          AND sp.trang_thai = 1
+          AND (:idDanhMuc IS NULL OR sp.id_danh_muc = :idDanhMuc)
+          AND (:idChatLieu IS NULL OR sp.id_chat_lieu = :idChatLieu)
+          AND (:idHang IS NULL OR sp.id_hang = :idHang)
+          AND (:keyword IS NULL OR sp.ten_san_pham LIKE %:keyword% OR sp.ma_san_pham LIKE %:keyword%)
+          AND (:idSize IS NULL OR ctp.id_size = :idSize)
+          AND (:idMauSac IS NULL OR ctp.id_mau_sac = :idMauSac)
+        """,
+            nativeQuery = true
+    )
+    Page<ChiTietSanPham> findFirstRecordForEachProduct(
+            @Param("keyword") String keyword,
+            @Param("idHang") Integer idHang,
+            @Param("idDanhMuc") Integer idDanhMuc,
+            @Param("idChatLieu") Integer idChatLieu,
+            @Param("idMauSac") Integer idMauSac,
+            @Param("idSize") Integer idSize,
+            Pageable pageable);
+
+
 
     @Query(value = "select * from ChiTietSanPham", nativeQuery = true)
     List<ChiTietSanPham> getALl();

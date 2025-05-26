@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -65,10 +66,17 @@ public class HomeController {
         }
         return null; // Nếu chưa đăng nhập, trả về null hoặc giá trị mặc định
     }
+
     @GetMapping("/hienthi")
-    public String hienthi(Model model, @RequestParam(defaultValue = "0") int page) {
+    public String hienthi(Model model, @RequestParam(defaultValue = "0") int page,
+                          @RequestParam(required = false) Integer idHang,
+                          @RequestParam(required = false) Integer idDanhMuc,
+                          @RequestParam(required = false) Integer idChatLieu,
+                          @RequestParam(required = false) Integer idMauSac,
+                          @RequestParam(required = false) Integer idSize,
+                          @RequestParam(required = false) String keyword) {
         int size = 12;
-        Page<ChiTietSanPham> lstCTSP = chiTietSanPhamService.findChiTietSanPhamJustOne(PageRequest.of(page, size));
+        Page<ChiTietSanPham> lstCTSP = chiTietSanPhamService.findChiTietSanPhamJustOne(keyword,idHang,idDanhMuc,idChatLieu,idMauSac,idSize,PageRequest.of(page, size));
         List<Hang> hangs = hangService.getAllHangs();
         model.addAttribute("listHang", hangs);
         model.addAttribute("listSanPham", lstCTSP);
@@ -82,6 +90,7 @@ public class HomeController {
         //end code hung
         return "user/sanpham/trangchu";
     }
+
     @GetMapping("/chitietsanpham/{id}")
     public String chiTietSanPham(@PathVariable("id") int id, Model model, RedirectAttributes redirectAttributes) {
         ChiTietSanPham chiTietSanPhams = chiTietSanPhamService.findById(id);

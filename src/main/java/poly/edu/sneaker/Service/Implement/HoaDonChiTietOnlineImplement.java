@@ -90,7 +90,7 @@ public class HoaDonChiTietOnlineImplement implements HoaDonChiTietOnlService {
                 HoaDonChiTiet existingDetail = existingDetailOpt.get();
                 int tongSoLuongMoi = existingDetail.getSoLuong() + soLuongMua;
                 // Kiểm tra số lượng kho có đủ không
-                if (existingDetail.getSoLuong() < soLuongMua && chiTietOpt.getSoLuong()<soLuongMua-existingDetail.getSoLuong()) {
+                if ( chiTietOpt.getSoLuong()<soLuongMua+existingDetail.getSoLuong()) {
                     return false; // Không đủ hàng
                 }
                 existingDetail.setGhiChu("Khách hàng mua thêm "+soLuongMua+" sản phẩm");
