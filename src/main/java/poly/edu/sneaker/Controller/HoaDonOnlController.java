@@ -388,23 +388,34 @@ public class HoaDonOnlController {
             int idHoaDonChiTiet = Integer.parseInt(payload.get("idHoaDonChiTiet").toString());
             int soLuongMoi = Integer.parseInt(payload.get("soLuongMoi").toString());
             // Gọi service cập nhật số lượng
+
             HoaDonChiTiet hoaDonChiTiet = hoaDonChiTietService.findHoaDonChiTietByID(idHoaDonChiTiet);
             ChiTietSanPham chiTietSanPham = chiTietSanPhamService.findById(hoaDonChiTiet.getIdChiTietSanPham().getId());
             // xử lí khi số lượng sản phảm trong kho không đủ
-            if(hoaDon.getTrangThai()==3){
-                if (chiTietSanPham.getSoLuong()+hoaDonChiTiet.getSoLuong() < soLuongMoi) {
-                    return ResponseEntity.badRequest().body(Map.of("message", "Số lượng sản phẩm trong kho không đủ"));
-                }
-            }else{
-                if(chiTietSanPham.getSoLuong()<soLuongMoi){
-                    return ResponseEntity.badRequest().body(Map.of("message", "Số lượng sản phẩm trong kho không đủ"));
-                }
+            if(hoaDonChiTiet.getDonGia()!=chiTietSanPham.getGiaBan()){
+                return ResponseEntity.badRequest().body(Map.of("message","Giá của "+chiTietSanPham.getIdSanPham().getTenSanPham()+" đã thay đổi."));
             }
-
             // xử lí khi sản phẩm không còn hoạt động
             if (!chiTietSanPham.getTrangThai() || !chiTietSanPham.getIdSanPham().getTrangThai()) {
                 return ResponseEntity.badRequest().body(Map.of("message", "Sản phẩm " + chiTietSanPham.getIdSanPham().getTenSanPham() + " ngừng không còn hoạt động"));
             }
+            List<HoaDonChiTiet> lstHdct = hoaDonChiTietOnlService.findHoaDonChiTietByHoaDonIdAndIdChiTietSanPham(idHoaDon,chiTietSanPham.getId());
+            int soLuongSPTrongHoaDon = lstHdct.stream().mapToInt(HoaDonChiTiet::getSoLuong).sum();
+            int soLuongTruHoaDonDuocChon = lstHdct.stream().filter(hd->hd.getId()!=hoaDonChiTiet.getId())
+                    .mapToInt(HoaDonChiTiet::getSoLuong).sum();
+            if(hoaDon.getTrangThai()==3){
+                if (chiTietSanPham.getSoLuong()+soLuongSPTrongHoaDon < soLuongMoi+soLuongTruHoaDonDuocChon) {
+                    return ResponseEntity.badRequest().body(Map.of("message", "Số lượng sản phẩm trong kho không đủ"));
+                }
+            }else{
+                if(chiTietSanPham.getSoLuong()<soLuongMoi+soLuongTruHoaDonDuocChon){
+                    System.out.println(soLuongMoi);
+                    System.out.println(soLuongTruHoaDonDuocChon);
+                    return ResponseEntity.badRequest().body(Map.of("message", "Số lượng sản phẩm trong kho không đủ"));
+                }
+            }
+
+
             //Cập nhật lại số lương ctsp nếu đang ở trang thái chờ lấy hàng
             if (hoaDon.getTrangThai() == 3) {
                 chiTietSanPham.setSoLuong(chiTietSanPham.getSoLuong() + (hoaDonChiTiet.getSoLuong() - soLuongMoi));
@@ -481,7 +492,9 @@ public class HoaDonOnlController {
             HoaDonChiTiet hoaDonChiTiet = new HoaDonChiTiet();
             hoaDonChiTiet.setIdHoaDon(hoaDon);
             hoaDonChiTiet.setIdChiTietSanPham(chiTietSanPham);
+            //số lượng mặc định là 1
             hoaDonChiTiet.setSoLuong(soLuong);
+            //giá bán mới nhất của sản phẩm
             hoaDonChiTiet.setDonGia(chiTietSanPham.getGiaBan());
             hoaDonChiTiet.setNgayTao(new Date());
             hoaDonChiTiet.setNgaySua(new Date());
@@ -607,6 +620,8 @@ public class HoaDonOnlController {
                 for (HoaDonChiTiet hd : lstHoaDonChiTiet) {
                     if (hd.getSoLuong() > hd.getIdChiTietSanPham().getSoLuong()) {
                         return ResponseEntity.badRequest().body(Map.of("message", "Số lượng sản phẩm " + hd.getIdChiTietSanPham().getIdSanPham().getTenSanPham() + " màu " + hd.getIdChiTietSanPham().getIdMauSac().getTenMauSac() + " trong kho không đủ: Còn " + hd.getIdChiTietSanPham().getSoLuong() + " sản phẩm"));
+                    } else if (!hd.getIdChiTietSanPham().getTrangThai()||!hd.getIdChiTietSanPham().getIdSanPham().getTrangThai()) {
+                        return ResponseEntity.badRequest().body(Map.of("message", "Sản phẩm " + hd.getIdChiTietSanPham().getIdSanPham().getTenSanPham() + " màu " + hd.getIdChiTietSanPham().getIdMauSac().getTenMauSac() +" size "+hd.getIdChiTietSanPham().getIdSize().getTenSize() + " không còn hoạt động "));
                     }
                 }
                 boolean doiTT = lichSuTrnngThaiService.doiTrangThaiDonHang(idhoadon, ghichu, trangthai);
