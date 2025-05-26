@@ -75,44 +75,47 @@ public class HoaDonChiTietOnlineImplement implements HoaDonChiTietOnlService {
 
             // Kiểm tra sản phẩm chi tiết có tồn tại không
             ChiTietSanPham chiTietOpt = chiTietSanPhamRepository.findById(hoaDonChiTiet.getIdChiTietSanPham().getId());
-
-            ChiTietSanPham chiTietSanPham = chiTietOpt;
+            if(chiTietOpt==null){
+                return false;
+            }
             int soLuongMua = hoaDonChiTiet.getSoLuong();
 
             // Kiểm tra nếu sản phẩm đã có trong hóa đơn chi tiết
             Optional<HoaDonChiTiet> existingDetailOpt = hoaDonChiTietOnlRepository.findByHoaDonAndSanPham(
-                    hoaDonChiTiet.getIdHoaDon().getId(), hoaDonChiTiet.getIdChiTietSanPham().getId()
+                    hoaDonChiTiet.getIdHoaDon().getId(), chiTietOpt.getId()
             );
 
             if (existingDetailOpt.isPresent()) {
                 // Nếu sản phẩm đã có, cộng dồn số lượng
                 HoaDonChiTiet existingDetail = existingDetailOpt.get();
                 int tongSoLuongMoi = existingDetail.getSoLuong() + soLuongMua;
-
                 // Kiểm tra số lượng kho có đủ không
-                if (chiTietSanPham.getSoLuong() < tongSoLuongMoi) {
+                if (existingDetail.getSoLuong() < soLuongMua && chiTietOpt.getSoLuong()<soLuongMua-existingDetail.getSoLuong()) {
                     return false; // Không đủ hàng
                 }
-
+                existingDetail.setGhiChu("Khách hàng mua thêm "+soLuongMua+" sản phẩm");
                 existingDetail.setSoLuong(tongSoLuongMoi);
+                existingDetail.setTongTrongLuong(chiTietOpt.getTrongLuong()*existingDetail.getSoLuong());
                 existingDetail.setNgaySua(new Date());
                 hoaDonChiTietOnlRepository.save(existingDetail);
-
+                if(hoaDonChiTiet.getIdHoaDon().getTrangThai()==3){
+                    chiTietOpt.setSoLuong(chiTietOpt.getSoLuong()-soLuongMua);
+                    chiTietOpt.setNgaySua(new Date());
+                    chiTietSanPhamRepository.save(chiTietOpt);
+                }
             } else {
                 // Nếu chưa có, thêm mới sản phẩm vào hóa đơn chi tiết
-                if (chiTietSanPham.getSoLuong() < soLuongMua) {
+                if (chiTietOpt.getSoLuong() < soLuongMua) {
                     return false; // Không đủ hàng
                 }
-
-                hoaDonChiTiet.setIdHoaDon(hoaDonOpt.get());
-                hoaDonChiTiet.setIdChiTietSanPham(chiTietSanPham);
-                hoaDonChiTiet.setNgayTao(new Date());
-                hoaDonChiTiet.setNgaySua(new Date());
+                hoaDonChiTiet.setGhiChu("Khách hàng thêm sản phẩm "+chiTietOpt.getIdSanPham().getTenSanPham());
                 hoaDonChiTietOnlRepository.save(hoaDonChiTiet);
+                if(hoaDonChiTiet.getIdHoaDon().getTrangThai()==3){
+                    chiTietOpt.setSoLuong(chiTietOpt.getSoLuong()-hoaDonChiTiet.getSoLuong());
+                    chiTietOpt.setNgaySua(new Date());
+                    chiTietSanPhamRepository.save(chiTietOpt);
+                }
             }
-
-
-
             return true;
         } catch (Exception e) {
             return false;

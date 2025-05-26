@@ -65,7 +65,7 @@ public class LichSuTrangThaiImplement implements LichSuTrnngThaiService {
     public boolean doiTrangThaiDonHang(int idHD, String ghiChu, int trangThai) {
 
         HoaDon hoaDon = hoaDonService.findById(idHD);
-        if (trangThai == 4) {
+        if (trangThai == 3) {
             List<HoaDonChiTiet> lstHoaDonChiTiet = hoaDonChiTietRepository.findHoaDonChiTietByIdHoaDon_IdAndIdHoaDon_LoaiHoaDon(idHD,true);
             for (HoaDonChiTiet hoaDonChiTiet : lstHoaDonChiTiet) {
                 ChiTietSanPham chiTietSanPham = chiTietSanPhamRepository.findById(hoaDonChiTiet.getIdChiTietSanPham().getId());
@@ -100,7 +100,6 @@ public class LichSuTrangThaiImplement implements LichSuTrnngThaiService {
         lichSuTrangThaiRepository.save(lichSuTrangThai);
         hoaDon.setTrangThai(trangThai);
         hoaDonService.save(hoaDon);
-
         return true;
     }
 }

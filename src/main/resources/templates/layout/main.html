@@ -139,7 +139,7 @@
 
                         <h6 class="collapse-header">Thông tin</h6>
                         <a class="collapse-item" href="/sanpham/hienthi"
-                            sec:authorize="hasAnyRole('EMPLOYEE','ADMIN')">Quản lý Sản phẩm/a>
+                            sec:authorize="hasAnyRole('EMPLOYEE','ADMIN')">Quản lý Sản phẩm</a>
                         <a class="collapse-item" href="/hang/hienthi"
                             sec:authorize="hasAnyRole('EMPLOYEE','ADMIN')">Quản lý Hãng</a>
                         <a class="collapse-item" href="/danh_muc/hienthi"
@@ -210,6 +210,22 @@
     <div layout:fragment="js"></div>
 
     <script>
+         const notyf = new Notyf({
+            duration: 3000,
+            position: { x: 'right', y: 'top' },
+            types: [
+                {
+                    type: 'success',
+                    background: '#28a745',
+                    icon: { className: 'fas fa-check-circle', tagName: 'i', color: '#fff' }
+                },
+                {
+                    type: 'error',
+                    background: '#dc3545',
+                    icon: { className: 'fas fa-exclamation-circle', tagName: 'i', color: '#fff' }
+                }
+            ]
+        });
         $(document).ready(function () {
 
             var quantitiy = 0;

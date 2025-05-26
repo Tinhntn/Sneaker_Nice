@@ -153,12 +153,11 @@
                         <h2 class="mb-4">Kết quả lọc sản phẩm</h2>
                     </div>
                 </div>
-                <div class="row">
+                <!-- <div class="row">
                     <div class="col-sm-12 col-md-6 col-lg-3 d-flex mb-4" th:each="sp : ${filteredProducts}">
                         <div class="product d-flex flex-column">
                             <a th:href="@{/Sneakers_Nice/chitietsanpham/{id}(id=${sp.id})}" class="img-prod">
                                 <img class="img-fluid" th:src="${sp.hinhAnh != null ? (sp.hinhAnh.split(',')[0].trim()) : '/images/default-product.png'}">
-
                             </a>
                             <div class="text py-3 pb-4 px-3">
                                 <div class="d-flex">
@@ -197,7 +196,7 @@
                             </div>
                         </div>
                     </div>
-                </div>
+                </div> -->
                 <!-- Phân trang cho kết quả lọc -->
                 <div class="pagination">
                     <nav aria-label="Page navigation">
@@ -380,8 +379,8 @@
                     <div class="col-sm-12 col-md-6 col-lg-3 ftco-animate d-flex"
                         th:each="sanPham : ${bestSellingProducts}">
                         <div class="product d-flex flex-column">
-                            <a th:href="@{/Sneakers_Nice/chitietsanpham/{id}(id=${sp.id})}" class="img-prod">
-                                <img class="img-fluid" th:src="${sanPham.hinhAnh}" loading="lazy"
+                            <a th:href="@{/Sneakers_Nice/chitietsanpham/{id}(id=${sanPham.id})}" class="img-prod">
+                                <img class="img-fluid" th:src="${sanPham.hinhAnh!=null?(sanPham.hinhAnh.split(',')[0].trim()):'/images/product-default.png'}" loading="lazy"
                                     alt="Colorlib Template">
 
                                 <div class="overlay"></div>

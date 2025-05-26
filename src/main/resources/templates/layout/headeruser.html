@@ -226,21 +226,21 @@
     </section>
     <script>
         const notyf = new Notyf({
-                duration: 3000,
-                position: { x: 'right', y: 'top' },
-                types: [
-                    {
-                        type: 'success',
-                        background: '#28a745',
-                        icon: { className: 'fas fa-check-circle', tagName: 'i', color: '#fff' }
-                    },
-                    {
-                        type: 'error',
-                        background: '#dc3545',
-                        icon: { className: 'fas fa-exclamation-circle', tagName: 'i', color: '#fff' }
-                    }
-                ]
-            });
+            duration: 3000,
+            position: { x: 'right', y: 'top' },
+            types: [
+                {
+                    type: 'success',
+                    background: '#28a745',
+                    icon: { className: 'fas fa-check-circle', tagName: 'i', color: '#fff' }
+                },
+                {
+                    type: 'error',
+                    background: '#dc3545',
+                    icon: { className: 'fas fa-exclamation-circle', tagName: 'i', color: '#fff' }
+                }
+            ]
+        });
         function updateCartCount() {
             fetch('/gio-hang/so-luong')
                 .then(response => {
@@ -311,19 +311,19 @@
                     checkoutButton.disabled = false;
                     checkoutButton.classList.remove("disabled");
                     cartList.innerHTML = "";
-                    let checkBtnThanhToan = items.filter(item=>!item.isOutOfStock)
-                                                .filter(item=>!item.checkSP).length>0;
+                    let checkBtnThanhToan = items.filter(item => !item.isOutOfStock)
+                        .filter(item => !item.checkSP).length > 0;
                     items.forEach(item => {
                         let li = document.createElement("li");
                         li.classList.add("cart-item");
                         let outOfStockWarning = item.isOutOfStock ? `<p class="out-of-stock-warning">Hết hàng</p>` : "";
-                        let spKhongHoatDong = item.checkSP? `<p class="out-of-stock-warning">Ngừng hoạt động</p>` : "";
+                        let spKhongHoatDong = item.checkSP ? `<p class="out-of-stock-warning">Ngừng hoạt động</p>` : "";
                         let disableIncreaseButton = item.isOutOfStock || item.checkSP ? "hidden" : "";
                         if (item.isOutOfStock) {
                             hasOutOfStock = true;
                         }
                         li.innerHTML = `
-                        <img src="${item.hinhAnh!=null?item.hinhAnh.split(',')[0].trim():'/images/default-product.png'}" alt="">
+                        <img src="${item.hinhAnh != null ? item.hinhAnh.split(',')[0].trim() : '/images/default-product.png'}" alt="">
                         <div class="item-details">
                             <h4>${item.tenSanPham}</h4>
                             <p>Size: ${item.size}</p>

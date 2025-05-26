@@ -22,4 +22,6 @@ public interface HoaDonService {
 
     Page<HoaDon> searchHoaDonByDateRange(String startDate, String endDate, int page,int size);
     Page<HoaDon> timHoaDonTheoIdKhuyenMai(Integer idkm, int page,int size);
+
+    void  tinhLaiKhuyenMai(HoaDon hoaDon);
 }

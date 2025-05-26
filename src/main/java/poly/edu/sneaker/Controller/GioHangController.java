@@ -191,14 +191,15 @@ public class GioHangController {
             try {
                 hoaDon.setPhiShip(Float.parseFloat(sanPhamThanhToan.get("tienShip").toString()));
                 hoaDon.setTongTien(tongTien);
-                hoaDon.setThanhTien(tongTien - tongTienGiam);
+                hoaDon.setThanhTien(tongTien+hoaDon.getPhiShip()- tongTienGiam);
             } catch (NumberFormatException e) {
                 return ResponseEntity.badRequest().body("Lỗi định dạng số tiền");
             }
             hoaDon.setNgayTao(new Date());
             hoaDon.setDonViGiaoHang("Giao hàng tiết kiệm");
             hoaDon.setLoaiHoaDon(true);
-            hoaDon.setLoaiThanhToan(true);
+            //thanh toán khi nhan hang de loai thanh toan la false
+            hoaDon.setLoaiThanhToan(false);
             hoaDon.setTrangThai(2);
             hoaDon.setGhiChu("Mua hàng ngày " + new Date() + " thanh toán khi nhận hàng");
             // Lưu hóa đơn vào database
@@ -330,7 +331,8 @@ public class GioHangController {
             hoaDon.setNgayTao(new Date());
             hoaDon.setDonViGiaoHang("Giao hàng tiết kiệm");
             hoaDon.setLoaiHoaDon(true);
-            hoaDon.setLoaiThanhToan(false);
+            //Thanh toán bằng vnpay để trạng thái là true
+            hoaDon.setLoaiThanhToan(true);
             hoaDon.setTrangThai(2);
             hoaDon.setGhiChu("Đơn hàng ngày " + new Date() + "đã thanh toán vnpay");
             hoaDonService.save(hoaDon);
@@ -459,6 +461,8 @@ public class GioHangController {
             if (!thayDoi.toString().isBlank()) {
                 return ResponseEntity.badRequest().body(Map.of("message", "Giá của " + thayDoi.toString() + " thay đổi", "load", true));
             }
+            //call api để tính phí ship
+            float phiShip = Float.parseFloat(sanPhamThanhToan.get("tienShip").toString());
             String maHoaDon = hoaDonService.taoMaHoaDon();
             float tongTien = (float) lstGioHangChiTiet.stream().filter(item -> item.getTrangThai()).mapToDouble(GioHangChiTiet::getTongTien).sum();
             if (tongTien > 20000000) {
@@ -478,7 +482,7 @@ public class GioHangController {
                     }
                 }
             }
-            int thanhTien = (int) ((int) tongTien - tongTienGiam);
+            int thanhTien = (int) ((int) tongTien +phiShip - tongTienGiam);
             // Lưu tạm thông tin giao dịch vào session (hoặc Redis, DB nếu cần)
             Map<String, Object> giaoDichTam = new HashMap<>(sanPhamThanhToan);
             giaoDichTam.put("idKhachHang", khachHangSession.getId());
@@ -486,6 +490,7 @@ public class GioHangController {
             giaoDichTam.put("thanhTien", thanhTien);
             giaoDichTam.put("tongTien", tongTien);
             giaoDichTam.put("tongTienGiam", tongTienGiam);
+            giaoDichTam.put("tienShip", phiShip);
             giaoDichTam.put("lstGioHangChiTiet", lstGioHangChiTiet);
             httpSession.setAttribute("giaoDichTam", giaoDichTam);
             String orderInfo = URLEncoder.encode("Thanh toan don hang" + maHoaDon, StandardCharsets.UTF_8.toString());
@@ -777,6 +782,7 @@ public class GioHangController {
                 int idMauSac = converToInt(sanPhamChon.get("idMauSac"));
                 ChiTietSanPham chiTietSanPham = chiTietSanPhamService.findCTSPByIdSPAndIdMauSacAndIdSize(idSanPham,
                         idSize, idMauSac);
+
                 if (chiTietSanPham == null) {
                     return ResponseEntity.badRequest()
                             .body(Collections.singletonMap("message", "Sản phẩm không còn hoạt động"));

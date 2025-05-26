@@ -398,7 +398,6 @@ public class BanHangTaiQuayController {
             // Kiểm tra khuyến mãi (nếu có)
             if (hd.getIdKhuyenMai() != null) {
                 KhuyenMai km = banHangTaiQuayService.timKhuyenMaiQuaMa(hd.getIdKhuyenMai().getMaKhuyenMai());
-
                 if (km != null) {
                     Date now = new Date();
 
@@ -435,9 +434,7 @@ public class BanHangTaiQuayController {
             hd.setTongTien(tongtiencthd); // Tổng tiền chưa giảm
             hd.setTienKhachDua(tienKhachDua);
             hd.setTienThua(tienThua);
-
             banHangTaiQuayService.saveHoaDon(hd);
-
             redirectAttributes.addFlashAttribute("success", "Thanh toán thành công!");
             return "redirect:/banhangtaiquay/in-hoadon/" + idhd;
 

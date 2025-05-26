@@ -150,7 +150,6 @@ public class KhuyenMaiController {
         calendar.set(Calendar.MINUTE, 59);
         calendar.set(Calendar.SECOND, 59);
         Date endOfDay = calendar.getTime();
-
         KhuyenMai khuyenMai = new KhuyenMai();
         khuyenMai.setTenKhuyenMai(tenKhuyenMai);
         khuyenMai.setGiaTriGiam(giaTriGiam);
@@ -162,9 +161,7 @@ public class KhuyenMaiController {
         khuyenMai.setSoLuong(soLuong);
         khuyenMai.setMaKhuyenMai(khuyenMaiService.taoMaoKhuyenMai());
         khuyenMai.setNgayTao(new Date());
-        khuyenMai.setLoaiKhuyenMai(true); // Mặc định giảm cố định
         khuyenMai.setNgaySua(new Date());
-
         if (ngayBatDau.before(endOfDay) && ngayKetThuc.after(startOfDay)) {
             khuyenMai.setTrangThai(true);
         } else {
@@ -190,16 +187,6 @@ public class KhuyenMaiController {
         KhuyenMai khuyenMai = khuyenMaiService.detailKhuyenMai(id);
         Page<HoaDon> hd = hoaDonService.timHoaDonTheoIdKhuyenMai(id,page,size);
         model.addAttribute("hoaDonPage", hd);
-        System.out.println("Danh sách hóa đơn áp dụng khuyến mãi ID = " + id);
-        System.out.println("Tổng số hóa đơn: " + hd.getTotalElements());
-        System.out.println("Tổng số trang: " + hd.getTotalPages());
-        System.out.println("Trang hiện tại: " + hd.getNumber());
-
-        for (HoaDon hoaDon : hd.getContent()) {
-            System.out.println("Hóa đơn ID: " + hoaDon.getId() +
-                    ", Ngày tạo: " + hoaDon.getMaHoaDon() +
-                    ", Tổng tiền: " + hoaDon.getTongTien());
-        }
 
         if (khuyenMai != null) {
             model.addAttribute("khuyenMai", khuyenMai);
@@ -266,19 +253,6 @@ public class KhuyenMaiController {
 
         // Lấy khuyến mãi cũ để giữ lại thông tin không thay đổi
         KhuyenMai old = khuyenMaiService.detailKhuyenMai(id);
-
-        Date today = new Date();
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTime(today);
-        calendar.set(Calendar.HOUR_OF_DAY, 0);
-        calendar.set(Calendar.MINUTE, 0);
-        calendar.set(Calendar.SECOND, 0);
-        Date startOfDay = calendar.getTime();
-        calendar.set(Calendar.HOUR_OF_DAY, 23);
-        calendar.set(Calendar.MINUTE, 59);
-        calendar.set(Calendar.SECOND, 59);
-        Date endOfDay = calendar.getTime();
-
         // Cập nhật thông tin khuyến mãi
         KhuyenMai khuyenMai = new KhuyenMai();
         khuyenMai.setId(id);
@@ -293,12 +267,7 @@ public class KhuyenMaiController {
         khuyenMai.setMaKhuyenMai(old.getMaKhuyenMai()); // giữ nguyên mã
         khuyenMai.setNgayTao(old.getNgayTao());
         khuyenMai.setNgaySua(new Date());
-
-        if (trangThai==true) {
-            khuyenMai.setTrangThai(true);
-        } else {
-            khuyenMai.setTrangThai(false);
-        }
+        khuyenMai.setTrangThai(trangThai);
         khuyenMaiService.updateKhuyenMai(khuyenMai, id);
         redirectAttributes.addFlashAttribute("success", "Khuyến mại đã được cập nhật thành công!");
         return "redirect:/khuyenmai/hienthi";

@@ -80,7 +80,7 @@
                         </div>
                         <div class="form-group">
                             <label for="dieukienapdung">Điều kiện áp dụng</label>
-                            <input type="number" step="0.01" class="form-control" id="dieukienapdung" name="dieuKienApDung">
+                            <input type="number" step="10000" class="form-control" id="dieukienapdung" name="dieuKienApDung">
                             <div class="input-group-append">
                                 <span class="input-group-text">VND</span>
                             </div>
@@ -88,8 +88,8 @@
                         <div class="form-group">
                             <label for="loaiKhuyenMai">Loại khuyến mãi</label>
                             <select class="form-control" id="loaiKhuyenMai" name="loaiKhuyenMai" onchange="toggleMaxDiscountField()">
-                                <option value="true">Giảm giá cố định</option>
-                                <option value="false">Giảm theo %</option>
+                                <option value="false">Giảm giá cố định</option>
+                                <option value="true">Giảm theo %</option>
                             </select>
                         </div>
                         <div class="form-group">
@@ -135,7 +135,7 @@
                 const groupMucGiamGia = document.getElementById("group-mucGiamGiaToiDa");
                 const unitGiaTriGiam = document.getElementById("unit-giaTriGiam");
 
-                if (loaiKhuyenMai === "true") {
+                if (loaiKhuyenMai === "false") {
                     // Giảm giá cố định
                     groupMucGiamGia.style.display = "none";
                     mucGiamGiaToiDa.value = giaTriGiam.value;

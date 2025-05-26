@@ -253,14 +253,14 @@
                             if (data.chiTietSanPham) {
                                 quantityText.innerText = ` ${data.chiTietSanPham.soLuong}`;
                                 giaBan.innerText = `${Number(data.chiTietSanPham.giaBan).toLocaleString('vi-VN')} VNĐ`;
-                                document.getElementById("idMauSac").innerText = `${data.chiTietSanPham.idMauSac.tenMauSac}`;
-                                document.getElementById("idMauSac").setAttribute("data-mauSac", `${data.chiTietSanPham.idMauSac.id}`);
+                                // document.getElementById("idMauSac").innerText = `${data.chiTietSanPham.idMauSac.tenMauSac}`;
+                                // document.getElementById("idMauSac").setAttribute("data-mauSac", `${data.chiTietSanPham.idMauSac.id}`);
                             } else if (data.message) {
                                 notyf.error(data.message);
                             }
                         })
                         .catch(error => {
-                            notyf.error("Lỗi khi cập nhật thông tin");
+                            console.log(error)
                         });
                 }
 
@@ -311,7 +311,6 @@
                     if (!event.target.classList.contains("btn-mau-sac") && !event.target.classList.contains("size-btn")) {
                         selectedColor = null;
                         selectedSize = null;
-
                         // Bật lại tất cả các nút
                         sizeButtons.forEach(btn => btn.disabled = false);
                         colorButtons.forEach(btn => btn.disabled = false);
@@ -319,7 +318,7 @@
                 });
 
             });
-
+           
             document.querySelectorAll(".btn-mau-sac").forEach(button => {
                 button.addEventListener("click", function () {
                     // Lấy id màu sắc từ nút được click
