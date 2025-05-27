@@ -5,6 +5,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
@@ -18,7 +20,9 @@ import poly.edu.sneaker.Service.ChucVuService;
 import poly.edu.sneaker.Service.NhanVienService;
 
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Controller
 @RequestMapping("/nhanvien")
@@ -38,7 +42,11 @@ public class NhanVienController {
         int size = 5;
         Pageable pageable = PageRequest.of(page, size);
         Page<NhanVienCustom> nhanVienCustomPageable;
-
+        List<NhanVien> nhanVienList =nhanVienService.findAllNhanVien();
+        System.out.println(nhanVienList.size());
+        for(NhanVien nhanVien :nhanVienList){
+            System.out.println(nhanVien.getIdChucVu().getMaChucVu()+" "+nhanVien.getIdChucVu().getTenChucVu());
+        }
         if (keyword != null && !keyword.isEmpty()) {
             nhanVienCustomPageable = nhanVienService.search(keyword, pageable);
             model.addAttribute("keyword", keyword);
@@ -47,10 +55,6 @@ public class NhanVienController {
         }
 
         List<ChucVu> listChucVu = chucVuService.getAll();
-
-        System.out.println(nhanVienCustomPageable.getContent().size());
-
-
         model.addAttribute("listChucVu", listChucVu);
         model.addAttribute("nhanVienCustomList", nhanVienCustomPageable.getContent());
         model.addAttribute("currentPage", nhanVienCustomPageable.getNumber());
@@ -152,18 +156,18 @@ public class NhanVienController {
     }
 
     @GetMapping("/detail/{id}")
-    public String detail(@PathVariable("id") int id, Model model){
-
-        System.out.println("idNhanvien: " + id);
+    @ResponseBody
+    public ResponseEntity<Map<String,Object>> detail(@PathVariable("id") int id, Model model){
+        Map<String, Object> response = new HashMap<>();
 
         NhanVien detailNhanVien = nhanVienService.findNhanVienById(id);
-
-        System.out.println("ten: " + detailNhanVien.getHoVaTen());
-
-//        List<ChucVu> comBoBoxChucVu = chucVuService.getAll();
+        if(detailNhanVien == null){
+            response.put("message","Không tìm thấy nhân thông tin nhân viên");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+        }
+        response.put("detailNhanVien", detailNhanVien);
         model.addAttribute("detailNhanVien", detailNhanVien);
-//        model.addAttribute("comBoBoxChucVu", comBoBoxChucVu);
-        return "admin/nhanVien/UpdateNhanVien";
+        return ResponseEntity.ok(response);
     }
 
     @PostMapping("/update/{id}")

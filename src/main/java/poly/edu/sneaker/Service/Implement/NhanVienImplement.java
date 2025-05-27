@@ -88,6 +88,11 @@ public class NhanVienImplement implements NhanVienService {
     }
 
     @Override
+    public List<NhanVien> findAllNhanVien() {
+        return nhanVienRepository.findAll();
+    }
+
+    @Override
     public String taoMa(){
         Random random = new Random();
         String  randomNumber = "NV" + random.nextInt(9000);

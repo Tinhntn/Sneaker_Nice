@@ -1,103 +1,429 @@
 <!doctype html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org"
-      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-      layout:decorate="~{layout/main.html}">
-<head>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+    layout:decorate="~{layout/main.html}">
 
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
-
-    <meta charset="UTF-8">
-    <meta name="viewport"
-          content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Document</title>
-</head>
 <body>
-<div layout:fragment="content">
-    <div class="container-fluid">
-        <h1>Danh Sách Nhân Viên</h1>
+    <div layout:fragment="content">
+        <style>
+            .employee-card {
+                transition: all 0.3s ease;
+            }
 
-        <div class="input-group mb-3">
-            <div class="input-group-append">
-                <a class="btn btn-outline-secondary" th:href="@{/nhanvien/addshow}">+ ADD</a>
+            .employee-card:hover {
+                transform: translateY(-5px);
+                box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+            }
+
+            .status-active {
+                color: #28a745;
+            }
+
+            .status-inactive {
+                color: #dc3545;
+            }
+
+            .gender-male {
+                color: #007bff;
+            }
+
+            .gender-female {
+                color: #ff6b9d;
+            }
+
+            .search-box {
+                max-width: 400px;
+            }
+
+            .form-section {
+                background-color: #f8f9fa;
+                border-radius: 10px;
+                padding: 20px;
+                margin-bottom: 20px;
+            }
+        </style>
+        <div class="container-fluid py-4">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h1 class="h3 mb-0">Quản lý nhân viên</h1>
+                <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#employeeModal">
+                    <i class="fas fa-plus me-2"></i>Thêm nhân viên
+                </button>
+            </div>
+
+            <!-- Search and filter -->
+            <div class="card mb-4">
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-8">
+                            <form th:action="@{/nhanvien/hienthi}" method="get">
+                                <div class="input-group search-box">
+                                    <input type="text" name="keyword" class="form-control"
+                                        placeholder="Tìm kiếm theo tên, email, SĐT...">
+                                    <button class="btn btn-outline-secondary" type="submit">
+                                        <i class="fas fa-search"></i>
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="d-flex justify-content-end">
+                                <div class="btn-group" role="group">
+                                    <button type="button" class="btn btn-outline-secondary"
+                                        onclick="filterEmployees('all')">Tất cả</button>
+                                    <button type="button" class="btn btn-outline-success"
+                                        onclick="filterEmployees('active')">Hoạt động</button>
+                                    <button type="button" class="btn btn-outline-danger"
+                                        onclick="filterEmployees('inactive')">Ngừng hoạt động</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Employee table -->
+            <div class="card">
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Mã NV</th>
+                                    <th>Họ tên</th>
+                                    <th>Ngày sinh</th>
+                                    <th>Giới tính</th>
+                                    <th>Chức vụ</th>
+                                    <th>Email</th>
+                                    <th>Số điện thoại</th>
+                                    <th>Trạng thái</th>
+                                    <th>Thao tác</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr th:each="nhanvien : ${nhanVienCustomList}">
+                                    <td th:text="${nhanvien.maNhanVien}"></td>
+                                    <td>
+                                        <a href="#" th:text="${nhanvien.hoVaTen}" data-bs-toggle="modal"
+                                            data-bs-target="#detailModal"
+                                            th:onclick="|showEmployeeDetail(${nhanvien.id})|"></a>
+                                    </td>
+                                    <td th:text="${#dates.format(nhanvien.ngaySinh,'dd/MM/yyyy')}"></td>
+                                    <td>
+                                        <span th:class="${nhanvien.gioiTinh} ? 'gender-male' : 'gender-female'">
+                                            <i th:class="${nhanvien.gioiTinh} ? 'fas fa-mars' : 'fas fa-venus'"></i>
+                                            <span th:text="${nhanvien.gioiTinh} ? 'Nam' : 'Nữ'"></span>
+                                        </span>
+                                    </td>
+                                    <td th:text="${nhanvien.tenChucVu}"></td>
+                                    <td th:text="${nhanvien.email}"></td>
+                                    <td th:text="${nhanvien.Sdt}"></td>
+                                    <td>
+                                        <span th:class="${nhanvien.trangThai} ? 'status-active' : 'status-inactive'">
+                                            <i
+                                                th:class="${nhanvien.trangThai} ? 'fas fa-check-circle' : 'fas fa-times-circle'"></i>
+                                            <span
+                                                th:text="${nhanvien.trangThai} ? 'Hoạt động' : 'Ngừng hoạt động'"></span>
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <!-- nút gọi modal -->
+                                        <button class="btn btn-sm btn-outline-primary" data-bs-toggle="modal"
+                                            data-bs-target="#employeeModal"
+                                            th:onclick="|loadEmployeeData(${nhanvien.id})|">
+                                            <i class="fas fa-edit"></i>
+                                        </button>
+
+
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Pagination -->
+                    <nav th:if="${totalPages > 1}">
+                        <ul class="pagination justify-content-center mt-4">
+                            <li class="page-item" th:classappend="${currentPage == 0} ? 'disabled'">
+                                <a class="page-link" th:href="@{/nhanvien/hienthi(page=${currentPage - 1})}">
+                                    <i class="fas fa-angle-left"></i>
+                                </a>
+                            </li>
+                            <li class="page-item" th:each="i : ${#numbers.sequence(0, totalPages - 1)}"
+                                th:classappend="${i == currentPage} ? 'active'">
+                                <a class="page-link" th:href="@{/nhanvien/hienthi(page=${i})}" th:text="${i + 1}"></a>
+                            </li>
+                            <li class="page-item" th:classappend="${currentPage + 1 == totalPages} ? 'disabled'">
+                                <a class="page-link" th:href="@{/nhanvien/hienthi(page=${currentPage + 1})}">
+                                    <i class="fas fa-angle-right"></i>
+                                </a>
+                            </li>
+                        </ul>
+                    </nav>
+                </div>
             </div>
         </div>
 
-        <div class="float-end">
-            <form th:action="@{/nhanvien/hienthi}" method="get">
-                <div class="input-group mb-3">
-                    <input type="text" name="keyword" class="form-control" style="width: 300px" placeholder="Tìm kiếm...">
-                    <div class="input-group-append">
-                        <button class="btn btn-outline-secondary" type="submit">Tìm kiếm</button>
+        <!-- Add/Edit Employee Modal -->
+        <div class="modal fade" id="employeeModal" tabindex="-1" aria-labelledby="employeeModalLabel"
+            aria-hidden="true">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="employeeModalLabel">Thêm nhân viên mới</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <form id="employeeForm" th:action="@{/nhanvien/add}" method="post">
+                        <input type="hidden" id="employeeId" name="id" value="">
+                        <div class="modal-body">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label class="form-label">Chức vụ <span class="text-danger">*</span></label>
+                                        <select class="form-select" aria-label="Chọn chức vụ" name="idcv" required>
+                                            <option th:each="chucvu : ${listChucVu}" th:value="${chucvu.id}"
+                                                th:text="${chucvu.tenChucVu}"></option>
+                                        </select>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">Họ và tên <span class="text-danger">*</span></label>
+                                        <input type="text" class="form-control" name="hovaten" required>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">Mã nhân viên <span
+                                                class="text-danger">*</span></label>
+                                        <input type="text" class="form-control" name="manhanvien" required>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">Ngày sinh <span class="text-danger">*</span></label>
+                                        <input type="date" class="form-control" name="ngaysinh" required>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">Giới tính <span class="text-danger">*</span></label>
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="radio" name="gioitinh" value="True"
+                                                id="male" checked>
+                                            <label class="form-check-label" for="male">Nam</label>
+                                        </div>
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="radio" name="gioitinh" value="False"
+                                                id="female">
+                                            <label class="form-check-label" for="female">Nữ</label>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label class="form-label">Địa chỉ <span class="text-danger">*</span></label>
+                                        <input type="text" class="form-control" name="diachi" required>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">Số điện thoại <span
+                                                class="text-danger">*</span></label>
+                                        <input type="tel" class="form-control" name="sdt" required>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">Email <span class="text-danger">*</span></label>
+                                        <input type="email" class="form-control" name="email" required>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">Mật khẩu <span class="text-danger">*</span></label>
+                                        <div class="input-group">
+                                            <input type="password" class="form-control" id="passwordField"
+                                                name="matkhau" required>
+                                            <button class="btn btn-outline-secondary" type="button" id="togglePassword">
+                                                <i class="fas fa-eye"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">Trạng thái <span class="text-danger">*</span></label>
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="radio" name="trangthai" value="True"
+                                                id="active" checked>
+                                            <label class="form-check-label" for="active">Hoạt động</label>
+                                        </div>
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="radio" name="trangthai" value="False"
+                                                id="inactive">
+                                            <label class="form-check-label" for="inactive">Ngừng hoạt động</label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                            <button type="submit" class="btn btn-primary">Lưu thông tin</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Employee Detail Modal -->
+        <div class="modal fade" id="detailModal" tabindex="-1" aria-labelledby="detailModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="detailModalLabel">Chi tiết nhân viên</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body" id="employeeDetailContent">
+                        <!-- Content will be loaded via AJAX -->
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
                     </div>
                 </div>
-            </form>
+            </div>
         </div>
 
-        <table class="table table-header">
-            <thead>
-            <tr>
-                <th>Mã Nhân Viên</th>
-                <th>Tên Nhân Viên</th>
-                <th>Ngày sinh</th>
-                <th>Giới tính</th>
-                <th>Địa chỉ</th>
-                <th>Sdt</th>
-                <th>Email</th>
-                <th>Mật khẩu</th>
-                <th>Chức vụ</th>
-                <th>Trạng thái</th>
-                <th>Thao tác</th>
-            </tr>
-            </thead>
-            <tbody>
-            <tr th:each="nhanvien : ${nhanVienCustomList}">
-                <td th:text="${nhanvien.maNhanVien}"></td>
-                <td th:text="${nhanvien.hoVaTen}"></td>
-                <td th:text="${nhanvien.ngaySinh}"></td>
-                <td th:text="${nhanvien.gioiTinh  == true ?'Nam':'Nữ'}"></td>
-                <td th:text="${nhanvien.diaChi}"></td>
-                <td th:text="${nhanvien.sdt}"></td>
-                <td th:text="${nhanvien.email}"></td>
-                <td th:text="${nhanvien.matKhau}"></td>
-                <td th:text="${nhanvien.tenChucVu}"></td>
-<!--                <td th:text="${#dates.format(nhanvien.ngayTao, 'yyyy-MM-dd')}"></td>-->
-<!--                <td th:text="${#dates.format(nhanvien.ngaySua, 'yyyy-MM-dd')}"></td>-->
-                <td th:text="${nhanvien.trangThai == true ?'Hoạt động':'Không hoạt động'}"></td>
-                <td>
-                    <a th:href="@{/nhanvien/detail/{id}(id=${nhanvien.id})}" class="btn btn-outline-warning">
-                        Chi tiết
-                    </a>
+        <script>
 
-                </td>
-            </tr>
-            </tbody>
-        </table>
+            // Toggle password visibility
+            document.getElementById('togglePassword').addEventListener('click', function () {
+                const passwordField = document.getElementById('passwordField');
+                const icon = this.querySelector('i');
+                if (passwordField.type === 'password') {
+                    passwordField.type = 'text';
+                    icon.classList.remove('fa-eye');
+                    icon.classList.add('fa-eye-slash');
+                } else {
+                    passwordField.type = 'password';
+                    icon.classList.remove('fa-eye-slash');
+                    icon.classList.add('fa-eye');
+                }
+            });
 
-        <div>
-            <ul class="pagination justify-content-center">
-                <!-- Nút "Trang trước" -->
-                <li class="page-item" th:classappend="${currentPage == 0} ? 'disabled'">
-                    <a class="page-link" th:href="@{/nhanvien/hienthi(page=${currentPage - 1})}"><</a>
-                </li>
+            // Form validation
+            document.getElementById('employeeForm').addEventListener('submit', function (e) {
+                let isValid = true;
+                const requiredFields = this.querySelectorAll('[required]');
 
-                <!-- Các nút số trang -->
-                <li class="page-item" th:each="i : ${#numbers.sequence(0, totalPages - 1)}"
-                    th:classappend="${i == currentPage} ? 'active'">
-                    <a class="page-link" th:href="@{/nhanvien/hienthi(page=${i})}" th:text="${i + 1}"></a>
-                </li>
+                requiredFields.forEach(field => {
+                    if (!field.value.trim()) {
+                        field.classList.add('is-invalid');
+                        isValid = false;
+                    } else {
+                        field.classList.remove('is-invalid');
+                    }
+                });
 
-                <!-- Nút "Trang sau" -->
-                <li class="page-item" th:classappend="${currentPage + 1 == totalPages} ? 'disabled'">
-                    <a class="page-link" th:href="@{/nhanvien/hienthi(page=${currentPage + 1})}">></a>
-                </li>
-            </ul>
-        </div>
+                if (!isValid) {
+                    e.preventDefault();
+                    notyf.error('Vui lòng điền đầy đủ thông tin bắt buộc');
+                }
+            });
 
+            // Load employee data for editing
+            function loadEmployeeData(id) {
+                fetch(`/nhanvien/detail/${id}`)
+                    .then(response => {
+                        if (!response.ok) throw new Error('Không tìm thấy nhân viên');
+                        return response.json();
+                    })
+                    .then(data => {
+                        const nv = data.detailNhanVien;
+                        console.log("Dữ liệu nhân viên:", nv);
+
+                        document.getElementById('employeeId').value = nv.id;
+                        document.getElementById('employeeModalLabel').textContent = 'Chỉnh sửa nhân viên';
+                        document.querySelector('#employeeForm [name="manhanvien"]').value = nv.maNhanVien;
+                        document.querySelector('#employeeForm [name="hovaten"]').value = nv.hoVaTen;
+                        document.querySelector('#employeeForm [name="ngaysinh"]').value = nv.ngaySinh ? nv.ngaySinh.split('T')[0] : '';
+                        document.querySelector(`#employeeForm [name="gioitinh"][value="${nv.gioiTinh ? 'True' : 'False'}"]`).checked = true;
+                        document.querySelector('#employeeForm [name="diachi"]').value = nv.diaChi;
+                        document.querySelector('#employeeForm [name="sdt"]').value = nv.sdt;
+                        document.querySelector('#employeeForm [name="email"]').value = nv.email;
+
+                        // 👇 ĐÂY LÀ CHỖ SỬA
+                        document.querySelector('#employeeForm [name="idcv"]').value = nv.idChucVu.id;
+
+                        document.querySelector(`#employeeForm [name="trangthai"][value="${nv.trangThai ? 'True' : 'False'}"]`).checked = true;
+
+                        document.getElementById('employeeForm').action = `/nhanvien/update/${id}`;
+                    })
+                    .catch(error => {
+                        console.error("Lỗi:", error);
+                        notyf.error('Lỗi khi tải dữ liệu nhân viên');
+                    });
+            }
+
+
+
+
+            // Show employee details
+            function showEmployeeDetail(id) {
+                fetch(`/nhanvien/detail/${id}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        const detailContent = `
+                        <div class="row">
+                            <div class="col-md-6">
+                                <p><strong>Mã NV:</strong> ${data.maNhanVien}</p>
+                                <p><strong>Họ tên:</strong> ${data.hoVaTen}</p>
+                                <p><strong>Ngày sinh:</strong> ${new Date(data.ngaySinh).toLocaleDateString()}</p>
+                                <p><strong>Giới tính:</strong> ${data.gioiTinh ? 'Nam' : 'Nữ'}</p>
+                                <p><strong>Chức vụ:</strong> ${data.tenChucVu}</p>
+                            </div>
+                            <div class="col-md-6">
+                                <p><strong>Địa chỉ:</strong> ${data.diaChi}</p>
+                                <p><strong>SĐT:</strong> ${data.sdt}</p>
+                                <p><strong>Email:</strong> ${data.email}</p>
+                                <p><strong>Ngày tạo:</strong> ${new Date(data.ngayTao).toLocaleString()}</p>
+                                <p><strong>Trạng thái:</strong> 
+                                    <span class="${data.trangThai ? 'status-active' : 'status-inactive'}">
+                                        ${data.trangThai ? 'Hoạt động' : 'Ngừng hoạt động'}
+                                    </span>
+                                </p>
+                            </div>
+                        </div>
+                    `;
+                        document.getElementById('employeeDetailContent').innerHTML = detailContent;
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        document.getElementById('employeeDetailContent').innerHTML =
+                            '<div class="alert alert-danger">Lỗi khi tải thông tin nhân viên</div>';
+                    });
+            }
+
+            // Confirm delete
+            function confirmDelete(id, name) {
+                if (confirm(`Bạn có chắc chắn muốn xóa nhân viên "${name}"?`)) {
+                    fetch(`/nhanvien/delete/${id}`, {
+                        method: 'DELETE'
+                    })
+                        .then(response => {
+                            if (response.ok) {
+                                notyf.success('Xóa nhân viên thành công');
+                                setTimeout(() => location.reload(), 1500);
+                            } else {
+                                notyf.error('Lỗi khi xóa nhân viên');
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Error:', error);
+                            notyf.error('Lỗi hệ thống khi xóa nhân viên');
+                        });
+                }
+            }
+
+            // Filter employees
+            function filterEmployees(type) {
+                // Implement your filtering logic here
+                // This could be client-side filtering or server-side with AJAX
+                console.log(`Filtering by: ${type}`);
+            }
+
+            // Reset form when modal is closed
+            document.getElementById('employeeModal').addEventListener('hidden.bs.modal', function () {
+                document.getElementById('employeeForm').reset();
+                document.getElementById('employeeId').value = '';
+                document.getElementById('employeeModalLabel').textContent = 'Thêm nhân viên mới';
+                document.getElementById('employeeForm').action = '/nhanvien/add';
+            });
+        </script>
     </div>
-</div>
 </body>
+
 </html>

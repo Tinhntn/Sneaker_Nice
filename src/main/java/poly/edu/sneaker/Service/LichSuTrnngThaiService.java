@@ -13,5 +13,8 @@ public interface LichSuTrnngThaiService {
     TrangThaiDonHang findLichSuTrangThaiById(Integer id);
     void updateLichSuTrangThai(TrangThaiDonHang lt);
     List<TrangThaiDonHang> getAllByIdHoaDon(int idHD);
-    boolean doiTrangThaiDonHang(int idHD, String ghiChu,int trangThai);
+    boolean doiTrangThaiDonHang(int idHD, String ghiChu,int trangThai, boolean isUndo);
+    TrangThaiDonHang layTrangThaiTruocDo(int idHoaDon,int trangThaiTruoc);
+
+    List<TrangThaiDonHang> findByIdHoaDon_IdOrderByNgayCapNhatDesc(int idHoaDon);
 }
