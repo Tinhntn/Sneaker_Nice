@@ -38,10 +38,7 @@ public class KhachHangController {
 
     @Autowired
     HttpSession session;
-    @Autowired
-    private PasswordEncoder passwordEncoder;
-
-
+    private final PasswordEncoder passwordEncoder = new BCryptPasswordEncoder(10);
 
     @GetMapping("/hienthi")
     public String hienThiKhachHang(Model model,
@@ -113,11 +110,11 @@ public class KhachHangController {
         }
 
         // Validate mật khẩu
-        if (khachHang.getMatKhau() == null || khachHang.getMatKhau().isBlank()) {
-            bindingResult.rejectValue("matKhau", "error.khachHang", "Mật khẩu không được để trống");
-        } else if (khachHang.getMatKhau().length() < 8) {
-            bindingResult.rejectValue("matKhau", "error.khachHang", "Mật khẩu phải có ít nhất 8 ký tự");
-        }
+//        if (khachHang.getMatKhau() == null || khachHang.getMatKhau().isBlank()) {
+//            bindingResult.rejectValue("matKhau", "error.khachHang", "Mật khẩu không được để trống");
+//        } else if (khachHang.getMatKhau().length() < 8) {
+//            bindingResult.rejectValue("matKhau", "error.khachHang", "Mật khẩu phải có ít nhất 8 ký tự");
+//        }
 
         // Validate ngày sinh
         if (khachHang.getNgaySinh() == null) {
@@ -138,13 +135,12 @@ public class KhachHangController {
                 maKhachHang = khachHangService.taoMaKhachHang();
             }
             khachHang.setMaKhachHang(maKhachHang);
-
+            String matKhauTam = "12345";
             // Mã hóa mật khẩu
-            khachHang.setMatKhau(passwordEncoder.encode(khachHang.getMatKhau()));
-
+//            khachHang.setMatKhau(passwordEncoder.encode(khachHang.getMatKhau()));
+                khachHang.setMatKhau(passwordEncoder.encode(matKhauTam));
             // Lưu khách hàng
             khachHangService.saveKhachHang(khachHang);
-
             // Tạo giỏ hàng tự động cho khách hàng
             GioHang gioHang = new GioHang();
             gioHang.setMaGioHang(gioHangService.taoMaGioHang());
@@ -198,11 +194,11 @@ public class KhachHangController {
             bindingResult.rejectValue("sdt", "error.khachHang", "Số điện thoại phải từ 10 đến 15 ký tự");
         }
         // Validate mật khẩu
-        if (khachHang.getMatKhau() == null || khachHang.getMatKhau().isBlank()) {
-            bindingResult.rejectValue("matKhau", "error.khachHang", "Mật khẩu không được để trống");
-        } else if (khachHang.getMatKhau().length() < 6) {
-            bindingResult.rejectValue("matKhau", "error.khachHang", "Mật khẩu phải có ít nhất 6 ký tự");
-        }
+//        if (khachHang.getMatKhau() == null || khachHang.getMatKhau().isBlank()) {
+//            bindingResult.rejectValue("matKhau", "error.khachHang", "Mật khẩu không được để trống");
+//        } else if (khachHang.getMatKhau().length() < 6) {
+//            bindingResult.rejectValue("matKhau", "error.khachHang", "Mật khẩu phải có ít nhất 6 ký tự");
+//        }
         // Nếu có lỗi, trả về trang cập nhật khách hàng
         if (bindingResult.hasErrors()) {
             return "admin/khach_hang/update";
@@ -214,9 +210,9 @@ public class KhachHangController {
             KhachHang existingKhachHang = khachHangService.findKhachHangById(id);
             if (existingKhachHang != null) {
                 // Mã hóa mật khẩu nếu mật khẩu được thay đổi
-                if (!khachHang.getMatKhau().equals(existingKhachHang.getMatKhau())) {
-                    khachHang.setMatKhau(passwordEncoder.encode(khachHang.getMatKhau()));
-                }
+//                if (!khachHang.getMatKhau().equals(existingKhachHang.getMatKhau())) {
+//                    khachHang.setMatKhau(passwordEncoder.encode(khachHang.getMatKhau()));
+//                }
 
                 // Cập nhật thông tin khách hàng
                 khachHang.setId(id);

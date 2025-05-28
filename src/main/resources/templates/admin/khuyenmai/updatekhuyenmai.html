@@ -1,229 +1,205 @@
-<!doctype html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-    layout:decorate="~{layout/main.html}">
-
-
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/main.html}">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
 <body>
-    <div layout:fragment="content">
-        <!-- Hiển thị thông báo thành công, lỗi hoặc cảnh báo -->
-        <script th:if="${success != null}" th:inline="javascript">
-            Swal.fire({
-                icon: 'success',
-                title: 'Thành công',
-                text: '[[${success}]]',
-                position: 'center',
-                timer: 3000,
-                showConfirmButton: false
-            });
-        </script>
-        <script th:if="${error != null}" th:inline="javascript">
-            Swal.fire({
-                icon: 'error',
-                title: 'Lỗi',
-                text: '[[${error}]]',
-                position: 'center',
-                timer: 3000,
-                showConfirmButton: false
-            });
-        </script>
-        <script th:if="${warning != null}" th:inline="javascript">
-            Swal.fire({
-                icon: 'warning',
-                title: 'Lưu ý',
-                text: '[[${warning}]]',
-                position: 'center',
-                timer: 3000,
-                showConfirmButton: false
-            });
-        </script>
+<div layout:fragment="content" class="container-fluid py-4">
 
-        <div class="container-fluid">
-            <h1 style="text-align: center">Cập nhật khuyến mãi</h1>
+    <!-- Hiển thị thông báo -->
+    <script th:if="${success != null}" th:inline="javascript">
+        Swal.fire({
+            icon: 'success',
+            title: 'Thành công',
+            text: '[[${success}]]',
+            position: 'center',
+            timer: 3000,
+            showConfirmButton: false
+        });
+    </script>
+    <script th:if="${error != null}" th:inline="javascript">
+        Swal.fire({
+            icon: 'error',
+            title: 'Lỗi',
+            text: '[[${error}]]',
+            position: 'center',
+            timer: 3000,
+            showConfirmButton: false
+        });
+    </script>
+    <script th:if="${warning != null}" th:inline="javascript">
+        Swal.fire({
+            icon: 'warning',
+            title: 'Lưu ý',
+            text: '[[${warning}]]',
+            position: 'center',
+            timer: 3000,
+            showConfirmButton: false
+        });
+    </script>
+
+    <!-- Form -->
+    <div class="card shadow-lg rounded-4">
+        <div class="card-header bg-primary text-white text-center fs-4 fw-bold">
+            <i class="fa-solid fa-tag me-2"></i> Cập nhật khuyến mãi
+        </div>
+        <div class="card-body p-4">
             <form th:action="@{/khuyenmai/update}" method="post">
-                <input type="hidden" name="id" th:value="${khuyenMai.id}">
-                <div class="row">
+                <input type="hidden" name="id" th:value="${khuyenMai.id}" />
+
+                <div class="row g-3">
+                    <!-- Cột trái -->
                     <div class="col-md-6">
-                        <div class="form-group">
-                            <label for="tenkhuyenmai">Tên khuyến mãi</label>
-                            <input type="text" class="form-control" id="tenkhuyenmai" name="tenKhuyenMai"
-                                th:value="${khuyenMai.tenKhuyenMai}">
-                        </div>
-                        <div class="form-group">
-                            <label for="dieukienapdung">Điều kiện áp dụng</label>
-                            <input type="number" class="form-control" id="dieukienapdung" name="dieuKienApDung"
-                                th:value="${khuyenMai.dieuKienApDung.intValue}">
-                            <div class="input-group-append">
-                                <span class="input-group-text">VND</span>
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label for="loaiKhuyenMai">Loại khuyến mãi</label>
-                            <select class="form-control" id="loaiKhuyenMai" name="loaiKhuyenMai"
+                        <label class="form-label">Tên khuyến mãi</label>
+                        <input type="text" class="form-control" name="tenKhuyenMai"
+                               th:value="${khuyenMai.tenKhuyenMai}" />
+
+                        <label class="form-label mt-3">Điều kiện áp dụng (VNĐ)</label>
+                        <input type="number" class="form-control" name="dieuKienApDung"
+                               th:value="${khuyenMai.dieuKienApDung.intValue}" />
+
+                        <label class="form-label mt-3">Loại khuyến mãi</label>
+                        <select class="form-select" name="loaiKhuyenMai" id="loaiKhuyenMai"
                                 onchange="toggleMaxDiscountField()">
-                                <option value="true" th:selected="${khuyenMai.loaiKhuyenMai} == true">Giảm giá cố định
-                                </option>
-                                <option value="false" th:selected="${khuyenMai.loaiKhuyenMai} == false">Giảm theo %
-                                </option>
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label for="giatrigiam">Giá trị giảm</label>
+                            <option value="true" th:selected="${khuyenMai.loaiKhuyenMai} == true">Giảm giá cố định
+                            </option>
+                            <option value="false" th:selected="${khuyenMai.loaiKhuyenMai} == false">Giảm theo %
+                            </option>
+                        </select>
+
+                        <label class="form-label mt-3">Giá trị giảm</label>
+                        <div class="input-group">
                             <input type="number" class="form-control" id="giatrigiam" name="giaTriGiam"
-                                th:value="${khuyenMai.giaTriGiam.intValue}">
-                            <div class="input-group-append">
-                                <span class="input-group-text" id="unit-giaTriGiam">VND</span>
-                            </div>
+                                   th:value="${khuyenMai.giaTriGiam.intValue}" />
+                            <span class="input-group-text" id="unit-giaTriGiam">VND</span>
                         </div>
-                        <div class="form-group" id="group-mucGiamGiaToiDa">
-                            <label for="mucGiamGiaToiDa">Mức giảm giá tối đa</label>
-                            <input type="number" class="form-control" id="mucGiamGiaToiDa" name="mucGiamGiaToiDa"
-                                th:value="${khuyenMai.mucGiamGiaToiDa.intValue}">
-                            <div class="input-group-append">
+
+                        <div class="mt-3" id="group-mucGiamGiaToiDa">
+                            <label class="form-label">Mức giảm tối đa</label>
+                            <div class="input-group">
+                                <input type="number" class="form-control" id="mucGiamGiaToiDa"
+                                       name="mucGiamGiaToiDa"
+                                       th:value="${khuyenMai.mucGiamGiaToiDa.intValue}" min="0" />
                                 <span class="input-group-text" id="unitMucGiamGiaToiDa">VND</span>
                             </div>
                         </div>
                     </div>
 
+                    <!-- Cột phải -->
                     <div class="col-md-6">
-                        <div class="form-group">
-                            <label for="ngaybatdau">Ngày bắt đầu</label>
-                            <input type="date" class="form-control" id="ngaybatdau" name="ngayBatDau"
-                                th:value="${khuyenMai.ngayBatDau}">
-                        </div>
-                        <div class="form-group">
-                            <label for="ngayketthuc">Ngày kết thúc</label>
-                            <input type="date" class="form-control" id="ngayketthuc" name="ngayKetThuc"
-                                th:value="${khuyenMai.ngayKetThuc}">
-                        </div>
-                        <div class="form-group">
-                            <label for="soluong">Số lượng</label>
-                            <input type="number" class="form-control" id="soluong" name="soLuong"
-                                th:value="${khuyenMai.soLuong}">
-                        </div>
+                        <label class="form-label">Ngày bắt đầu</label>
+                        <input type="date" class="form-control" name="ngayBatDau"
+                               th:value="${#dates.format(khuyenMai.ngayBatDau, 'yyyy-MM-dd')}" />
 
-                        <div class="form-group">
-                            <label>Trạng thái</label>
-                            <div class="form-check">
-                                <input class="form-check-input" type="radio" id="trangThaiHoatDong" name="trangThai"
-                                    value="true" th:checked="${khuyenMai.trangThai}" />
-                                <label class="form-check-label" for="trangThaiHoatDong">
-                                    Hoạt động
-                                </label>
-                            </div>
-                            <div class="form-check">
-                                <input class="form-check-input" type="radio" id="trangThaiKhongHoatDong"
-                                    name="trangThai" value="false" th:checked="${!khuyenMai.trangThai}" />
-                                <label class="form-check-label" for="trangThaiKhongHoatDong">
-                                    Không hoạt động
-                                </label>
-                            </div>
+                        <label class="form-label mt-3">Ngày kết thúc</label>
+                        <input type="date" class="form-control" name="ngayKetThuc"
+                               th:value="${#dates.format(khuyenMai.ngayKetThuc, 'yyyy-MM-dd')}" />
+
+                        <label class="form-label mt-3">Số lượng</label>
+                        <input type="number" class="form-control" name="soLuong"
+                               th:value="${khuyenMai.soLuong}" />
+
+                        <label class="form-label mt-3">Trạng thái</label>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" id="trangThaiHoatDong" name="trangThai"
+                                   value="true" th:checked="${khuyenMai.trangThai}" />
+                            <label class="form-check-label" for="trangThaiHoatDong">
+                                Hoạt động
+                            </label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" id="trangThaiKhongHoatDong"
+                                   name="trangThai" value="false" th:checked="${!khuyenMai.trangThai}" />
+                            <label class="form-check-label" for="trangThaiKhongHoatDong">
+                                Không hoạt động
+                            </label>
                         </div>
                     </div>
                 </div>
-                <br>
-                <div th:if="${errorMessage}" class="alert alert-danger" role="alert">
+
+                <!-- Thông báo lỗi -->
+                <div th:if="${errorMessage}" class="alert alert-danger mt-4">
                     <p th:text="${errorMessage}"></p>
                 </div>
-                <button type="submit" class="btn btn-primary">Cập nhật</button>
+
+                <div class="mt-4 text-center">
+                    <button type="submit" class="btn btn-primary px-4 py-2 fw-semibold">
+                        <i class="fa-solid fa-floppy-disk me-2"></i> Cập nhật
+                    </button>
+                </div>
             </form>
-
-            <h4>Danh sách hóa đơn sử dụng khuyến mãi</h4>
-            <table border="1" class="table table-bordered">
-                <thead>
-                    <tr>
-                        <th>Mã Hóa Đơn</th>
-                        <th>Ngày Tạo</th>
-                        <th>Tổng Tiền</th>
-                        <th>Tiền Giảm</th>
-                        <th>Thành Tiền</th>
-                        <th>Tiền Khách Đưa</th>
-                        <th>Tiền Thừa</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr th:each="hd : ${hoaDonPage.content}">
-                        <td th:text="${hd.maHoaDon != null ? hd.maHoaDon : 'N/A'}">HD001</td>
-
-                        <td th:text="${hd.ngayTao != null ? #dates.format(hd.ngayTao, 'dd/MM/yyyy HH:mm') : 'N/A'}">
-                            01/01/2025
-                        </td>
-
-                        <td
-                            th:text="${hd.tongTien != null ? #numbers.formatDecimal(hd.tongTien, 0, 'COMMA', 0, 'POINT') + ' đ' : '0 đ'}">
-                            0 đ
-                        </td>
-
-
-                        <td
-                            th:text="${hd.tongTienGiam != null ? #numbers.formatDecimal(hd.tongTienGiam, 0, 'COMMA', 0, 'POINT') + ' đ' : '0 đ'}">
-                            0 đ
-                        </td>
-                        <td
-                            th:text="${hd.thanhTien != null ? #numbers.formatDecimal(hd.tongTien, 0, 'COMMA', 0, 'POINT') + ' đ' : '0 đ'}">
-                            0 đ
-                        </td>
-                        <td
-                            th:text="${hd.tienKhachDua != null ? #numbers.formatDecimal(hd.tienKhachDua, 0, 'COMMA', 0, 'POINT') + ' đ' : '0 đ'}">
-                            0 đ
-                        </td>
-
-                        <td
-                            th:text="${hd.tienThua != null ? #numbers.formatDecimal(hd.tienThua, 0, 'COMMA', 0, 'POINT') + ' đ' : '0 đ'}">
-                            0 đ
-                        </td>
-
-                    </tr>
-                    <tr th:if="${hoaDonPage.totalElements == 0}">
-                        <td colspan="6" class="text-center">Không có hóa đơn sử dụng khuyến mãi này.</td>
-                    </tr>
-                </tbody>
-            </table>
-
-
-
-            <script>
-                function toggleMaxDiscountField() {
-                    const loaiKhuyenMai = document.getElementById("loaiKhuyenMai").value;
-                    const mucGiamGiaToiDa = document.getElementById("mucGiamGiaToiDa");
-                    const giaTriGiam = document.getElementById("giatrigiam");
-                    const groupMucGiamGia = document.getElementById("group-mucGiamGiaToiDa");
-                    const unitGiaTriGiam = document.getElementById("unit-giaTriGiam");
-                    const unitMucGiamGiaToiDa = document.getElementById("unitMucGiamGiaToiDa");
-
-                    if (loaiKhuyenMai === "true") {
-                        groupMucGiamGia.style.display = "none";
-                        mucGiamGiaToiDa.value = giaTriGiam.value;
-                        mucGiamGiaToiDa.readOnly = true;
-
-                        unitGiaTriGiam.textContent = "VND";
-                        unitMucGiamGiaToiDa.textContent = "VND";
-
-                        giaTriGiam.removeAttribute("min");
-                        giaTriGiam.removeAttribute("max");
-                    } else {
-                        groupMucGiamGia.style.display = "block";
-                        mucGiamGiaToiDa.readOnly = false;
-                        unitGiaTriGiam.textContent = "%";
-                        unitMucGiamGiaToiDa.textContent = "VND";
-
-                        giaTriGiam.setAttribute("min", "1");
-                        giaTriGiam.setAttribute("max", "100");
-                    }
-                }
-
-                window.onload = toggleMaxDiscountField;
-
-                document.getElementById("giatrigiam").addEventListener("input", function () {
-                    if (document.getElementById("loaiKhuyenMai").value === "true") {
-                        document.getElementById("mucGiamGiaToiDa").value = this.value;
-                    }
-                });
-
-                document.getElementById("loaiKhuyenMai").addEventListener("change", toggleMaxDiscountField);
-            </script>
         </div>
     </div>
+
+    <!-- Danh sách hóa đơn -->
+    <div class="card mt-5 shadow-sm rounded-4">
+        <div class="card-header bg-secondary text-white fs-5">
+            <i class="fa-solid fa-file-invoice me-2"></i> Hóa đơn sử dụng khuyến mãi
+        </div>
+        <div class="card-body p-4">
+            <table class="table table-bordered table-striped text-center align-middle">
+                <thead class="table-light">
+                <tr>
+                    <th>Mã HĐ</th>
+                    <th>Ngày tạo</th>
+                    <th>Tổng tiền</th>
+                    <th>Tiền giảm</th>
+                    <th>Thành tiền</th>
+                    <th>Tiền khách đưa</th>
+                    <th>Tiền thừa</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="hd : ${hoaDonPage.content}">
+                    <td th:text="${hd.maHoaDon ?: 'N/A'}"></td>
+                    <td th:text="${hd.ngayTao != null ? #dates.format(hd.ngayTao, 'dd/MM/yyyy HH:mm') : 'N/A'}"></td>
+                    <td th:text="${hd.tongTien != null ? #numbers.formatDecimal(hd.tongTien, 0, 'COMMA', 0, 'POINT') + ' đ' : '0 đ'}"></td>
+                    <td th:text="${hd.tongTienGiam != null ? #numbers.formatDecimal(hd.tongTienGiam, 0, 'COMMA', 0, 'POINT') + ' đ' : '0 đ'}"></td>
+                    <td th:text="${hd.thanhTien != null ? #numbers.formatDecimal(hd.thanhTien, 0, 'COMMA', 0, 'POINT') + ' đ' : '0 đ'}"></td>
+                    <td th:text="${hd.tienKhachDua != null ? #numbers.formatDecimal(hd.tienKhachDua, 0, 'COMMA', 0, 'POINT') + ' đ' : '0 đ'}"></td>
+                    <td th:text="${hd.tienThua != null ? #numbers.formatDecimal(hd.tienThua, 0, 'COMMA', 0, 'POINT') + ' đ' : '0 đ'}"></td>
+                </tr>
+                <tr th:if="${hoaDonPage.totalElements == 0}">
+                    <td colspan="7" class="text-center text-muted">Không có hóa đơn sử dụng khuyến mãi này.</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- JS xử lý thay đổi đơn vị và hiển thị -->
+    <script>
+        function toggleMaxDiscountField() {
+            const isFixed = document.getElementById("loaiKhuyenMai").value === "true";
+            const mucGiamGia = document.getElementById("group-mucGiamGiaToiDa");
+            const unitGiaTri = document.getElementById("unit-giaTriGiam");
+            const unitMax = document.getElementById("unitMucGiamGiaToiDa");
+            const giaTriInput = document.getElementById("giatrigiam");
+            const mucInput = document.getElementById("mucGiamGiaToiDa");
+
+            if (isFixed) {
+                mucGiamGia.style.display = "none";
+                mucInput.value = giaTriInput.value;
+                mucInput.readOnly = true;
+                unitGiaTri.textContent = "VND";
+            } else {
+                mucGiamGia.style.display = "block";
+                mucInput.readOnly = false;
+                unitGiaTri.textContent = "%";
+            }
+
+            unitMax.textContent = "VND";
+        }
+
+        window.onload = toggleMaxDiscountField;
+        document.getElementById("giatrigiam").addEventListener("input", function () {
+            if (document.getElementById("loaiKhuyenMai").value === "true") {
+                document.getElementById("mucGiamGiaToiDa").value = this.value;
+            }
+        });
+        document.getElementById("loaiKhuyenMai").addEventListener("change", toggleMaxDiscountField);
+    </script>
+</div>
 </body>
 
 </html>
