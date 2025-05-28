@@ -38,10 +38,7 @@ public class NhanVienImplement implements NhanVienService {
 
     @Override
     public void saveNhanVien(NhanVien nhanVien) {
-        NhanVien existingNhanVien = nhanVienRepository.findByMaNhanVien(nhanVien.getMaNhanVien());
-        if (existingNhanVien != null) {
-            throw new IllegalArgumentException("Mã nhân viên đã tồn tại!");
-        }
+
         nhanVienRepository.save(nhanVien);
     }
 
@@ -60,8 +57,8 @@ public class NhanVienImplement implements NhanVienService {
     }
 
     @Override
-    public Page<NhanVienCustom> search(String keyword, Pageable pageable) {
-        return nhanVienRepository.searchNhanVien(keyword, pageable);
+    public Page<NhanVienCustom> search(String keyword,Boolean trangThai, Pageable pageable) {
+        return nhanVienRepository.searchNhanVien(keyword,trangThai, pageable);
     }
 
     @Override

@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -11,134 +12,162 @@ import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import poly.edu.sneaker.DAO.ChucVuDTO;
 import poly.edu.sneaker.Model.ChucVu;
 import poly.edu.sneaker.Service.ChucVuService;
 
 import jakarta.validation.Valid;
-@Controller
-@RequestMapping("/chuc_vu")
+
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+@RestController
+@RequestMapping("/api/chucvu")
 public class ChucVuController {
 
     @Autowired
     private ChucVuService chucVuService;
 
-    // Hiển thị danh sách chức vụ
-    @GetMapping("/hienthi")
-    public String hienThiChucVu(Model model,
-                                @RequestParam(defaultValue = "0") int page,
-                                @RequestParam(required = false) String keyword) {
-        int size = 5; // Số lượng bản ghi trên mỗi trang
+    // Lấy danh sách chức vụ phân trang
+    @GetMapping
+    public ResponseEntity<Map<String, Object>> getAll(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "5") int size,
+            @RequestParam(required = false) String keyword) {
         Pageable pageable = PageRequest.of(page, size);
         Page<ChucVu> chucVuPage;
 
         if (keyword != null && !keyword.isEmpty()) {
             chucVuPage = chucVuService.search(keyword, pageable);
-            model.addAttribute("keyword", keyword);
         } else {
             chucVuPage = chucVuService.getAll(pageable);
         }
 
-        model.addAttribute("listCV", chucVuPage.getContent());
-        model.addAttribute("currentPage", chucVuPage.getNumber());
-        model.addAttribute("totalPages", chucVuPage.getTotalPages());
-        return "admin/chuc_vu/ListChucVu";
+        Map<String, Object> response = new HashMap<>();
+        response.put("listCV", chucVuPage.getContent());
+        response.put("currentPage", chucVuPage.getNumber());
+        response.put("totalItems", chucVuPage.getTotalElements());
+        response.put("totalPages", chucVuPage.getTotalPages());
+
+        return ResponseEntity.ok(response);
     }
 
-    // Hiển thị form thêm chức vụ
-    @GetMapping("/add")
-    public String showAddForm(Model model) {
-        ChucVu chucVu = new ChucVu();
-        String maChucVu = chucVuService.taoMaChucVu();
-        while (chucVuService.findByMaChucVu(maChucVu) != null) {
-            maChucVu = chucVuService.taoMaChucVu();
-        }
-        chucVu.setMaChucVu(maChucVu);
-        model.addAttribute("chucVu", chucVu);
-        return "admin/chuc_vu/add";
-    }
+    // Thêm mới chức vụ
+    @PostMapping
+    public ResponseEntity<?> addChucVu(@Valid @RequestBody ChucVuDTO chucVuDTO,
+                                       BindingResult bindingResult) {
 
-    // Xử lý thêm chức vụ
-    @PostMapping("/add")
-    public String addChucVu(@Valid @ModelAttribute("chucVu") ChucVu chucVu,
-                            BindingResult bindingResult,
-                            RedirectAttributes redirectAttributes) {
-        // Kiểm tra trùng tên chức vụ
-        if (chucVuService.getAll().stream().anyMatch(cv -> cv.getTenChucVu().equalsIgnoreCase(chucVu.getTenChucVu()))) {
-            bindingResult.addError(new FieldError("chucVu", "tenChucVu", "Tên chức vụ đã tồn tại"));
-        }
-
-        validateChucVu(chucVu, bindingResult);
+        // Kiểm tra validate
         if (bindingResult.hasErrors()) {
-            return "admin/chuc_vu/add";
+            Map<String, String> errors = new HashMap<>();
+            bindingResult.getFieldErrors().forEach(error ->
+                    errors.put(error.getField(), error.getDefaultMessage()));
+            return ResponseEntity.badRequest().body(errors);
         }
+
+        // Kiểm tra trùng tên
+        if (chucVuService.existsByTenChucVu(chucVuDTO.getTenChucVu())) {
+            return ResponseEntity.badRequest()
+                    .body(Collections.singletonMap("tenChucVu", "Tên chức vụ đã tồn tại"));
+        }
+
         try {
+            String maChucVu = chucVuService.taoMaChucVu();
+            maChucVu += chucVuDTO.isPhanQuyen() ? "ADMIN" : "EMPLOYEE";
+
+            ChucVu chucVu = new ChucVu();
+            chucVu.setTenChucVu(chucVuDTO.getTenChucVu());
+            chucVu.setMaChucVu(maChucVu);
+
             chucVuService.save(chucVu);
-            redirectAttributes.addFlashAttribute("successMessage", "Chức vụ được thêm thành công!");
+            return ResponseEntity.ok(Collections.singletonMap("message", "Thêm chức vụ thành công"));
         } catch (Exception e) {
-            redirectAttributes.addFlashAttribute("errorMessage", "Lỗi khi thêm chức vụ!");
+            return ResponseEntity.internalServerError()
+                    .body(Collections.singletonMap("message", "Lỗi khi thêm chức vụ"));
         }
-        return "redirect:/chuc_vu/hienthi";
     }
 
-    // Hiển thị form cập nhật chức vụ
-    @GetMapping("/edit/{id}")
-    public String showEditForm(@PathVariable("id") Integer id, Model model, RedirectAttributes redirectAttributes) {
-        ChucVu chucVu = chucVuService.findChucVuById(id);
-        if (chucVu == null) {
-            redirectAttributes.addFlashAttribute("errorMessage", "Chức vụ không tồn tại!");
-            return "redirect:/chuc_vu/hienthi";
-        }
-        model.addAttribute("chucVu", chucVu);
-        return "admin/chuc_vu/update";
-    }
+    // Cập nhật chức vụ
+    @PutMapping("/{id}")
+    public ResponseEntity<?> updateChucVu(@PathVariable Integer id,
+                                          @Valid @RequestBody ChucVuDTO chucVuDTO,
+                                          BindingResult bindingResult) {
 
-    // Xử lý cập nhật chức vụ
-    @PostMapping("/update/{id}")
-    public String editChucVu(@PathVariable("id") Integer id,
-                             @Valid @ModelAttribute("chucVu") ChucVu chucVu,
-                             BindingResult bindingResult,
-                             RedirectAttributes redirectAttributes) {
-        // Kiểm tra trùng tên chức vụ (ngoại trừ chính nó)
-        if (chucVuService.getAll().stream()
-                .anyMatch(cv -> !cv.getId().equals(id) && cv.getTenChucVu().equalsIgnoreCase(chucVu.getTenChucVu()))) {
-            bindingResult.addError(new FieldError("chucVu", "tenChucVu", "Tên chức vụ đã tồn tại"));
-        }
-
-        validateChucVu(chucVu, bindingResult);
+        // Kiểm tra validate
         if (bindingResult.hasErrors()) {
-            return "admin/chuc_vu/update";
+            Map<String, String> errors = new HashMap<>();
+            bindingResult.getFieldErrors().forEach(error ->
+                    errors.put(error.getField(), error.getDefaultMessage()));
+            return ResponseEntity.badRequest().body(errors);
         }
+
+        // Kiểm tra trùng tên (trừ chính nó)
+        List<ChucVu> chucVuCheck = chucVuService.getAll();
+        ChucVu existingChucVu = chucVuService.findChucVuById(id);
+
+
+
         try {
-            ChucVu existingChucVu = chucVuService.findChucVuById(id);
-            if (existingChucVu != null) {
-                chucVu.setId(id);
-                chucVuService.update(chucVu, id);
-                redirectAttributes.addFlashAttribute("successMessage", "Cập nhật chức vụ thành công!");
-            } else {
-                redirectAttributes.addFlashAttribute("errorMessage", "Chức vụ không tồn tại!");
+            if (existingChucVu == null) {
+                return ResponseEntity.notFound().build();
             }
+            boolean chucVuExist = chucVuCheck.stream().filter(chucVu->chucVu.getTenChucVu().equalsIgnoreCase(chucVuDTO.getTenChucVu())).findFirst().isPresent();
+            if (chucVuExist&&chucVuDTO.getId()!=existingChucVu.getId()) {
+                return ResponseEntity.badRequest()
+                        .body(Collections.singletonMap("tenChucVu", "Tên chức vụ đã tồn tại"));
+            }
+            boolean currentPhanQuyen = existingChucVu.getMaChucVu().contains("ADMIN");
+            boolean newPhanQuyen = chucVuDTO.isPhanQuyen();
+
+            existingChucVu.setTenChucVu(chucVuDTO.getTenChucVu());
+
+            if (currentPhanQuyen != newPhanQuyen) {
+                String newRoleSuffix = newPhanQuyen ? "ADMIN" : "EMPLOYEE";
+                String newMaChucVu = existingChucVu.getMaChucVu()
+                        .replace("ADMIN", "")
+                        .replace("EMPLOYEE", "") + newRoleSuffix;
+                existingChucVu.setMaChucVu(newMaChucVu);
+            }
+
+            chucVuService.save(existingChucVu);
+            return ResponseEntity.ok(Collections.singletonMap("message", "Cập nhật chức vụ thành công"));
         } catch (Exception e) {
-            redirectAttributes.addFlashAttribute("errorMessage", "Lỗi khi cập nhật chức vụ!");
+            return ResponseEntity.internalServerError()
+                    .body(Collections.singletonMap("message", "Lỗi khi cập nhật chức vụ"));
         }
-        return "redirect:/chuc_vu/hienthi";
     }
 
     // Xóa chức vụ
-    @GetMapping("/delete/{id}")
-    public String deleteChucVu(@PathVariable("id") Integer id, RedirectAttributes redirectAttributes) {
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> deleteChucVu(@PathVariable Integer id) {
         try {
+            if (chucVuService.findChucVuById(id)==null) {
+                return ResponseEntity.notFound().build();
+            }
+
             chucVuService.deleteById(id);
-            redirectAttributes.addFlashAttribute("successMessage", "Xóa chức vụ thành công!");
+            return ResponseEntity.ok(Collections.singletonMap("message", "Xóa chức vụ thành công"));
         } catch (Exception e) {
-            redirectAttributes.addFlashAttribute("errorMessage", "Lỗi khi xóa chức vụ!");
+            return ResponseEntity.internalServerError()
+                    .body(Collections.singletonMap("message", "Lỗi khi xóa chức vụ"));
         }
-        return "redirect:/chuc_vu/hienthi";
     }
 
-    // Hàm validate dữ liệu chức vụ
-    private void validateChucVu(ChucVu chucVu, BindingResult bindingResult) {
-        if (chucVu.getTenChucVu() == null || chucVu.getTenChucVu().isEmpty()) {
-            bindingResult.addError(new FieldError("chucVu", "tenChucVu", "Tên chức vụ không được để trống"));
+    // Lấy thông tin 1 chức vụ
+    @GetMapping("/{id}")
+    public ResponseEntity<?> getChucVuById(@PathVariable Integer id) {
+        ChucVu chucVu = chucVuService.findChucVuById(id);
+        if (chucVu == null) {
+            return ResponseEntity.notFound().build();
         }
+
+        ChucVuDTO chucVuDTO = new ChucVuDTO();
+        chucVuDTO.setId(chucVu.getId());
+        chucVuDTO.setTenChucVu(chucVu.getTenChucVu());
+        chucVuDTO.setPhanQuyen(chucVu.getMaChucVu().contains("ADMIN"));
+
+        return ResponseEntity.ok(chucVuDTO);
     }
 }

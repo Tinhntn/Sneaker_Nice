@@ -1,18 +1,24 @@
 package poly.edu.sneaker.Controller;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import poly.edu.sneaker.DAO.NhanVienCustom;
 import poly.edu.sneaker.DAO.NhanVienRequest;
@@ -22,12 +28,15 @@ import poly.edu.sneaker.Model.NhanVien;
 import poly.edu.sneaker.Service.ChucVuService;
 import poly.edu.sneaker.Service.NhanVienService;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Controller
 @RequestMapping("/nhanvien")
@@ -44,14 +53,15 @@ public class NhanVienController {
     @GetMapping("/hienthi")
     public String hienThiNhanVien(Model model,
                                   @RequestParam(defaultValue = "0") int page,
-                                  @RequestParam(required = false) String keyword) {
+                                  @RequestParam(required = false) String keyword,
+                                  @RequestParam(required = false) Boolean trangThai) {
 
         int size = 5;
-        Pageable pageable = PageRequest.of(page, size);
+        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC,"ngayTao"));
         Page<NhanVienCustom> nhanVienCustomPageable;
 
         if (keyword != null && !keyword.isEmpty()) {
-            nhanVienCustomPageable = nhanVienService.search(keyword, pageable);
+            nhanVienCustomPageable = nhanVienService.search(keyword,trangThai, pageable);
             model.addAttribute("keyword", keyword);
         } else {
             nhanVienCustomPageable = nhanVienService.getAll(pageable);
@@ -68,51 +78,73 @@ public class NhanVienController {
 
     @PostMapping("/add")
     @ResponseBody
-    public ResponseEntity<?> addNhanVien(@RequestParam(value ="hovaten", required = false) String hoVaTen,
-                                         @RequestParam(value ="idcv", required = false) Integer idcv,
-                                         @RequestParam(value = "ngaysinh", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Date ngaySinh,
-                                         @RequestParam(value ="gioitinh", required = false) Boolean gioiTinh,
-                                         @RequestParam(value ="diachi", required = false) String diaChi,
-                                         @RequestParam(value ="sdt", required = false) String sdt,
-                                         @RequestParam(value ="email", required = false) String email,
-                                         @RequestParam(value ="trangthai", required = false) Boolean trangThai) {
+    public ResponseEntity<?> addNhanVien(
+            @RequestBody Map<String, Object> requestBody) {
         try {
-            // Validate input
-            Map<String, String> errors = new HashMap<>();
+            String hoVaTen = (String) requestBody.get("hovaten");
+            Integer idcv = (Integer) requestBody.get("idcv");
+            Boolean gioiTinh = (Boolean) requestBody.get("gioitinh");
+            String diaChi = (String) requestBody.get("diachi");
+            String sdt = (String) requestBody.get("sdt");
+            String email = (String) requestBody.get("email");
+            Boolean trangThai = (Boolean) requestBody.get("trangthai");
+
             if (gioiTinh == null ) {
-                errors.put("gioiTinh", "Giới tính không được để trống");
+                return ResponseEntity.badRequest().body(Map.of("success",false,"message","Giới tính không được để trống"));
             }
             if (hoVaTen == null || hoVaTen.trim().isEmpty()) {
-                errors.put("hoVaTen", "Họ và tên không được để trống");
+                return ResponseEntity.badRequest().body(Map.of("success",false,"message","Họ tên không được để trống"));
             }
-            if (ngaySinh == null||ngaySinh.toString().isEmpty()) {
-                errors.put("ngaySinh", "Ngày sinh không được để trống");
-            }
+            Object ngaySinhObj = requestBody.get("ngaysinh");
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-            Date ngaySinhFormat = sdf.parse(ngaySinh.toString());
+            Date ngaySinhFormat = sdf.parse(requestBody.get("ngaysinh").toString());
+            Date ngaySinh = null;
+            if (ngaySinhObj != null) {
+                if (ngaySinhObj instanceof String) {
+                    // Thử parse từ nhiều định dạng
+                    String[] dateFormats = {
+                            "yyyy-MM-dd",
+                            "EEE MMM dd HH:mm:ss zzz yyyy", // Format "Mon May 14 00:00:00 ICT 1990"
+                            "dd/MM/yyyy"
+                    };
+
+                    for (String format : dateFormats) {
+                        try {
+                            ngaySinh = new SimpleDateFormat(format).parse((String) ngaySinhObj);
+                            break;
+                        } catch (ParseException e) {
+                            // Bỏ qua và thử format tiếp theo
+                        }
+                    }
+
+                    if (ngaySinh == null) {
+                        return ResponseEntity.badRequest().body(
+                                Map.of("success", false, "message", "Định dạng ngày không hợp lệ")
+                        );
+                    }
+                } else if (ngaySinhObj instanceof Long) {
+                    // Nếu là timestamp
+                    ngaySinh = new Date((Long) ngaySinhObj);
+                }
+            }
 
             if(ngaySinhFormat.after(new Date())){
-                errors.put("ngaySinh","Ngày sinh không được ở tương lai");
+                return ResponseEntity.badRequest().body(Map.of("success",false,"message","Ngày sinh không được ở tương lai"));
             }
 
             if (diaChi== null || diaChi.trim().isEmpty()) {
-                errors.put("diaChi", "Địa chỉ không được để trống");
+                return ResponseEntity.badRequest().body(Map.of("success",false,"message","Không được để trống địa chỉ"));
             }
-
             if (sdt == null || sdt.trim().isEmpty()) {
-                errors.put("sdt", "Số điện thoại không được để trống");
-            } else if (sdt.matches(SDT_PATTERN)) {
-                errors.put("sdt", "Số điện thoại không đúng định dạng (bắt đầu bằng 0, tối thiểu 10 số)");
+                return ResponseEntity.badRequest().body(Map.of("success",false,"message","Không được để trống số điện thoại"));
+            } else if (!sdt.matches(SDT_PATTERN)) {
+                return ResponseEntity.badRequest().body(Map.of("success",false,"message","Số điện thoại không đúng định dạng (bắt đầu bằng 0, tối thiểu 10 số)"));
             }
 
             if (email == null || email.trim().isEmpty()) {
-                errors.put("email", "Email không được để trống");
-            } else if (email.matches(EMAIL_PATTERN)) {
-                errors.put("email", "Email không đúng định dạng");
-            }            if (!errors.isEmpty()) {
-                return ResponseEntity.badRequest().body(
-                        Map.of("success", false, "errors", errors)
-                );
+                return ResponseEntity.badRequest().body(Map.of("success",false,"message","Email không được để trống"));
+            } else if (!email.matches(EMAIL_PATTERN)) {
+                return ResponseEntity.badRequest().body(Map.of("success",false,"message","Email không đúng định dạng"));
             }
 
             ChucVu chucVu = chucVuService.findChucVuById(idcv);
@@ -124,19 +156,12 @@ public class NhanVienController {
             List<NhanVien> lstNhanVien = nhanVienService.findAllNhanVien();
             for(NhanVien nhanVien1 : lstNhanVien) {
                 if(nhanVien1.getEmail().equalsIgnoreCase(email)){
-                    return ResponseEntity.badRequest().body(Map.of("succsess",false,"message","email đã tồn tại"));
+                    return ResponseEntity.badRequest().body(Map.of("success",false,"message","email đã tồn tại"));
                 }
-            }
-            // Validate input
-            if (!errors.isEmpty()) {
-                return ResponseEntity.badRequest().body(
-                        Map.of("success", false, "errors", errors)
-                );
             }
 
             // Create new employee
             String matKhau = "SN12345@"; // Default password
-
             NhanVien nhanVien = new NhanVien();
             nhanVien.setMaNhanVien(nhanVienService.taoMa());
             nhanVien.setHoVaTen(hoVaTen);
@@ -148,7 +173,7 @@ public class NhanVienController {
             nhanVien.setEmail(email);
             nhanVien.setMatKhau(new BCryptPasswordEncoder(10).encode(matKhau));
             nhanVien.setNgayTao(new Date());
-            nhanVien.setTrangThai(true);
+            nhanVien.setTrangThai(trangThai);
             nhanVienService.saveNhanVien(nhanVien);
             return ResponseEntity.ok(Map.of(
                     "success", true,
@@ -201,10 +226,10 @@ public class NhanVienController {
 
             // Validate input
             if (gioiTinh == null ) {
-                return ResponseEntity.badRequest().body(Map.of("succsess",false,"message","Giới tính không được để trống"));
+                return ResponseEntity.badRequest().body(Map.of("success",false,"message","Giới tính không được để trống"));
             }
             if (hoVaTen == null || hoVaTen.trim().isEmpty()) {
-                return ResponseEntity.badRequest().body(Map.of("succsess",false,"message","Họ tên không được để trống"));
+                return ResponseEntity.badRequest().body(Map.of("success",false,"message","Họ tên không được để trống"));
             }
 
             Object ngaySinhObj = requestBody.get("ngaysinh");
@@ -241,23 +266,22 @@ public class NhanVienController {
             }
 
             if(ngaySinhFormat.after(new Date())){
-                return ResponseEntity.badRequest().body(Map.of("succsess",false,"message","Ngày sinh không được ở tương lai"));
+                return ResponseEntity.badRequest().body(Map.of("success",false,"message","Ngày sinh không được ở tương lai"));
             }
 
             if (diaChi== null || diaChi.trim().isEmpty()) {
-                return ResponseEntity.badRequest().body(Map.of("succsess",false,"message","Không được để trống địa chỉ"));
+                return ResponseEntity.badRequest().body(Map.of("success",false,"message","Không được để trống địa chỉ"));
             }
-            System.out.println(sdt);
             if (sdt == null || sdt.trim().isEmpty()) {
-                return ResponseEntity.badRequest().body(Map.of("message","Không được để trống số điện thoại"));
-            } else if (sdt.matches(SDT_PATTERN)) {
-                return ResponseEntity.badRequest().body(Map.of("message","Số điện thoại không đúng định dạng (bắt đầu bằng 0, tối thiểu 10 số)"));
+                return ResponseEntity.badRequest().body(Map.of("success",false,"message","Không được để trống số điện thoại"));
+            } else if (!sdt.matches(SDT_PATTERN)) {
+                return ResponseEntity.badRequest().body(Map.of("success",false,"message","Số điện thoại không đúng định dạng (bắt đầu bằng 0, tối thiểu 10 số)"));
             }
 
             if (email == null || email.trim().isEmpty()) {
-                return ResponseEntity.badRequest().body(Map.of("succsess",false,"message","Email không được để trống"));
-            } else if (email.matches(EMAIL_PATTERN)) {
-                return ResponseEntity.badRequest().body(Map.of("succsess",false,"message","Email không đúng định dạng"));
+                return ResponseEntity.badRequest().body(Map.of("success",false,"message","Email không được để trống"));
+            } else if (!email.matches(EMAIL_PATTERN)) {
+                return ResponseEntity.badRequest().body(Map.of("success",false,"message","Email không đúng định dạng"));
             }
 
 
@@ -277,7 +301,7 @@ public class NhanVienController {
             List<NhanVien> lstNhanVien = nhanVienService.findAllNhanVien();
             for(NhanVien nhanVien1 : lstNhanVien) {
                 if(nhanVien1.getId()!=nhanVien.getId()&&nhanVien1.getEmail().equalsIgnoreCase(email)){
-                    return ResponseEntity.badRequest().body(Map.of("succsess",false,"message","email đã tồn tại"));
+                    return ResponseEntity.badRequest().body(Map.of("success",false,"message","email đã tồn tại"));
                 }
             }
             // Update fields

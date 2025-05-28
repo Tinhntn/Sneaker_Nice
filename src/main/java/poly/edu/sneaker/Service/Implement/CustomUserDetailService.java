@@ -20,11 +20,15 @@ public class CustomUserDetailService implements UserDetailsService {
     KhachHangService khachHangService;
     @Autowired
     NhanVienService nhanVienService;
+
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
         NhanVien nhanVien = nhanVienService.getNhanVienByEmail(email);
         if (nhanVien != null) {
-            String chucVu =(nhanVien.getIdChucVu()!=null&&("CV001".equals(nhanVien.getIdChucVu().getMaChucVu()))?"ROLE_ADMIN":"ROLE_EMPLOYEE");
+            String chucVu = (nhanVien.getIdChucVu() != null
+                    && nhanVien.getIdChucVu().getMaChucVu() != null
+                    && nhanVien.getIdChucVu().getMaChucVu().contains("ADMIN"))
+                    ? "ROLE_ADMIN" : "ROLE_EMPLOYEE";
             return User.builder()
                     .username(nhanVien.getEmail())
                     .password(nhanVien.getMatKhau())
@@ -42,5 +46,6 @@ public class CustomUserDetailService implements UserDetailsService {
                     .build();
         }
 
-        throw new UsernameNotFoundException("Không tìm thấy tài khoản với email: " + email);    }
+        throw new UsernameNotFoundException("Không tìm thấy tài khoản với email: " + email);
+    }
 }

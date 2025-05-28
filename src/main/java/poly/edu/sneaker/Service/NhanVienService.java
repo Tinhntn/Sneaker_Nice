@@ -18,7 +18,7 @@ public interface NhanVienService {
 
     NhanVien findNhanVienById(int id);
 
-    Page<NhanVienCustom> search(String keyword, Pageable pageable);
+    Page<NhanVienCustom> search(String keyword,Boolean trangThai, Pageable pageable);
 
     NhanVien getNhanVienByEmailandMatKhau(String email, String matKhau);
 
