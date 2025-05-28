@@ -11,7 +11,7 @@
         <!-- Thanh tìm kiếm và bộ lọc -->
         <div class="card shadow-sm mb-4">
             <div class="card-body">
-                <form th:method="get" th:action="@{/hoadononline/hoa-don}"  class="row g-3">
+                <form th:method="get" th:action="@{/hoadononline/hoa-don}" class="row g-3">
                     <div class="col-md-4">
                         <input type="text" name="keyword" th:value="${keyword}" class="form-control"
                             placeholder="Mã hoặc Tên KH">
@@ -95,10 +95,11 @@
                                     <tr>
                                         <th>Mã HĐ</th>
                                         <th>Khách hàng</th>
-                                        <th class="text-end">Tổng tiền</th>
-                                        <th class="text-end">Thành tiền</th>
+                                        <th>Tổng tiền</th>
+                                        <th>Thành tiền</th>
+                                        <th>Trạng thái</th>
                                         <th>Ngày tạo</th>
-                                        <th class="text-center">Thao tác</th>
+                                        <th>Thao tác</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -111,6 +112,17 @@
                                         <td class="text-end fw-bold"
                                             th:text="${#numbers.formatInteger(hdtatca.thanhTien,3,'COMMA')} + ' VND'">
                                         </td>
+                                        <td class="text-end fw-bold" th:text="${hdtatca.trangThai == 1 ? 'Đã Thanh Toán' :
+             (hdtatca.trangThai == 2 ? 'Chờ xác nhận' :
+             (hdtatca.trangThai == 3 ? 'Chờ lấy hàng' :
+             (hdtatca.trangThai == 0 ? 'Chưa thanh toán' :
+             (hdtatca.trangThai == 4 ? 'Đang giao' :
+             (hdtatca.trangThai == 5 ? 'Đã giao' :
+             (hdtatca.trangThai == 10 ? 'Đã thanh toán - chờ xác nhận' :
+             (hdtatca.trangThai == 11 ? 'Giao thất bại' :
+             'Đã hủy')))))))}">
+                                        </td>
+
                                         <td th:text="${hdtatca.ngayTao}"></td>
                                         <td class="text-center">
                                             <a th:href="@{/hoadononline/detailhoadononlinect/{id}(id=${hdtatca.id})}"
@@ -122,10 +134,30 @@
                                 </tbody>
                             </table>
                         </div>
+                        <nav th:if="${totalPagesTT > 1}">
+                            <ul class="pagination justify-content-center">
+                                
+                                <li class="page-item" th:classappend="${currentPageTT == 0} ? 'disabled'">
+                                    <a class="page-link"
+                                        th:href="@{/hoadononline/hienthi(page=${currentPageTT - 1})}"><i class="fas fa-chevron-left"></i>
+</a>
+                                </li>
+                                <li th:each="i : ${#numbers.sequence(1, totalPagesTT)}" class="page-item"
+                                    th:classappend="${currentPageTT + 1 == i} ? 'active'">
+                                    <a class="page-link" th:href="@{/hoadononline/hienthi(page=${i - 1})}"
+                                        th:text="${i}"></a>
+                                </li>
+                                <li class="page-item"
+                                    th:classappend="${currentPageTT + 1 >= totalPagesTT} ? 'disabled'">
+                                    <a class="page-link"
+                                        th:href="@{/hoadononline/hienthi(page=${currentPageTT + 1})}"><i class="fas fa-chevron-right"></i></a>
+                                </li>
+                
+                            </ul>
+                        </nav>
                     </div>
                 </div>
             </div>
-
             <!-- Tab Chờ xác nhận -->
             <div class="tab-pane fade" id="tab2" role="tabpanel" aria-labelledby="tab2-tab">
                 <div class="card shadow-sm">
@@ -162,11 +194,30 @@
                                 </tbody>
                             </table>
                         </div>
+                        <nav th:if="${totalPagesCXN > 1}">
+                            <ul class="pagination justify-content-center">
+                              
+                                <li class="page-item" th:classappend="${currentPageCXN == 0} ? 'disabled'">
+                                    <a class="page-link"
+                                        th:href="@{/hoadononline/hienthi(page=${currentPageCXN - 1})}"><i class="fas fa-chevron-left"></i>
+                                    </a>
+                                </li>
+                                <li th:each="i : ${#numbers.sequence(1, totalPagesCXN)}" class="page-item"
+                                    th:classappend="${currentPageCXN + 1 == i} ? 'active'">
+                                    <a class="page-link" th:href="@{/hoadononline/hienthi(page=${i - 1})}"
+                                        th:text="${i}"></a>
+                                </li>
+                                <li class="page-item"
+                                    th:classappend="${currentPageCXN + 1 >= totalPagesCXN} ? 'disabled'">
+                                    <a class="page-link"
+                                        th:href="@{/hoadononline/hienthi(page=${currentPageCXN + 1})}"><i class="fas fa-chevron-right"></i></a>
+                                </li>
+                               
+                            </ul>
+                        </nav>
                     </div>
                 </div>
             </div>
-
-            <!-- Các tab khác (Chờ lấy hàng, Đang giao, Đã giao, Đã hủy) có cấu trúc tương tự -->
             <!-- Tab Chờ lấy hàng -->
             <div class="tab-pane fade" id="tab3" role="tabpanel" aria-labelledby="tab3-tab">
                 <div class="card shadow-sm">
@@ -203,6 +254,27 @@
                                 </tbody>
                             </table>
                         </div>
+                         <nav th:if="${totalPagesCLH > 1}">
+                            <ul class="pagination justify-content-center">
+                                
+                                <li class="page-item" th:classappend="${currentPageCLH == 0} ? 'disabled'">
+                                    <a class="page-link"
+                                        th:href="@{/hoadononline/hienthi(page=${currentPageCLH - 1})}"><i class="fas fa-chevron-left"></i>
+</a>
+                                </li>
+                                <li th:each="i : ${#numbers.sequence(1, totalPagesCLH)}" class="page-item"
+                                    th:classappend="${currentPageCLH + 1 == i} ? 'active'">
+                                    <a class="page-link" th:href="@{/hoadononline/hienthi(page=${i - 1})}"
+                                        th:text="${i}"></a>
+                                </li>
+                                <li class="page-item"
+                                    th:classappend="${currentPageCLH + 1 >= totalPagesCLH} ? 'disabled'">
+                                    <a class="page-link"
+                                        th:href="@{/hoadononline/hienthi(page=${currentPageCLH + 1})}"><i class="fas fa-chevron-right"></i></a>
+                                </li>
+                               
+                            </ul>
+                        </nav>
                     </div>
                 </div>
             </div>
@@ -242,6 +314,27 @@
                                 </tbody>
                             </table>
                         </div>
+                        <nav th:if="${totalPagesDG > 1}">
+                            <ul class="pagination justify-content-center">
+                               
+                                <li class="page-item" th:classappend="${currentPageDG == 0} ? 'disabled'">
+                                    <a class="page-link"
+                                        th:href="@{/hoadononline/hienthi(page=${currentPageDG - 1})}"><i class="fas fa-chevron-left"></i>
+</a>
+                                </li>
+                                <li th:each="i : ${#numbers.sequence(1, totalPagesDG)}" class="page-item"
+                                    th:classappend="${currentPageDG + 1 == i} ? 'active'">
+                                    <a class="page-link" th:href="@{/hoadononline/hienthi(page=${i - 1})}"
+                                        th:text="${i}"></a>
+                                </li>
+                                <li class="page-item"
+                                    th:classappend="${currentPageDG + 1 >= totalPagesDG} ? 'disabled'">
+                                    <a class="page-link"
+                                        th:href="@{/hoadononline/hienthi(page=${currentPageDG + 1})}"><i class="fas fa-chevron-right"></i></a>
+                                </li>
+                              
+                            </ul>
+                        </nav>
                     </div>
                 </div>
             </div>
@@ -281,6 +374,27 @@
                                 </tbody>
                             </table>
                         </div>
+                        <nav th:if="${totalPagesHT > 1}">
+                            <ul class="pagination justify-content-center">
+                               
+                                <li class="page-item" th:classappend="${currentPageHT == 0} ? 'disabled'">
+                                    <a class="page-link"
+                                        th:href="@{/hoadononline/hienthi(page=${currentPageHT - 1})}"><i class="fas fa-chevron-left"></i></i>
+</a>
+                                </li>
+                                <li th:each="i : ${#numbers.sequence(1, totalPagesHT)}" class="page-item"
+                                    th:classappend="${currentPageHT + 1 == i} ? 'active'">
+                                    <a class="page-link" th:href="@{/hoadononline/hienthi(page=${i - 1})}"
+                                        th:text="${i}"></a>
+                                </li>
+                                <li class="page-item"
+                                    th:classappend="${currentPageHT + 1 >= totalPagesHT} ? 'disabled'">
+                                    <a class="page-link"
+                                        th:href="@{/hoadononline/hienthi(page=${currentPageHT + 1})}"><i class="fas fa-chevron-right"></i></i></a>
+                                </li>
+                              
+                            </ul>
+                        </nav>
                     </div>
                 </div>
             </div>
@@ -320,290 +434,32 @@
                                 </tbody>
                             </table>
                         </div>
+                        <nav th:if="${totalPagesDH > 1}">
+                            <ul class="pagination justify-content-center">
+                               
+                                <li class="page-item" th:classappend="${currentPageDH == 0} ? 'disabled'">
+                                    <a class="page-link"
+                                        th:href="@{/hoadononline/hienthi(page=${currentPageDH - 1})}"><i class="fas fa-chevron-left"></i></i>
+</a>
+                                </li>
+                                <li th:each="i : ${#numbers.sequence(1, totalPagesDH)}" class="page-item"
+                                    th:classappend="${currentPageDH + 1 == i} ? 'active'">
+                                    <a class="page-link" th:href="@{/hoadononline/hienthi(page=${i - 1})}"
+                                        th:text="${i}"></a>
+                                </li>
+                                <li class="page-item"
+                                    th:classappend="${currentPageDH + 1 >= totalPagesDH} ? 'disabled'">
+                                    <a class="page-link"
+                                        th:href="@{/hoadononline/hienthi(page=${currentPageDH + 1})}"> <i class="fas fa-chevron-right"></i></a>
+                                </li>
+                               
+                            </ul>
+                        </nav>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-
-
-    <ul class="nav nav-tabs" id="myTab" role="tablist">
-            <li class="nav-item" th:classappend="${tabActive == 'tab1'} ? 'nav-item' : 'nav-item'">
-                <a class="nav-link active" id="tab1-tab" data-bs-toggle="tab" href="#tab1" role="tab"
-                    aria-controls="tab1" aria-selected="true">Tất cả
-                <span class="badge bg-danger" th:text="${sizeTatCa}"></span>
-                </a>
-            </li>
-            <li class="nav-item" th:classappend="${tabActive == 'tab2'} ? 'nav-item' : 'nav-item'">
-                <a class="nav-link" id="tab2-tab" data-bs-toggle="tab" href="#tab2" role="tab" aria-controls="tab2"
-                    aria-selected="false">
-                    Chờ xác nhận
-                    <span class="badge bg-danger" th:text="${sizecxn}"></span>
-                </a>
-            </li>
-            <li class="nav-item" th:classappend="${tabActive == 'tab3'} ? 'nav-item' : 'nav-item'">
-                <a class="nav-link" id="tab3-tab" data-bs-toggle="tab" href="#tab3" role="tab" aria-controls="tab3"
-                    aria-selected="false">Chờ lấy hàng
-                    <span class="badge bg-danger" th:text="${sizeclh}"></span>
-                </a>
-            </li>
-            <li class="nav-item" th:classappend="${tabActive == 'tab4'} ? 'nav-item' : 'nav-item'">
-                <a class="nav-link" id="tab4-tab" data-bs-toggle="tab" href="#tab4" role="tab" aria-controls="tab4"
-                    aria-selected="false">
-                    Đang giao
-                    <span class="badge bg-danger" th:text="${sizedg}"></span>
-                </a>
-            </li>
-            <li class="nav-item" th:classappend="${tabActive == 'tab5'} ? 'nav-item' : 'nav-item'">
-                <a class="nav-link" id="tab5-tab" data-bs-toggle="tab" href="#tab5" role="tab" aria-controls="tab5"
-                    aria-selected="false">
-                    Đã giao
-                    <span class="badge bg-danger" th:text="${sizeht}"></span>
-                </a>
-            </li>
-            <li class="nav-item" th:classappend="${tabActive == 'tab6'} ? 'nav-item' : 'nav-item'">
-                <a class="nav-link" id="tab6-tab" data-bs-toggle="tab" href="#tab6" role="tab" aria-controls="tab6"
-                    aria-selected="false">Đã hủy
-                    <span class="badge bg-danger" th:text="${sizeDH}"></span>
-                </a>
-            </li>
-            <!--        <li class="nav-item" th:classappend="${tabActive == 'tab7'} ? 'nav-item' : 'nav-item'">-->
-            <!--            <a class="nav-link" id="tab7-tab" data-bs-toggle="tab" href="#tab7" role="tab" aria-controls="tab7" aria-selected="false">Trả hàng</a>-->
-            <!--        </li>-->
-        </ul>
-
-    <!-- Nội dung của các tab -->
-        <div class="tab-content" id="myTabContent">
-            <div class="tab-pane fade show active" id="tab1" role="tabpanel" aria-labelledby="tab1-tab">
-                <div class="container">
-                    <div class="row" style="margin-top: 15px">
-                        <div class="col-md-12">
-                            <table class="table table-header" id="hoaDonTable">
-                                <thead>
-                                <tr>
-                                    <th>Mã</th>
-                                    <th>Tên khách hàng</th>
-                                    <th>Tổng số tiền</th>
-                                    <th>Thành tiền</th>
-                                    <th>Ngày tạo</th>
-                                    <th>Thao tác</th>
-                                </tr>
-                                </thead>
-                                <tbody>
-                                <tr th:each="hdtatca : ${listHoaDonTatCa}">
-                                    <td th:text="${hdtatca.maHoaDon}"></td>
-                                    <td th:text="${hdtatca.tenKhachHang}"></td>
-                                    <td th:text="${#numbers.formatInteger(hdtatca.tongTien,3,'COMMA')} +  ' VND'"></td>
-                                    <td th:text="${#numbers.formatInteger(hdtatca.thanhTien,3,'COMMA')} +  ' VND'"></td>
-                                    <td th:text="${hdtatca.ngayTao}"></td>
-                                    <td>
-                                        <a th:href="@{/hoadononline/detailhoadononlinect/{id}(id=${hdtatca.id})}">
-                                            <button type="button" class="btn btn-outline-primary">Chi tiết</button></a>
-                                    </td>
-                                </tr>
-                                </tbody>
-                            </table>
-
-
-                        </div>
-                    </div>
-                </div>
-            </div>
-<!--        </div>-->
-
-        <!-- Chờ xác nhận -->
-        <div class="tab-pane fade" id="tab2" role="tabpanel" aria-labelledby="tab2-tab">
-            <div class="container-fluid">
-                        <!-- Sử dụng th:each để lặp qua danh sách hdcxn -->
-                        <div class="card mb-3">
-                            <div class="card-body" style="background-color: wheat; padding-top: 15px;">
-                                <table class="table table-header">
-                                    <thead>
-                                        <tr>
-                                            <th>Mã</th>
-                                            <th>Tên khách hàng</th>
-                                            <th>Tổng số tiền</th>
-                                            <th>Thành tiền</th>
-                                            <th>Ngày tạo</th>
-                                            <th>Thao tác</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr th:each="hdcxn : ${listHoaDonCXN}">
-                                            <td th:text="${hdcxn.maHoaDon}"></td>
-                                            <td th:text="${hdcxn.tenKhachHang}"></td>
-                                            <td th:text="${#numbers.formatInteger(hdcxn.tongTien,3,'COMMA')} +  ' VND'"></td>
-                                            <td th:text="${#numbers.formatInteger(hdcxn.thanhTien,3,'COMMA')} +  ' VND'"></td>
-                                            <td th:text="${hdcxn.ngayTao}"></td>
-                                            <td>
-                                                <a th:href="@{/hoadononline/detailhoadononlinect/{id}(id=${hdcxn.id})}">
-                                                <button type="button" class="btn btn-outline-primary">Chi tiết</button></a>
-                                            </td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Chờ lấy hàng -->
-        <div class="tab-pane fade" id="tab3" role="tabpanel" aria-labelledby="tab3-tab">
-            <div class="container-fluid">
-                <!-- Sử dụng th:each để lặp qua danh sách hdcxn -->
-                <div class="card mb-3">
-                    <div class="card-body" style="background-color: wheat; padding-top: 15px;">
-                        <table class="table table-header">
-                            <thead>
-                            <tr>
-                                <th>Mã</th>
-                                <th>Tên khách hàng</th>
-                                <th>Tổng số tiền</th>
-                                <th>Thành tiền</th>
-                                <th>Ngày tạo</th>
-                                <th>Thao tác</th>
-                            </tr>
-                            </thead>
-                            <tbody>
-                            <tr th:each="hdclh : ${listHoaDonCLH}">
-                                <td th:text="${hdclh.maHoaDon}"></td>
-                                <td th:text="${hdclh.tenKhachHang}"></td>
-                                <td th:text="${#numbers.formatInteger(hdclh.tongTien,3,'COMMA')} +  ' VND'"></td>
-                                <td th:text="${#numbers.formatInteger(hdclh.thanhTien,3,'COMMA')} +  ' VND'"></td>
-                                <td th:text="${hdclh.ngayTao}"></td>
-                                <td>
-                                    <a th:href="@{/hoadononline/detailhoadononlinect/{id}(id=${hdclh.id})}">
-                                        <button type="button" class="btn btn-outline-primary">Chi tiết</button></a>
-                                </td>
-                            </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- đang vận chuyển -->
-        <div class="tab-pane fade" id="tab4" role="tabpanel" aria-labelledby="tab4-tab">
-            <div class="container-fluid">
-                <!-- Sử dụng th:each để lặp qua danh sách hdcxn -->
-                <div class="card mb-3">
-                    <div class="card-body" style="background-color: wheat; padding-top: 15px;">
-                        <table class="table table-header">
-                            <thead>
-                            <tr>
-                                <th>Mã</th>
-                                <th>Tên khách hàng</th>
-                                <th>Tổng số tiền</th>
-                                <th>Thành tiền</th>
-                                <th>Ngày tạo</th>
-                                <th>Thao tác</th>
-                            </tr>
-                            </thead>
-                            <tbody>
-                            <tr th:each="hddg : ${listHoaDonDG}">
-                                <td th:text="${hddg.maHoaDon}"></td>
-                                <td th:text="${hddg.tenKhachHang}"></td>
-                                <td th:text="${#numbers.formatInteger(hddg.tongTien,3,'COMMA')} +  ' VND'"></td>
-                                <td th:text="${#numbers.formatInteger(hddg.thanhTien,3,'COMMA')} +  ' VND'"></td>
-                                <td th:text="${hddg.ngayTao}"></td>
-                                <td>
-                                    <a th:href="@{/hoadononline/detailhoadononlinect/{id}(id=${hddg.id})}">
-                                        <button type="button" class="btn btn-outline-primary">Chi tiết</button></a>
-                                </td>
-                            </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Đã giao -->
-        <div class="tab-pane fade" id="tab5" role="tabpanel" aria-labelledby="tab5-tab">
-            <div class="container-fluid">
-                <!-- Sử dụng th:each để lặp qua danh sách hdcxn -->
-                <div class="card mb-3">
-                    <div class="card-body" style="background-color: wheat; padding-top: 15px;">
-                        <table class="table table-header">
-                            <thead>
-                            <tr>
-                                <th>Mã</th>
-                                <th>Tên khách hàng</th>
-                                <th>Tổng số tiền</th>
-                                <th>Thành tiền</th>
-                                <th>Ngày tạo</th>
-                                <th>Thao tác</th>
-                            </tr>
-                            </thead>
-                            <tbody>
-                            <tr th:each="hdht : ${listHoaDonHT}">
-                                <td th:text="${hdht.maHoaDon}"></td>
-                                <td th:text="${hdht.tenKhachHang}"></td>
-                                <td th:text="${#numbers.formatInteger(hdht.tongTien,3,'COMMA')} +  ' VND'"></td>
-                                <td th:text="${#numbers.formatInteger(hdht.thanhTien,3,'COMMA')} +  ' VND'"></td>
-                                <td th:text="${hdht.ngayTao}"></td>
-                                <td>
-                                    <a th:href="@{/hoadononline/detailhoadononlinect/{id}(id=${hdht.id})}">
-                                        <button type="button" class="btn btn-outline-primary">Chi tiết</button></a>
-                                </td>
-                            </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Đã hủy -->
-        <div class="tab-pane fade" id="tab6" role="tabpanel" aria-labelledby="tab6-tab">
-            <div class="container-fluid">
-                <!-- Sử dụng th:each để lặp qua danh sách hdcxn -->
-                <div class="card mb-3">
-                    <div class="card-body" style="background-color: wheat; padding-top: 15px;">
-                        <table class="table table-header">
-                            <thead>
-                            <tr>
-                                <th>Mã</th>
-                                <th>Tên khách hàng</th>
-                                <th>Tổng số tiền</th>
-                                <th>Thành tiền</th>
-                                <th>Ngày tạo</th>
-                                <th>Thao tác</th>
-                            </tr>
-                            </thead>
-                            <tbody>
-                            <tr th:each="hddh : ${listHoaDonDH}">
-                                <td th:text="${hddh.maHoaDon}"></td>
-                                <td th:text="${hddh.tenKhachHang}"></td>
-                                <td th:text="${#numbers.formatInteger(hddh.tongTien,3,'COMMA')} +  ' VND'"></td>
-                                <td th:text="${#numbers.formatInteger(hddh.thanhTien,3,'COMMA')} +  ' VND'"></td>
-                                <td th:text="${hddh.ngayTao}"></td>
-                                <td>
-                                    <a th:href="@{/hoadononline/detailhoadononlinect/{id}(id=${hddh.id})}">
-                                        <button type="button" class="btn btn-outline-primary">Chi tiết</button></a>
-                                </td>
-                            </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-</div>
-
-    //hủy đơn hàng
-    <script th:if="${thanhcong != null}">
-        Swal.fire({
-            icon: 'success',
-            title: 'Thành công',
-            text: [[${thanhcong}]],
-            timer: 2000,
-            showConfirmButton: false
-        });
-    </script>
-</div>
 
 </body>
 

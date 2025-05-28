@@ -619,8 +619,6 @@ public class BanHangTaiQuayController {
         Document document = new Document(pdfDoc, PageSize.A4);
         document.setMargins(50, 50, 50, 50);
 
-
-
         // Font
         PdfFont boldFont = PdfFontFactory.createFont(
                 ResourceUtils.getFile("classpath:static/fonts/Roboto-Regular.ttf").getAbsolutePath(),

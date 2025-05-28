@@ -49,7 +49,7 @@ public interface HoaDonOnlRepository extends JpaRepository<HoaDon, Integer> {
             "LEFT JOIN h.idNhanVien nv " +
             "LEFT JOIN h.idKhachHang kh " +
             "LEFT JOIN h.idKhuyenMai km " +
-            "WHERE h.loaiHoaDon = true AND h.trangThai = 0")
+            "WHERE h.loaiHoaDon = true AND h.trangThai = 6")
     Page<HoaDonOnlCustom> getHoaDonCustomDH(Pageable pageable);
 
     @Query("SELECT h.id AS id, nv.hoVaTen AS tenNhanVien, kh.tenKhachHang AS tenKhachHang, " +

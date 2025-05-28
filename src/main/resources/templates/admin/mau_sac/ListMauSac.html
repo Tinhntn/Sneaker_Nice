@@ -170,7 +170,7 @@
                         <li class="page-item" th:classappend="${currentPage == 0} ? 'disabled'">
                             <a class="page-link" th:href="@{/mau_sac/hienthi(page=${currentPage - 1})}"
                                 aria-label="Previous">
-                                <span aria-hidden="true">&laquo;</span>
+                               <i class="fas fa-chevron-left"></i>
                             </a>
                         </li>
                         <li class="page-item" th:each="i : ${#numbers.sequence(0, totalPages - 1)}"
@@ -180,7 +180,7 @@
                         <li class="page-item" th:classappend="${currentPage + 1 == totalPages} ? 'disabled'">
                             <a class="page-link" th:href="@{/mau_sac/hienthi(page=${currentPage + 1})}"
                                 aria-label="Next">
-                                <span aria-hidden="true">&raquo;</span>
+                               <i class="fas fa-chevron-left"></i>
                             </a>
                         </li>
                     </ul>

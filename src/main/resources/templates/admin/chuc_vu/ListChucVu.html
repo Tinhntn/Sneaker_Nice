@@ -175,7 +175,7 @@
                     // Previous button
                     html += `
         <li class="page-item ${currentPageIndex === 0 ? 'disabled' : ''}">
-            <a class="page-link" href="#" data-page-action="prev" ${currentPageIndex === 0 ? 'tabindex="-1"' : ''}>&laquo;</a>
+            <a class="page-link" href="#" data-page-action="prev" ${currentPageIndex === 0 ? 'tabindex="-1"' : ''}><i class="fas fa-chevron-left"></i></a>
         </li>
         `;
 
@@ -205,7 +205,7 @@
                     // Next button
                     html += `
         <li class="page-item ${currentPageIndex >= totalPages - 1 ? 'disabled' : ''}">
-            <a class="page-link" href="#" data-page-action="next" ${currentPageIndex >= totalPages - 1 ? 'tabindex="-1"' : ''}>&raquo;</a>
+            <a class="page-link" href="#" data-page-action="next" ${currentPageIndex >= totalPages - 1 ? 'tabindex="-1"' : ''}><i class="fas fa-chevron-right"></i></a>
         </li>
         `;
 

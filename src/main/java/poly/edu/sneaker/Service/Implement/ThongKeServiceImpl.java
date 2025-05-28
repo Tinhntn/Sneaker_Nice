@@ -1,6 +1,8 @@
 package poly.edu.sneaker.Service.Implement;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import poly.edu.sneaker.DAO.SanPhamBanChayResponse;
 import poly.edu.sneaker.Repository.HoaDonChiTietOnlRepository;
@@ -107,15 +109,16 @@ import java.util.*;
 
         // Lấy danh sách top 5 sản phẩm bán chạy
         // Lấy danh sách top 5 sản phẩm bán chạy trong ngày hôm nay
-        List<SanPhamBanChayResponse> listSanPhamBanChay = hoaDonChiTietOnlRepository.getTop5SanPhamBanChay(todayStart, todayEnd, null);
+        Pageable pageable = PageRequest.of(0, 5);
+        List<SanPhamBanChayResponse> listSanPhamBanChay = hoaDonChiTietOnlRepository.getTop5SanPhamBanChay(todayStart, todayEnd, null,pageable);
         stats.put("lstSanPhamBanChay", listSanPhamBanChay);
 
         return stats;
     }
 
     @Override
-    public List<SanPhamBanChayResponse> getTop5SanPhamBanChay(Date startDate, Date endDate, Long loaiSanPham) {
-        return hoaDonChiTietOnlRepository.getTop5SanPhamBanChay(startDate, endDate, loaiSanPham);
+    public List<SanPhamBanChayResponse> getTop5SanPhamBanChay(Date startDate, Date endDate, Long loaiSanPham, Pageable pageable) {
+        return hoaDonChiTietOnlRepository.getTop5SanPhamBanChay(startDate, endDate, loaiSanPham,pageable);
     }
 
     @Override
@@ -194,7 +197,8 @@ import java.util.*;
             stats.put("hd", hd);
 
             // Lấy danh sách top 5 sản phẩm bán chạy trong khoảng ngày
-            List<SanPhamBanChayResponse> listSanPhamBanChay = hoaDonChiTietOnlRepository.getTop5SanPhamBanChay(start, end, null);
+            Pageable pageable = PageRequest.of(0, 5);
+            List<SanPhamBanChayResponse> listSanPhamBanChay = hoaDonChiTietOnlRepository.getTop5SanPhamBanChay(start, end, null,pageable);
             stats.put("lstSanPhamBanChay", listSanPhamBanChay);
 
             return stats;
@@ -234,7 +238,9 @@ import java.util.*;
         stats.put("hd", hd);
 
       // Lấy danh sách top 5 sản phẩm bán chạy theo loại thời gian
-        List<SanPhamBanChayResponse> listSanPhamBanChay = hoaDonChiTietOnlRepository.getTop5SanPhamBanChay(start, end, null);
+        Pageable pageable = PageRequest.of(0, 5);
+
+        List<SanPhamBanChayResponse> listSanPhamBanChay = hoaDonChiTietOnlRepository.getTop5SanPhamBanChay(start, end, null,pageable);
         stats.put("lstSanPhamBanChay", listSanPhamBanChay);
         return stats;
     }

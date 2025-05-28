@@ -42,20 +42,33 @@ public interface HoaDonChiTietOnlRepository extends JpaRepository<HoaDonChiTiet,
             "WHERE hct.id_hoa_don = :idHoaDon",
             nativeQuery = true)
     List<HoaDonChiTiet> findHoaDonChiTietByHoaDonId(@Param("idHoaDon") Integer idHoaDon);
-// thay đổi câu truy vấn cũ
-    @Query("SELECT new poly.edu.sneaker.DAO.SanPhamBanChayResponse(sp.tenSanPham, ctsp.hinhAnh, ctsp.giaBan, SUM(hdct.soLuong)) " +
+    @Query("SELECT new poly.edu.sneaker.DAO.SanPhamBanChayResponse(sp.tenSanPham, ctsp.hinhAnh, ctsp.giaBan, SUM(hdct.soLuong),ctsp.idMauSac.tenMauSac) " +
             "FROM HoaDonChiTiet hdct " +
             "JOIN hdct.idHoaDon hd " +
             "JOIN hdct.idChiTietSanPham ctsp " +
             "JOIN ctsp.idSanPham sp " +
-            "WHERE hd.trangThai = 1 " +
+            "WHERE hd.trangThai = 5 " +
             "AND hd.ngayTao BETWEEN :startDate AND :endDate " +
             "AND (:loaiSanPham IS NULL OR sp.idDanhMuc.id = :loaiSanPham) " +
-            "GROUP BY sp.tenSanPham, ctsp.hinhAnh, ctsp.giaBan " +
+            "GROUP BY sp.tenSanPham, ctsp.hinhAnh, ctsp.giaBan,ctsp.idMauSac.tenMauSac " +
             "ORDER BY SUM(hdct.soLuong) DESC")
     List<SanPhamBanChayResponse> getTop5SanPhamBanChay(@Param("startDate") Date startDate,
-                                                       @Param("endDate") Date endDate,
-                                                       @Param("loaiSanPham") Long loaiSanPham);
+                                                      @Param("endDate") Date endDate,
+                                                      @Param("loaiSanPham") Long loaiSanPham,
+                                                      Pageable pageable);
+//    @Query("SELECT new poly.edu.sneaker.DAO.SanPhamBanChayResponse(sp.tenSanPham, ctsp.hinhAnh, ctsp.giaBan, SUM(hdct.soLuong)) " +
+//            "FROM HoaDonChiTiet hdct " +
+//            "JOIN hdct.idHoaDon hd " +
+//            "JOIN hdct.idChiTietSanPham ctsp " +
+//            "JOIN ctsp.idSanPham sp " +
+//            "WHERE hd.trangThai = 5 " +
+//            "AND hd.ngayTao BETWEEN :startDate AND :endDate " +
+//            "AND (:loaiSanPham IS NULL OR sp.idDanhMuc.id = :loaiSanPham) " +
+//            "GROUP BY sp.tenSanPham, ctsp.hinhAnh, ctsp.giaBan " +
+//            "ORDER BY SUM(hdct.soLuong) DESC")
+//    List<SanPhamBanChayResponse> getTop5SanPhamBanChay(@Param("startDate") Date startDate,
+//                                                       @Param("endDate") Date endDate,
+//                                                       @Param("loaiSanPham") Long loaiSanPham);
     //an
 
     @Query(value = "SELECT COALESCE(SUM(ct.so_luong), 0) FROM hoadonchitiet ct " +

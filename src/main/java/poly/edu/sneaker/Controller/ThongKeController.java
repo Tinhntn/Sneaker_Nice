@@ -1,6 +1,8 @@
 package poly.edu.sneaker.Controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -25,6 +27,7 @@ public class ThongKeController {
     @GetMapping("/hienthi")
     public String viewThongKe(Model model) {
         // Lấy dữ liệu mặc định
+        Pageable pageable = PageRequest.of(0, 5);
         Map<String, Object> defaultStats = thongKeService.getDefaultThongKe();
         model.addAllAttributes(defaultStats);
 
@@ -35,7 +38,7 @@ public class ThongKeController {
         // Lấy danh sách top 5 sản phẩm bán chạy trong ngày hôm nay
         Date todayStart = new Date(); // Lấy ngày hiện tại
         Date todayEnd = new Date();   // Ngày hiện tại
-        List<SanPhamBanChayResponse> top5 = thongKeService.getTop5SanPhamBanChay(todayStart, todayEnd, null);
+        List<SanPhamBanChayResponse> top5 = thongKeService.getTop5SanPhamBanChay(todayStart, todayEnd, null,pageable);
         model.addAttribute("lstSanPhamBanChay", top5);
 
         return "admin/thongke/viewThongKe";

@@ -692,7 +692,7 @@ public class GioHangController {
             if (tongTienSanPhamDaChon < khuyenMai.getDieuKienApDung()) {
                 return ResponseEntity.badRequest().body(Map.of("message", "Đơn hàng của bạn không đủ điểu kiện"));
             }
-            if (gioHang.getIdKhuyenMai().getId() == khuyenMai.getId()) {
+            if (gioHang.getIdKhuyenMai()!=null&&gioHang.getIdKhuyenMai().getId() == khuyenMai.getId()) {
                 return ResponseEntity.ok().body(Map.of("message", "Đã áp dụng mã khuyến mãi"));
             }
             float tongTienGiam;

@@ -5,15 +5,20 @@ public class SanPhamBanChayResponse {
     private String hinhAnh;
     private Float giaBan;
     private Long soLuongBan;
+    private String tenMauSac;
 
-    public SanPhamBanChayResponse(String tenSanPham, String hinhAnh, Float giaBan, Long soLuongBan) {
+    public SanPhamBanChayResponse(String tenSanPham, String hinhAnh, Float giaBan, Long soLuongBan,String tenMauSac) {
         this.tenSanPham = tenSanPham;
         this.hinhAnh = hinhAnh;
         this.giaBan = giaBan;
         this.soLuongBan = soLuongBan;
+        this.tenMauSac = tenMauSac;
     }
 
     // Getters
+    public String getTenMauSac(){
+        return tenMauSac;
+    }
     public String getTenSanPham() {
         return tenSanPham;
     }
@@ -31,6 +36,9 @@ public class SanPhamBanChayResponse {
     }
 
     // Setters
+    public void setTenMauSac(String tenMauSac) {
+        this.tenMauSac = tenMauSac;
+    }
     public void setTenSanPham(String tenSanPham) {
         this.tenSanPham = tenSanPham;
     }

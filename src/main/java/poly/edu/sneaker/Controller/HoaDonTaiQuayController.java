@@ -39,7 +39,6 @@ public class HoaDonTaiQuayController {
         List<HoaDonChiTiet> hdct = hoaDonService.danhSachChiTietHoaDonByIDHD(id);
         model.addAttribute("hdct",hdct);
 
-        System.out.println(hd.getMaHoaDon());
         return "admin/hoa-don/chitiethoadontaiquay";
     }
 
