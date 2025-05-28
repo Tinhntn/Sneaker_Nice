@@ -70,7 +70,7 @@
                         <label class="form-label mt-3">Giá trị giảm</label>
                         <div class="input-group">
                             <input type="number" class="form-control" id="giatrigiam" name="giaTriGiam"
-                                   th:value="${khuyenMai.giaTriGiam.intValue}" />
+                                   th:value="${khuyenMai.giaTriGiam.intValue}" min="0"/>
                             <span class="input-group-text" id="unit-giaTriGiam">VND</span>
                         </div>
 
@@ -181,15 +181,20 @@
                 mucGiamGia.style.display = "none";
                 mucInput.value = giaTriInput.value;
                 mucInput.readOnly = true;
+
+                giaTriInput.max = "";
                 unitGiaTri.textContent = "VND";
             } else {
                 mucGiamGia.style.display = "block";
                 mucInput.readOnly = false;
+
+                giaTriInput.max = 100;
                 unitGiaTri.textContent = "%";
             }
 
             unitMax.textContent = "VND";
         }
+
 
         window.onload = toggleMaxDiscountField;
         document.getElementById("giatrigiam").addEventListener("input", function () {
