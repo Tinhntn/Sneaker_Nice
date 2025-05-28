@@ -109,13 +109,6 @@ public class KhachHangController {
             bindingResult.rejectValue("sdt", "error.khachHang", "Số điện thoại phải từ 10 đến 15 ký tự");
         }
 
-        // Validate mật khẩu
-//        if (khachHang.getMatKhau() == null || khachHang.getMatKhau().isBlank()) {
-//            bindingResult.rejectValue("matKhau", "error.khachHang", "Mật khẩu không được để trống");
-//        } else if (khachHang.getMatKhau().length() < 8) {
-//            bindingResult.rejectValue("matKhau", "error.khachHang", "Mật khẩu phải có ít nhất 8 ký tự");
-//        }
-
         // Validate ngày sinh
         if (khachHang.getNgaySinh() == null) {
             bindingResult.rejectValue("ngaySinh", "error.khachHang", "Ngày sinh không được để trống");
@@ -137,7 +130,6 @@ public class KhachHangController {
             khachHang.setMaKhachHang(maKhachHang);
             String matKhauTam = "12345";
             // Mã hóa mật khẩu
-//            khachHang.setMatKhau(passwordEncoder.encode(khachHang.getMatKhau()));
                 khachHang.setMatKhau(passwordEncoder.encode(matKhauTam));
             // Lưu khách hàng
             khachHangService.saveKhachHang(khachHang);
@@ -194,12 +186,7 @@ public class KhachHangController {
             bindingResult.rejectValue("sdt", "error.khachHang", "Số điện thoại phải từ 10 đến 15 ký tự");
         }
         // Validate mật khẩu
-//        if (khachHang.getMatKhau() == null || khachHang.getMatKhau().isBlank()) {
-//            bindingResult.rejectValue("matKhau", "error.khachHang", "Mật khẩu không được để trống");
-//        } else if (khachHang.getMatKhau().length() < 6) {
-//            bindingResult.rejectValue("matKhau", "error.khachHang", "Mật khẩu phải có ít nhất 6 ký tự");
-//        }
-        // Nếu có lỗi, trả về trang cập nhật khách hàng
+
         if (bindingResult.hasErrors()) {
             return "admin/khach_hang/update";
         }
@@ -209,13 +196,10 @@ public class KhachHangController {
             // Lấy khách hàng hiện tại từ cơ sở dữ liệu
             KhachHang existingKhachHang = khachHangService.findKhachHangById(id);
             if (existingKhachHang != null) {
-                // Mã hóa mật khẩu nếu mật khẩu được thay đổi
-//                if (!khachHang.getMatKhau().equals(existingKhachHang.getMatKhau())) {
-//                    khachHang.setMatKhau(passwordEncoder.encode(khachHang.getMatKhau()));
-//                }
 
                 // Cập nhật thông tin khách hàng
                 khachHang.setId(id);
+                khachHang.setMatKhau(existingKhachHang.getMatKhau());
                 khachHangService.updateKhachHang(khachHang, id);
 
                 redirectAttributes.addFlashAttribute("successMessage", "Cập nhật khách hàng thành công!");

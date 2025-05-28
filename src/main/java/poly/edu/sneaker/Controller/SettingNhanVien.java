@@ -32,6 +32,7 @@ public class SettingNhanVien {
     NhanVienService nhanVienService;
     @Autowired
     EmailService emailService;
+
     public String getCurrentUserEmail() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication != null && authentication.isAuthenticated()) {
@@ -39,10 +40,12 @@ public class SettingNhanVien {
         }
         return null; // Nếu chưa đăng nhập, trả về null hoặc giá trị mặc định
     }
+
     @Autowired
     PasswordEncoder passwordEncoder = new BCryptPasswordEncoder(10);
     @Autowired
     HttpSession session;
+
     @GetMapping("/laylaimatkhau")
     @ResponseBody
     public ResponseEntity<?> layLaiMatKhau() {
@@ -50,7 +53,8 @@ public class SettingNhanVien {
             String email = getCurrentUserEmail(); // Lấy email người dùng đang đăng nhập
             NhanVien nv = nhanVienService.getNhanVienByEmail(email);
 
-            if (nv == null) return ResponseEntity.badRequest().body(Map.of("success", false, "message", "Không tìm thấy nhân viên"));
+            if (nv == null)
+                return ResponseEntity.badRequest().body(Map.of("success", false, "message", "Không tìm thấy nhân viên"));
 
             // Tạo mã xác nhận
             String maXacNhan = String.valueOf(new Random().nextInt(900000) + 100000); // 6 số
@@ -59,17 +63,22 @@ public class SettingNhanVien {
             String subject = "Mã xác nhận lấy lại mật khẩu";
             String body = "Mã xác nhận của bạn là: " + maXacNhan;
 
-            emailService.sendLayLaiMatKhau(nv.getEmail(), subject, body);
+            boolean guiMail = emailService.sendLayLaiMatKhau(nv.getEmail(), subject, body);
 
             // Lưu tạm vào session (hoặc Redis, hoặc DB tạm)
             session.setAttribute("maXacNhan", maXacNhan);
             session.setAttribute("emailXacNhan", nv.getEmail());
+            if (guiMail) {
+                return ResponseEntity.ok(Map.of("success", true, "maXacNhan", maXacNhan)); // hoặc bỏ không gửi mã về frontend nếu muốn bảo mật
 
-            return ResponseEntity.ok(Map.of("success", true, "maXacNhan", maXacNhan)); // hoặc bỏ không gửi mã về frontend nếu muốn bảo mật
+            }
+            return ResponseEntity.badRequest().body(Map.of("success", true, "maXacNhan", maXacNhan)); // hoặc bỏ không gửi mã về frontend nếu muốn bảo mật
+
         } catch (Exception e) {
             return ResponseEntity.internalServerError().body(Map.of("success", false, "message", "Lỗi: " + e.getMessage()));
         }
     }
+
     @PostMapping("/tao-mat-khau-moi")
     @ResponseBody
     public ResponseEntity<?> taoMatKhauMoi(HttpSession session) {
@@ -110,6 +119,7 @@ public class SettingNhanVien {
         model.addAttribute("nhanVien", nhanVien);
         return "admin/nhanvien/thong-tin-ca-nhan";
     }
+
     @PutMapping(value = "/cap-nhat", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<?> capNhatThongTin(
             @RequestPart("nhanVien") String nhanVienJson,
@@ -140,7 +150,7 @@ public class SettingNhanVien {
 
                 // Lưu đường dẫn ảnh dùng để hiển thị (dùng trong HTML)
                 nhanVien.setHinhAnh("/images/" + fileName);  // ✅ Đường dẫn đúng
-            }else{
+            } else {
                 nhanVien.setHinhAnh(nv.getHinhAnh());
             }
 
@@ -154,7 +164,7 @@ public class SettingNhanVien {
             nhanVien.setTrangThai(nv.getTrangThai());
             nhanVien.setMatKhau(nv.getMatKhau());
             // Lưu thông tin nhân viên
-            nhanVienService.updateNhanVien(nhanVien,nhanVien.getId());
+            nhanVienService.updateNhanVien(nhanVien, nhanVien.getId());
 
             return ResponseEntity.ok().body(Map.of(
                     "success", true,
@@ -172,6 +182,7 @@ public class SettingNhanVien {
             ));
         }
     }
+
     @PostMapping("/doi-mat-khau")
     public ResponseEntity<?> changePassword(@RequestBody Map<String, String> passwordData) {
         try {
@@ -181,13 +192,13 @@ public class SettingNhanVien {
 
             NhanVien nhanVien = nhanVienService.getNhanVienByEmail(getCurrentUserEmail());
             if (nhanVien == null) {
-                return ResponseEntity.badRequest().body(Collections.singletonMap("message","Người dùng không tồn tại"));
+                return ResponseEntity.badRequest().body(Collections.singletonMap("message", "Người dùng không tồn tại"));
             }
 
             PasswordEncoder passwordEncoder = new BCryptPasswordEncoder(10);
             // Kiểm tra mật khẩu hiện tại
             if (!passwordEncoder.matches(currentPassword, nhanVien.getMatKhau())) {
-                return ResponseEntity.badRequest().body(Collections.singletonMap("message","Mật khẩu không đúng"));
+                return ResponseEntity.badRequest().body(Collections.singletonMap("message", "Mật khẩu không đúng"));
             }
             System.out.println(nhanVien);
             System.out.println(isPasswordValid(newPassword));
@@ -200,9 +211,9 @@ public class SettingNhanVien {
             nhanVien.setMatKhau(passwordEncoder.encode(newPassword));
             System.out.println(nhanVien.getMatKhau());
             nhanVienService.saveNhanVien(nhanVien);
-            return ResponseEntity.ok().body(Collections.singletonMap("message","Đổi mật khẩu thành công"));
+            return ResponseEntity.ok().body(Collections.singletonMap("message", "Đổi mật khẩu thành công"));
         } catch (Exception e) {
-            return ResponseEntity.badRequest().body(Collections.singletonMap("message","Đổi mật khẩu thất bại"));
+            return ResponseEntity.badRequest().body(Collections.singletonMap("message", "Đổi mật khẩu thất bại"));
         }
     }
 
@@ -211,6 +222,7 @@ public class SettingNhanVien {
         String pattern = "^(?=.*[A-Z])(?=.*[!@#$%^&*]).{8,}$";
         return password.matches(pattern);
     }
+
     private Map<String, Object> createSuccessResponse(String message) {
         Map<String, Object> response = new HashMap<>();
         response.put("success", true);

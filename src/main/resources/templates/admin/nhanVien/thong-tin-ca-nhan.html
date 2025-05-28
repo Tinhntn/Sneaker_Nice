@@ -1077,6 +1077,9 @@
                         .then(data => {
                             notyf.success("Mật khẩu đã được gửi đến email của bạn")
                             $('#modalMaXacNhan').modal('hide');
+                            setTimeout(()=>{
+                                window.location.href="/logout"
+                            },2000)
                         })
                         .catch(err => {
                             notyf.error("Mã xác nhận không đúng")

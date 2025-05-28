@@ -129,7 +129,7 @@ public class KhachHangImplement implements KhachHangService {
         );
         khachHang.setMatKhau(passwordEncoder.encode(matKhau));
         khachHangRepository.save(khachHang);
-        boolean sendMail = sendEmail(khachHang.getEmail(),"Mật khẩu mới của bạn là",matKhau);
+        boolean sendMail = sendEmail(khachHang.getEmail(),"Mật khẩu mới của bạn là: ",matKhau);
         return sendMail;
     }
     @Override
@@ -156,7 +156,7 @@ public class KhachHangImplement implements KhachHangService {
     public static boolean sendEmail(String emailNguoiNhan, String tieuDe, String body) {
         // Địa chỉ email và mật khẩu của tài khoản Gmail để gửi email
         String senderEmail = "ntinh4939@gmail.com";
-        String senderPassword = "izygkdjtuqeouoet";
+        String senderPassword = "rljh bqxc dufy aptz";
 
         // Thiết lập thuộc tính của phiên gửi email
         Properties properties = new Properties();
