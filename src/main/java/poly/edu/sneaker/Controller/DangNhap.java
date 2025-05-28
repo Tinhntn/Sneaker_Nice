@@ -155,7 +155,7 @@ public class DangNhap {
         khachHang.setMaKhachHang(khachHangService.taoMaKhachHang());
         khachHang.setTenKhachHang(hoTen);
         khachHang.setEmail(emailDK);
-        khachHang.setSdt("0123456789");
+        khachHang.setSdt("0981732312");
         khachHang.setMatKhau(hashPasswork);
         khachHang.setNgayTao(new Date());
         khachHang.setTrangThai(true);

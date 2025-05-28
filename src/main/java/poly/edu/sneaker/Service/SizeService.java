@@ -5,6 +5,7 @@ import org.springframework.data.domain.Pageable;
 import poly.edu.sneaker.Model.Hang;
 import poly.edu.sneaker.Model.Size;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -22,4 +23,6 @@ public interface SizeService {
 //    void deleteSize(int id);
     void updateSize(Size size, int id);
     String taoMaSize();
+    Page<Size> locSize(String keyword, LocalDate startDate, LocalDate endDate, Boolean trangThai, Pageable pageable);
+
 }

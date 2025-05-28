@@ -4,6 +4,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -16,6 +18,7 @@ import poly.edu.sneaker.Service.DanhMucService;
 
 import jakarta.validation.Valid;
 
+import java.time.LocalDate;
 import java.util.*;
 
 @Controller
@@ -26,58 +29,60 @@ public class DanhMucController {
     private DanhMucService danhMucService;
 
     @GetMapping("/hienthi")
-    public String hienThiDanhMuc(Model model, @RequestParam(defaultValue = "0") int page, @RequestParam(required = false) String keyword) {
-        int size = 5;
-        Pageable pageable = PageRequest.of(page, size);
-        Page<DanhMuc> danhMucPage;
-
-        if (keyword != null && !keyword.isEmpty()) {
-            danhMucPage = danhMucService.search(keyword, pageable);
-            model.addAttribute("keyword", keyword);
-        } else {
-            danhMucPage = danhMucService.getAll(pageable);
+    public String hienthi(Model model, @RequestParam(defaultValue = "0") int page,
+                          @RequestParam(required = false) String keyword,
+                          @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate starDate,
+                          @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd")LocalDate endDate,
+                          @RequestParam(required = false) Integer trangThai) {
+        int size = 10;
+        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "ngayTao"));
+        Boolean tt =null;
+        if(trangThai!=null){
+            if(trangThai==0){
+                tt=true;
+            }else if(trangThai==1){
+                tt=false;
+            }
         }
-
-        model.addAttribute("listDM", danhMucPage.getContent());
+        Page<DanhMuc> danhMucPage = danhMucService.locDanhMuc(keyword,starDate,endDate,tt,pageable);
+        model.addAttribute("lstDanhMuc", danhMucPage.getContent());
         model.addAttribute("currentPage", danhMucPage.getNumber());
         model.addAttribute("totalPages", danhMucPage.getTotalPages());
-        return "admin/danh_muc/ListDanhMuc";
+        return "admin/danh_muc/listDanhMuc";
     }
 
     @PostMapping("/add")
-    public String addDanhMuc(@Valid @ModelAttribute("danhMuc") DanhMuc danhMuc, BindingResult bindingResult, RedirectAttributes redirectAttributes) {
-        // Kiểm tra trùng tên danh mục
-        if (danhMucService.getAllDanhMucs().stream().anyMatch(dm -> dm.getTenDanhMuc().equalsIgnoreCase(danhMuc.getTenDanhMuc()))) {
-            bindingResult.rejectValue("tenDanhMuc", "error.danhMuc", "Tên danh mục đã tồn tại");
+    @ResponseBody
+    public ResponseEntity<?> add(
+            @RequestParam("tenDanhMuc") String tenDanhMuc,
+            @RequestParam("trangThai") Boolean trangThai) {
+        if (tenDanhMuc == null || tenDanhMuc.trim().isEmpty()) {
+            return ResponseEntity.badRequest().body(Collections.singletonMap("message", "Vui lòng nhập đủ thông tin"));
         }
-
-        // Kiểm tra trùng mã danh mục
-        if (danhMucService.findByMaDanhMuc(danhMuc.getMaDanhMuc()) != null) {
-            bindingResult.rejectValue("maDanhMuc", "error.danhMuc", "Mã danh mục đã tồn tại");
-        }
-
-        if (bindingResult.hasErrors()) {
-            return "admin/danh_muc/add";
-        }
-
-        try {
-            String maDanhMuc = danhMucService.taoMaDanhMuc();
-            while (danhMucService.findByMaDanhMuc(maDanhMuc) != null) {
-                maDanhMuc = danhMucService.taoMaDanhMuc();
+        List<DanhMuc> lstDanhMuc = danhMucService.getAllDanhMucs();
+        for (DanhMuc dn : lstDanhMuc) {
+            if (dn.getTenDanhMuc().equalsIgnoreCase(tenDanhMuc)) {
+                return ResponseEntity.badRequest().body(Collections.singletonMap("message", "Tên danh mục đã tồn tại"));
             }
-            danhMuc.setMaDanhMuc(maDanhMuc);
-            danhMucService.save(danhMuc);
-            redirectAttributes.addFlashAttribute("successMessage", "Danh mục được thêm thành công!");
-        } catch (Exception e) {
-            redirectAttributes.addFlashAttribute("errorMessage", "Lỗi khi thêm danh mục!");
         }
-        return "redirect:/danh_muc/hienthi";
+        DanhMuc danhMuc = new DanhMuc();
+        danhMuc.setMaDanhMuc(danhMucService.taoMaDanhMuc());
+        danhMuc.setTenDanhMuc(tenDanhMuc);
+        danhMuc.setTrangThai(trangThai);
+        danhMuc.setNgayTao(new Date());
+        try {
+            danhMucService.save(danhMuc);
+        } catch (IllegalArgumentException e) {
+            e.printStackTrace();
+            return ResponseEntity.badRequest().body(Collections.singletonMap("message", "Thêm thất bại"));
+        }
+        return ResponseEntity.ok().body(Collections.singletonMap("success", true));
     }
     @PostMapping("/them_nhanh")
     @ResponseBody
     public ResponseEntity<?> themNhanh(@ModelAttribute DanhMuc danhMuc) {
 
-        if(danhMuc==null){
+        if (danhMuc == null|| danhMuc.getTenDanhMuc() == null || danhMuc.getTenDanhMuc().trim().isEmpty()){
             return ResponseEntity.badRequest().body(Collections.singletonMap("message","Bạn cần nhập đủ thông tin"));
         }
         String tenDanhMuc = danhMuc.getTenDanhMuc();
@@ -95,43 +100,35 @@ public class DanhMucController {
         danhMucService.save(newDM);
         return ResponseEntity.ok().body(Map.of("message","Thêm hãng mới thành công","success",true));
     }
-    @GetMapping("/edit/{id}")
-    public String showEditForm(@PathVariable("id") Integer id, Model model, RedirectAttributes redirectAttributes) {
-        DanhMuc danhMuc = danhMucService.findDanhMucById(id);
-        if (danhMuc == null) {
-            redirectAttributes.addFlashAttribute("errorMessage", "Danh mục không tồn tại!");
-            return "redirect:/danh_muc/hienthi";
-        }
-        model.addAttribute("danhMuc", danhMuc);
-        return "admin/danh_muc/update";
-    }
+
 
     @PostMapping("/update/{id}")
-    public String editDanhMuc(@PathVariable("id") Integer id, @Valid @ModelAttribute("danhMuc") DanhMuc danhMuc, BindingResult bindingResult, RedirectAttributes redirectAttributes) {
-        // Kiểm tra trùng tên danh mục (ngoại trừ chính nó)
-        if (danhMucService.getAllDanhMucs().stream()
-                .anyMatch(dm -> !dm.getId().equals(id) && dm.getTenDanhMuc().equalsIgnoreCase(danhMuc.getTenDanhMuc()))) {
-            bindingResult.rejectValue("tenDanhMuc", "error.danhMuc", "Tên danh mục đã tồn tại");
+    @ResponseBody
+    public ResponseEntity<?> update(@PathVariable("id") Integer idDanhMuc,
+                                    @RequestParam("tenDanhMuc") String tenDanhMuc,
+                                    @RequestParam("trangThai") Boolean trangThai) {
+        if (tenDanhMuc == null || tenDanhMuc.trim().isEmpty()) {
+            return ResponseEntity.badRequest().body(Collections.singletonMap("message", "Vui lòng nhập đủ thông tin"));
         }
-
-        if (bindingResult.hasErrors()) {
-            return "admin/danh_muc/update";
-        }
-
-        try {
-            DanhMuc existingDanhMuc = danhMucService.findDanhMucById(id);
-            if (existingDanhMuc != null) {
-                danhMuc.setId(id);
-                danhMuc.setNgayTao(existingDanhMuc.getNgayTao());
-                danhMucService.update(danhMuc, id);
-                redirectAttributes.addFlashAttribute("successMessage", "Cập nhật danh mục thành công!");
-            } else {
-                redirectAttributes.addFlashAttribute("errorMessage", "Danh mục không tồn tại!");
+        List<DanhMuc> lstDanhMuc = danhMucService.getAllDanhMucs();
+        for (DanhMuc dn : lstDanhMuc) {
+            if (dn.getId()!=idDanhMuc&&dn.getTenDanhMuc().equalsIgnoreCase(tenDanhMuc)) {
+                return ResponseEntity.badRequest().body(Collections.singletonMap("message", "Tên danh mục đã tồn tại"));
             }
-        } catch (Exception e) {
-            redirectAttributes.addFlashAttribute("errorMessage", "Lỗi khi cập nhật danh mục!");
         }
-        return "redirect:/danh_muc/hienthi";
+        DanhMuc danhMuc = danhMucService.findDanhMucById(idDanhMuc);
+        danhMuc.setTenDanhMuc(tenDanhMuc);
+        danhMuc.setNgaySua(new Date());
+        danhMuc.setTrangThai(trangThai);
+        try {
+            danhMucService.update(danhMuc, idDanhMuc);
+        } catch (IllegalArgumentException e) {
+            e.printStackTrace();
+            return ResponseEntity.badRequest().body(Collections.singletonMap("message", "Cập nhật thất bại"));
+
+        }
+        return ResponseEntity.ok().body(Collections.singletonMap("success", true));
+
     }
     @PostMapping("/toggleStatus/{id}")
     public String toggleStatus(@PathVariable("id") Integer id, RedirectAttributes redirectAttributes) {
@@ -161,15 +158,5 @@ public class DanhMucController {
         return "redirect:/danh_muc/hienthi";
     }
 
-    @GetMapping("/add")
-    public String showAddForm(Model model) {
-        DanhMuc danhMuc = new DanhMuc();
-        String maDanhMuc = danhMucService.taoMaDanhMuc();
-        while (danhMucService.findByMaDanhMuc(maDanhMuc) != null) {
-            maDanhMuc = danhMucService.taoMaDanhMuc();
-        }
-        danhMuc.setMaDanhMuc(maDanhMuc);
-        model.addAttribute("danhMuc", danhMuc);
-        return "admin/danh_muc/add";
-    }
+
 }

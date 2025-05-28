@@ -16,11 +16,51 @@ public interface ChiTietSanPhamRepository extends JpaRepository<ChiTietSanPham, 
 
     // Lấy sản phẩm theo id của sản phẩm (SanPham)
     Page<ChiTietSanPham> findChiTietSanPhamByIdSanPham_Id(int idSanPham, Pageable pageable);
+
     List<ChiTietSanPham> findChiTietSanPhamByIdSanPham_Id(int idSanPham);
-    // Lấy bản ghi mới nhất cho mỗi sản phẩm
-    @Query("SELECT ctp FROM ChiTietSanPham ctp " +
-            "WHERE ctp.idSanPham.trangThai=true and ctp.soLuong>0 and ctp.trangThai =true ")
-    Page<ChiTietSanPham> findFirstRecordForEachProduct(Pageable pageable);
+
+    @Query(
+            value = """
+        SELECT ctp.* 
+        FROM ChiTietSanPham ctp
+        JOIN SanPham sp ON ctp.id_san_pham = sp.id
+        WHERE ctp.trang_thai = 1
+          AND ctp.so_luong > 0
+          AND sp.trang_thai = 1
+          AND (:idDanhMuc IS NULL OR sp.id_danh_muc = :idDanhMuc)
+          AND (:idChatLieu IS NULL OR sp.id_chat_lieu = :idChatLieu)
+          AND (:idHang IS NULL OR sp.id_hang = :idHang)
+          AND (:keyword IS NULL OR sp.ten_san_pham LIKE %:keyword% OR sp.ma_san_pham LIKE %:keyword%)
+          AND (:idSize IS NULL OR ctp.id_size = :idSize)
+          AND (:idMauSac IS NULL OR ctp.id_mau_sac = :idMauSac)
+        ORDER BY ctp.ngay_tao DESC
+        """,
+            countQuery = """
+        SELECT COUNT(ctp.id)
+        FROM ChiTietSanPham ctp
+        JOIN SanPham sp ON ctp.id_san_pham = sp.id
+        WHERE ctp.trang_thai = 1
+          AND ctp.so_luong > 0
+          AND sp.trang_thai = 1
+          AND (:idDanhMuc IS NULL OR sp.id_danh_muc = :idDanhMuc)
+          AND (:idChatLieu IS NULL OR sp.id_chat_lieu = :idChatLieu)
+          AND (:idHang IS NULL OR sp.id_hang = :idHang)
+          AND (:keyword IS NULL OR sp.ten_san_pham LIKE %:keyword% OR sp.ma_san_pham LIKE %:keyword%)
+          AND (:idSize IS NULL OR ctp.id_size = :idSize)
+          AND (:idMauSac IS NULL OR ctp.id_mau_sac = :idMauSac)
+        """,
+            nativeQuery = true
+    )
+    Page<ChiTietSanPham> findFirstRecordForEachProduct(
+            @Param("keyword") String keyword,
+            @Param("idHang") Integer idHang,
+            @Param("idDanhMuc") Integer idDanhMuc,
+            @Param("idChatLieu") Integer idChatLieu,
+            @Param("idMauSac") Integer idMauSac,
+            @Param("idSize") Integer idSize,
+            Pageable pageable);
+
+
 
     @Query(value = "select * from ChiTietSanPham", nativeQuery = true)
     List<ChiTietSanPham> getALl();
@@ -37,7 +77,7 @@ public interface ChiTietSanPhamRepository extends JpaRepository<ChiTietSanPham, 
 
     @Query("SELECT c FROM ChiTietSanPham c WHERE c.idSanPham.id = :id AND c.idMauSac.id = :idMauSac AND c.trangThai = true")
     List<ChiTietSanPham> findChiTietSanPhamByIdSPAndIdMauSac(@Param("id") int id,
-                                                     @Param("idMauSac") int idMauSac);
+                                                             @Param("idMauSac") int idMauSac);
 
 
     // Lấy danh sách chi tiết sản phẩm theo id sản phẩm với trạng thái đang hoạt động
@@ -67,7 +107,8 @@ public interface ChiTietSanPhamRepository extends JpaRepository<ChiTietSanPham, 
             "AND (:chatLieu IS NULL OR cl.tenChatLieu = :chatLieu) " +
             "AND ctp.giaBan BETWEEN :minPrice AND :maxPrice " +
             "AND ctp.soLuong > 0 " + // Thêm điều kiện kiểm tra số lượng
-            "AND ctp.trangThai = true") // Thêm điều kiện kiểm tra trạng thái
+            "AND ctp.trangThai = true")
+    // Thêm điều kiện kiểm tra trạng thái
     Page<ChiTietSanPham> filterByHangAndPrice(
             @Param("tenHang") String tenHang,
             @Param("chatLieu") String chatLieu,
@@ -89,6 +130,7 @@ public interface ChiTietSanPhamRepository extends JpaRepository<ChiTietSanPham, 
             "JOIN sp.idChatLieu cl " +
             "WHERE (:chatLieu IS NULL OR cl.tenChatLieu = :chatLieu)")
     List<String> findDistinctHangByChatLieu(@Param("chatLieu") String chatLieu);
+
     // code quan
     @Query(value = "SELECT * FROM chitietsanpham WHERE chitietsanpham.trang_thai = 1",
             nativeQuery = true)
@@ -113,5 +155,16 @@ public interface ChiTietSanPhamRepository extends JpaRepository<ChiTietSanPham, 
                                                @Param("idChatLieu") Integer idChatLieu,
                                                Pageable pageable);
 
-
+    @Query("SELECT c FROM ChiTietSanPham c WHERE " +
+            "(:idSanPham IS NULL OR c.idSanPham.id = :idSanPham) " +
+            "AND (:idSize IS NULL OR c.idSize.id = :idSize) " +
+            "AND (:idMauSac IS NULL OR c.idMauSac.id = :idMauSac) " +
+            "AND (:trangThai IS NULL OR c.trangThai = :trangThai)")
+    Page<ChiTietSanPham> locChiTietSanPham(
+            @Param("idSanPham") Integer idSanPham,
+            @Param("idSize") Integer idSize,
+            @Param("idMauSac") Integer idMauSac,
+            @Param("trangThai") Boolean trangThai,
+            Pageable pageable
+    );
 }

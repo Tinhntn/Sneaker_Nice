@@ -54,71 +54,71 @@ public class HoaDonKhachHangController {
         }
         return null; // Nếu chưa đăng nhập, trả về null hoặc giá trị mặc định
     }
-    @PostMapping("/doi-trang-thai")
-    @ResponseBody
-    public ResponseEntity<?> DoiTrangThai(@RequestBody Map<String, Object> formData) {
-        System.out.println("Đã gọi");
-        try {
-            System.out.println("đã gọi"+formData);
-            int idhoadon = Integer.parseInt(formData.get("idHoaDon").toString());
-            String ghichu = formData.get("ghiChu").toString();
-            int trangthai = Integer.parseInt(formData.get("trangThai").toString());
-            HoaDon hoaDon = hoaDonService.findById(idhoadon);
-            System.out.println(idhoadon);
-            System.out.println(ghichu);
-            System.out.println(trangthai);
-            if (trangthai == 3) {
-                boolean doiTT = lichSuTrnngThaiService.doiTrangThaiDonHang(idhoadon, ghichu, trangthai);
-                if (!doiTT) {
-                    return ResponseEntity.badRequest().body(Map.of("message", "Đổi trạng thái thất bại"));
-                }
-                return ResponseEntity.ok(Map.of("message", "Chờ lấy hàng"));
-            } else if (trangthai == 4) {
-                if (hoaDon.getTenNguoiGiao() == null || hoaDon.getTenNguoiGiao().isEmpty() || hoaDon.getSdtNguoiGiao() == null || hoaDon.getSdtNguoiGiao().isEmpty()) {
-                    return ResponseEntity.badRequest().body(Map.of("message", "Vui lòng cập nhật thông tin người giao hàng"));
-                }
-                boolean doiTT = lichSuTrnngThaiService.doiTrangThaiDonHang(idhoadon, ghichu, trangthai);
-                if (!doiTT) {
-                    return ResponseEntity.badRequest().body(Map.of("message", "Đổi trạng thái thất bại"));
-                }
-                return ResponseEntity.ok(Map.of("message", "Đang giao"));
-
-            } else if (trangthai == 5) {
-                boolean doiTT = lichSuTrnngThaiService.doiTrangThaiDonHang(idhoadon, ghichu, trangthai);
-                if (!doiTT) {
-                    return ResponseEntity.badRequest().body(Map.of("message", "Đổi trạng thái thất bại"));
-                }
-                return ResponseEntity.ok(Map.of("message", "Đã giao"));
-            } else if (trangthai == 6) {
-                List<HoaDonChiTietOnlCustom> chiTietHoaDon = hoaDonChiTietOnlService.findByHoaDonId(hoaDon);
-                System.out.println("đã hu ho đơn"+trangthai);
-                if(hoaDon.getTrangThai()==4||hoaDon.getTrangThai()==10||hoaDon.getTrangThai()==11){
-                    for (HoaDonChiTietOnlCustom ct : chiTietHoaDon
-                    ) {
-                        chiTietSanPhamService.capNhatSoLuongKhiHuyHoaDon(ct.getIdChiTietSanPham(), ct.getSoLuong());
-                    }
-                }
-                boolean doiTT = lichSuTrnngThaiService.doiTrangThaiDonHang(idhoadon, ghichu, trangthai);
-                if (!doiTT) {
-                    return ResponseEntity.badRequest().body(Map.of("message", "Đổi trạng thái thất bại"));
-                }
-                return ResponseEntity.ok(Map.of("message", "Đã hủy hóa đơn"));
-            }else if(trangthai ==11){
-                boolean doiTT = lichSuTrnngThaiService.doiTrangThaiDonHang(idhoadon, ghichu, trangthai);
-                if (!doiTT) {
-                    return ResponseEntity.badRequest().body(Map.of("message", "Đổi trạng thái thất bại"));
-                }
-                return ResponseEntity.ok(Map.of("message", "Giao hàng thất bại"));
-            }
-            return ResponseEntity.ok(Map.of("message", "Đổi trạng thái thất bại"));
-
-        } catch (Exception e) {
-            // Ghi lại log lỗi để kiểm tra sau
-            e.printStackTrace();
-            return ResponseEntity.badRequest().body(Map.of("message", "Đổi trạng thái thất bại"));
-        }
-
-    }
+//    @PostMapping("/doi-trang-thai")
+//    @ResponseBody
+//    public ResponseEntity<?> DoiTrangThai(@RequestBody Map<String, Object> formData) {
+//        System.out.println("Đã gọi");
+//        try {
+//            System.out.println("đã gọi"+formData);
+//            int idhoadon = Integer.parseInt(formData.get("idHoaDon").toString());
+//            String ghichu = formData.get("ghiChu").toString();
+//            int trangthai = Integer.parseInt(formData.get("trangThai").toString());
+//            HoaDon hoaDon = hoaDonService.findById(idhoadon);
+//            System.out.println(idhoadon);
+//            System.out.println(ghichu);
+//            System.out.println(trangthai);
+//            if (trangthai == 3) {
+//                boolean doiTT = lichSuTrnngThaiService.doiTrangThaiDonHang(idhoadon, ghichu, trangthai);
+//                if (!doiTT) {
+//                    return ResponseEntity.badRequest().body(Map.of("message", "Đổi trạng thái thất bại"));
+//                }
+//                return ResponseEntity.ok(Map.of("message", "Chờ lấy hàng"));
+//            } else if (trangthai == 4) {
+//                if (hoaDon.getTenNguoiGiao() == null || hoaDon.getTenNguoiGiao().isEmpty() || hoaDon.getSdtNguoiGiao() == null || hoaDon.getSdtNguoiGiao().isEmpty()) {
+//                    return ResponseEntity.badRequest().body(Map.of("message", "Vui lòng cập nhật thông tin người giao hàng"));
+//                }
+//                boolean doiTT = lichSuTrnngThaiService.doiTrangThaiDonHang(idhoadon, ghichu, trangthai);
+//                if (!doiTT) {
+//                    return ResponseEntity.badRequest().body(Map.of("message", "Đổi trạng thái thất bại"));
+//                }
+//                return ResponseEntity.ok(Map.of("message", "Đang giao"));
+//
+//            } else if (trangthai == 5) {
+//                boolean doiTT = lichSuTrnngThaiService.doiTrangThaiDonHang(idhoadon, ghichu, trangthai);
+//                if (!doiTT) {
+//                    return ResponseEntity.badRequest().body(Map.of("message", "Đổi trạng thái thất bại"));
+//                }
+//                return ResponseEntity.ok(Map.of("message", "Đã giao"));
+//            } else if (trangthai == 6) {
+//                List<HoaDonChiTietOnlCustom> chiTietHoaDon = hoaDonChiTietOnlService.findByHoaDonId(hoaDon);
+//                System.out.println("đã hu ho đơn"+trangthai);
+//                if(hoaDon.getTrangThai()==4||hoaDon.getTrangThai()==10||hoaDon.getTrangThai()==11){
+//                    for (HoaDonChiTietOnlCustom ct : chiTietHoaDon
+//                    ) {
+//                        chiTietSanPhamService.capNhatSoLuongKhiHuyHoaDon(ct.getIdChiTietSanPham(), ct.getSoLuong());
+//                    }
+//                }
+//                boolean doiTT = lichSuTrnngThaiService.doiTrangThaiDonHang(idhoadon, ghichu, trangthai);
+//                if (!doiTT) {
+//                    return ResponseEntity.badRequest().body(Map.of("message", "Đổi trạng thái thất bại"));
+//                }
+//                return ResponseEntity.ok(Map.of("message", "Đã hủy hóa đơn"));
+//            }else if(trangthai ==11){
+//                boolean doiTT = lichSuTrnngThaiService.doiTrangThaiDonHang(idhoadon, ghichu, trangthai);
+//                if (!doiTT) {
+//                    return ResponseEntity.badRequest().body(Map.of("message", "Đổi trạng thái thất bại"));
+//                }
+//                return ResponseEntity.ok(Map.of("message", "Giao hàng thất bại"));
+//            }
+//            return ResponseEntity.ok(Map.of("message", "Đổi trạng thái thất bại"));
+//
+//        } catch (Exception e) {
+//            // Ghi lại log lỗi để kiểm tra sau
+//            e.printStackTrace();
+//            return ResponseEntity.badRequest().body(Map.of("message", "Đổi trạng thái thất bại"));
+//        }
+//
+//    }
     @PostMapping("/MuaLai")
     public ResponseEntity<?> muaLaiDonHang(@RequestBody int idHoaDon){
 

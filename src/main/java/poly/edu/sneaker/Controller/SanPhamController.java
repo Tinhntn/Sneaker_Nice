@@ -87,9 +87,9 @@ public class SanPhamController {
 
 
         // Lấy danh sách cho dropdown
-        model.addAttribute("lstDanhMuc", danhMucService.getAllDanhMucs());
-        model.addAttribute("lstChatLieu", chatLieuService.getAllChatLieus());
-        model.addAttribute("lstHang", hangService.getAllHangs());
+        model.addAttribute("lstDanhMuc", danhMucService.getAllDanhMucs().stream().sorted(Comparator.comparing(DanhMuc::getTenDanhMuc, String.CASE_INSENSITIVE_ORDER)).collect(Collectors.toList()));
+        model.addAttribute("lstChatLieu", chatLieuService.getAllChatLieus().stream().sorted(Comparator.comparing(ChatLieu::getTenChatLieu, String.CASE_INSENSITIVE_ORDER)).collect(Collectors.toList()));
+        model.addAttribute("lstHang", hangService.getAllHangs().stream().sorted(Comparator.comparing(Hang::getTenHang, String.CASE_INSENSITIVE_ORDER)).collect(Collectors.toList()));
 
         // Thực hiện lọc
         Page<SanPham> pageSanPham = sanPhamService.filterSanPham(
@@ -126,27 +126,6 @@ public class SanPhamController {
 
     }
 
-    @GetMapping("/themsanpham")
-    public String hienThiFormThem(Model model) {
-        model.addAttribute("sanPham", new SanPham()); // Đối tượng rỗng để Thymeleaf bind dữ liệu
-        List<Hang> lstHang = hangService.getAllHangs();
-        List<DanhMuc> lstDanhMuc = danhMucService.getAllDanhMucs();
-        List<ChatLieu> lstChatLieu = chatLieuService.getAllChatLieus();
-        List<SanPham> lstSanPham = sanPhamService.getAllSanPhams();
-        String maSanPham = sanPhamService.taoMaSanPham();
-        for (SanPham sp : lstSanPham
-        ) {
-            if (sp.getMaSanPham().equals(maSanPham)) {
-                maSanPham = sanPhamService.taoMaSanPham();
-            }
-        }
-        model.addAttribute("lstHang", lstHang);
-        model.addAttribute("lstDanhMuc", lstDanhMuc);
-        model.addAttribute("lstChatlieu", lstChatLieu);
-        model.addAttribute("maSanPham", maSanPham);
-
-        return "admin/sanpham/addSanPham";
-    }
 
     @PostMapping("/themsanpham")
     @ResponseBody
@@ -186,22 +165,57 @@ public class SanPhamController {
     }
 
     @GetMapping("/chitietsanpham/{id}")
-    public String chiTietSanPham(@PathVariable("id") int idSanPham, Model model, @RequestParam(defaultValue = "0") int page
+    public String chiTietSanPham(
+            @PathVariable("id") int idSanPham,
+            Model model,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(required = false) Integer idSize,
+            @RequestParam(required = false) Integer idMauSac,
+            @RequestParam(required = false) Integer trangThai // ✅ Sửa từ `boolean` sang `Boolean`
     ) {
-        int size = 5;
+        int size = 10;
+        Boolean tt = null;
+
+        if(trangThai != null) {
+            if(trangThai==3){
+                tt = false;
+            }else if(trangThai==2){
+                tt = true;
+            }
+        }
         Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "ngayTao"));
-        Page<ChiTietSanPham> lstCTSP = chiTietSanPhamService.findChiTietSanPhamByIDSanPham(idSanPham, pageable);
+        Page<ChiTietSanPham> lstCTSP = chiTietSanPhamService.locChiTietSanPham(idSanPham, idSize, idMauSac, tt, pageable);
+
         model.addAttribute("lstCTSP", lstCTSP.getContent());
         model.addAttribute("currentPage", lstCTSP.getNumber());
         model.addAttribute("totalPages", lstCTSP.getTotalPages());
+
         SanPham sanPham = sanPhamService.findById(idSanPham);
         model.addAttribute("sanPham", sanPham);
-        List<Hang> lstHang = hangService.getAllHangs();
-        List<DanhMuc> lstDanhMuc = danhMucService.getAllDanhMucs();
-        List<ChatLieu> lstChatLieu = chatLieuService.getAllChatLieus();
-        List<Size> lstSize = sizeService.findAll();
 
-        List<MauSac> lstMauSac = mauSacService.findAll();
+        List<Hang> lstHang = hangService.getAllHangs().stream()
+                .sorted(Comparator.comparing(Hang::getTenHang, String.CASE_INSENSITIVE_ORDER))
+                .collect(Collectors.toList());
+
+        List<DanhMuc> lstDanhMuc = danhMucService.getAllDanhMucs().stream()
+                .sorted(Comparator.comparing(DanhMuc::getTenDanhMuc, String.CASE_INSENSITIVE_ORDER))
+                .collect(Collectors.toList());
+
+        List<ChatLieu> lstChatLieu = chatLieuService.getAllChatLieus().stream()
+                .sorted(Comparator.comparing(ChatLieu::getTenChatLieu, String.CASE_INSENSITIVE_ORDER))
+                .collect(Collectors.toList());
+
+        List<Size> lstSize = sizeService.findAll().stream()
+                .sorted((s1, s2) -> Integer.compare(
+                        Integer.parseInt(s1.getTenSize()),
+                        Integer.parseInt(s2.getTenSize())
+                ))
+                .collect(Collectors.toList());
+
+        List<MauSac> lstMauSac = mauSacService.findAll().stream()
+                .sorted(Comparator.comparing(MauSac::getTenMauSac, String.CASE_INSENSITIVE_ORDER))
+                .collect(Collectors.toList());
+
         model.addAttribute("lstMauSac", lstMauSac);
         model.addAttribute("lstSize", lstSize);
         model.addAttribute("lst", lstDanhMuc);
@@ -210,6 +224,7 @@ public class SanPhamController {
         model.addAttribute("lstChatlieu", lstChatLieu);
         return "admin/sanpham/updateSanPham";
     }
+
 
     @PutMapping("/capnhatsanpham/{idSanPham}")
     @ResponseBody
@@ -312,7 +327,7 @@ public class SanPhamController {
             for (ChiTietSanPham ct : lstCTSP) {
                 if (ct.getIdSize().getId() == idSize && ct.getIdMauSac().getId() == idMauSac) {
                     return ResponseEntity.badRequest().body(Map.of(
-                            "message", "Sản phẩm đã tồn tại",
+                            "message", "Sản phẩm " + ct.getIdSanPham().getTenSanPham() + " " + "size: " + ct.getIdSize().getTenSize() + " màu: " + ct.getIdMauSac().getTenMauSac() + " đã tồn tại",
                             "success", false
                     ));
                 }
@@ -360,8 +375,8 @@ public class SanPhamController {
         model.addAttribute("lstCTSP", pageCTSP.getContent());
         model.addAttribute("currentPage", page);
         model.addAttribute("totalPages", pageCTSP.getTotalPages());
-        model.addAttribute("lstSize", sizeService.findAll());
-        model.addAttribute("lstMauSac", mauSacService.findAll());
+        model.addAttribute("lstSize", sizeService.findAll().stream().sorted(Comparator.comparing(Size::getTenSize, String.CASE_INSENSITIVE_ORDER)).collect(Collectors.toList()));
+        model.addAttribute("lstMauSac", mauSacService.findAll().stream().sorted(Comparator.comparing(MauSac::getTenMauSac, String.CASE_INSENSITIVE_ORDER)).collect(Collectors.toList()));
         return "fragments/chitietsanpham-table :: tableFragment";
     }
 
@@ -379,7 +394,10 @@ public class SanPhamController {
         List<Size> lstSize = sizeService.findAll();
 
         List<Size> lstSizeChuaCo = lstSize.stream()
-                .filter(size -> !sizeDaCo.contains(size.getId()))
+                .sorted((s1, s2) -> Integer.compare(
+                        Integer.parseInt(s1.getTenSize()),
+                        Integer.parseInt(s2.getTenSize())
+                ))
                 .collect(Collectors.toList());
         return ResponseEntity.ok(lstSizeChuaCo);
     }
@@ -621,5 +639,6 @@ public class SanPhamController {
             ));
         }
     }
+
 
 }

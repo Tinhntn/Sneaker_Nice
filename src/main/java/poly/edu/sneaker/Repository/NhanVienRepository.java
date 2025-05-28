@@ -27,19 +27,21 @@ import java.util.UUID;
         NhanVien findByMaNhanVien(String maNhanVien);
 
 
-    @Query(value = """
-        SELECT nv.id AS id, nv.maNhanVien AS maNhanVien, nv.hoVaTen AS hoVaTen, 
-               nv.gioiTinh AS gioiTinh, nv.ngaySinh AS ngaySinh, nv.diaChi AS diaChi, 
-               nv.sdt AS sdt, nv.email AS email, nv.matKhau AS matKhau, 
-               cv.tenChucVu AS tenChucVu, nv.ngayTao AS ngayTao, nv.ngaySua AS ngaySua, 
-               nv.trangThai AS trangThai
-        FROM NhanVien nv
-        JOIN nv.idChucVu cv
-        WHERE (:keyword IS NULL OR nv.maNhanVien LIKE %:keyword% 
-               OR nv.hoVaTen LIKE %:keyword% 
-               OR nv.email LIKE %:keyword%)
-    """)
-    Page<NhanVienCustom> searchNhanVien(@Param("keyword") String keyword, Pageable pageable);
+    @Query("""
+    SELECT nv.id AS id, nv.maNhanVien AS maNhanVien, nv.hoVaTen AS hoVaTen, 
+           nv.gioiTinh AS gioiTinh, nv.ngaySinh AS ngaySinh, nv.diaChi AS diaChi, 
+           nv.sdt AS sdt, nv.email AS email, nv.matKhau AS matKhau, 
+           cv.tenChucVu AS tenChucVu, nv.ngayTao AS ngayTao, nv.ngaySua AS ngaySua, 
+           nv.trangThai AS trangThai
+    FROM NhanVien nv
+    JOIN nv.idChucVu cv
+    WHERE (:keyword IS NULL OR nv.maNhanVien LIKE %:keyword% 
+           OR nv.hoVaTen LIKE %:keyword% 
+           OR nv.email LIKE %:keyword%)
+      AND (:trangThai IS NULL OR nv.trangThai = :trangThai)
+""")
+
+    Page<NhanVienCustom> searchNhanVien(@Param("keyword") String keyword,@Param("trangThai") Boolean trangThai, Pageable pageable);
     NhanVien findByEmailAndMatKhau(String email,String matKhau);
     NhanVien findByEmail(String email);
 }

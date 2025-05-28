@@ -158,8 +158,8 @@
 								<div class="cart-item-thanhtoan" th:each="item : ${lstGioHangChiTiet}">
 									<input type="checkbox" class="cart-checkbox mr-2" th:data-id="${item.id}"
 										th:data-price="${item.tongTien}" checked>
-									<img th:src="${item.idChiTietSanPham.hinhAnh}" alt=""
-										style="width: 50px; height: 50px; margin-right: 10px;">
+									<img th:src="@{'/images/' + ${#strings.arraySplit(item.idChiTietSanPham.hinhAnh, ',')[0].trim()}}"
+										alt="" style="width: 50px; height: 50px; margin-right: 10px;">
 									<div class="cart-item-info-thanhtoan">
 										<span
 											th:text="${item.idChiTietSanPham.idSanPham.tenSanPham +' Size: ' + item.idChiTietSanPham.idSize.tenSize + ', Màu: ' + item.idChiTietSanPham.idMauSac.tenMauSac}"></span>
@@ -296,22 +296,22 @@
 		</section>
 		<script>
 
-			document.addEventListener("DOMContentLoaded", function () {
-				updateTotalPrice();
-				const notyf = new Notyf({
-					dismissible: true,
-					duration: 3000,
-					ripple: true,
-					types: [
-						{
-							type: 'error',
-							background: 'red',
-							duration: 3000,
-							dismissible: true
-						}
-					]
-				});
-			});
+			// document.addEventListener("DOMContentLoaded", function () {
+			// 	updateTotalPrice();
+			// 	const notyf = new Notyf({
+			// 		dismissible: true,
+			// 		duration: 3000,
+			// 		ripple: true,
+			// 		types: [
+			// 			{
+			// 				type: 'error',
+			// 				background: 'red',
+			// 				duration: 3000,
+			// 				dismissible: true
+			// 			}
+			// 		]
+			// 	});
+			// });
 			async function capNhatGiaGiam(tongTien) {
 				const response = await fetch(`/gio-hang/changeChoice?tongTien=${encodeURIComponent(tongTien)}`);
 				if (!response.ok) {
@@ -570,7 +570,6 @@
 						tongTien: tongTien,
 						selectedIds: selectedIds
 					}
-					console.log(formData)
 					fetch('/gio-hang/addVoucher', {
 						method: 'POST',
 						headers: { 'Content-Type': 'application/json' },
@@ -717,9 +716,9 @@
 									}, 2000)
 								})
 								.catch(error => {
-									// setTimeout(() => {
-									// 	window.location.reload();
-									// }, 2000)
+									setTimeout(() => {
+										window.location.reload();
+									}, 2000)
 								});
 
 							// Nếu chọn thanh toán qua VNPAY
@@ -740,10 +739,20 @@
 									return response.json();
 								})
 								.then(data => {
-									notyf.success(data.message || "Thanh toán thành côngcông")
-									setTimeout(function () {
-										window.location.href = "/gio-hang/checkout-success"; // Điều hướng đến trang thanh toán VNPAY
-									}, 2000)
+									if (data.redirectUrl) {
+										window.location.href = data.redirectUrl; // Redirect đến VNPay
+									} else if (data.message) {
+										notyf.error(data.message);
+										setTimeout(() => {
+											window.location.href = "/gio-hang/checkout-success"
+										}, 1500)
+									} else {
+										notyf.error("Lỗi khi thanh toán");
+										setTimeout(() => {
+											window.location.href = "/gio-hang/checkout-failed"
+										}, 1500)
+										return;
+									}
 								})
 								.catch(error => {
 									setTimeout(() => {
@@ -785,12 +794,13 @@
 						}
 						items
 							.filter(item => !item.isOutOfStock)
+							.filter(item => !item.checkSP)
 							.forEach(item => {
 								const itemHTML = `
                     <div class="cart-item-thanhtoan">
                         <input type="checkbox" class="cart-checkbox mr-2" data-id="${item.idGioHangChiTiet}"
                                data-price="${item.tongTien}" checked>
-                        <img src="${item.hinhAnh}" alt=""
+                        <img src="${item.hinhAnh != null ? item.hinhAnh.split(',')[0].trim() : '/images/defaul-product.png'}" alt=""
                              style="width: 50px; height: 50px; margin-right: 10px;">
                         <div class="cart-item-info-thanhtoan">
                            <span> ${item.tenSanPham} </span>
@@ -855,6 +865,12 @@
 			$(document).ready(function () {
 				loadCheckout(); // chỉ gọi 1 lần khi tải trang
 			});
+			/*<![CDATA[*/
+			const errorMessage = /*[[${errorMessage}]]*/ null;
+			if (errorMessage) {
+				notyf.error(errorMessage);
+			}
+			/*]]>*/
 		</script>
 	</div>
 </body>

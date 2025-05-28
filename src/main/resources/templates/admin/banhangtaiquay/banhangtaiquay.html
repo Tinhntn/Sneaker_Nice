@@ -203,7 +203,7 @@
                             <tbody>
                                 <tr th:each="hdct : ${listHDCT}">
                                     <td th:text="${hdct.idChiTietSanPham.idSanPham.tenSanPham}"></td>
-                                    <td><img th:src=" ${hdct.idChiTietSanPham.hinhAnh}" alt="Image" style="width:80px;height:50px;" />
+                                    <td><img th:src=" ${hdct.idChiTietSanPham.hinhAnh!=null?hdct.idChiTietSanPham.hinhAnh.split(',')[0].trim():'/images/defaul-product.png'}" alt="Image" style="width:80px;height:50px;" />
                                     </td>
                                     <td th:text="${hdct.idChiTietSanPham.idSanPham.idHang.tenHang}"></td>
                                     <td th:text="${hdct.idChiTietSanPham.idSanPham.idDanhMuc.tenDanhMuc}"></td>
@@ -369,7 +369,7 @@
                                         <td th:text="${lst.idSanPham.idDanhMuc.tenDanhMuc}"></td>
                                         <td th:text="${lst.idSanPham.idChatLieu.tenChatLieu}"></td>
                                         <td th:text="${lst.idMauSac.tenMauSac}"></td>
-                                        <td><img th:src=" ${lst.hinhAnh}" alt="Image" style="width:80px;height:50px;" />
+                                        <td><img th:src=" ${lst.hinhAnh!=null?lst.hinhAnh.split(',')[0].trim():'/images/defaul-product.png'}" alt="Image" style="width:100px;height:100px;" />
                                         </td>
 
                                         <td th:text="${lst.soLuong}"></td>

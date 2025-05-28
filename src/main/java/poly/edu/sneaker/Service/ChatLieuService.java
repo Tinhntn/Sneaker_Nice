@@ -3,8 +3,10 @@ package poly.edu.sneaker.Service;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import poly.edu.sneaker.Model.ChatLieu;
+import poly.edu.sneaker.Model.Size;
 
 import java.lang.reflect.Array;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -27,4 +29,6 @@ public interface ChatLieuService {
      ChatLieu findByMaChatLieu(String maChatLieu);
      String taoMaChatLieu();
      boolean existsByTenChatLieu(String tenChatLieu);
+     Page<ChatLieu> locChatLieu(String keyword, LocalDate startDate, LocalDate endDate, Boolean trangThai, Pageable pageable);
+
 }

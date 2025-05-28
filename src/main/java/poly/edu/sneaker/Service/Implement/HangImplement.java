@@ -9,9 +9,8 @@ import poly.edu.sneaker.Model.NhanVien;
 import poly.edu.sneaker.Repository.HangRepository;
 import poly.edu.sneaker.Service.HangService;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
+import java.time.LocalDate;
+import java.util.*;
 
 @Service
 
@@ -61,6 +60,23 @@ public class HangImplement implements HangService {
         Random random = new Random();
         String maMaHang = "MH"+String.valueOf(1000+random.nextInt(9000));
         return maMaHang;
+    }
+
+    @Override
+    public Page<Hang> locHang(String keyword, LocalDate startDate, LocalDate endDate, Boolean trangThai, Pageable pageable) {
+        Date start = startDate != null ? java.sql.Date.valueOf(startDate) : null;
+        Date end = endDate != null ? java.sql.Date.valueOf(endDate) : null;
+        if (end != null) {
+            // Gán endDate thành 23:59:59 để bao phủ hết ngày đó
+            Calendar cal = Calendar.getInstance();
+            cal.setTime(end);
+            cal.set(Calendar.HOUR_OF_DAY, 23);
+            cal.set(Calendar.MINUTE, 59);
+            cal.set(Calendar.SECOND, 59);
+            cal.set(Calendar.MILLISECOND, 999);
+            end = cal.getTime();
+        }
+        return hangRepository.getHangByKeyword(keyword, start, end, trangThai, pageable);
     }
 
     @Override

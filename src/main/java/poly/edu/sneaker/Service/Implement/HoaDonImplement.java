@@ -7,8 +7,10 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import poly.edu.sneaker.Model.HoaDon;
 import poly.edu.sneaker.Model.HoaDonChiTiet;
+import poly.edu.sneaker.Model.KhuyenMai;
 import poly.edu.sneaker.Repository.HoaDonChiTietRepository;
 import poly.edu.sneaker.Repository.HoaDonRepository;
+import poly.edu.sneaker.Repository.KhuyenMaiRepository;
 import poly.edu.sneaker.Service.HoaDonService;
 
 import java.util.List;
@@ -21,6 +23,8 @@ public class HoaDonImplement implements HoaDonService {
     HoaDonRepository hoaDonRepository;
     @Autowired
     HoaDonChiTietRepository hoaDonChiTietRepository;
+    @Autowired
+    KhuyenMaiRepository khuyenMaiRepository;
     @Override
     public Page<HoaDon> findAll(Pageable pageable) {
         return hoaDonRepository.findAll(pageable);
@@ -84,6 +88,25 @@ public class HoaDonImplement implements HoaDonService {
         return hoaDonRepository.timHoaDonTheoIdKhuyenMai(idkm,PageRequest.of(page,size));
     }
 
-    //code quan
-
+    @Override
+    public void tinhLaiKhuyenMai(HoaDon hoaDon) {
+        //Tinh lại phieu giam gia khi khach hang thay doi so luong san pham
+        KhuyenMai khuyenMai = hoaDon.getIdKhuyenMai();
+        if(khuyenMai != null){
+            if(khuyenMai.getDieuKienApDung()>hoaDon.getTongTien()){
+                hoaDon.setTongTienGiam(0);
+                hoaDon.setThanhTien(hoaDon.getTongTien()-hoaDon.getTongTienGiam()+hoaDon.getPhiShip());
+            }else{
+                if(khuyenMai.getLoaiKhuyenMai()){
+                    hoaDon.setTongTienGiam(khuyenMai.getGiaTriGiam());
+                    hoaDon.setThanhTien(hoaDon.getTongTien()-hoaDon.getTongTienGiam()+hoaDon.getPhiShip());
+                }else{
+                    float tienGiamTamTinh = (hoaDon.getTongTien()*khuyenMai.getGiaTriGiam())/100;
+                    hoaDon.setTongTienGiam(Math.min(khuyenMai.getMucGiamGiaToiDa(), tienGiamTamTinh));
+                    hoaDon.setThanhTien(hoaDon.getTongTien()-hoaDon.getTongTienGiam()+hoaDon.getPhiShip());
+                }
+            }
+            hoaDonRepository.save(hoaDon);
+        }
+    }
 }

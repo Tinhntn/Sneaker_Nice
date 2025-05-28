@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+    layout:decorate="~{layout/main.html}">
+
+<body>
+    <div layout:fragment="content">
+        <div class="container mt-4">
+            <h2>Chỉnh sửa thông tin cá nhân</h2>
+            <form th:action="@{/nhan-vien/cap-nhat}" th:object="${nhanVien}" method="post">
+                <input type="hidden" th:field="*{id}">
+                <div class="mb-3">
+                    <label class="form-label">Mã nhân viên</label>
+                    <input type="text" class="form-control" th:field="*{maNhanVien}" readonly>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Họ và tên</label>
+                    <input type="text" class="form-control" th:field="*{hoVaTen}" required>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Giới tính</label>
+                    <select class="form-select" th:field="*{gioiTinh}">
+                        <option value="true">Nam</option>
+                        <option value="false">Nữ</option>
+                    </select>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Ngày sinh</label>
+                    <input type="date" class="form-control" th:field="*{ngaySinh}" required>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Địa chỉ</label>
+                    <input type="text" class="form-control" th:field="*{diaChi}">
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Số điện thoại</label>
+                    <input type="text" class="form-control" th:field="*{sdt}">
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Email</label>
+                    <input type="email" class="form-control" th:field="*{email}">
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Chức vụ</label>
+                    <select class="form-select" th:field="*{idChucVu}">
+                        <option th:each="chucVu : ${danhSachChucVu}" th:value="${chucVu.id}"
+                            th:text="${chucVu.tenChucVu}"></option>
+                    </select>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Hình ảnh</label>
+                    <input type="text" class="form-control" th:field="*{hinhAnh}">
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Trạng thái</label>
+                    <select class="form-select" th:field="*{trangThai}">
+                        <option value="true">Đang làm việc</option>
+                        <option value="false">Đã nghỉ việc</option>
+                    </select>
+                </div>
+
+                <button type="submit" class="btn btn-primary">Cập nhật</button>
+                <a th:href="@{/nhan-vien/thong-tin/} + ${nhanVien.id}" class="btn btn-secondary">Hủy</a>
+            </form>
+        </div>
+    </div>
+</body>
+
+</html>s

@@ -3,7 +3,9 @@ package poly.edu.sneaker.Service;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import poly.edu.sneaker.Model.MauSac;
+import poly.edu.sneaker.Model.Size;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -28,4 +30,7 @@ public interface MauSacService {
     MauSac findByMaMauSac(String maMauSac);
 
     String taoMaMauSac();
+
+    Page<MauSac> locMauSac(String keyword, LocalDate startDate, LocalDate endDate, Boolean trangThai, Pageable pageable);
+
 }

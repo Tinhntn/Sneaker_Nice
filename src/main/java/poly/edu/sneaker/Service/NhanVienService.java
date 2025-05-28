@@ -18,13 +18,13 @@ public interface NhanVienService {
 
     NhanVien findNhanVienById(int id);
 
-    Page<NhanVienCustom> search(String keyword, Pageable pageable);
+    Page<NhanVienCustom> search(String keyword,Boolean trangThai, Pageable pageable);
 
     NhanVien getNhanVienByEmailandMatKhau(String email, String matKhau);
 
     NhanVien getNhanVienByEmail(String email);
 
     boolean layLaiMatKhauNhanVien(NhanVien nhanVien);
-
+    List<NhanVien> findAllNhanVien();
     String taoMa();
 }

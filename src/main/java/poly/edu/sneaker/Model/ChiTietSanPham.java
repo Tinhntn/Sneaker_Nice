@@ -20,8 +20,6 @@ public class    ChiTietSanPham {
     @ManyToOne
     @JoinColumn(name="id_san_pham")
     private SanPham idSanPham;
-
-
     @ManyToOne
     @JoinColumn(name = "id_size")
     private Size idSize;

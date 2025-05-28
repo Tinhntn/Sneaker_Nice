@@ -24,4 +24,5 @@ public interface KhuyenMaiService {
     List<KhuyenMai> getKhuyenMaiByDieuKienGiam(float dieuKienGiam);
     KhuyenMai findByMaKhuyenMai(String maKM);
 
+
 }

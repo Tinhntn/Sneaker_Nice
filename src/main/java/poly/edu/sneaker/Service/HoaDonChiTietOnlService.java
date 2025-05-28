@@ -27,6 +27,6 @@ public interface HoaDonChiTietOnlService {
 
     void xacNhanHoaDon(int hoaDonId);
 //    HoaDonChiTiet findHoaDonChiTietByIdHoaDon(int idHoaDon);
-
+    List<HoaDonChiTiet> findHoaDonChiTietByHoaDonIdAndIdChiTietSanPham(int idHoaDon,int idChiTietSanPham);
 
 }

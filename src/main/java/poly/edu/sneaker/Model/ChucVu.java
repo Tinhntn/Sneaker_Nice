@@ -17,8 +17,6 @@ public class ChucVu {
     private Integer id;
     @Column(name = "ma_chuc_vu", unique = true, nullable = false)
     private String maChucVu;
-
     @Column(name = "ten_chuc_vu", nullable = false)
-
     private String tenChucVu;
 }

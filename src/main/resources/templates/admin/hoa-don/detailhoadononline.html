@@ -11,6 +11,293 @@
 <body>
     <div layout:fragment="content">
         <style>
+            #modalSanPham .modal-content {
+                border: none;
+                border-radius: 10px;
+                box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+            }
+
+            #modalSanPham .modal-header {
+                border-radius: 10px 10px 0 0;
+                padding: 1rem 1.5rem;
+            }
+
+            #modalSanPham .modal-body {
+                padding: 1.5rem;
+            }
+
+            /* Table style */
+            #modalSanPham .table {
+                margin-bottom: 0;
+            }
+
+            #modalSanPham .table th {
+                font-weight: 600;
+                text-transform: uppercase;
+                font-size: 0.8rem;
+                letter-spacing: 0.5px;
+                background-color: #f8f9fa !important;
+            }
+
+            #modalSanPham .table-danger td {
+                color: #dc3545;
+                opacity: 0.7;
+            }
+
+            /* Button style */
+            #modalSanPham .btn-success {
+                background-color: #28a745;
+                border-color: #28a745;
+                transition: all 0.3s;
+            }
+
+            #modalSanPham .btn-success:hover {
+                background-color: #218838;
+                border-color: #1e7e34;
+            }
+
+            /* Pagination style */
+            #modalSanPham .page-item.active .page-link {
+                background-color: #d3b788;
+                border-color: #f5f5f5;
+            }
+
+            #modalSanPham .page-link {
+                color: rgb(36, 34, 34);
+            }
+
+            /* Responsive */
+            @media (max-width: 768px) {
+                #modalSanPham .modal-body {
+                    padding: 1rem;
+                }
+
+                #modalSanPham .table-responsive {
+                    margin-bottom: 1rem;
+                }
+            }
+
+            /* General card styles */
+            .card {
+                border: none;
+                border-radius: 10px;
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+                transition: all 0.3s ease;
+                height: 100%;
+            }
+
+            .card:hover {
+                box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
+            }
+
+            .card-header {
+                background-color: #fff;
+                border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+                padding: 1.25rem 1.5rem;
+                border-radius: 10px 10px 0 0 !important;
+            }
+
+            .card-header h5 {
+                font-weight: 600;
+                color: #2c3e50;
+                font-size: 1.1rem;
+                margin: 0;
+            }
+
+            .card-body {
+                padding: 1.5rem;
+            }
+
+            /* Payment information section */
+            .text-muted.small {
+                font-size: 1rem;
+                color: #6c757d !important;
+                font-weight: 500;
+                margin-bottom: 0.25rem;
+                display: block;
+            }
+
+            .card-body p.mb-0 {
+                font-size: 0.95rem;
+                color: #495057;
+                font-weight: 500;
+                margin: 0;
+            }
+
+            /* Summary card styles */
+            .summary-card {
+                background-color: #f8fafc;
+            }
+
+            .summary-item {
+                display: flex;
+                justify-content: space-between;
+                margin-bottom: 0.8rem;
+                font-size: 0.95rem;
+            }
+
+            .summary-item span:first-child {
+                color: #6c757d;
+                font-weight: 500;
+            }
+
+            .summary-item span:last-child {
+                color: #495057;
+                font-weight: 600;
+            }
+
+            .summary-item.text-danger span {
+                color: #dc3545 !important;
+            }
+
+            .summary-item.total-amount {
+                margin-top: 1rem;
+                padding-top: 0.8rem;
+                border-top: 1px dashed #dee2e6;
+            }
+
+            .summary-item.total-amount span {
+                font-size: 1.1rem;
+                color: #2c3e50 !important;
+                font-weight: 700;
+            }
+
+            hr {
+                margin: 1.25rem 0;
+                border-top: 1px dashed #e9ecef;
+            }
+
+            /* Payment status styles (đã có từ trước) */
+            .payment-status-container {
+                padding: 1rem;
+                background-color: #f8f9fa;
+                border-radius: 8px;
+                border-left: 4px solid #6c757d;
+            }
+
+            .payment-status-label {
+                font-weight: 600;
+                color: #495057;
+                text-transform: uppercase;
+                font-size: 0.8rem;
+                letter-spacing: 0.5px;
+            }
+
+            .payment-badge {
+                display: inline-flex;
+                align-items: center;
+                padding: 0.5rem 1rem;
+                border-radius: 20px;
+                font-size: 0.9rem;
+                font-weight: 500;
+            }
+
+            .payment-badge-success {
+                background-color: #e6f7ee;
+                color: #28a745;
+                border: 1px solid #c3e6cb;
+            }
+
+            .payment-badge-warning {
+                background-color: #fff3cd;
+                color: #856404;
+                border: 1px solid #ffeeba;
+            }
+
+            .payment-badge-danger {
+                background-color: #fdecea;
+                color: #dc3545;
+                border: 1px solid #f5c6cb;
+            }
+
+            .payment-status-group {
+                display: flex;
+                flex-direction: column;
+                gap: 0.5rem;
+            }
+
+            .payment-badge i {
+                font-size: 1rem;
+            }
+
+            /* Responsive adjustments */
+            @media (max-width: 768px) {
+                .col-md-6 {
+                    margin-bottom: 1.5rem;
+                }
+
+                .card-header {
+                    padding: 1rem;
+                }
+
+                .card-body {
+                    padding: 1.25rem;
+                }
+
+                .summary-item {
+                    font-size: 0.9rem;
+                }
+
+                .summary-item.total-amount span {
+                    font-size: 1rem;
+                }
+            }
+
+            /* Payment status container */
+            .payment-status-container {
+                padding: 1rem;
+                background-color: #f8f9fa;
+                border-radius: 8px;
+                border-left: 4px solid #6c757d;
+            }
+
+            .payment-status-label {
+                font-weight: 600;
+                color: #495057;
+                text-transform: uppercase;
+                font-size: 0.8rem;
+                letter-spacing: 0.5px;
+            }
+
+            /* Payment badges */
+            .payment-badge {
+                display: inline-flex;
+                align-items: center;
+                padding: 0.5rem 1rem;
+                border-radius: 20px;
+                font-size: 0.9rem;
+                font-weight: 500;
+            }
+
+            .payment-badge-success {
+                background-color: #e6f7ee;
+                color: #28a745;
+                border: 1px solid #c3e6cb;
+            }
+
+            .payment-badge-warning {
+                background-color: #fff3cd;
+                color: #856404;
+                border: 1px solid #ffeeba;
+            }
+
+            .payment-badge-danger {
+                background-color: #fdecea;
+                color: #dc3545;
+                border: 1px solid #f5c6cb;
+            }
+
+            .payment-status-group {
+                display: flex;
+                flex-direction: column;
+                gap: 0.5rem;
+            }
+
+            /* Icon styles */
+            .payment-badge i {
+                font-size: 1rem;
+            }
+
             /* CSS tổng thể */
             .invoice-container {
                 background-color: #f8f9fa;
@@ -145,8 +432,6 @@
 
             /* Đã thanh toán - chờ xác nhận */
         </style>
-
-
         <div class="container-fluid invoice-container">
             <!-- Header và nút hành động -->
             <div class="card mb-4">
@@ -159,12 +444,15 @@
                             th:unless="${hoaDon.trangThai == 4 or hoaDon.trangThai == 5 or hoaDon.trangThai == 6 or hoaDon.trangThai==11}">
                             <i class="fas fa-times-circle me-1"></i> Hủy đơn
                         </button>
-
                         <button class="btn btn-success btn-action" id="xacnhan" data-bs-toggle="modal"
                             data-bs-target="#exampleModal"
                             th:unless="${hoaDon.trangThai == 6 or hoaDon.trangThai == 5 or hoaDon.trangThai==11}"
                             onclick="xacNhanHoaDon()">
                             <i class="fas fa-check-circle me-1"></i> Đổi trạng thái
+                        </button>
+                        <button class="btn btn-outline-danger btn-action" id="quayLaiTrangThaiTruoc"
+                            th:value="${hoaDon.id}">
+                            <i class="fa-solid fa-rotate-left"></i> Quay lại
                         </button>
                         <button class="btn btn-warning btn-action" id="inhoadon" th:unless="${hoaDon.trangThai != 3}"
                             th:value="${hoaDon.id}" onclick="openInvoicePage(this)">
@@ -197,7 +485,6 @@
                                 <i th:if="${ls.trangThai == 6}" class="fas fa-times-circle"></i>
                                 <i th:if="${ls.trangThai == 10}" class="fas fa-venus-double"></i>
                                 <i th:if="${ls.trangThai == 11}" class="fas fa-ban" style="color: red;"></i>
-
                             </div>
                             <div class="timeline-content">
                                 <div class="d-flex justify-content-between">
@@ -229,10 +516,6 @@
                     <div class="card mb-4">
                         <div class="card-header d-flex justify-content-between align-items-center">
                             <h5 class="mb-0">Thông tin khách hàng</h5>
-                            <button th:unless="${hoaDon.trangThai != 2 }" class="btn btn-sm btn-warning"
-                                data-bs-toggle="modal" data-bs-target="#capnhatlichsu">
-                                <i class="fas fa-edit me-1"></i> Cập nhật
-                            </button>
                         </div>
                         <div class="card-body">
                             <div class="mb-3">
@@ -265,9 +548,9 @@
                     <div class="card mb-4">
                         <div class="card-header">
                             <h5 class="mb-0">Thông tin vận chuyển</h5>
-                            <button th:unless="${ hoaDon.trangThai !=3}" class="btn btn-sm btn-warning"
-                                data-bs-toggle="modal" data-bs-target="#capnhatlichsu">
-                                <i class="fas fa-edit me-1"></i> Cập nhật
+                            <button th:unless="${ hoaDon.trangThai !=3 && hoaDon.trangThai!=2}"
+                                class="btn btn-sm btn-warning" data-bs-toggle="modal" data-bs-target="#capnhatlichsu">
+                                <i class="fas fa-edit me-1"></i> Cập nhậts
                             </button>
                         </div>
 
@@ -293,10 +576,9 @@
             <div class="card mb-4">
                 <div class="card-header d-flex justify-content-between align-items-center">
                     <h5 class="mb-0">Danh sách sản phẩm</h5>
-                    <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal"
-                        data-bs-target="#modalSanPham"
-                        th:unless="${hoaDon == null or(hoaDon.trangThai != 2 and hoaDon.trangThai!=3)}">
-                        <i class="fas fa-plus me-1"></i> Thêm sản phẩm
+                    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalSanPham"
+                        th:if="${hoaDon.trangThai==2 or hoaDon.trangThai==3}" th:data-hoadonid="${hoaDon.id}">
+                        <i class="fas fa-plus me-1"></i>Thêm sản phẩm
                     </button>
                 </div>
                 <div class="card-body">
@@ -306,31 +588,32 @@
                                 <tr>
                                     <th>Hình ảnh</th>
                                     <th>Tên sản phẩm</th>
-                                    <th class="text-end">Đơn giá</th>
-                                    <th class="text-center">Số lượng</th>
-                                    <th class="text-center">Size</th>
-                                    <th class="text-end">Thành tiền</th>
-                                    <th class="text-center">Thao tác</th>
+                                    <th>Màu sắc</th>
+                                    <th>Size</th>
+                                    <th>Đơn giá</th>
+                                    <th>Số lượng</th>
+                                    <th>Thành tiền</th>
+                                    <th>Thao tác</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 <tr th:each="cthd : ${chiTietHoaDon}">
                                     <td>
-                                        <img th:src="${cthd.idChiTietSanPham.hinhAnh}" class="product-img"
-                                            alt="Sản phẩm">
+                                        <img th:src="${cthd.idChiTietSanPham.hinhAnh!=null?cthd.idChiTietSanPham.hinhAnh.split(',')[0].trim():'/images/defaul-product.png'}"
+                                            class="product-img" alt="Sản phẩm">
                                     </td>
                                     <td th:text="${cthd.idChiTietSanPham.idSanPham.tenSanPham}"></td>
-                                    <td class="text-end"
+                                    <td th:text="${cthd.idChiTietSanPham.idMauSac.tenMauSac}"></td>
+                                    <td th:text="${cthd.idChiTietSanPham.idSize.tenSize}"></td>
+                                    <td
                                         th:text="${#numbers.formatDecimal(cthd.donGia, 0, 'COMMA', 0, 'POINT')} + ' VNĐ'">
                                     </td>
                                     <td class="text-center">
-
                                         <input type="number"
                                             class="form-control d-inline-block text-center soLuongInput"
                                             style="width: 70px;" th:value="${cthd.soLuong}" min="1"
                                             th:disabled="${hoaDon == null or (hoaDon.trangThai != 2 and hoaDon.trangThai!=3)}" />
                                     </td>
-                                    <td class="text-center" th:text="${cthd.idChiTietSanPham.idSize.tenSize}"></td>
                                     <td class="text-end"
                                         th:text="${#numbers.formatDecimal(cthd.soLuong*cthd.donGia, 0, 'COMMA', 0, 'POINT')} + ' VNĐ'">
                                     </td>
@@ -364,17 +647,62 @@
                         <div class="card-body">
                             <div class="mb-3">
                                 <label class="text-muted small">Phương thức thanh toán</label>
-                                <p class="mb-0" th:text="${hoaDon.loaiThanhToan == 1 ? 'Chuyển khoản' : 'Tiền mặt'}">
+                                <p class="mb-0"
+                                    th:text="${hoaDon.loaiThanhToan ? 'Thanh toán bằng VNPay ' : 'Thanh toán khi nhận hàng'}">
                                 </p>
                             </div>
-                            <div class="mb-3">
-                                <label class="text-muted small">Trạng thái thanh toán</label>
-                                <p class="mb-0">
-                                    <span th:if="${hoaDon.trangThai == 1}" class="badge bg-success">Đã thanh
-                                        toán</span>
-                                    <span th:if="${hoaDon.trangThai == 0}" class="badge bg-warning">Chưa thanh
-                                        toán</span>
-                                </p>
+                            <div class="payment-status-container mb-4">
+                                <label class="payment-status-label">TRẠNG THÁI THANH TOÁN</label>
+                                <div class="payment-status-content mt-2">
+                                    <!-- Đã thanh toán đủ -->
+                                    <div th:if="${hoaDon.loaiThanhToan and hoaDon.tienThua == 0 and (hoaDon.tienKhachDua-hoaDon.thanhTien)>=0}"
+                                        class="payment-badge payment-badge-success">
+                                        <i class="fas fa-check-circle me-2"></i>
+                                        <span>Đã thanh toán: </span>
+                                        <span
+                                            th:text="${#numbers.formatDecimal(hoaDon.tienKhachDua,0,'COMMA',0,'POINT') + ' VNĐ'}"></span>
+                                    </div>
+                                    <!-- Đã thanh toán nhưng có tiền thừa -->
+                                    <div th:if="${hoaDon.loaiThanhToan and hoaDon.tienThua > 0}"
+                                        class="payment-status-group">
+                                        <div class="payment-badge payment-badge-success mb-2">
+                                            <i class="fas fa-check-circle me-2"></i>
+                                            <span>Đã thanh toán: </span>
+                                            <span
+                                                th:text="${#numbers.formatDecimal(hoaDon.tienKhachDua,0,'COMMA',0,'POINT') + ' VNĐ'}"></span>
+                                        </div>
+                                        <div class="payment-badge payment-badge-danger">
+                                            <i class="fas fa-exchange-alt me-2"></i>
+                                            <span>Tiền thừa trả khách: </span>
+                                            <span
+                                                th:text="${#numbers.formatDecimal(hoaDon.tienThua,0,'COMMA',0,'POINT') + ' VNĐ'}"></span>
+                                        </div>
+                                    </div>
+                                    <!-- Đã thanh toán nhưng có tiền thừa -->
+                                    <div th:if="${hoaDon.loaiThanhToan and (hoaDon.thanhTien-hoaDon.tienKhachDua)>0}"
+                                        class="payment-status-group">
+                                        <div class="payment-badge payment-badge-success mb-2">
+                                            <i class="fas fa-check-circle me-2"></i>
+                                            <span>Đã thanh toán: </span>
+                                            <span
+                                                th:text="${#numbers.formatDecimal(hoaDon.tienKhachDua,0,'COMMA',0,'POINT') + ' VNĐ'}"></span>
+                                        </div>
+                                        <div class="payment-badge payment-badge-danger">
+                                            <i class="fas fa-exchange-alt me-2"></i>
+                                            <span>Còn phải trả: </span>
+                                            <span
+                                                th:text=" ' '+${#numbers.formatDecimal((hoaDon.thanhTien-hoaDon.tienKhachDua),0,'COMMA',0,'POINT') + ' VNĐ'}"></span>
+                                        </div>
+                                    </div>
+
+                                    <!-- Chưa thanh toán -->
+                                    <div th:if="${not hoaDon.loaiThanhToan}" class="payment-badge payment-badge-danger">
+                                        <i class="fas fa-exclamation-circle me-2"></i>
+                                        <span>Còn phải thanh toán: </span>
+                                        <span
+                                            th:text="' '+ ${#numbers.formatDecimal(hoaDon.thanhTien,0,'COMMA',0,'POINT') + ' VNĐ'}"></span>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -396,6 +724,17 @@
                                     th:text="'-' + ${#numbers.formatDecimal(hoaDon.tongTienGiam, 0, 'COMMA', 0, 'POINT')} + ' VNĐ'"></span>
                             </div>
                             <div class="summary-item">
+                                <span>Mã giảm giá:</span>
+                                <span class="text-danger" th:text="${hoaDon.idKhuyenMai != null} ?
+        (hoaDon.idKhuyenMai.loaiKhuyenMai ?
+            ${#numbers.formatDecimal(hoaDon.idKhuyenMai.giaTriGiam, 0, 'COMMA', 0, 'POINT')} + ' % cho đơn hàng từ ' +
+           ${ #numbers.formatDecimal(hoaDon.idKhuyenMai.dieuKienApDung, 0, 'COMMA', 0, 'POINT')} + ' VNĐ ' :
+            ${hoaDon.idKhuyenMai.giaTriGiam} + 'VNĐ cho đơn hàng từ ' +
+           ${ #numbers.formatDecimal(hoaDon.idKhuyenMai.dieuKienApDung, 0, 'COMMA', 0, 'POINT')} + ' VNĐ')
+        : 'Không có mã khuyến mãi'">
+                                </span>
+                            </div>
+                            <div class="summary-item">
                                 <span>Phí vận chuyển:</span>
                                 <span
                                     th:text="${#numbers.formatDecimal(hoaDon.phiShip, 0, 'COMMA', 0, 'POINT')} + ' VNĐ'"></span>
@@ -411,68 +750,60 @@
                 </div>
             </div>
 
-            <!-- Các modal (giữ nguyên từ code sgốc) -->
-            <!-- Modal thay đổi trạng thái -->
-            <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel"
-                aria-hidden="true">
-                <!-- Nội dung modal giữ nguyên -->
+            <!-- Modal đổi trạng thái -->
+            <div class="modal fade" id="exampleModal" tabindex="-1" aria-hidden="true">
                 <div class="modal-dialog">
                     <div class="modal-content">
                         <div class="modal-header">
-                            <h1 class="modal-title fs-5" id="exampleModalLabel">Ghi chú</h1>
+                            <h5 class="modal-title">Đổi trạng thái đơn hàng</h5>
                             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                         </div>
                         <div class="modal-body">
-                            <form id="cancelForm">
-                                <div class="form-group">
-                                    <textarea class="form-control large-textarea" id="note" required></textarea>
+                            <form>
+                                <div class="mb-3">
+                                    <label class="form-label">Ghi chú</label>
+                                    <textarea class="form-control" id="note" required></textarea>
                                 </div>
-                                <div class="form-group">
-                                    <label for="status">Trạng thái:</label>
-                                    <select class="form-control" id="status">
-                                        <option value="" disabled selected>Vui lòng chọn trạng thái</option>
-                                        <option th:if="${hoaDon.trangThai == 2||hoaDon.trangThai==10}" th:value="2">
-                                            Xác
-                                            nhận</option>
-                                        <option th:if="${hoaDon.trangThai == 3}" th:value="3">Đã
-                                            lấy hàng</option>
-                                        <option th:if="${hoaDon.trangThai == 4}" th:value="4">Đã
-                                            giao</option>
-                                        <option th:if="${hoaDon.trangThai == 4}" th:value="11">Giao thất bại</option>
+                                <div class="mb-3">
+                                    <label class="form-label">Trạng thái mới</label>
+                                    <select class="form-select" id="status">
+                                        <option value="" disabled selected>Chọn trạng thái</option>
+                                        <option th:if="${hoaDon.trangThai == 2 || hoaDon.trangThai == 10}" value="3">Xác
+                                            nhận đơn</option>
+                                        <option th:if="${hoaDon.trangThai == 3}" value="4">Bắt đầu giao hàng</option>
+                                        <option th:if="${hoaDon.trangThai == 4}" value="5">Xác nhận đã giao</option>
+                                        <option th:if="${hoaDon.trangThai == 4}" value="11">Giao hàng thất bại</option>
                                     </select>
                                 </div>
                             </form>
                         </div>
                         <div class="modal-footer">
                             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
-                            <button type="button" class="btn btn-primary" id="confirmCancel">Thay
-                                đổi</button>
+                            <button type="button" class="btn btn-primary" id="confirmCancel">Xác nhận</button>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <!-- Modal hủy hóa đơn -->
-            <div class="modal fade" id="modalhuyhoadon" tabindex="-1" aria-labelledby="exampleModalLabel"
-                aria-hidden="true">
-                <!-- Nội dung modal giữ nguyên -->
+            <!-- Modal hủy đơn -->
+            <div class="modal fade" id="modalhuyhoadon" tabindex="-1" aria-hidden="true">
                 <div class="modal-dialog">
                     <div class="modal-content">
                         <div class="modal-header">
-                            <h1 class="modal-title fs-5" id="exampleModalLabel">Ghi chú</h1>
+                            <h5 class="modal-title">Hủy đơn hàng</h5>
                             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                         </div>
                         <div class="modal-body">
-                            <form id="cancelForm">
-                                <div class="form-group">
-                                    <textarea class="form-control large-textarea" id="notehuyhoadon"
-                                        required></textarea>
+                            <form>
+                                <div class="mb-3">
+                                    <label class="form-label">Lý do hủy đơn</label>
+                                    <textarea class="form-control" id="notehuyhoadon" required></textarea>
                                 </div>
                             </form>
                         </div>
                         <div class="modal-footer">
                             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
-                            <button type="button" class="btn btn-primary" id="huyhoadon">Thay đổi</button>
+                            <button type="button" class="btn btn-danger" id="huyhoadon">Xác nhận hủy</button>
                         </div>
                     </div>
                 </div>
@@ -481,65 +812,137 @@
             <!-- Modal thêm sản phẩm -->
             <div class="modal fade" id="modalSanPham" tabindex="-1" aria-labelledby="modalSanPhamLabel"
                 aria-hidden="true">
-                <!-- Nội dung modal giữ nguyên -->
-                <div class="modal-dialog modal-lg">
+                <div class="modal-dialog modal-xl">
                     <div class="modal-content">
-                        <div class="modal-header">
-                            <h5 class="modal-title" id="modalSanPhamLabel">Danh sách sản phẩm chi tiết</h5>
-                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        <!-- Modal Header -->
+                        <div class="modal-header bg-primary text-white">
+                            <h5 class="modal-title" id="modalSanPhamLabel">
+                                <i class="fas fa-boxes me-2"></i>Danh sách sản phẩm chi tiết
+                            </h5>
+                            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                                aria-label="Close"></button>
                         </div>
+
+                        <!-- Modal Body -->
                         <div class="modal-body">
-                            <table class="table table-bordered">
-                                <thead>
-                                    <tr>
-                                        <th>Hình ảnh</th>
-                                        <th>Tên sản phẩm</th>
-                                        <th>Giá bán</th>
-                                        <th>Số lượng</th>
-                                        <th>Thao tác</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr th:each="sanPhamChiTiet : ${sanPhamChiTiet}">
-                                        <td><img th:src="${sanPhamChiTiet.hinhAnh}" alt="Hình ảnh"
-                                                style="width:80px;height:50px;">
-                                        </td>
-                                        <td th:text="${sanPhamChiTiet.idSanPham.tenSanPham}"></td>
-                                        <td
-                                            th:text="${#numbers.formatDecimal(sanPhamChiTiet.giaBan, 0, 'COMMA', 0, 'POINT')} + ' VNĐ'">
-                                        </td>
-                                        <td th:text="${sanPhamChiTiet.soLuong}"></td>
-                                        <td>
-                                            <button class="btn btn-success btnThemVaoHoaDon"
-                                                th:data-id="${sanPhamChiTiet.id}"
-                                                th:data-ten="${sanPhamChiTiet.idSanPham.tenSanPham}"
-                                                th:data-gia="${sanPhamChiTiet.giaBan}"
-                                                th:data-hinh="${sanPhamChiTiet.hinhAnh}">
-                                                Thêm
-                                            </button>
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </table>
+                            <!-- Bộ lọc sản phẩm -->
+                            <form id="filterForm" class="mb-4">
+                                <div class="row g-3">
+                                    <!-- Tìm kiếm -->
+                                    <div class="col-md-3">
+                                        <label for="keyword" class="form-label">Tìm kiếm</label>
+                                        <div class="input-group">
+                                            <span class="input-group-text"><i class="fas fa-search"></i></span>
+                                            <input type="text" id="keyword" class="form-control"
+                                                placeholder="Tên sản phẩm..." name="keyword" th:value="${keyword}">
+                                        </div>
+                                    </div>
+
+                                    <!-- Lọc theo danh mục -->
+                                    <div class="col-md-3">
+                                        <label for="danhMucFilter" class="form-label">Danh mục</label>
+                                        <select name="locTheoDanhMuc" class="form-select" id="danhMucFilter">
+                                            <option value="">Tất cả danh mục</option>
+                                            <option th:each="danhMuc : ${lstDanhMuc}" th:value="${danhMuc.id}"
+                                                th:text="${danhMuc.tenDanhMuc}"
+                                                th:selected="${locTheoDanhMuc != null and locTheoDanhMuc == danhMuc.id}">
+                                            </option>
+                                        </select>
+                                    </div>
+
+                                    <!-- Lọc theo chất liệu -->
+                                    <div class="col-md-3">
+                                        <label for="chatLieuFilter" class="form-label">Chất liệu</label>
+                                        <select name="locTheoChatLieu" class="form-select" id="chatLieuFilter">
+                                            <option value="">Tất cả chất liệu</option>
+                                            <option th:each="chatLieu : ${lstChatLieu}" th:value="${chatLieu.id}"
+                                                th:text="${chatLieu.tenChatLieu}"
+                                                th:selected="${locTheoChatLieu != null and locTheoChatLieu == chatLieu.id}">
+                                            </option>
+                                        </select>
+                                    </div>
+
+                                    <!-- Lọc theo hãng -->
+                                    <div class="col-md-3">
+                                        <label for="hangFilter" class="form-label">Hãng</label>
+                                        <select name="locTheoHang" class="form-select" id="hangFilter">
+                                            <option value="">Tất cả hãng</option>
+                                            <option th:each="hang : ${lstHang}" th:value="${hang.id}"
+                                                th:text="${hang.tenHang}"
+                                                th:selected="${locTheoHang != null and locTheoHang == hang.id}">
+                                            </option>
+                                        </select>
+                                    </div>
+
+                                    <!-- Lọc theo màu -->
+                                    <div class="col-md-3">
+                                        <label for="colorFilter" class="form-label">Màu sắc</label>
+                                        <select name="locTheoMauSac" class="form-select" id="colorFilter">
+                                            <option value="">Tất cả màu</option>
+                                            <option th:each="mauSac : ${lstMauSac}" th:value="${mauSac.id}"
+                                                th:text="${mauSac.tenMauSac}"
+                                                th:selected="${locTheoMauSac != null and locTheoMauSac == mauSac.id}">
+                                            </option>
+                                        </select>
+                                    </div>
+
+                                    <!-- Lọc theo size -->
+                                    <div class="col-md-3">
+                                        <label for="sizeFilter" class="form-label">Kích cỡ</label>
+                                        <select name="locTheoSize" class="form-select" id="sizeFilter">
+                                            <option value="">Tất cả size</option>
+                                            <option th:each="size : ${lstSize}" th:value="${size.id}"
+                                                th:text="${size.tenSize}"
+                                                th:selected="${locTheoSize != null and locTheoSize == size.id}">
+                                            </option>
+                                        </select>
+                                    </div>
+
+                                    <!-- Nút lọc -->
+                                    <div class="col-md-3 d-flex align-items-end">
+                                        <button type="button" id="applyFilter" class="btn btn-primary me-2 flex-grow-1">
+                                            <i class="fas fa-filter me-2"></i>Lọc
+                                        </button>
+                                        <button type="button" id="clearFilters" class="btn btn-outline-secondary">
+                                            <i class="fas fa-times"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </form>
+
+                            <!-- Bảng sản phẩm -->
+                            <div class="table-responsive">
+                                <table id="productTable" class="table table-hover table-bordered align-middle">
+                                    <thead class="table-light">
+                                        <tr>
+                                            <th width="120">Hình ảnh</th>
+                                            <th>Tên sản phẩm</th>
+                                            <th width="150">Giá bán</th>
+                                            <th width="120">Số lượng</th>
+                                            <th width="120">Thao tác</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <!-- Nội dung sẽ được tải bằng AJAX -->
+                                    </tbody>
+                                </table>
+                            </div>
+
+                            <!-- Phân trang -->
+                            <nav aria-label="Page navigation" class="mt-4">
+                                <ul class="pagination justify-content-center">
+                                    <!-- Nội dung sẽ được tải bằng AJAX -->
+                                </ul>
+                            </nav>
+
                         </div>
-                        <nav aria-label="Page navigation" class="mt-3">
-                            <ul class="pagination justify-content-center">
-                                <li class="page-item" th:classappend="${currentPageCTSP == 0} ? 'disabled' : ''">
-                                    <a th:href="@{/hoaDon/detailhoadononlinect(page=${currentPageCTSP - 1}, size=${10})}"
-                                        class="page-link">«</a>
-                                </li>
-                                <li class="page-item" th:each="i : ${#numbers.sequence(0, totalPagesCTSP - 1)}"
-                                    th:classappend="${i == currentPageCTSP} ? 'active' : ''">
-                                    <a th:href="@{/hoaDon/detailhoadononlinect(page=${i}, size=${10})}"
-                                        class="page-link" th:text="${i + 1}"></a>
-                                </li>
-                                <li class="page-item"
-                                    th:classappend="${currentPageCTSP + 1 == totalPagesCTSP} ? 'disabled' : ''">
-                                    <a th:href="@{/hoaDon/detailhoadononlinect(page=${currentPageCTSP+1}, size=${10})}"
-                                        class="page-link">»</a>
-                                </li>
-                            </ul>
-                        </nav>
+
+                        <!-- Modal Footer -->
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">
+                                <i class="fas fa-times me-1"></i>Đóng
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -557,7 +960,7 @@
                         <div class="modal-body">
 
                             <!-- Thông tin khách hàng -->
-                            <div th:attr="disabled=${hoaDon.trangThai==2}">
+                            <div>
                                 <h5>Thông tin khách hàng:</h5>
                                 <div class="row row-cols-2">
                                     <div class="col mb-3">
@@ -598,9 +1001,8 @@
                             </div>
 
                             <!-- Thông tin giao hàng (Hiển thị nếu trạng thái == 3) -->
-                            <div th:if="${hoaDon.trangThai==3}">
+                            <div>
                                 <h5>Thông tin đơn vị giao hàng:</h5>
-
                                 <div class="row row-cols-2">
                                     <div class="col mb-3">
                                         <label for="tenNguoiGiao" class="form-label">Tên người giao<span
@@ -693,20 +1095,6 @@
                     });
                 });
             });
-        </script>
-
-
-        <!-- Modal -->
-
-
-
-
-        <!--    Thêm sản phẩm vào hóa đơn-->
-        <script>
-            let notyf = new Notyf({
-                duration: 3000,
-                position: { x: "right", y: "top" },
-            });
 
             function getIdHoaDonFromPath() {
                 let pathParts = window.location.pathname.split("/");
@@ -722,7 +1110,7 @@
 
             $(document).ready(function () {
                 $('#muaLaiDonHang').click(function () {
-                    const idHoaDon = $(this).data('id');
+                    const idHoaDon = getIdHoaDonFromPath();
 
                     Swal.fire({
                         title: 'Xác nhận?',
@@ -734,41 +1122,44 @@
                         reverseButtons: true
                     }).then((result) => {
                         if (result.isConfirmed) {
-                            $.ajax({
-                                url: '/hoadononline/MuaLai',
-                                method: 'POST',
-                                contentType: 'application/json',
-                                data: JSON.stringify(idHoaDon),
-                                success: function (response) {
-                                    notyf.success("Mua lại thành công");
-                                    notyf.success("Sản phẩm đã hến"+response.spHet)
-                                    notyf.success("Sản phẩm không đủ số lượng"+response.spKhongDu)
-                                    if (response.URL) {
+                            fetch("/hoadononline/MuaLai?idHoaDon=" + idHoaDon, {
+                                method: "POST"
+                            })
+                                .then(response => response.json())
+                                .then(data => {
+                                    if (data.URL) {
+                                        notyf.success(data.message);
                                         setTimeout(() => {
-                                            window.location.href = '/' + response.URL;
+                                            window.location.href = "/" + data.URL;
                                         }, 2000);
+                                    } else {
+                                        notyf.error(data.message);
                                     }
-                                },
-                                error: function (xhr) {
-                                    notyf.error("Mua lại thất bại");
-                                }
-                            });
+                                })
+                                .catch(error => {
+                                    notyf.error("Lỗi hệ thống! Vui lòng thử lại sau.");
+                                });
+
                         }
                     });
                 });
             });
             document.addEventListener("DOMContentLoaded", function () {
-                document.querySelectorAll(".btnThemVaoHoaDon").forEach(button => {
-                    button.addEventListener("click", function () {
-                        let idChiTietSanPham = parseInt(this.getAttribute("data-id"));
-                        let tenSanPham = this.getAttribute("data-ten");
-                        let giaBan = parseFloat(this.getAttribute("data-gia"));
-                        let hinhAnh = this.getAttribute("data-hinh");
-                        let soLuong = 1; // Mặc định là 1
-                        let idHoaDon = getIdHoaDonFromPath(); // Lấy ID từ URL
+                // Sử dụng event delegation thay vì gắn trực tiếp
+                document.addEventListener("click", function (event) {
+                    // Kiểm tra nếu phần tử được click có class btnThemVaoHoaDon hoặc nằm trong phần tử có class đó
+                    const button = event.target.closest('.btnThemVaoHoaDon');
+
+                    if (button && !button.disabled) {
+                        let idChiTietSanPham = parseInt(button.getAttribute("data-id"));
+                        let tenSanPham = button.getAttribute("data-ten");
+                        let giaBan = parseFloat(button.getAttribute("data-gia"));
+                        let hinhAnh = button.getAttribute("data-hinh");
+                        let soLuong = 1;
+                        let idHoaDon = getIdHoaDonFromPath();
 
                         if (!idHoaDon) {
-                            alert("Không tìm thấy ID hóa đơn trên URL. Vui lòng kiểm tra lại!");
+                            notyf.error("Không tìm thấy ID hóa đơn trên URL. Vui lòng kiểm tra lại!");
                             return;
                         }
 
@@ -776,29 +1167,28 @@
                             method: "POST",
                             headers: { "Content-Type": "application/json" },
                             body: JSON.stringify({
-                                idHoaDon: idHoaDon,  // Truyền ID trực tiếp
+                                idHoaDon: idHoaDon,
                                 idChiTietSanPham: idChiTietSanPham,
                                 soLuong: soLuong,
                                 donGia: giaBan,
                                 trangThai: 1
                             })
                         })
-                            .then(response => response.json()) // Chuyển response thành JSON
+                            .then(response => response.json())
                             .then(data => {
                                 if (data.success) {
-
                                     let tbody = document.querySelector("tbody");
                                     let existingRow = tbody.querySelector(`tr[data-id="${idChiTietSanPham}"]`);
+
                                     if (existingRow) {
-                                        notyf.success("Thêm thành công")
-                                        // Nếu sản phẩm đã tồn tại, cập nhật số lượng
+                                        notyf.success("Thêm thành công");
                                         let input = existingRow.querySelector(".soLuongInput");
                                         input.value = parseInt(input.value) + 1;
                                     } else {
-                                        notyf.success("Thêm thành công")
+                                        notyf.success("Thêm thành công");
                                         setTimeout(() => {
-                                            window.location.reload()
-                                        }, 2000)
+                                            window.location.reload();
+                                        }, 2000);
                                     }
                                 } else {
                                     throw new Error(data.message || "Lỗi không xác định!");
@@ -806,130 +1196,125 @@
                             })
                             .catch(error => {
                                 console.error("Lỗi:", error);
-                                notyf.error(error.message)
-                                setTimeout(() => {
-                                    window.location.reload()
-                                }, 2000)
+                                notyf.error(error.message);
+
                             });
 
-                        // Đóng modal sau khi thêm
-                        var modal = new bootstrap.Modal(document.getElementById('modalSanPham'));
-                        modal.hide();
-                    });
+                    }
                 });
             });
 
-            document.getElementById('huyhoadon').addEventListener('click', function () {
-                    var idHD = getIdHoaDonFromPath();
-                    var note = document.getElementById('notehuyhoadon').value;
+            document.getElementById('huyhoadon').addEventListener('click', async function () {
+                try {
+                    const idHD = getIdHoaDonFromPath();
+                    const note = document.getElementById('notehuyhoadon').value.trim();
 
-                    if (note.trim() === '') {
-                        alert('Không được để trống ghi chú');
+                    if (!note) {
+                        notyf.error('Vui lòng nhập ghi chú hủy đơn');
                         return;
                     }
 
-                    var formData = {
-                        idHoaDon: idHD,
-                        ghiChu: note,
-                        trangThai: 6
-                    };
+                    const result = await Swal.fire({
+                        title: 'Xác nhận hủy đơn',
+                        text: "Bạn có chắc muốn hủy hóa đơn này?",
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonColor: '#d33',
+                        cancelButtonColor: '#3085d6',
+                        confirmButtonText: 'Xác nhận hủy',
+                        cancelButtonText: 'Quay lại'
+                    });
 
-                    if (confirm('Bạn có chắc muốn hủy hóa đơn không?')) {
-                        $.ajax({
+                    if (result.isConfirmed) {
+                        const response = await $.ajax({
                             type: 'POST',
                             url: '/hoadononline/doi-trang-thai',
                             contentType: 'application/json',
-                            data: JSON.stringify(formData),
-                            success: function (response) {
-                                $('#modalhuyhoadon').modal('hide');
-                                window.location.href = '/hoadononline/detailhoadononlinect/' + idHD;
-                            },
-                            error: function (error) {
-                                if (error.responseJSON && error.responseJSON.message) {
-                                    alert(error.responseJSON.message);
-                                } else {
-                                    alert("Đã xảy ra lỗi, vui lòng thử lại");
-                                }
-                                window.location.href = '/hoadononline/detailhoadononlinect/' + idHD;
-                            }
+                            data: JSON.stringify({
+                                idHoaDon: idHD,
+                                ghiChu: note,
+                                trangThai: 6
+                            })
                         });
+
+                        notyf.success(response.message || "Hủy đơn thành công");
+                        $('#modalhuyhoadon').modal('hide');
+                        setTimeout(() => window.location.reload(), 1000);
                     }
-                });
-
-            document.getElementById('confirmCancel').addEventListener('click', function () {
-                var note = document.getElementById('note').value;
-                var status = parseInt(document.getElementById('status').value);
-                var idHD = getIdHoaDonFromPath();
-
-
-                if (note.trim() === '') {
-                    alert('Ghi chú không được để trống.');
-                    return;
-                }
-                if (!status) {
-                    alert('Vui lòng chọn trạng thái.');
-                    return;
-                }
-
-                var ttdoi;
-                if (status === 2 || status === 10) {
-                    ttdoi = 3;
-                } else if (status === 3) {
-                    ttdoi = 4;
-                } else if (status === 4) {
-                    ttdoi = 5;
-                } else if (status == 11) {
-                    ttdoi = 11;
-                }
-                else {
-                    // Trường hợp mặc định nếu không khớp với bất kỳ giá trị nào
-                    notyf.error("Trạng thía không hợp lệ")
-                    return;
-                }
-                var formData = {
-                    idHoaDon: idHD,
-                    ghiChu: note,
-                    trangThai: ttdoi
-                };
-
-                if (confirm('Bạn có muốn đổi trạng thái không ?')) {
-                    // Thực hiện AJAX hoặc hành động để thay đổi trạng thái hóa đơn
-                    // Ví dụ sử dụng AJAX
-                    $.ajax({
-                        type: 'POST',
-                        contentType: 'application/json',
-                        url: '/hoadononline/doi-trang-thai', // Đường dẫn đến endpoint của controller Spring
-                        data: JSON.stringify(formData), // Chuyển đổi đối tượng thành JSON
-                        success: function (response) {
-                            alert(response.message);
-                            $('#cancelModal').modal('hide');
-                            // Đăng ký sự kiện chỉ 1 lần ngoài Ajax
-                            document.getElementById("confirmCancel").addEventListener("click", function () {
-                                document.getElementById("note").value = "";
-                            });
-                            // Chuyển hướng trang
-                            window.location.href = '/hoadononline/detailhoadononlinect/' + idHD;
-                            // Thực hiện các thao tác khác nếu cần
-                        },
-                        error: function (xhr) {
-                            console.log(xhr);
-                            // Kiểm tra xem lỗi có phải là JSON không
-                            if (xhr.responseJSON && xhr.responseJSON.message) {
-                                alert(xhr.responseJSON.message);
-                            } else if (xhr.responseText) {
-                                // Trường hợp không phải JSON, lấy responseText
-                                alert(xhr.responseText);
-                            } else {
-                                alert("Đã xảy ra lỗi, vui lòng thử lại.");
-                            }
-                            document.getElementById("confirmCancel").addEventListener("click", function () {
-                                document.getElementById("note").value = "";
-                            });
-                            window.location.href = '/hoadononline/detailhoadononlinect/' + idHD;
-                        }
-                    });
+                } catch (error) {
+                    handleAjaxError(error);
                 }
             });
+
+
+
+            // Đổi trạng thái
+            document.getElementById('confirmCancel').addEventListener('click', async function () {
+                try {
+                    const idHD = getIdHoaDonFromPath();
+                    const note = document.getElementById('note').value.trim();
+                    const status = parseInt(document.getElementById('status').value);
+
+                    if (!note) {
+                        notyf.error('Vui lòng nhập ghi chú');
+                        return;
+                    }
+                    if (!status) {
+                        notyf.error('Vui lòng chọn trạng thái');
+                        return;
+                    }
+
+                    const result = await Swal.fire({
+                        title: 'Xác nhận đổi trạng thái',
+                        text: `Bạn có chắc muốn đổi sang trạng thái ${getStateName(status)}?`,
+                        icon: 'question',
+                        showCancelButton: true,
+                        confirmButtonText: 'Xác nhận',
+                        cancelButtonText: 'Hủy bỏ'
+                    });
+
+                    if (result.isConfirmed) {
+                        const response = await $.ajax({
+                            type: 'POST',
+                            url: '/hoadononline/doi-trang-thai',
+                            contentType: 'application/json',
+                            data: JSON.stringify({
+                                idHoaDon: idHD,
+                                ghiChu: note,
+                                trangThai: status
+                            })
+                        });
+
+                        notyf.success(response.message || "Đổi trạng thái thành công");
+                        $('#exampleModal').modal('hide');
+                        setTimeout(() => window.location.reload(), 1000);
+                    }
+                } catch (error) {
+                    handleAjaxError(error);
+                }
+            });
+
+            // Helper functions
+            function handleAjaxError(error) {
+                const errorMsg = error.responseJSON?.message || error.responseText || "Lỗi hệ thống";
+                notyf.error(errorMsg);
+                console.error("Lỗi:", error);
+            }
+
+            function getStateName(state) {
+                const states = {
+                    0: 'Chưa thanh toán',
+                    1: 'Đã thanh toán',
+                    2: 'Chờ xác nhận',
+                    3: 'Chờ lấy hàng',
+                    4: 'Đang giao',
+                    5: 'Đã giao',
+                    6: 'Đã hủy',
+                    10: 'Đã thanh toán - chờ xác nhận',
+                    11: 'Giao thất bại'
+                };
+                return states[state] || `Trạng thái ${state}`;
+            }
             document.getElementById("btn-luu-thay-doi").addEventListener("click", function (e) {
                 let isValid = true;
                 document.querySelectorAll("input[required]").forEach(input => {
@@ -967,17 +1352,13 @@
                 }
 
             });
+            //cập nhật thông tin khách hàng và thông tin người giao
             function updateHoaDon() {
                 var idHD = getIdHoaDonFromPath(); // Hàm lấy ID từ URL hoặc nguồn khác
                 let tenNguoiGiao = document.getElementById("tenNguoiGiao").value.trim();
                 let sdtNguoiGiao = document.getElementById("sdtNguoiGiao").value.trim();
                 let donViGiaoHang = document.getElementById("donViGiaoHang").value.trim();
-                if (tenNguoiGiao == '' || sdtNguoiGiao == '' || donViGiaoHang == '') {
-                    tenNguoiGiao = 'Không có';
-                    sdtNguoiGiao = 'Không có';
-                    donViGiaoHang = 'Không có';
 
-                }
                 let hoaDon = {
                     id: idHD,
                     tenKhachHang: $("#tenKhachHang").val(),
@@ -1022,12 +1403,12 @@
                         notyf.error("Lỗi cập nhật: " + error.message);
                     });
             }
+            //xóa sản phẩm
             document.addEventListener("DOMContentLoaded", function () {
                 document.querySelectorAll(".btnXoaSanPham").forEach(button => {
                     button.addEventListener("click", function () {
                         let idHoaDon = this.getAttribute("data-id-hoa-don");
                         let idHoaDonChiTiet = this.getAttribute("data-id-hoa-don-chi-tiet");
-
                         if (!idHoaDon || !idHoaDonChiTiet) {
                             alert("Lỗi: Không lấy được ID sản phẩm hoặc hóa đơn!");
                             return;
@@ -1070,6 +1451,194 @@
                 }
             }
 
+
+            //xử lí phân trang cho modal them san pham 
+            $(document).ready(function () {
+                let currentHoaDonId = null;
+
+                // Mở modal và tải dữ liệu ban đầu
+                $('#modalSanPham').on('show.bs.modal', function (event) {
+                    const button = $(event.relatedTarget);
+                    currentHoaDonId = button.data('hoadonid');
+                    loadProducts(currentHoaDonId, 0);
+                });
+
+                // Xử lý phân trang
+                $(document).on('click', '.page-link:not(.disabled)', function (e) {
+                    e.preventDefault();
+                    const page = $(this).data('page');
+                    loadProducts(currentHoaDonId, page);
+                });
+
+                // Xử lý submit form filter
+                $('#applyFilter').on('click', function (e) {
+                    e.preventDefault();
+                    loadProducts(currentHoaDonId, 0);
+                });
+
+                // Xử lý xóa filter
+                $('#clearFilters').on('click', function () {
+                    $('#filterForm')[0].reset();
+                    loadProducts(currentHoaDonId, 0);
+                });
+
+                // Hàm tải sản phẩm bằng AJAX
+                function loadProducts(hoaDonId, page) {
+                    const formData = $('#filterForm').serialize();
+
+                    $.ajax({
+                        url: `/hoadononline/detailhoadononlinect/${hoaDonId}/products?page=${page}&${formData}`,
+                        type: 'GET',
+                        beforeSend: function () {
+                            $('#productTable tbody').html('<tr><td colspan="5" class="text-center"><div class="spinner-border text-primary" role="status"><span class="visually-hidden">Loading...</span></div></td></tr>');
+                        },
+                        success: function (response) {
+                            renderProducts(response.products);
+                            renderPagination(response.currentPage, response.totalPages);
+                        },
+                        error: function (xhr) {
+                            console.error(xhr);
+                            $('#productTable tbody').html('<tr><td colspan="5" class="text-center text-danger">Đã xảy ra lỗi khi tải dữ liệu</td></tr>');
+                        }
+                    });
+                }
+
+                // Render danh sách sản phẩm
+                function renderProducts(products) {
+                    let html = '';
+
+                    if (products.length === 0) {
+                        html = '<tr><td colspan="5" class="text-center">Không tìm thấy sản phẩm nào</td></tr>';
+                    } else {
+                        products.forEach(product => {
+                            const isOutOfStock = product.soLuong === 0;
+                            const imageUrl = product.hinhAnh ? product.hinhAnh.split(',')[0].trim() : '/images/defaul-product.png';
+
+                            html += `
+                <tr class="${isOutOfStock ? 'table-danger' : ''}">
+                    <td class="text-center">
+                        <img src="${imageUrl}" alt="Hình ảnh" class="img-thumbnail" style="width:80px;height:80px;object-fit:cover;">
+                    </td>
+                    <td>
+                        <div class="fw-semibold" style="font-size:1rem; color:#a81423;">${product.idSanPham.tenSanPham}</div>
+                        <div class="small text-muted" style="font-size:1rem;">
+                            <span class="me-2">màu: ${product.idMauSac.tenMauSac}</span>
+                            <span>size: ${product.idSize.tenSize}</span>
+                        </div>
+                    </td>
+                    <td class="text-end fw-bold" style="font-size:1rem;" >
+                        ${new Intl.NumberFormat('vi-VN').format(product.giaBan)} VNĐ
+                    </td>
+                    <td class="text-center">${product.soLuong}</td>
+                    <td class="text-center">
+                        <button class="btn btn-sm btn-success btnThemVaoHoaDon"
+                            data-id="${product.id}"
+                            data-ten="${product.idSanPham.tenSanPham}"
+                            data-gia="${product.giaBan}"
+                            ${isOutOfStock ? 'disabled' : ''}>
+                            <i class="fas fa-plus me-1"></i>Thêm
+                        </button>
+                    </td>
+                </tr>
+                `;
+                        });
+                    }
+
+                    $('#productTable tbody').html(html);
+                }
+
+                // Render phân trang
+                function renderPagination(currentPage, totalPages) {
+                    let html = '';
+
+                    // Nút Previous
+                    html += `<li class="page-item ${currentPage === 0 ? 'disabled' : ''}">
+        <a class="page-link" data-page="${currentPage - 1}">
+            <i class="fas fa-angle-left"></i>
+        </a>
+    </li>`;
+
+                    // Trang đầu + dấu ...
+                    if (currentPage > 2) {
+                        html += `<li class="page-item">
+            <a class="page-link" data-page="0">1</a>
+        </li>`;
+                        if (currentPage > 3) {
+                            html += `<li class="page-item disabled"><span class="page-link">...</span></li>`;
+                        }
+                    }
+
+                    // Các trang gần currentPage
+                    let startPage = Math.max(0, currentPage - 2);
+                    let endPage = Math.min(totalPages - 1, currentPage + 2);
+
+                    for (let i = startPage; i <= endPage; i++) {
+                        html += `<li class="page-item ${i === currentPage ? 'active' : ''}">
+            <a class="page-link" data-page="${i}">${i + 1}</a>
+        </li>`;
+                    }
+
+                    // Trang cuối + dấu ...
+                    if (currentPage < totalPages - 3) {
+                        if (currentPage < totalPages - 4) {
+                            html += `<li class="page-item disabled"><span class="page-link">...</span></li>`;
+                        }
+                        html += `<li class="page-item">
+            <a class="page-link" data-page="${totalPages - 1}">${totalPages}</a>
+        </li>`;
+                    }
+
+                    // Nút Next
+                    html += `<li class="page-item ${currentPage + 1 === totalPages ? 'disabled' : ''}">
+        <a class="page-link" data-page="${currentPage + 1}">
+            <i class="fas fa-angle-right"></i>
+        </a>
+    </li>`;
+
+                    $('.pagination').html(html);
+                }
+
+            });
+            $(document).ready(function () {
+                $('#quayLaiTrangThaiTruoc').click(async function () {
+                    var idHoaDon = $(this).val();
+                    const result = await Swal.fire({
+                        title: 'Xác nhận đổi trạng thái',
+                        text: `Bạn có chắc quay lại trạng thái trước `,
+                        icon: 'question',
+                        showCancelButton: true,
+                        confirmButtonText: 'Xác nhận',
+                        cancelButtonText: 'Hủy bỏ'
+                    });
+                    if (result.isConfirmed) {
+
+                        fetch(`/hoadononline/quay-lai-trang-thai-truoc?idHoaDon=` + idHoaDon, {
+                            method: 'POST'
+                        })
+                            .then(response => {
+                                if (!response.ok) {
+                                    return response.json().then(data => {
+                                        notyf.error(data.message || "Quay lại trạng thái cũ thất bại");
+                                    });
+                                }
+                                return response.json();
+                            })
+                            .then(data => {
+                                if (data && data.message) {
+                                    notyf.success(data.message || "Đã quay lại trạng thái trước đó");
+                                    setTimeout(() => {
+                                        location.reload();
+                                    }, 2000);
+                                }
+                            })
+                            .catch(error => {
+                                console.error("Lỗi khi cập nhật:", error);
+                                notyf.error("Lỗi cập nhật: " + error.message);
+                            });
+
+                    }
+                });
+            });
         </script>
 
     </div>

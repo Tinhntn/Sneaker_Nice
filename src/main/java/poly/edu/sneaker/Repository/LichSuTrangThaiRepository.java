@@ -13,4 +13,8 @@ import java.util.List;
 public interface LichSuTrangThaiRepository extends JpaRepository<TrangThaiDonHang, Integer> {
 
     List<TrangThaiDonHang> findAllByIdHoaDon_Id(int idHD);
+
+    TrangThaiDonHang findByIdHoaDon_IdAndTrangThai(int idHD,int trangThai);
+    List<TrangThaiDonHang> findByIdHoaDon_IdOrderByNgayCapNhatDesc(int idHoaDon);
+
 }

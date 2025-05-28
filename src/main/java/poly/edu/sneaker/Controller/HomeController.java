@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -65,10 +66,17 @@ public class HomeController {
         }
         return null; // Nếu chưa đăng nhập, trả về null hoặc giá trị mặc định
     }
+
     @GetMapping("/hienthi")
-    public String hienthi(Model model, @RequestParam(defaultValue = "0") int page) {
+    public String hienthi(Model model, @RequestParam(defaultValue = "0") int page,
+                          @RequestParam(required = false) Integer idHang,
+                          @RequestParam(required = false) Integer idDanhMuc,
+                          @RequestParam(required = false) Integer idChatLieu,
+                          @RequestParam(required = false) Integer idMauSac,
+                          @RequestParam(required = false) Integer idSize,
+                          @RequestParam(required = false) String keyword) {
         int size = 12;
-        Page<ChiTietSanPham> lstCTSP = chiTietSanPhamService.findChiTietSanPhamJustOne(PageRequest.of(page, size));
+        Page<ChiTietSanPham> lstCTSP = chiTietSanPhamService.findChiTietSanPhamJustOne(keyword,idHang,idDanhMuc,idChatLieu,idMauSac,idSize,PageRequest.of(page, size));
         List<Hang> hangs = hangService.getAllHangs();
         model.addAttribute("listHang", hangs);
         model.addAttribute("listSanPham", lstCTSP);
@@ -82,6 +90,7 @@ public class HomeController {
         //end code hung
         return "user/sanpham/trangchu";
     }
+
     @GetMapping("/chitietsanpham/{id}")
     public String chiTietSanPham(@PathVariable("id") int id, Model model, RedirectAttributes redirectAttributes) {
         ChiTietSanPham chiTietSanPhams = chiTietSanPhamService.findById(id);
@@ -149,16 +158,38 @@ public class HomeController {
 
     @GetMapping("/lay-combination")
     @ResponseBody
-    public ResponseEntity<?> checkSoLuongSanPham(@RequestParam("idSanPham") int idSanPham, @RequestParam("idSize") int idSize, @RequestParam("idMauSac") int idMauSac) {
-        try {
+    public ResponseEntity<?> checkSoLuongSanPham(
+            @RequestParam("idSanPham") int idSanPham,
+            @RequestParam("idSize") int idSize,
+            @RequestParam("idMauSac") int idMauSac) {
 
-            ChiTietSanPham chiTietSanPham = chiTietSanPhamService.findCTSPByIdSPAndIdMauSacAndIdSize(idSanPham, idMauSac, idSize);
-            if (chiTietSanPham == null) {
-                return ResponseEntity.badRequest().body(Map.of("message", "Không tồn tại sản phẩm"));
+        try {
+            // Kiểm tra các tham số đầu vào
+            if (idSanPham <= 0 || idSize <= 0 || idMauSac <= 0) {
+                return ResponseEntity.badRequest().body(Map.of(
+                        "success", false,
+                        "message", "Thông tin sản phẩm không hợp lệ"
+                ));
             }
-            return ResponseEntity.ok().body(Collections.singletonMap("chiTietSanPham", chiTietSanPham));
+
+            ChiTietSanPham chiTietSanPham = chiTietSanPhamService.findCTSPByIdSPAndIdMauSacAndIdSize(idSanPham, idSize, idMauSac);
+
+            if (chiTietSanPham == null) {
+                return ResponseEntity.ok().body(Map.of(
+                        "success", false,
+                        "message", "Sản phẩm không tồn tại với màu sắc và kích cỡ đã chọn"
+                ));
+            }
+
+            return ResponseEntity.ok().body(Map.of(
+                    "success", true,
+                    "chiTietSanPham", chiTietSanPham
+            ));
         } catch (Exception e) {
-            return ResponseEntity.badRequest().body(Map.of("message", "Thông tin không hợp lệ"));
+            return ResponseEntity.badRequest().body(Map.of(
+                    "success", false,
+                    "message", "Lỗi hệ thống: " + e.getMessage()
+            ));
         }
     }
 
