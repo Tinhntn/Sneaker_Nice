@@ -2,6 +2,7 @@ package poly.edu.sneaker.Service;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import poly.edu.sneaker.Model.HoaDon;
 import poly.edu.sneaker.Model.KhachHang;
 
 public interface KhachHangService {
@@ -29,6 +30,6 @@ public interface KhachHangService {
     boolean layLaiKhachHang(KhachHang khachHang);
     KhachHang findByMaKhachHang(String maKhachHang);
     Page<KhachHang> filterAndSort(Boolean trangThai, String sortBy, String sortDir, Pageable pageable);
-
+    boolean guiMailDonHang(KhachHang khachHang, HoaDon hoaDon, String ghiChu);
 
 }

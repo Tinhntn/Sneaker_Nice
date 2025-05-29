@@ -8,8 +8,13 @@ import org.springframework.data.domain.Sort;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import poly.edu.sneaker.Model.HoaDon;
+import poly.edu.sneaker.Model.HoaDonChiTiet;
 import poly.edu.sneaker.Model.KhachHang;
+import poly.edu.sneaker.Model.NhanVien;
+import poly.edu.sneaker.Repository.HoaDonChiTietRepository;
 import poly.edu.sneaker.Repository.KhachHangRepository;
+import poly.edu.sneaker.Repository.NhanVienRepository;
 import poly.edu.sneaker.Service.KhachHangService;
 import javax.mail.Message;
 import javax.mail.MessagingException;
@@ -18,16 +23,20 @@ import javax.mail.Transport;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Properties;
 import java.util.Random;
+import java.util.stream.Collectors;
 
 @Service
 public class KhachHangImplement implements KhachHangService {
 
     @Autowired
     private KhachHangRepository khachHangRepository;
-
-
+    @Autowired
+    private HoaDonChiTietRepository hoaDonChiTietRepository;
+    @Autowired
+    private NhanVienRepository nhanVienRepository;
     @Override
     public Page<KhachHang> getAll(Pageable pageable) {
         return khachHangRepository.findAll(pageable);
@@ -40,7 +49,6 @@ public class KhachHangImplement implements KhachHangService {
 
     @Override
     public void saveKhachHang(KhachHang khachHang) {
-        System.out.println(khachHang.getMaKhachHang());
         khachHangRepository.save(khachHang);
     }
 
@@ -152,6 +160,105 @@ public class KhachHangImplement implements KhachHangService {
             return khachHangRepository.findAll(newPageable);
         }
     }
+
+    @Override
+    public boolean guiMailDonHang(KhachHang khachHang, HoaDon hoaDon, String ghiChu) {
+        List<HoaDonChiTiet> chiTietList = hoaDonChiTietRepository.findHoaDonChiTietByIdHoaDon_Id(hoaDon.getId());
+        if (chiTietList == null || chiTietList.isEmpty()) {
+            return false;
+        }
+
+        // Lọc danh sách nhân viên có chức vụ là ADMIN
+        List<NhanVien> lstNhanVien = nhanVienRepository.findAll();
+        List<NhanVien> lstNhanVienAdmin = lstNhanVien.stream()
+                .filter(nv -> nv.getIdChucVu().getMaChucVu().equalsIgnoreCase("ADMIN"))
+                .collect(Collectors.toList());
+
+        String emailNoiDung = buildEmailContent(khachHang, hoaDon, chiTietList, ghiChu);
+        String tieuDe = hoaDon.getTrangThai() == 2 ? "YÊU CẦU HỦY ĐƠN!" : "XÁC NHẬN ĐÃ NHẬN HÀNG THÀNH CÔNG";
+
+        final String senderEmail = "ntinh4939@gmail.com";
+        final String senderPassword = "rljh bqxc dufy aptz";
+
+        Properties props = new Properties();
+        props.put("mail.smtp.host", "smtp.gmail.com");
+        props.put("mail.smtp.port", "587");
+        props.put("mail.smtp.auth", "true");
+        props.put("mail.smtp.starttls.enable", "true");
+
+        Session session = Session.getInstance(props, new javax.mail.Authenticator() {
+            protected javax.mail.PasswordAuthentication getPasswordAuthentication() {
+                return new javax.mail.PasswordAuthentication(senderEmail, senderPassword);
+            }
+        });
+
+        try {
+            // Gửi mail cho khách hàng
+            if (khachHang.getEmail() != null && !khachHang.getEmail().isEmpty()) {
+                Message messageToCustomer = new MimeMessage(session);
+                messageToCustomer.setFrom(new InternetAddress(senderEmail));
+                messageToCustomer.setRecipients(Message.RecipientType.TO, InternetAddress.parse(khachHang.getEmail()));
+                messageToCustomer.setSubject(tieuDe);
+                messageToCustomer.setText(emailNoiDung);
+                Transport.send(messageToCustomer);
+            }
+
+            // Gửi mail cho tất cả ADMIN
+            for (NhanVien admin : lstNhanVienAdmin) {
+                if (admin.getEmail() != null && !admin.getEmail().isEmpty()) {
+                    Message messageToAdmin = new MimeMessage(session);
+                    messageToAdmin.setFrom(new InternetAddress(senderEmail));
+                    messageToAdmin.setRecipients(Message.RecipientType.TO, InternetAddress.parse(admin.getEmail()));
+                    messageToAdmin.setSubject("[ADMIN] " + tieuDe);
+                    messageToAdmin.setText(emailNoiDung);
+                    Transport.send(messageToAdmin);
+                }
+            }
+
+            return true;
+        } catch (MessagingException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+
+    private String buildEmailContent(KhachHang khachHang, HoaDon hoaDon, List<HoaDonChiTiet> chiTietList, String ghiChu) {
+        StringBuilder sb = new StringBuilder();
+
+        sb.append("Khách hàng: ").append(khachHang.getTenKhachHang())
+                .append(" | Mã KH: ").append(khachHang.getMaKhachHang())
+                .append(" | SĐT: ").append(khachHang.getSdt())
+                .append(" | Email: ").append(khachHang.getEmail() != null ? khachHang.getEmail() : "Không có").append("\n\n");
+
+        sb.append("Mã hóa đơn: ").append(hoaDon.getMaHoaDon()).append("\n");
+
+        for (HoaDonChiTiet chiTiet : chiTietList) {
+            String tenSP = chiTiet.getIdChiTietSanPham().getIdSanPham().getTenSanPham();
+            sb.append(String.format("- Sản phẩm: %s | Giá: %,.0f VNĐ | SL: %d%n",
+                    tenSP, chiTiet.getDonGia(), chiTiet.getSoLuong()));
+        }
+
+        sb.append("\n")
+                .append(String.format("Tổng tiền: %,.0f VNĐ%n", hoaDon.getTongTien()))
+                .append(String.format("Giảm giá: %,.0f VNĐ%n", hoaDon.getTongTienGiam()))
+                .append(String.format("Thành tiền: %,.0f VNĐ%n", hoaDon.getThanhTien()));
+
+        String hinhThucThanhToan = hoaDon.getLoaiThanhToan() ? "Thanh toán bằng VNPAY" : "Thanh toán khi nhận hàng";
+        sb.append("Hình thức thanh toán: ").append(hinhThucThanhToan).append("\n");
+
+        if (hoaDon.getLoaiThanhToan()) {
+            sb.append(String.format("Đã thanh toán: %,.0f VNĐ%n", hoaDon.getTienKhachDua()));
+        }
+
+        if (ghiChu != null && !ghiChu.isEmpty()) {
+            sb.append("\nGhi chú: ").append(ghiChu);
+        }
+
+        return sb.toString();
+    }
+
+
 
     public static boolean sendEmail(String emailNguoiNhan, String tieuDe, String body) {
         // Địa chỉ email và mật khẩu của tài khoản Gmail để gửi email

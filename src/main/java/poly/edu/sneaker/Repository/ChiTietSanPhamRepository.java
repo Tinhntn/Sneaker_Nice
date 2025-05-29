@@ -132,7 +132,7 @@ public interface ChiTietSanPhamRepository extends JpaRepository<ChiTietSanPham, 
     List<String> findDistinctHangByChatLieu(@Param("chatLieu") String chatLieu);
 
     // code quan
-    @Query(value = "SELECT * FROM chitietsanpham WHERE chitietsanpham.trang_thai = 1",
+    @Query(value = "SELECT * FROM chitietsanpham WHERE chitietsanpham.trang_thai = 1 AND so_luong >= 1",
             nativeQuery = true)
     Page<ChiTietSanPham> getAllChiTieSanPhamDAO(Pageable pageable);
 
@@ -140,7 +140,7 @@ public interface ChiTietSanPhamRepository extends JpaRepository<ChiTietSanPham, 
     ChiTietSanPham getChiTietSanPhamById(@Param("id") Integer id);
 
     @Query("SELECT c FROM ChiTietSanPham c WHERE " +
-            "c.trangThai = true AND (" +
+            "c.trangThai = true AND c.soLuong >= 1 AND (" +
             "(:tenSanPham IS NOT NULL AND :tenSanPham <> '' AND c.idSanPham.tenSanPham LIKE CONCAT('%', :tenSanPham, '%')) OR " +
             "(:idSize IS NOT NULL AND c.idSize.id = :idSize) OR " +
             "(:idMauSac IS NOT NULL AND c.idMauSac.id = :idMauSac) OR " +

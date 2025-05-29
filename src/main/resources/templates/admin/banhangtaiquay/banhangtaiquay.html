@@ -374,55 +374,67 @@
                                     </tr>
                                 </tbody>
                             </table>
-                            <div class="pagination">
+
+
+                            <div class="pagination mt-4 d-flex justify-content-center">
                                 <!-- Nếu có hóa đơn được chọn -->
-                                <div th:if="${hoadonduocchon != null}" class="d-flex gap-2">
+                                <div th:if="${hoadonduocchon != null}" class="btn-group" role="group" aria-label="Pagination">
                                     <!-- Trang trước -->
-                                    <button type="button" class="btn btn-primary" th:disabled="${currentPage == 0}"
-                                        th:onclick="|window.location.href='/banhangtaiquay/showhoadoncho/${hoadonduocchon.id}?page=${currentPage - 1}'|">
-                                        &lt;&lt;
+                                    <button type="button" class="btn btn-outline-primary"
+                                            th:disabled="${currentPage == 0}"
+                                            th:onclick="|window.location.href='/banhangtaiquay/showhoadoncho/${hoadonduocchon.id}?page=${currentPage - 1}'|">
+                                        <i class="fas fa-angle-left"></i>
                                     </button>
 
                                     <!-- Số trang -->
-                                    <div th:each="i : ${#numbers.sequence(0, totalPages - 1)}" class="me-2">
-                                        <button type="button" class="btn btn-dark"
-                                            th:classappend="${i == currentPage} ? ' current-page' : ''"
-                                            th:onclick="|window.location.href='/banhangtaiquay/showhoadoncho/${hoadonduocchon.id}?page=${i}'|">
+                                    <div th:if="${CTSP.size() > 0}" th:each="i : ${#numbers.sequence(0, totalPages - 1)}" class="mx-1">
+                                        <button type="button"
+                                                class="btn"
+                                                th:classappend="${i == currentPage} ? 'btn-primary' : 'btn-outline-secondary'"
+                                                th:onclick="|window.location.href='/banhangtaiquay/showhoadoncho/${hoadonduocchon.id}?page=${i}'|">
                                             <span th:text="${i + 1}"></span>
                                         </button>
                                     </div>
 
                                     <!-- Trang kế tiếp -->
-                                    <button type="button" class="btn btn-primary"
-                                        th:disabled="${currentPage == totalPages - 1}"
-                                        th:onclick="|window.location.href='/banhangtaiquay/showhoadoncho/${hoadonduocchon.id}?page=${currentPage + 1}'|">
-                                        &gt;&gt;
+                                    <button type="button" class="btn btn-outline-primary"
+                                            th:disabled="${currentPage == totalPages - 1}"
+                                            th:onclick="|window.location.href='/banhangtaiquay/showhoadoncho/${hoadonduocchon.id}?page=${currentPage + 1}'|">
+                                        <i class="fas fa-angle-right"></i>
                                     </button>
                                 </div>
 
                                 <!-- Nếu KHÔNG có hóa đơn được chọn -->
-                                <div th:if="${hoadonduocchon == null}" class="d-flex gap-2">
+                                <div th:if="${hoadonduocchon == null}" class="btn-group" role="group" aria-label="Pagination">
                                     <!-- Trang trước -->
-                                    <button type="button" class="btn btn-primary" th:disabled="${currentPage == 0}"
-                                        th:onclick="|window.location.href='/banhangtaiquay/hienthi?page=${currentPage - 1}'|">
-                                        &lt;&lt;
+                                    <button type="button" class="btn btn-outline-primary"
+                                            th:disabled="${currentPage == 0}"
+                                            th:onclick="|window.location.href='/banhangtaiquay/hienthi?page=${currentPage - 1}'|">
+                                        <i class="fas fa-angle-left"></i>
                                     </button>
+
                                     <!-- Số trang -->
-                                    <div th:each="i : ${#numbers.sequence(0, totalPages - 1)}" class="me-2">
-                                        <button type="button" class="btn btn-dark"
-                                            th:classappend="${i == currentPage} ? ' current-page' : ''"
-                                            th:onclick="|window.location.href='/banhangtaiquay/hienthi?page=${i}'|">
+                                    <div th:if="${CTSP.size() > 0}" th:each="i : ${#numbers.sequence(0, totalPages - 1)}" class="mx-1">
+                                        <button type="button"
+                                                class="btn"
+                                                th:classappend="${i == currentPage} ? 'btn-primary' : 'btn-outline-secondary'"
+                                                th:onclick="|window.location.href='/banhangtaiquay/hienthi?page=${i}'|">
                                             <span th:text="${i + 1}"></span>
                                         </button>
                                     </div>
+
                                     <!-- Trang kế tiếp -->
-                                    <button type="button" class="btn btn-primary"
-                                        th:disabled="${currentPage == totalPages - 1}"
-                                        th:onclick="|window.location.href='/banhangtaiquay/hienthi?page=${currentPage + 1}'|">
-                                        &gt;&gt;
+                                    <button type="button" class="btn btn-outline-primary"
+                                            th:disabled="${currentPage == totalPages - 1}"
+                                            th:onclick="|window.location.href='/banhangtaiquay/hienthi?page=${currentPage + 1}'|">
+                                        <i class="fas fa-angle-right"></i>
                                     </button>
                                 </div>
                             </div>
+
+
+
+
                         </div>
                     </div>
                 </div>
@@ -600,7 +612,7 @@
                             <!-- Hiển thị số tiền khách đưa -->
                             <div class="mb-3">
                                 <label class="form-label"><strong>Tiền khách đưa:</strong></label>
-                                <input type="number" class="form-control" name="tienKhachDua"
+                                <input th:if="${hoadonduocchon != null}" type="number" class="form-control" name="tienKhachDua"
                                     placeholder="Nhập số tiền khách đưa"
                                     th:value="${tienKhachDua != null ? tienKhachDua.intValue : ''}"
                                     onblur="document.getElementById('tienkhachdua').submit()">

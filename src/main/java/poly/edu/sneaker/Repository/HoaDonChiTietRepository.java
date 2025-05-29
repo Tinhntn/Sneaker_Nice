@@ -3,6 +3,7 @@ package poly.edu.sneaker.Repository;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import poly.edu.sneaker.Model.HoaDon;
 import poly.edu.sneaker.Model.HoaDonChiTiet;
 
 import java.util.List;
@@ -15,6 +16,7 @@ public interface HoaDonChiTietRepository extends JpaRepository<HoaDonChiTiet,Int
             nativeQuery = true)
     List<HoaDonChiTiet> findHoaDonChiTietByIdHoaDon(@Param("idHoaDon") Integer idHoaDon);
 
+    List<HoaDonChiTiet> findHoaDonChiTietByIdHoaDon_Id(Integer idHoaDon);
     List<HoaDonChiTiet> findHoaDonChiTietByIdHoaDon_IdAndIdHoaDon_LoaiHoaDon(int idHoaDon,boolean loaiHoaDon);
     @Query(value = "SELECT * FROM HoaDonChiTiet " +
             "WHERE HoaDonChiTiet.id_chi_tiet_san_pham = :idChiTietSanPham " +

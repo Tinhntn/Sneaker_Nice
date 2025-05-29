@@ -159,7 +159,7 @@ public class BanHangTaiQuayController {
 
         List<HoaDon> list = banHangTaiQuayService.getAllHoaDon();
         if (list.size() >= 5) {
-            redirectAttributes.addFlashAttribute("error", "Chỉ được tạo tối đa 5 hóa đơn chờ.");
+            redirectAttributes.addFlashAttribute("warning", "Chỉ được tạo tối đa 5 hóa đơn chờ.");
             return "redirect:/banhangtaiquay/hienthi";
         } else {
 
@@ -227,6 +227,10 @@ public class BanHangTaiQuayController {
             List<HoaDonChiTiet> listcthd = banHangTaiQuayService.ktratrunghdct(chiTietSanPham.getId(), idhd);
             if (listcthd.size() >= 1) {
                 redirectAttributes.addFlashAttribute("warning", "Sản phẩm đã tồn tại trong giỏ hàng.");
+                return "redirect:/banhangtaiquay/showhoadoncho/" + idhd;
+            }
+            if(chiTietSanPham.getSoLuong()<=0){
+                redirectAttributes.addFlashAttribute("warning", "Sản phẩm trong kho không đủ.");
                 return "redirect:/banhangtaiquay/showhoadoncho/" + idhd;
             }
             hdct.setTrangThai(0);
@@ -308,13 +312,13 @@ public class BanHangTaiQuayController {
                                 @RequestParam("soluong") String soLuongMoiStr) {
         // Kiểm tra nếu số lượng không hợp lệ (chứa chữ hoặc số âm)
         if (!soLuongMoiStr.matches("\\d+")) {
-            redirectAttributes.addFlashAttribute("error", "Số lượng không hợp lệ! Vui lòng nhập số nguyên dương.");
+            redirectAttributes.addFlashAttribute("warning", "Số lượng không hợp lệ! Vui lòng nhập số nguyên dương.");
             return "redirect:/banhangtaiquay/showhoadoncho/" + idhd;
         }
 
         Integer soLuongMoi = Integer.parseInt(soLuongMoiStr);
         if (soLuongMoi <= 0) {
-            redirectAttributes.addFlashAttribute("error", "Số lượng phải là số nguyên dương!");
+            redirectAttributes.addFlashAttribute("warning", "Số lượng phải là số nguyên dương!");
             return "redirect:/banhangtaiquay/showhoadoncho/" + idhd;
         }
 
@@ -329,21 +333,21 @@ public class BanHangTaiQuayController {
         // Xử lý tăng, giảm số lượng hoặc nhập số lượng trực tiếp
         if ("tang".equals(suahdct)) {
             if (hdct.getSoLuong() >= ctsp.getSoLuong() + hdct.getSoLuong()) {
-                redirectAttributes.addFlashAttribute("error", "Hàng trong kho không đủ!");
+                redirectAttributes.addFlashAttribute("warning", "Hàng trong kho không đủ!");
                 return "redirect:/banhangtaiquay/showhoadoncho/" + idhd;
             }
             hdct.setSoLuong(hdct.getSoLuong() + 1);
             ctsp.setSoLuong(ctsp.getSoLuong() - 1);
         } else if ("giam".equals(suahdct)) {
             if (hdct.getSoLuong() <= 1) {
-                redirectAttributes.addFlashAttribute("error", "Số lượng tối thiểu là 1!");
+                redirectAttributes.addFlashAttribute("warning", "Số lượng tối thiểu là 1!");
                 return "redirect:/banhangtaiquay/showhoadoncho/" + idhd;
             }
             hdct.setSoLuong(hdct.getSoLuong() - 1);
             ctsp.setSoLuong(ctsp.getSoLuong() + 1);
         } else {
             if (soLuongMoi > ctsp.getSoLuong() + hdct.getSoLuong()) {
-                redirectAttributes.addFlashAttribute("error", "Số lượng trong kho không đủ!");
+                redirectAttributes.addFlashAttribute("warning", "Số lượng trong kho không đủ!");
                 return "redirect:/banhangtaiquay/showhoadoncho/" + idhd;
             }
             ctsp.setSoLuong(ctsp.getSoLuong() + hdct.getSoLuong() - soLuongMoi);
@@ -375,23 +379,23 @@ public class BanHangTaiQuayController {
 
         try {
             if (tongtiencthd <= 0) {
-                redirectAttributes.addFlashAttribute("error", "Chưa có sản phẩm trong hóa đơn!");
+                redirectAttributes.addFlashAttribute("warning", "Chưa có sản phẩm trong hóa đơn!");
                 return "redirect:/banhangtaiquay/showhoadoncho/" + idhd;
             }
 
             if (tienKhachDua <= 0) {
-                redirectAttributes.addFlashAttribute("error", "Vui lòng nhập số tiền khách đưa!");
+                redirectAttributes.addFlashAttribute("warning", "Vui lòng nhập số tiền khách đưa!");
                 return "redirect:/banhangtaiquay/showhoadoncho/" + idhd;
             }
 
             if (tienKhachDua < tongtiencthddatru) {
-                redirectAttributes.addFlashAttribute("error", "Số tiền khách đưa không đủ để thanh toán!");
+                redirectAttributes.addFlashAttribute("warning", "Số tiền khách đưa không đủ để thanh toán!");
                 return "redirect:/banhangtaiquay/showhoadoncho/" + idhd;
             }
 
             HoaDon hd = banHangTaiQuayService.getHoaDonByID(idhd);
             if (hd == null) {
-                redirectAttributes.addFlashAttribute("error", "Không tìm thấy hóa đơn!");
+                redirectAttributes.addFlashAttribute("warning", "Không tìm thấy hóa đơn!");
                 return "redirect:/banhangtaiquay";
             }
 
@@ -402,22 +406,22 @@ public class BanHangTaiQuayController {
                     Date now = new Date();
 
                     if (Boolean.FALSE.equals(km.getTrangThai())) {
-                        redirectAttributes.addFlashAttribute("error", "Mã khuyến mãi không còn hoạt động!");
+                        redirectAttributes.addFlashAttribute("warning", "Mã khuyến mãi không còn hoạt động!");
                         return "redirect:/banhangtaiquay/showhoadoncho/" + idhd;
                     }
 
                     if (km.getNgayBatDau() != null && km.getNgayBatDau().after(now)) {
-                        redirectAttributes.addFlashAttribute("error", "Mã khuyến mãi chưa được áp dụng!");
+                        redirectAttributes.addFlashAttribute("warning", "Mã khuyến mãi chưa được áp dụng!");
                         return "redirect:/banhangtaiquay/showhoadoncho/" + idhd;
                     }
 
                     if (km.getNgayKetThuc() != null && km.getNgayKetThuc().before(now)) {
-                        redirectAttributes.addFlashAttribute("error", "Mã khuyến mãi đã hết hạn!");
+                        redirectAttributes.addFlashAttribute("warning", "Mã khuyến mãi đã hết hạn!");
                         return "redirect:/banhangtaiquay/showhoadoncho/" + idhd;
                     }
 
                     if (km.getDaSuDung() >= km.getSoLuong()) {
-                        redirectAttributes.addFlashAttribute("error", "Mã khuyến mãi đã được sử dụng hết!");
+                        redirectAttributes.addFlashAttribute("warning", "Mã khuyến mãi đã được sử dụng hết!");
                         return "redirect:/banhangtaiquay/showhoadoncho/" + idhd;
                     }
 
@@ -440,7 +444,7 @@ public class BanHangTaiQuayController {
 
         } catch (Exception e) {
             e.printStackTrace();
-            redirectAttributes.addFlashAttribute("error", "Đã xảy ra lỗi khi thanh toán!");
+            redirectAttributes.addFlashAttribute("warning", "Đã xảy ra lỗi khi thanh toán!");
             return "redirect:/banhangtaiquay/showhoadoncho/" + idhd;
         }
     }
@@ -458,7 +462,7 @@ public class BanHangTaiQuayController {
             redirectAttributes.addFlashAttribute("success", "Thêm khách hàng " + khachHang.getTenKhachHang() + " vào hóa đơn thành công");
             return "redirect:/banhangtaiquay/showhoadoncho/" + idhd;
         } else {
-            redirectAttributes.addFlashAttribute("error", "Không tìm thấy khách hàng với số điện thoại: " + sdt);
+            redirectAttributes.addFlashAttribute("warning", "Không tìm thấy khách hàng với số điện thoại: " + sdt);
             return "redirect:/banhangtaiquay/showhoadoncho/" + idhd;
         }
     }
@@ -483,36 +487,36 @@ public class BanHangTaiQuayController {
             HoaDon hd = banHangTaiQuayService.getHoaDonByID(idhd);
             Double tongtiencthd = banHangTaiQuayService.tongTienCTHD(idhd);
             if (hd == null) {
-                redirectAttributes.addFlashAttribute("error", "Không tìm thấy hóa đơn.");
+                redirectAttributes.addFlashAttribute("warning", "Không tìm thấy hóa đơn.");
                 return "redirect:/banhangtaiquay";
             }
             if (km == null) {
-                redirectAttributes.addFlashAttribute("error", "Không tìm thấy mã khuyến mãi này.");
+                redirectAttributes.addFlashAttribute("warning", "Không tìm thấy mã khuyến mãi này.");
                 return "redirect:/banhangtaiquay/showhoadoncho/" + idhd;
             }
             // Kiểm tra trạng thái hoạt động
             if (Boolean.FALSE.equals(km.getTrangThai())) {
-                redirectAttributes.addFlashAttribute("error", "Mã khuyến mãi không hoạt động.");
+                redirectAttributes.addFlashAttribute("warning", "Mã khuyến mãi không hoạt động.");
                 return "redirect:/banhangtaiquay/showhoadoncho/" + idhd;
             }
             // Kiểm tra ngày bắt đầu và kết thúc
             Date now = new Date();
             if (km.getNgayBatDau() != null && km.getNgayBatDau().after(now)) {
-                redirectAttributes.addFlashAttribute("error", "Mã khuyến mãi chưa bắt đầu.");
+                redirectAttributes.addFlashAttribute("warning", "Mã khuyến mãi chưa bắt đầu.");
                 return "redirect:/banhangtaiquay/showhoadoncho/" + idhd;
             }
             if (km.getNgayKetThuc() != null && km.getNgayKetThuc().before(now)) {
-                redirectAttributes.addFlashAttribute("error", "Mã khuyến mãi đã hết hạn.");
+                redirectAttributes.addFlashAttribute("warning", "Mã khuyến mãi đã hết hạn.");
                 return "redirect:/banhangtaiquay/showhoadoncho/" + idhd;
             }
             // Kiểm tra số lượng mã khuyến mãi
             if (km.getSoLuong() < 1) {
-                redirectAttributes.addFlashAttribute("error", "Số lượng mã khuyến mãi không đủ. Hãy chọn mã khác.");
+                redirectAttributes.addFlashAttribute("warning", "Số lượng mã khuyến mãi không đủ. Hãy chọn mã khác.");
                 return "redirect:/banhangtaiquay/showhoadoncho/" + idhd;
             }
             // Kiểm tra điều kiện áp dụng
             if (km.getDieuKienApDung() > tongtiencthd) {
-                redirectAttributes.addFlashAttribute("error", "Hóa đơn của bạn chưa đủ điều kiện để áp dụng mã khuyến mãi.");
+                redirectAttributes.addFlashAttribute("warning", "Hóa đơn của bạn chưa đủ điều kiện để áp dụng mã khuyến mãi.");
                 return "redirect:/banhangtaiquay/showhoadoncho/" + idhd;
             }
             // Gán khuyến mãi vào hóa đơn
@@ -522,7 +526,7 @@ public class BanHangTaiQuayController {
             return "redirect:/banhangtaiquay/showhoadoncho/" + idhd;
         } catch (Exception e) {
             e.printStackTrace(); // hoặc log lỗi bằng Logger
-            redirectAttributes.addFlashAttribute("error", "Đã xảy ra lỗi khi áp dụng mã khuyến mãi.");
+            redirectAttributes.addFlashAttribute("warning", "Đã xảy ra lỗi khi áp dụng mã khuyến mãi.");
             return "redirect:/banhangtaiquay/showhoadoncho/" + idhd;
         }
     }
@@ -548,7 +552,7 @@ public class BanHangTaiQuayController {
         HoaDon hoaDon = banHangTaiQuayService.getHoaDonByID(idhd);
         Double tongTienGoc = banHangTaiQuayService.tongTienCTHD(idhd);
         if (hoaDon == null || tongTienGoc == null) {
-            redirectAttributes.addFlashAttribute("error", "Không tìm thấy hóa đơn hoặc dữ liệu không hợp lệ.");
+            redirectAttributes.addFlashAttribute("warning", "Không tìm thấy hóa đơn hoặc dữ liệu không hợp lệ.");
             return "redirect:/banhangtaiquay";
         }
 
@@ -575,7 +579,7 @@ public class BanHangTaiQuayController {
         float tienThua = tienKhachDua - tongTienSauGiam;
 
         if (tienThua < 0) {
-            redirectAttributes.addFlashAttribute("error", "Tiền khách đưa nhỏ hơn số tiền cần thanh toán.");
+            redirectAttributes.addFlashAttribute("warning", "Tiền khách đưa nhỏ hơn số tiền cần thanh toán.");
             return "redirect:/banhangtaiquay/showhoadoncho/" + idhd;
         }
 
@@ -595,7 +599,7 @@ public class BanHangTaiQuayController {
         List<HoaDonChiTiet> hdct = banHangTaiQuayService.danhSachChiTietHoaDonByIDHD(id);
 
         if (hoaDon == null) {
-            redirectAttributes.addFlashAttribute("error", "Hóa đơn không tồn tại!");
+            redirectAttributes.addFlashAttribute("warning", "Hóa đơn không tồn tại!");
             return "redirect:/banhangtaiquay/hienthi"; // Quay về trang bán hàng nếu không tìm thấy
         }
 
@@ -732,10 +736,6 @@ public class BanHangTaiQuayController {
         Float tongTien = hoaDon.getTongTien() != 0 ? hoaDon.getTongTien() : 0.0f;
         Float giamGia = hoaDon.getTongTienGiam() != 0 ? hoaDon.getTongTienGiam() : 0.0f;
         Float thanhToan = hoaDon.getThanhTien() != 0 ? hoaDon.getThanhTien() : 0.0f;
-
-
-
-
         summaryTable.addCell(new Cell().add(new Paragraph("Tổng tiền hàng:").setFont(boldFont)).setBorder(Border.NO_BORDER));
         summaryTable.addCell(new Cell().add(new Paragraph(currencyFormat.format(tongTien) + " đ")).setTextAlignment(TextAlignment.RIGHT).setBorder(Border.NO_BORDER));
         summaryTable.addCell(new Cell().add(new Paragraph("Giảm giá:").setFont(boldFont)).setBorder(Border.NO_BORDER));

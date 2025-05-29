@@ -223,6 +223,23 @@ public class NhanVienController {
             String sdt = (String) requestBody.get("sdt");
             String email = (String) requestBody.get("email");
             Boolean trangThai = (Boolean) requestBody.get("trangthai");
+            List<NhanVien> lstNhanVien = nhanVienService.findAllNhanVien();
+            boolean coAdmin = lstNhanVien.stream()
+                    .anyMatch(item -> item.getIdChucVu() != null
+                            && item.getIdChucVu().getMaChucVu() != null
+                            && item.getIdChucVu().getMaChucVu().equalsIgnoreCase("ADMIN"));
+
+            if (!trangThai) {
+                String maChucVu = chucVuService.findChucVuById(idcv).getMaChucVu();
+                boolean laAdmin = maChucVu != null && maChucVu.equalsIgnoreCase("ADMIN");
+
+                if (laAdmin && !coAdmin) {
+                    return ResponseEntity.badRequest().body(Map.of(
+                            "success", false,
+                            "message", "Phải có tối thiểu 1 tài khoản admin trong hệ thống"
+                    ));
+                }
+            }
 
             // Validate input
             if (gioiTinh == null ) {
@@ -298,7 +315,6 @@ public class NhanVienController {
                         Map.of("success", false, "message", "Không tìm thấy chức vụ")
                 );
             }
-            List<NhanVien> lstNhanVien = nhanVienService.findAllNhanVien();
             for(NhanVien nhanVien1 : lstNhanVien) {
                 if(nhanVien1.getId()!=nhanVien.getId()&&nhanVien1.getEmail().equalsIgnoreCase(email)){
                     return ResponseEntity.badRequest().body(Map.of("success",false,"message","email đã tồn tại"));

@@ -485,6 +485,8 @@
                                 <i th:if="${ls.trangThai == 6}" class="fas fa-times-circle"></i>
                                 <i th:if="${ls.trangThai == 10}" class="fas fa-venus-double"></i>
                                 <i th:if="${ls.trangThai == 11}" class="fas fa-ban" style="color: red;"></i>
+                                <i th:if="${ls.trangThai == 12}" class="fas fa-ban" style="color: red;"></i>
+                                <i th:if="${ls.trangThai == 13}" class="fas fa-check-square"></i>
                             </div>
                             <div class="timeline-content">
                                 <div class="d-flex justify-content-between">
@@ -496,7 +498,9 @@
                                     (ls.trangThai == 5 ? 'Đã giao' :
                                     (ls.trangThai == 10 ? 'Đã thanh toán - chờ xác nhận':
                                     (ls.trangThai == 11 ? 'Giao thất bại':
-                                    'Đã hủy')))))))}"></span>
+                                    (ls.trangThai == 12 ? 'Yêu cầu hủy hàng từ khách hàng':
+                                    (ls.trangThai == 13 ? 'Đã nhận hàng thành công!':
+                                    'Đã hủy')))))))))}"></span>
                                     <span class="timeline-date"
                                         th:text="${#dates.format(ls.ngayCapNhat,'dd/MM/yyyy HH:mm:ss')}"></span>
                                 </div>

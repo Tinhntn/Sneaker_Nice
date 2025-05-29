@@ -40,7 +40,6 @@ public class KhachHangOnlineController {
     public String hienthi(Model model, @RequestParam(defaultValue = "0") int page) {
 
         KhachHang khachHang = khachHangService.findByEmail(getCurrentUserEmail());
-        System.out.println(khachHang.getTenKhachHang());
         if(khachHang==null){
             return "/dang-nhap";
         }
