@@ -154,7 +154,15 @@
                             aria-haspopup="true" aria-expanded="false">
                             <i class="fas fa-user-circle fa-fw"></i> Tài khoản
                         </a>
-                        <div class="dropdown-menu dropdown-menu-right" aria-labelledby="userDropdown" sec:authorize="hasAnyRole('USER')">
+                        <div class="dropdown-menu dropdown-menu-right" aria-labelledby="userDropdown"
+                            sec:authorize="isAnonymous()">
+                            <a class="dropdown-item" href="/dang-nhap">
+                                <i class="fas fa-user fa-fw"></i> Đăng nhập
+                            </a>
+                        </div>
+
+                        <div class="dropdown-menu dropdown-menu-right" aria-labelledby="userDropdown"
+                            sec:authorize="hasAnyRole('USER')">
                             <a class="dropdown-item" href="/khachhangonline/hienthi">
                                 <i class="fas fa-user fa-fw"></i> Thông tin cá nhân
                             </a>

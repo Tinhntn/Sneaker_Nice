@@ -166,7 +166,7 @@ public class HoaDonKhachHangController {
 
         Page<HoaDonOnlCustom> listHoaDonTatCaKH = hoaDonOnlService.getHoaDonCustomTatCaKH(pageable, khachHangService1.getId());
         Integer sizeTatCaKH = listHoaDonTatCaKH.getContent().size();
-        model.addAttribute("sizeDHKH", sizeTatCaKH);
+        model.addAttribute("sizeTatCaKH", sizeTatCaKH);
 
         Page<HoaDonOnlCustom> listHoaDonDHKH = hoaDonOnlService.getHoaDonCustomDHKH(pageable, khachHangService1.getId());
         Integer sizeDHKH = listHoaDonDHKH.getContent().size();
@@ -190,28 +190,28 @@ public class HoaDonKhachHangController {
         model.addAttribute("sizehtKH", sizehtKH);
 
         model.addAttribute("listHoaDonTatCaKH", listHoaDonTatCaKH);
-        model.addAttribute("currentPage", listHoaDonTatCaKH.getNumber());
-        model.addAttribute("totalPages", listHoaDonTatCaKH.getTotalPages());
+        model.addAttribute("currentPageTT", listHoaDonTatCaKH.getNumber());
+        model.addAttribute("totalPagesTT", listHoaDonTatCaKH.getTotalPages());
 
-        model.addAttribute("listHoaDonDHKH", listHoaDonDHKH);
-        model.addAttribute("currentPage", listHoaDonDHKH.getNumber());
-        model.addAttribute("totalPages", listHoaDonDHKH.getTotalPages());
+        model.addAttribute("listHoaDonDH", listHoaDonDHKH);
+        model.addAttribute("currentPageDH", listHoaDonDHKH.getNumber());
+        model.addAttribute("totalPagesDH", listHoaDonDHKH.getTotalPages());
 
         model.addAttribute("listHoaDonCXNKH", listHoaDonCXNKH);
-        model.addAttribute("currentPage", listHoaDonCXNKH.getNumber());
-        model.addAttribute("totalPages", listHoaDonCXNKH.getTotalPages());
+        model.addAttribute("currentPageCXN", listHoaDonCXNKH.getNumber());
+        model.addAttribute("totalPagesCXN", listHoaDonCXNKH.getTotalPages());
 
         model.addAttribute("listHoaDonCLHKH", listHoaDonCLHKH);
-        model.addAttribute("currentPage", listHoaDonCLHKH.getNumber());
-        model.addAttribute("totalPages", listHoaDonCLHKH.getTotalPages());
+        model.addAttribute("currentPageCL", listHoaDonCLHKH.getNumber());
+        model.addAttribute("totalPagesCL", listHoaDonCLHKH.getTotalPages());
 
         model.addAttribute("listHoaDonDGKH", listHoaDonDGKH);
-        model.addAttribute("currentPage", listHoaDonDGKH.getNumber());
-        model.addAttribute("totalPages", listHoaDonDGKH.getTotalPages());
+        model.addAttribute("currentPageDG", listHoaDonDGKH.getNumber());
+        model.addAttribute("totalPagesDG", listHoaDonDGKH.getTotalPages());
 
         model.addAttribute("listHoaDonHTKH", listHoaDonHTKH);
-        model.addAttribute("currentPage", listHoaDonHTKH.getNumber());
-        model.addAttribute("totalPages", listHoaDonHTKH.getTotalPages());
+        model.addAttribute("currentPageHT", listHoaDonHTKH.getNumber());
+        model.addAttribute("totalPagesHT", listHoaDonHTKH.getTotalPages());
 
         return "user/hoadon/listHoaDonKhachHang";
     }

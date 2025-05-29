@@ -33,7 +33,7 @@ public class KhachHang {
     @Column(name = "phuong_xa")
     private String phuongXa;
 
-    @Column(name = "gioi_tinh")
+    @Column(name = "gioi_tinh", columnDefinition = "boolean default true")
     private Boolean gioiTinh;
 
     @Column(name = "email", unique = true)

@@ -9,8 +9,11 @@
                 <div
                     class="card-header bg-gradient-primary text-white py-3 d-flex justify-content-between align-items-center">
                     <h3 class="mb-0 fs-5"><i class="fas fa-user-circle me-2"></i>Thông tin cá nhân</h3>
-                    <div class="group"><button class="btn btn-light btn-sm rounded-pill shadow-sm"
-                            data-bs-toggle="modal" data-bs-target="#editProfileModal">
+                    <div class="group">
+                        <button type="button" class="btn btn-light btn-sm rounded-pill shadow-sm" id="btnDangXuat">Đăng
+                            xuất</button>
+                        <button class="btn btn-light btn-sm rounded-pill shadow-sm" data-bs-toggle="modal"
+                            data-bs-target="#editProfileModal">
                             <i class="fas fa-edit me-2"></i>Chỉnh sửa
                         </button>
                         <button type="button" class="btn btn-danger btn-sm rounded-pill shadow-sm"
@@ -705,9 +708,25 @@
 
         <script>
 
+
             // Form validation
             // Thay thế đoạn code validation cũ bằng đoạn code mới này
             document.addEventListener('DOMContentLoaded', function () {
+                document.getElementById('btnDangXuat').addEventListener('click', function () {
+                    Swal.fire({
+                        title: 'Đăng xuất',
+                        text: "Bạn có muốn đăng xuất không?",
+                        icon: 'question',
+                        showCancelButton: true,
+                        confirmButtonText: 'Xác nhận',
+                        cancelButtonText: 'Hủy',
+                        reverseButtons: true
+                    }).then((result) => {
+                        if (result.isConfirmed) { 
+                            window.location.href='/logout'
+                        }
+                    })
+                })
                 // Xử lý validation cho form đổi mật khẩu
                 const changePasswordForm = document.getElementById('changePasswordForm');
                 if (changePasswordForm) {
@@ -1077,9 +1096,9 @@
                         .then(data => {
                             notyf.success("Mật khẩu đã được gửi đến email của bạn")
                             $('#modalMaXacNhan').modal('hide');
-                            setTimeout(()=>{
-                                window.location.href="/logout"
-                            },2000)
+                            setTimeout(() => {
+                                window.location.href = "/logout"
+                            }, 2000)
                         })
                         .catch(err => {
                             notyf.error("Mã xác nhận không đúng")

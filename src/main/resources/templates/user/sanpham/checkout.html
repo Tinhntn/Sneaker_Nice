@@ -101,6 +101,12 @@
 							</div>
 
 							<!-- Lưu địa chỉ từ Thymeleaf -->
+							<!-- tính phí vận chuyển -->
+							<input type="hidden" id="pickProvince" value="Hà Nội">
+							<input type="hidden" id="pickDistrict" value="Mỹ Đình">
+							<input type="hidden" id="pickWard" value="Phú Đô">
+							<input type="hidden" id="totalWeight" value="1000"> <!-- gram -->
+
 							<input type="hidden" id="savedProvince" th:value="${khachHang.tinhThanhPho}">
 							<input type="hidden" id="savedDistrict" th:value="${khachHang.quanHuyen}">
 							<input type="hidden" id="savedWard" th:value="${khachHang.phuongXa}">
@@ -133,7 +139,6 @@
 									<option value="" required>Chọn phường/xã</option>
 								</select>
 								<div class="invalid-feedback">Vui lòng chọn phường xã.</div>
-
 							</div>
 
 							<div class="form-group">
@@ -184,7 +189,7 @@
 							<div class="d-flex">
 								<span style="margin-right: 5px;">Phí giao hàng: </span>
 								<span id="shipping-fee"
-									th:text="${#numbers.formatInteger(shippingFee,3,'COMMA')} + 'đ'"></span>
+									th:text="${#numbers.formatInteger(shippingFee,0,'COMMA')} + 'đ'"></span>
 							</div>
 							<hr>
 							<!-- Tổng tiền -->
@@ -296,22 +301,84 @@
 		</section>
 		<script>
 
-			// document.addEventListener("DOMContentLoaded", function () {
-			// 	updateTotalPrice();
-			// 	const notyf = new Notyf({
-			// 		dismissible: true,
-			// 		duration: 3000,
-			// 		ripple: true,
-			// 		types: [
-			// 			{
-			// 				type: 'error',
-			// 				background: 'red',
-			// 				duration: 3000,
-			// 				dismissible: true
-			// 			}
-			// 		]
-			// 	});
-			// });
+			//tinh phi vận chuyển
+			async function tinhPhiShip() {
+				console.log("đã gọi")
+				const provinceSelect = document.getElementById("province");
+				const districtSelect = document.getElementById("district");
+				const weight = parseInt(document.getElementById("totalWeight").value) || 0;
+
+				const provinceText = provinceSelect.options[provinceSelect.selectedIndex].text;
+				const districtText = districtSelect.options[districtSelect.selectedIndex].text;
+
+				if (!provinceText || !districtText) return;
+
+				// Lấy thông tin nơi lấy hàng
+				const rawPickProvince = document.getElementById("pickProvince").value;
+				const rawPickDistrict = document.getElementById("pickDistrict").value;
+
+				// Chuẩn hóa tên
+				const pickProvince = normalizeProvinceName(rawPickProvince);
+				const pickDistrict = normalizeProvinceName(rawPickDistrict);
+				const toProvince = normalizeProvinceName(provinceText);
+				const toDistrict = normalizeProvinceName(districtText);
+
+				try {
+					const checkedCheckboxes = document.querySelectorAll('.cart-checkbox:checked');
+					const selectedIds = Array.from(checkedCheckboxes).map(cb => cb.getAttribute('data-id'));
+
+					const formData = {
+						pickProvince: pickProvince,
+						pickDistrict: pickDistrict,
+						toProvince: toProvince,
+						toDistrict: toDistrict,
+						selectedIds: selectedIds,
+						weight: weight.toString() // Thêm trường weight
+					};
+
+					fetch('/gio-hang/tinhPhiShip', {
+						method: 'POST',
+						headers: { 'Content-Type': 'application/json' },
+						body: JSON.stringify(formData)
+					})
+						.then(response => {
+							if (!response.ok) {
+								return response.json().then(err => {
+									notyf.error(err.message || "Tính phí ship thất bại!");
+									throw new Error(err.message || "Tính phí ship thất bại!");
+								});
+							}
+							return response.json();
+						})
+						.then(data => {
+							const shippingFee = data.fee;
+							document.getElementById("shipping-fee").textContent =
+								shippingFee !== undefined ? formatCurrency(shippingFee) + "đ" : "Không tính được";
+						})
+						.catch(error => {
+							console.error("Lỗi:", error);
+							document.getElementById("shipping-fee").textContent = "Không tính được";
+						});
+
+				} catch (error) {
+					console.error("Lỗi khi tính phí ship:", error);
+					document.getElementById("shipping-fee").textContent = "0";
+				}
+			}
+
+			function normalizeProvinceName(name) {
+				if (!name) return "";
+				return name
+					.toLowerCase()
+					.replace(/^(tỉnh|thành phố|quận|huyện)\s*/i, "")
+					.normalize("NFD")
+					.replace(/[\u0300-\u036f]/g, "")
+					.replace(/\s+/g, "");
+			}
+
+			function formatCurrency(value) {
+				return value.toLocaleString('vi-VN'); // ví dụ: 50000 -> "50.000"
+			}
 			async function capNhatGiaGiam(tongTien) {
 				const response = await fetch(`/gio-hang/changeChoice?tongTien=${encodeURIComponent(tongTien)}`);
 				if (!response.ok) {
@@ -407,14 +474,13 @@
 					provinceSelect.innerHTML = '<option value="">Chọn tỉnh/thành phố</option>';
 
 					let savedProvince = document.getElementById("savedProvince").value;
-
 					data.forEach(province => {
 						let option = document.createElement("option");
 						option.value = province.code;
 						option.textContent = province.name;
 
 						// Nếu tỉnh này trùng với dữ liệu đã lưu thì chọn
-						if (province.code === savedProvince) {
+						if (province.name === savedProvince) {
 							option.selected = true;
 						}
 
@@ -430,7 +496,7 @@
 				}
 			}
 
-
+			document.getElementById("district").addEventListener("change", tinhPhiShip);
 			// Load danh sách quận/huyện khi chọn tỉnh/thành phố
 			async function loadDistricts() {
 				let provinceCode = document.getElementById("province").value;
@@ -442,17 +508,16 @@
 
 					let districtSelect = document.getElementById("district");
 					districtSelect.innerHTML = '<option value="">Chọn quận/huyện</option>';
-
 					let savedDistrict = document.getElementById("savedDistrict").value;
-
 					data.districts.forEach(district => {
 						let option = document.createElement("option");
 						option.value = district.code;
 						option.textContent = district.name;
 
 						// Chọn quận/huyện đã lưu
-						if (district.code === savedDistrict) {
+						if (district.name === savedDistrict) {
 							option.selected = true;
+
 						}
 
 						districtSelect.appendChild(option);
@@ -461,6 +526,7 @@
 					// Nếu có quận/huyện được chọn thì tự động load phường/xã
 					if (districtSelect.value) {
 						await loadWards();
+						await tinhPhiShip();
 					}
 				} catch (error) {
 					console.error("Lỗi khi tải danh sách quận/huyện:", error);
@@ -485,12 +551,10 @@
 						let option = document.createElement("option");
 						option.value = ward.code;
 						option.textContent = ward.name;
-
 						// Chọn phường/xã đã lưu
-						if (ward.code === savedWard) {
+						if (ward.name === savedWard) {
 							option.selected = true;
 						}
-
 						wardSelect.appendChild(option);
 					});
 				} catch (error) {
@@ -498,8 +562,10 @@
 				}
 			}
 
+
+
 			// Gọi API khi trang tải lần đầu
-			document.addEventListener("DOMContentLoaded", loadProvinces);
+			document.addEventListener("DOMContentLoaded", loadProvinces());
 			function getSelectedVoucherId() {
 				const selectedRadio = document.querySelector('input[name="voucher"]:checked');
 				if (selectedRadio) {

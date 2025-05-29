@@ -92,10 +92,14 @@ public interface ChiTietSanPhamRepository extends JpaRepository<ChiTietSanPham, 
             "JOIN sp.idHang h " +
             "JOIN sp.idChatLieu cl " +
             "JOIN sp.idDanhMuc dm " +
+            "JOIN ctsp.idMauSac ms " +
+            "JOIN ctsp.idSize s " +
             "WHERE sp.tenSanPham LIKE %:keyword% " +
             "OR h.tenHang LIKE %:keyword% " +
             "OR cl.tenChatLieu LIKE %:keyword% " +
-            "OR dm.tenDanhMuc LIKE %:keyword%")
+            "OR dm.tenDanhMuc LIKE %:keyword% " +
+            "OR ms.tenMauSac LIKE %:keyword% " +
+            "OR s.tenSize LIKE %:keyword%")
     List<ChiTietSanPham> searchByMultipleFields(@Param("keyword") String keyword);
 
     // Lọc sản phẩm theo hãng, chất liệu và khoảng giá

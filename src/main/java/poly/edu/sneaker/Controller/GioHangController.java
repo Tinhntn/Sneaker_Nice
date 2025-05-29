@@ -15,6 +15,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import poly.edu.sneaker.Model.*;
+import poly.edu.sneaker.Response.GiaoHangTietKiemResponse;
 import poly.edu.sneaker.Service.*;
 
 import java.lang.reflect.Array;
@@ -56,7 +57,10 @@ public class GioHangController {
     private VnPay vnPay;
     @Autowired
     KhachHangService khachHangService;
-
+    @Autowired
+    GiaoHangService giaoHangService;
+    @Autowired
+    HttpSession session;
     public String getCurrentUserEmail() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication != null && authentication.isAuthenticated()) {
@@ -65,7 +69,62 @@ public class GioHangController {
         return null; // Nếu chưa đăng nhập, trả về null hoặc giá trị mặc định
     }
 
+    @PostMapping("/tinhPhiShip")
+    public ResponseEntity<?> calculateFee(@RequestBody Map<String, Object> payload) {
+        try {
+            GioHang gioHang = gioHangService.findGioHangByIDKH(khachHangService.findByEmail(getCurrentUserEmail()).getId());
 
+            String pickProvince = (String) payload.get("pickProvince");
+            String pickDistrict = (String) payload.get("pickDistrict");
+            String toProvince = (String) payload.get("toProvince");
+            String toDistrict = (String) payload.get("toDistrict");
+
+
+            // Xử lý weight
+            int weight = 0;
+            if (payload.containsKey("weight")) {
+                try {
+                    weight = Integer.parseInt(payload.get("weight").toString());
+                } catch (NumberFormatException e) {
+                    // Nếu parse weight thất bại, sẽ tính lại từ selectedIds
+                }
+            }
+
+            // Xử lý selectedIds
+            List<Integer> idGHCT = new ArrayList<>();
+            Object selectedIdsRaw = payload.get("selectedIds");
+            if (selectedIdsRaw instanceof List<?>) {
+                for (Object idObj : (List<?>) selectedIdsRaw) {
+                    try {
+                        idGHCT.add(Integer.parseInt(idObj.toString()));
+                    } catch (NumberFormatException e) {
+                        return ResponseEntity.badRequest().body(Map.of("message", "ID sản phẩm không hợp lệ"));
+                    }
+                }
+            }
+
+            // Nếu có selectedIds và weight = 0 hoặc không parse được từ payload
+            if (!idGHCT.isEmpty() && weight == 0) {
+                List<GioHangChiTiet> lstGHCT = gioHangChiTietService.findByIdGioHang(gioHang.getId())
+                        .stream()
+                        .filter(item -> idGHCT.contains(item.getId()))
+                        .collect(Collectors.toList());
+
+                if (!lstGHCT.isEmpty()) {
+                    weight = lstGHCT.stream().mapToInt(GioHangChiTiet::getTongTrongLuong).sum();
+                }
+            }
+            GiaoHangTietKiemResponse response = giaoHangService.getGiaoHangTietKiem(
+                    pickProvince, pickDistrict, toProvince, toDistrict, weight);
+            session.setAttribute("phiVanChuyen",response.getFee());
+            session.setAttribute("thoiGianDuKien",response.getEstimatedDeliveryTime() );
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of("message", "Lỗi khi tính phí: " + e.getMessage()));
+        }
+    }
     @GetMapping("/tim-giam-gia")
     @ResponseBody
     public ResponseEntity<Map<String, Object>> timGiamGia(@RequestParam("maKhuyenMai") String maKhuyenMai) {
@@ -137,14 +196,13 @@ public class GioHangController {
                 } else if (gh.getSoLuong() > gh.getIdChiTietSanPham().getSoLuong()) {
                     thayDoi.append("").append(gh.getIdChiTietSanPham().getIdSanPham().getTenSanPham());
                     isChaged = true;
-                }else if(!gh.getTrangThai()||!gh.getIdChiTietSanPham().getTrangThai()||!gh.getIdChiTietSanPham().getIdSanPham().getTrangThai()){
+                } else if (!gh.getTrangThai() || !gh.getIdChiTietSanPham().getTrangThai() || !gh.getIdChiTietSanPham().getIdSanPham().getTrangThai()) {
                     thayDoi.append("").append(gh.getIdChiTietSanPham().getIdSanPham().getTenSanPham());
                 }
             }
             if (isChaged) {
                 tinhLaiGiaTien(gioHang);
             }
-
             if (!thayDoi.toString().isBlank()) {
                 return ResponseEntity.badRequest().body(Map.of("message", "Sản phẩm " + thayDoi.toString() + "có thay đổi thay đổi"));
             }
@@ -161,7 +219,7 @@ public class GioHangController {
                 khuyenMai = khuyenMaiService.findById(gioHang.getIdKhuyenMai().getId());
                 if (khuyenMai != null) {
                     int checkKM = checkKhuyenMai(khuyenMai);
-                    if (checkKM == 1 ) {
+                    if (checkKM == 1) {
                         return ResponseEntity.badRequest().body(Map.of("message", "Mã khuyến mãi không còn hoạt động"));
                     } else if (checkKM == 2) {
                         return ResponseEntity.badRequest().body(Map.of("message", "Mã khuyến mãi đã được sử dụng hết"));
@@ -182,18 +240,34 @@ public class GioHangController {
             hoaDon.setEmailNguoiNhan((String) sanPhamThanhToan.get("email"));
             hoaDon.setTinhThanhPho((String) sanPhamThanhToan.get("province"));
             hoaDon.setQuanHuyen((String) sanPhamThanhToan.get("district"));
+            String thoiGianDuKien = (String) sanPhamThanhToan.get("thoiGianDuKien")+"ngày";
             hoaDon.setPhuongXa((String) sanPhamThanhToan.get("ward"));
             hoaDon.setDiaChiChiTiet((String) sanPhamThanhToan.get("diaChiCuThe"));
-            hoaDon.setGhiChu((String) sanPhamThanhToan.get("ghiChu"));
+            hoaDon.setGhiChu((String) sanPhamThanhToan.get("ghiChu")+" "+thoiGianDuKien);
             hoaDon.setTienKhachDua(0);
             hoaDon.setLoaiHoaDon(true);
             hoaDon.setTienThua(0);
             hoaDon.setTongTienGiam(tongTienGiam);
+            Object feeObj = session.getAttribute("phiVanChuyen");
+            float shippingFee = 0f;
+
+            if (feeObj != null) {
+                if (feeObj instanceof Number) {
+                    shippingFee = ((Number) feeObj).floatValue(); // Hỗ trợ Integer, Double, Float...
+                } else if (feeObj instanceof String) {
+                    try {
+                        shippingFee = Float.parseFloat((String) feeObj);
+                    } catch (NumberFormatException e) {
+                        System.out.println("Không thể chuyển String sang float: " + feeObj);
+                    }
+                }
+            }
+
             // Kiểm tra và parse giá trị float an toàn
             try {
-                hoaDon.setPhiShip(Float.parseFloat(sanPhamThanhToan.get("tienShip").toString()));
+                hoaDon.setPhiShip(shippingFee);
                 hoaDon.setTongTien(tongTien);
-                hoaDon.setThanhTien(tongTien+hoaDon.getPhiShip()- tongTienGiam);
+                hoaDon.setThanhTien(tongTien + hoaDon.getPhiShip() - tongTienGiam);
             } catch (NumberFormatException e) {
                 return ResponseEntity.badRequest().body("Lỗi định dạng số tiền");
             }
@@ -203,16 +277,17 @@ public class GioHangController {
             //thanh toán khi nhan hang de loai thanh toan la false
             hoaDon.setLoaiThanhToan(false);
             hoaDon.setTrangThai(2);
-            hoaDon.setGhiChu("Mua hàng ngày " + new Date() + " thanh toán khi nhận hàng");
+            hoaDon.setGhiChu("Mua hàng ngày " + new Date() + " thanh toán khi nhận hàng"+" dự kiến giao hàng trong vòng"+(String) session.getAttribute("thoiGianDuKien"+" ngày"));
             // Lưu hóa đơn vào database
             hoaDonService.save(hoaDon);
             //Cập nhật số lượng khuyến mại sau khi khách hàng thanh toán
-            if(khuyenMai!=null){
+            if (khuyenMai != null) {
                 khuyenMai.setDaSuDung(khuyenMai.getDaSuDung() + 1);
                 khuyenMaiService.updateKhuyenMai(khuyenMai, khuyenMai.getId());
 
             }
-                       //Cập nhật thông tin vao lich su don hang
+            System.out.println("Chạy đến aaya");
+            //Cập nhật thông tin vao lich su don hang
             TrangThaiDonHang trangThaiDonHang = new TrangThaiDonHang();
             trangThaiDonHang.setTrangThai(hoaDon.getTrangThai());
             trangThaiDonHang.setGhiChu("Thanh toán khi nhận hàng - Chờ xác nhận");
@@ -234,6 +309,8 @@ public class GioHangController {
                 //Xóa giỏ hàng chi tiết khi thanh toán thành công
                 gioHangChiTietService.deleteGioHangChitiet(ghct.getId());
             }
+            session.removeAttribute("phiVanChuyen");
+            session.removeAttribute("thoiGianDuKien");
             return ResponseEntity.ok(Map.of("message", "Đặt hàng thành công", "redirectUrl", "/gio-hang/checkout-success"));
 
         } catch (Exception e) {
@@ -323,10 +400,25 @@ public class GioHangController {
             hoaDon.setQuanHuyen((String) giaoDich.get("district"));
             hoaDon.setPhuongXa((String) giaoDich.get("ward"));
             hoaDon.setDiaChiChiTiet((String) giaoDich.get("diaChiCuThe"));
-            hoaDon.setGhiChu((String) giaoDich.get("ghiChu"));
+            hoaDon.setGhiChu((String) giaoDich.get("ghiChu")+" dự kiến giao hàng trong vòng"+(String) session.getAttribute("thoiGianDuKien"+" ngày"));
             try {
+                Object feeObj = session.getAttribute("phiVanChuyen");
+                float shippingFee = 0f;
+
+                if (feeObj != null) {
+                    if (feeObj instanceof Number) {
+                        shippingFee = ((Number) feeObj).floatValue(); // Hỗ trợ Integer, Double, Float...
+                    } else if (feeObj instanceof String) {
+                        try {
+                            shippingFee = Float.parseFloat((String) feeObj);
+                        } catch (NumberFormatException e) {
+                            System.out.println("Không thể chuyển String sang float: " + feeObj);
+                        }
+                    }
+                }
+
                 hoaDon.setTienKhachDua(Float.parseFloat(giaoDich.get("thanhTien").toString()));
-                hoaDon.setPhiShip(Float.parseFloat(giaoDich.get("tienShip").toString()));
+                hoaDon.setPhiShip(shippingFee);
                 hoaDon.setTongTien(Float.parseFloat(giaoDich.get("tongTien").toString()));
                 hoaDon.setTongTienGiam(Float.parseFloat(giaoDich.get("tongTienGiam").toString()));
                 hoaDon.setThanhTien(Float.parseFloat(giaoDich.get("thanhTien").toString()));
@@ -387,7 +479,8 @@ public class GioHangController {
             // Xóa session sau khi giao dịch hoàn tất
             httpSession.removeAttribute("giaoDichTam");
             httpSession.removeAttribute("khachHangSession");
-
+            session.removeAttribute("phiVanChuyen");
+            session.removeAttribute("thoiGianDuKien");
             httpSession.setAttribute("paymentStatus", "success");
             return new RedirectView("/gio-hang/checkout-success");
         } else if (paymentStatus == 0) {
@@ -477,7 +570,21 @@ public class GioHangController {
                 return ResponseEntity.badRequest().body(Map.of("message", "Giá của " + thayDoi.toString() + " thay đổi", "load", true));
             }
             //call api để tính phí ship
-            float phiShip = Float.parseFloat(sanPhamThanhToan.get("tienShip").toString());
+            Object feeObj = session.getAttribute("phiVanChuyen");
+            float shippingFee = 0f;
+
+            if (feeObj != null) {
+                if (feeObj instanceof Number) {
+                    shippingFee = ((Number) feeObj).floatValue(); // Hỗ trợ Integer, Double, Float...
+                } else if (feeObj instanceof String) {
+                    try {
+                        shippingFee = Float.parseFloat((String) feeObj);
+                    } catch (NumberFormatException e) {
+                        System.out.println("Không thể chuyển String sang float: " + feeObj);
+                    }
+                }
+            }
+
             String maHoaDon = hoaDonService.taoMaHoaDon();
             float tongTien = (float) lstGioHangChiTiet.stream().filter(item -> item.getTrangThai()).mapToDouble(GioHangChiTiet::getTongTien).sum();
             if (tongTien > 20000000) {
@@ -497,7 +604,7 @@ public class GioHangController {
                     }
                 }
             }
-            int thanhTien = (int) ((int) tongTien +phiShip - tongTienGiam);
+            int thanhTien = (int) ((int) tongTien +shippingFee - tongTienGiam);
             // Lưu tạm thông tin giao dịch vào session (hoặc Redis, DB nếu cần)
             Map<String, Object> giaoDichTam = new HashMap<>(sanPhamThanhToan);
             giaoDichTam.put("idKhachHang", khachHangSession.getId());
@@ -505,7 +612,7 @@ public class GioHangController {
             giaoDichTam.put("thanhTien", thanhTien);
             giaoDichTam.put("tongTien", tongTien);
             giaoDichTam.put("tongTienGiam", tongTienGiam);
-            giaoDichTam.put("tienShip", phiShip);
+            giaoDichTam.put("tienShip", shippingFee);
             giaoDichTam.put("lstGioHangChiTiet", lstGioHangChiTiet);
             httpSession.setAttribute("giaoDichTam", giaoDichTam);
             String orderInfo = URLEncoder.encode("Thanh toan don hang" + maHoaDon, StandardCharsets.UTF_8.toString());
@@ -550,21 +657,16 @@ public class GioHangController {
         if (lstGioHangChiTiet == null || lstGioHangChiTiet.isEmpty() || lstGioHangChiTiet.size() == 0) {
             return "redirect:/Sneakers_Nice/hienthi";
         }
-        double tien = 0;
-        for (GioHangChiTiet ghct : lstGioHangChiTiet
-        ) {
-            tien += ghct.getDonGia() * ghct.getSoLuong();
-        }
-        double shippingFee = 65000; // Giả sử phí ship cố định
-        double tongTien = tien + shippingFee;
-        List<KhuyenMai> lstKhuyenMai = khuyenMaiService.getKhuyenMaiByDieuKienGiam((float) tongTien);
+        double tien = lstGioHangChiTiet.stream().mapToDouble(GioHangChiTiet::getTongTien).sum();
+        double shippingFee = 0; // Giả sử phí ship cố định
+        List<KhuyenMai> lstKhuyenMai = khuyenMaiService.getKhuyenMaiByDieuKienGiam((float) tien);
         List<KhuyenMai> filterKhuyenMai = lstKhuyenMai.stream()
                 .filter(Objects::nonNull) // Lọc các phần tử null
                 .sorted(Comparator.comparingDouble((KhuyenMai km) -> {
                     if (km.getLoaiKhuyenMai()) {
                         return km.getGiaTriGiam();
                     } else {
-                        double giamTheoPhanTram = km.getGiaTriGiam() * tongTien / 100;
+                        double giamTheoPhanTram = km.getGiaTriGiam() * tien / 100;
                         double mucGiamToiDa = km.getMucGiamGiaToiDa();
                         return Math.min(giamTheoPhanTram, mucGiamToiDa);
                     }
@@ -580,13 +682,15 @@ public class GioHangController {
                     tongTienGiam = km.getGiaTriGiam();
                 } else {
                     double t1 = km.getMucGiamGiaToiDa();
-                    double t2 = tongTien * km.getGiaTriGiam() / 100;
+                    double t2 = tien * km.getGiaTriGiam() / 100;
                     tongTienGiam = (long) Math.min(t1, t2);
                 }
             } else {
                 tongTienGiam = 0;
             }
         }
+
+        double tongTien = tien + shippingFee;
         model.addAttribute("lstKhuyenMai", filterKhuyenMai);
         model.addAttribute("giamGia", tongTienGiam);
         model.addAttribute("khachHang", khachHangSessiong);
