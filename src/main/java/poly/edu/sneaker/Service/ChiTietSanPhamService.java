@@ -34,7 +34,13 @@ public interface ChiTietSanPhamService {
                                                    Integer idMauSac,
                                                    Integer idSize,
                                                    Pageable pageable);
-
+    Page<ChiTietSanPham> findChiTietSanPhamJustOneTT(String keyword,
+                                                   Integer idHang,
+                                                   Integer idDanhMuc,
+                                                   Integer idChatLieu,
+                                                   Integer idMauSac,
+                                                   Integer idSize,
+                                                   Pageable pageable);
     List<ChiTietSanPham> searchByMultipleFields(String keyword);
 
     // Lọc theo hãng, chất liệu và khoảng giá

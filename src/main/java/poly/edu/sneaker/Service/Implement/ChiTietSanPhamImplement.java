@@ -58,6 +58,11 @@ public class ChiTietSanPhamImplement implements ChiTietSanPhamService {
         return chiTietSanPhamRepository.findFirstRecordForEachProduct(keyword, idHang, idDanhMuc, idChatLieu, idMauSac, idSize, pageable);
     }
 
+    @Override
+    public Page<ChiTietSanPham> findChiTietSanPhamJustOneTT(String keyword, Integer idHang, Integer idDanhMuc, Integer idChatLieu, Integer idMauSac, Integer idSize, Pageable pageable) {
+        return chiTietSanPhamRepository.findLatestProductDetails(keyword, idHang, idDanhMuc, idChatLieu, idMauSac, idSize, pageable);
+    }
+
 
     @Override
 

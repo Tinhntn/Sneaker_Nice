@@ -5,11 +5,13 @@ import org.springframework.data.domain.Pageable;
 import poly.edu.sneaker.Model.HoaDon;
 import poly.edu.sneaker.Model.KhachHang;
 
+import java.util.List;
+
 public interface KhachHangService {
     Page<KhachHang> getAll(Pageable pageable);
 
     KhachHang findKhachHangById(int id);
-
+    List<KhachHang> findAll();
     void saveKhachHang(KhachHang khachHang);
 
     void updateKhachHang(KhachHang khachHang, int id);
@@ -31,5 +33,6 @@ public interface KhachHangService {
     KhachHang findByMaKhachHang(String maKhachHang);
     Page<KhachHang> filterAndSort(Boolean trangThai, String sortBy, String sortDir, Pageable pageable);
     boolean guiMailDonHang(KhachHang khachHang, HoaDon hoaDon, String ghiChu);
+    boolean ThongBao( HoaDon hoaDon,int trangThai, String ghiChu);
 
 }

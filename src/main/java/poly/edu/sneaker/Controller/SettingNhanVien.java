@@ -155,6 +155,7 @@ public class SettingNhanVien {
             }
 
 
+            boolean logout = nv.getEmail().equalsIgnoreCase(nhanVien.getEmail());
             // Cập nhật ngày sửa
             nhanVien.setNgaySua(new Date());
             nhanVien.setId(nv.getId());
@@ -168,7 +169,7 @@ public class SettingNhanVien {
 
             return ResponseEntity.ok().body(Map.of(
                     "success", true,
-                    "message", "Cập nhật thông tin thành công"
+                    "message", "Cập nhật thông tin thành công","logout", logout
             ));
         } catch (IOException e) {
             return ResponseEntity.badRequest().body(Map.of(

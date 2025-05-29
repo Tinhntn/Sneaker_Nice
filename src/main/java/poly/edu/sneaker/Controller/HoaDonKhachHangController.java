@@ -1,10 +1,7 @@
 package poly.edu.sneaker.Controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -162,7 +159,7 @@ public class HoaDonKhachHangController {
 
         KhachHang khachHangService1 = khachHangService.findByEmail(getCurrentUserEmail());
 
-        Pageable pageable = PageRequest.of(page, size);
+        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC,"ngayTao"));
 
         Page<HoaDonOnlCustom> listHoaDonTatCaKH = hoaDonOnlService.getHoaDonCustomTatCaKH(pageable, khachHangService1.getId());
         Integer sizeTatCaKH = listHoaDonTatCaKH.getContent().size();
@@ -311,7 +308,6 @@ public class HoaDonKhachHangController {
 
             KhachHang khachHang = hoaDon.getIdKhachHang();
             boolean guiMailYeuCauHuy = khachHangService.guiMailDonHang(khachHang, hoaDon, ghichu);
-            System.out.println(guiMailYeuCauHuy);
             if (guiMailYeuCauHuy) {
                 TrangThaiDonHang trangThaiDonHang = new TrangThaiDonHang();
                 trangThaiDonHang.setIdHoaDon(hoaDon);

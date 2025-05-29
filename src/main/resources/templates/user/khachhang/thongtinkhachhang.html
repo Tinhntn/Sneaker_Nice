@@ -4,222 +4,404 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Thông tin khách hàng</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
     <style>
         body {
-            font-family: 'Arial', sans-serif;
+            font-family: 'Segoe UI', sans-serif;
             background-color: #f8f9fa;
-            color: #333;
         }
 
-        h2 {
-            font-weight: bold;
-            color: #343a40;
+        .profile-card {
+            border-radius: 12px;
+            overflow: hidden;
+            background-color: #fff;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
         }
 
-        .form-label {
+        .profile-header {
+            background: linear-gradient(to right, #0d6efd, #0b5ed7);
+            color: white;
+            padding: 20px;
+        }
+
+        .profile-info {
+            padding: 20px;
+        }
+
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 12px 0;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .info-label {
             font-weight: 600;
             color: #555;
         }
 
-        .btn-custom {
-            background-color: #007bff;
+        .info-value {
+            color: #222;
+        }
+
+        .profile-avatar {
+            width: 160px;
+            height: 200px;
+            object-fit: cover;
+            border-radius: 10px;
+            border: 3px solid #fff;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .btn-update {
+            background-color: #0d6efd;
+            border: none;
             color: white;
             border-radius: 25px;
             padding: 10px 20px;
-            transition: background-color 0.3s;
         }
 
-        .btn-custom:hover {
-            background-color: #0056b3;
+        .btn-update:hover {
+            background-color: #0b5ed7;
         }
     </style>
 </head>
 
 <body>
-    <div layout:fragment="content" class="container mt-5">
+
+    <!-- Thông báo -->
+    <div layout:fragment="content" class="container my-5">
+        <!-- Thông báo bằng SweetAlert -->
         <script th:if="${success != null}" th:inline="javascript">
-            Swal.fire({
-                icon: 'success',
-                title: 'Thành công',
-                text: '[[${success}]]',
-                position: 'center',
-                timer: 3000,
-                timerProgressBar: true,
-                showConfirmButton: false
-            });
+            Swal.fire({ icon: 'success', title: 'Thành công', text: '[[${success}]]', timer: 3000, showConfirmButton: false });
         </script>
-
         <script th:if="${error != null}" th:inline="javascript">
-            Swal.fire({
-                icon: 'error',
-                title: 'Lỗi',
-                text: '[[${error}]]',
-                position: 'center',
-                timer: 3000,
-                timerProgressBar: true,
-                showConfirmButton: false
-            });
+            Swal.fire({ icon: 'error', title: 'Lỗi', text: '[[${error}]]', timer: 3000, showConfirmButton: false });
         </script>
-
         <script th:if="${warning != null}" th:inline="javascript">
-            Swal.fire({
-                icon: 'warning',
-                title: 'Lưu ý',
-                text: '[[${warning}]]',
-                position: 'center',
-                timer: 3000,
-                timerProgressBar: true,
-                showConfirmButton: false
-            });
+            Swal.fire({ icon: 'warning', title: 'Lưu ý', text: '[[${warning}]]', timer: 3000, showConfirmButton: false });
         </script>
 
-        <h2 class="mb-4 text-center">Thông tin khách hàng</h2>
+        <!-- Card thông tin khách hàng -->
+        <div class="card shadow-lg p-4 rounded-4 mx-auto" style="max-width: 900px;">
+            <div class="row g-4 align-items-center">
+                <!-- Hình ảnh -->
+                <div class="col-md-4 text-center">
+                    <img th:src="@{${khachhang.hinhAnh != null ? khachhang.hinhAnh : '/img/add.jpg'}}"
+                        alt="Ảnh khách hàng" class="img-fluid rounded-4 border border-3"
+                        style="max-height: 240px; object-fit: cover;">
+                </div>
 
-        <div class="row justify-content-center align-items-center">
-            <div class="col-md-4 text-center">
-                <img th:src="@{${khachhang.hinhAnh != null ? khachhang.hinhAnh : '/img/add.jpg'}}"
-                    style="width: 200px; height: 250px; object-fit: cover;" alt="Ảnh khách hàng"
-                    class="img-fluid rounded shadow">
-                <p class="mt-3">
-                    Xin chào
-                    <span
-                        th:text="${#strings.isEmpty(khachhang.tenKhachHang) ? 'Không có' : khachhang.tenKhachHang}"></span>
-                </p>
-            </div>
-            <div class="col-md-6">
-                <div class="mb-3">
-                    <label class="form-label">Mã khách hàng:</label>
-                    <span
-                        th:text="${#strings.isEmpty(khachhang.maKhachHang) ? 'Không có' : khachhang.maKhachHang}"></span>
+                <!-- Thông tin -->
+                <div class="col-md-8">
+                    <h4 class="fw-bold mb-3 text-primary">Thông tin khách hàng</h4>
+
+                    <div class="mb-3 border-bottom pb-2">
+                        <strong><i class="fas fa-id-card me-2"></i>Mã KH:</strong>
+                        <span th:text="${khachhang.maKhachHang ?: 'Không có'}"></span>
+                    </div>
+
+                    <div class="mb-3 border-bottom pb-2">
+                        <strong><i class="fas fa-user me-2"></i>Họ tên:</strong>
+                        <span th:text="${khachhang.tenKhachHang ?: 'Không có'}"></span>
+                    </div>
+
+                    <div class="mb-3 border-bottom pb-2">
+                        <strong><i class="fas fa-envelope me-2"></i>Email:</strong>
+                        <span th:text="${khachhang.email ?: 'Không có'}"></span>
+                    </div>
+
+                    <div class="mb-3 border-bottom pb-2">
+                        <strong><i class="fas fa-phone me-2"></i>Số điện thoại:</strong>
+                        <span th:text="${khachhang.sdt ?: 'Không có'}"></span>
+                    </div>
+
+                    <div class="mb-3 border-bottom pb-2">
+                        <strong><i class="fas fa-venus-mars me-2"></i>Giới tính:</strong>
+                        <span
+                            th:text="${khachhang.gioiTinh == null ? 'Không có' : (khachhang.gioiTinh ? 'Nam' : 'Nữ')}"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <strong><i class="fas fa-map-marker-alt me-2"></i>Địa chỉ:</strong>
+                        <span th:text="${#strings.isEmpty(khachhang.tinhThanhPho) && #strings.isEmpty(khachhang.quanHuyen) && #strings.isEmpty(khachhang.phuongXa)
+                              ? 'Không có'
+                              : khachhang.tinhThanhPho + ', ' + khachhang.quanHuyen + ', ' + khachhang.phuongXa}">
+                        </span>
+                    </div>
+
+                    <!-- Nút cập nhật -->
+                    <div class="text-end">
+                        <button class="btn btn-primary px-4 rounded-pill" data-bs-toggle="modal"
+                            data-bs-target="#updateModal">
+                            <i class="fas fa-edit me-2"></i>Cập nhật thông tin
+                        </button>
+                    </div>
                 </div>
-                <div class="mb-3">
-                    <label class="form-label">Email:</label>
-                    <span th:text="${#strings.isEmpty(khachhang.email) ? 'Không có' : khachhang.email}"></span>
-                </div>
-                <div class="mb-3">
-                    <label class="form-label">Số điện thoại:</label>
-                    <span th:text="${#strings.isEmpty(khachhang.sdt) ? 'Không có' : khachhang.sdt}"></span>
-                </div>
-                <div class="mb-3">
-                    <label class="form-label">Giới tính:</label>
-                    <span
-                        th:text="${khachhang.gioiTinh == null ? 'Không có' : (khachhang.gioiTinh ? 'Nam' : 'Nữ')}"></span>
-                </div>
-                <div class="mb-3">
-                    <label class="form-label">Địa chỉ:</label>
-                    <span th:text="${
-                #strings.isEmpty(khachhang.tinhThanhPho) &&
-                #strings.isEmpty(khachhang.quanHuyen) &&
-                #strings.isEmpty(khachhang.phuongXa)
-                ? 'Không có'
-                : khachhang.tinhThanhPho + ', ' + khachhang.quanHuyen + ', ' + khachhang.phuongXa
-            }"></span>
-                </div>
-                <button class="btn btn-custom" data-bs-toggle="modal" data-bs-target="#updateModal"
-                    style="background-color: #ff7e5f">
-                    Cập nhật thông tin
-                </button>
             </div>
         </div>
+
 
 
         <!-- Modal cập nhật -->
         <div class="modal fade" id="updateModal" tabindex="-1" aria-labelledby="updateModalLabel" aria-hidden="true">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <div class="modal-header">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content border-0 shadow">
+                    <div class="modal-header bg-primary text-white">
                         <h5 class="modal-title" id="updateModalLabel">Cập nhật thông tin khách hàng</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
                     </div>
-                    <div class="modal-body">
-                        <form th:action="@{/khachhangonline/updatethongtin}" method="post" id="updateForm"
-                            onsubmit="return validateForm()">
-                            <div class="mb-3">
-                                <label class="form-label">Họ và tên</label>
-                                <input type="text" class="form-control" name="tenKhachHang"
-                                    th:value="${khachhang.tenKhachHang}" required>
+                    <form th:action="@{/khachhangonline/updatethongtin}" method="post" id="updateForm"
+                        onsubmit="return validateForm()">
+                        <div class="modal-body p-4">
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <label class="form-label">Họ và tên</label>
+                                    <input type="text" class="form-control" name="tenKhachHang"
+                                        th:value="${khachhang.tenKhachHang}" required>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Email</label>
+                                    <input type="email" class="form-control" name="email" th:value="${khachhang.email}"
+                                        required>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Số điện thoại</label>
+                                    <input type="tel" class="form-control" name="sdt" th:value="${khachhang.sdt}"
+                                        required>
+                                </div>
+
+                                <div class="col-md-6">
+                                    <label class="form-label">Giới tính</label>
+                                    <select class="form-select" name="gioiTinh" required>
+                                        <option th:selected="${khachhang.gioiTinh}" value="true">Nam</option>
+                                        <option th:selected="${!khachhang.gioiTinh}" value="false">Nữ</option>
+                                    </select>
+                                </div>
+
+                                <div class="col-12">
+                                    <input type="hidden" id="savedProvince" th:value="${khachhang.tinhThanhPho}">
+                                    <input type="hidden" id="savedDistrict" th:value="${khachhang.quanHuyen}">
+                                    <input type="hidden" id="savedWard" th:value="${khachhang.phuongXa}">
+                                    <!-- Chọn tỉnh/thành phố -->
+                                    <!-- Thay đổi name và thêm hidden input để gửi tên địa chỉ -->
+                                    <div class="form-group">
+                                        <label for="province">Tỉnh/Thành phố<span class="text-danger">*</span></label>
+                                        <select class="form-control" id="province" onchange="loadDistricts()">
+                                            <option value="">Chọn tỉnh/thành phố</option>
+                                        </select>
+                                        <input type="hidden" id="provinceName" name="tinhThanhPho"
+                                            th:value="${khachhang.tinhThanhPho}">
+                                        <div class="invalid-feedback">Vui lòng chọn tỉnh/thành phố.</div>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="district">Quận/Huyện<span class="text-danger">*</span></label>
+                                        <select class="form-control" id="district" onchange="loadWards()">
+                                            <option value="">Chọn quận/huyện</option>
+                                        </select>
+                                        <input type="hidden" id="districtName" name="quanHuyen"
+                                            th:value="${khachhang.quanHuyen}">
+                                        <div class="invalid-feedback">Vui lòng chọn quận/huyện.</div>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="ward">Phường/Xã<span class="text-danger">*</span></label>
+                                        <select class="form-control" id="ward">
+                                            <option value="">Chọn phường/xã</option>
+                                        </select>
+                                        <input type="hidden" id="wardName" name="phuongXa"
+                                            th:value="${khachhang.phuongXa}">
+                                        <div class="invalid-feedback">Vui lòng chọn phường xã.</div>
+                                    </div>
+
+                                </div>
+
                             </div>
-                            <div class="mb-3">
-                                <label class="form-label">Email</label>
-                                <input type="email" class="form-control" name="email" th:value="${khachhang.email}"
-                                    required>
-                            </div>
-                            <div class="mb-3">
-                                <label class="form-label">Số điện thoại</label>
-                                <input type="tel" class="form-control" name="sdt" th:value="${khachhang.sdt}" required>
-                            </div>
-                            <div class="mb-3">
-                                <label class="form-label">Giới tính</label>
-                                <select class="form-select" name="gioiTinh" required>
-                                    <option th:selected="${khachhang.gioiTinh}" value="true">Nam</option>
-                                    <option th:selected="${!khachhang.gioiTinh}" value="false">Nữ</option>
-                                </select>
-                            </div>
-                            <div class="mb-3">
-                                <label class="form-label">Địa chỉ</label>
-                                <input type="text" class="form-control" name="tinhThanhPho"
-                                    th:value="${khachhang.tinhThanhPho}" placeholder="Tỉnh / Thành phố" required>
-                                <input type="text" class="form-control mt-2" name="quanHuyen"
-                                    th:value="${khachhang.quanHuyen}" placeholder="Quận / Huyện" required>
-                                <input type="text" class="form-control mt-2" name="phuongXa"
-                                    th:value="${khachhang.phuongXa}" placeholder="Phường / Xã" required>
-                            </div>
-                            <div class="modal-footer">
-                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
-                                <button type="submit" class="btn btn-primary">Lưu thay đổi</button>
-                            </div>
-                        </form>
-                    </div>
+                        </div>
+                        <div class="modal-footer px-4">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                            <button type="submit" class="btn btn-primary">Lưu thay đổi</button>
+                        </div>
+                    </form>
                 </div>
             </div>
         </div>
-
-        <!-- Script validate -->
+        <!-- Validate form -->
         <script>
-            function validateForm() {
-                const form = document.getElementById("updateForm");
 
-                const tenKhachHang = form.tenKhachHang.value.trim();
+            const API_PROVINCE = "https://provinces.open-api.vn/api/";
+
+
+            document.addEventListener("DOMContentLoaded", loadProvinces());
+
+
+
+            // Thêm sự kiện change cho các select box
+            document.getElementById("province").addEventListener("change", function () {
+                const selectedOption = this.options[this.selectedIndex];
+                document.getElementById("provinceName").value = selectedOption.textContent;
+            });
+
+            document.getElementById("district").addEventListener("change", function () {
+                const selectedOption = this.options[this.selectedIndex];
+                document.getElementById("districtName").value = selectedOption.textContent;
+            });
+
+            document.getElementById("ward").addEventListener("change", function () {
+                const selectedOption = this.options[this.selectedIndex];
+                document.getElementById("wardName").value = selectedOption.textContent;
+            });
+
+            // Sửa lại hàm loadProvinces
+            async function loadProvinces() {
+                try {
+                    let response = await fetch(API_PROVINCE + "?depth=1");
+                    let data = await response.json();
+
+                    let provinceSelect = document.getElementById("province");
+                    provinceSelect.innerHTML = '<option value="">Chọn tỉnh/thành phố</option>';
+
+                    let savedProvince = document.getElementById("provinceName").value;
+                    data.forEach(province => {
+                        let option = document.createElement("option");
+                        option.value = province.code;
+                        option.textContent = province.name;
+
+                        if (province.name === savedProvince) {
+                            option.selected = true;
+                            document.getElementById("provinceName").value = province.name;
+                        }
+
+                        provinceSelect.appendChild(option);
+                    });
+
+                    if (provinceSelect.value) {
+                        await loadDistricts();
+                    }
+                } catch (error) {
+                    console.error("Lỗi khi tải danh sách tỉnh/thành phố:", error);
+                }
+            }
+
+            // Sửa lại hàm loadDistricts
+            async function loadDistricts() {
+                let provinceCode = document.getElementById("province").value;
+                if (!provinceCode) return;
+
+                try {
+                    let response = await fetch(API_PROVINCE + "p/" + provinceCode + "?depth=2");
+                    let data = await response.json();
+
+                    let districtSelect = document.getElementById("district");
+                    districtSelect.innerHTML = '<option value="">Chọn quận/huyện</option>';
+                    let savedDistrict = document.getElementById("districtName").value;
+
+                    data.districts.forEach(district => {
+                        let option = document.createElement("option");
+                        option.value = district.code;
+                        option.textContent = district.name;
+
+                        if (district.name === savedDistrict) {
+                            option.selected = true;
+                            document.getElementById("districtName").value = district.name;
+                        }
+
+                        districtSelect.appendChild(option);
+                    });
+
+                    if (districtSelect.value) {
+                        await loadWards();
+                    }
+                } catch (error) {
+                    console.error("Lỗi khi tải danh sách quận/huyện:", error);
+                }
+            }
+
+            // Sửa lại hàm loadWards
+            async function loadWards() {
+                let districtCode = document.getElementById("district").value;
+                if (!districtCode) return;
+
+                try {
+                    let response = await fetch(API_PROVINCE + "d/" + districtCode + "?depth=2");
+                    let data = await response.json();
+
+                    let wardSelect = document.getElementById("ward");
+                    wardSelect.innerHTML = '<option value="">Chọn phường/xã</option>';
+                    let savedWard = document.getElementById("wardName").value;
+
+                    data.wards.forEach(ward => {
+                        let option = document.createElement("option");
+                        option.value = ward.code;
+                        option.textContent = ward.name;
+
+                        if (ward.name === savedWard) {
+                            option.selected = true;
+                            document.getElementById("wardName").value = ward.name;
+                        }
+
+                        wardSelect.appendChild(option);
+                    });
+                } catch (error) {
+                    console.error("Lỗi khi tải danh sách phường/xã:", error);
+                }
+            }
+            function validateForm() {
+                
+                const form = document.getElementById("updateForm");
+                const name = form.tenKhachHang.value.trim();
                 const email = form.email.value.trim();
-                const sdt = form.sdt.value.trim();
-                const tinhThanhPho = form.tinhThanhPho.value.trim();
-                const quanHuyen = form.quanHuyen.value.trim();
-                const phuongXa = form.phuongXa.value.trim();
+                const phone = form.sdt.value.trim();
+                const tinh = form.tinhThanhPho.value.trim();
+                const quan = form.quanHuyen.value.trim();
+                const phuong = form.phuongXa.value.trim();
 
                 const nameRegex = /^[a-zA-ZÀ-ỹĂăĐđÊêÔôƠơƯư\s]+$/u;
                 const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
                 const phoneRegex = /^0\d{9,10}$/;
+ if (!tinh || !quan || !phuong) {
+        Swal.fire("Lỗi", "Vui lòng nhập đầy đủ địa chỉ.", "error");
+        return false;
+    }
 
-                if (!nameRegex.test(tenKhachHang)) {
+                if (!nameRegex.test(name)) {
                     Swal.fire("Lỗi", "Tên khách hàng chỉ được chứa chữ cái và khoảng trắng.", "error");
                     return false;
                 }
 
                 if (!emailRegex.test(email)) {
-                    Swal.fire("Lỗi", "Email không hợp lệ. Vui lòng nhập đúng định dạng.", "error");
+                    Swal.fire("Lỗi", "Email không hợp lệ.", "error");
                     return false;
                 }
 
-                if (!phoneRegex.test(sdt)) {
-                    Swal.fire("Lỗi", "Số điện thoại phải bắt đầu bằng số 0 và có 10-11 chữ số.", "error");
+                if (!phoneRegex.test(phone)) {
+                    Swal.fire("Lỗi", "Số điện thoại phải bắt đầu bằng 0 và có 10-11 chữ số.", "error");
                     return false;
                 }
 
-                if (!tinhThanhPho || !quanHuyen || !phuongXa) {
-                    Swal.fire("Lỗi", "Vui lòng nhập đầy đủ địa chỉ: Tỉnh/TP, Quận/Huyện, Phường/Xã.", "error");
+                if (!tinh || !quan || !phuong) {
+                    Swal.fire("Lỗi", "Vui lòng nhập đầy đủ địa chỉ.", "error");
                     return false;
                 }
 
                 return true;
             }
         </script>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
     </div>
+
+
+
+
+
+
 </body>
 
 </html>

@@ -4,6 +4,137 @@
 
 <body>
     <div layout:fragment="content">
+        <style>
+            /* CSS cho section bộ lọc */
+            .ftco-section.bg-light {
+                padding: 2rem 0;
+            }
+
+            /* Card chứa bộ lọc */
+            .card.shadow-sm {
+                border: none;
+                border-radius: 10px;
+                overflow: hidden;
+                transition: all 0.3s ease;
+            }
+
+            .card.shadow-sm:hover {
+                box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1) !important;
+            }
+
+            .card-body {
+                padding: 1.5rem;
+            }
+
+            /* Tiêu đề bộ lọc */
+            .card-body h5 {
+                font-size: 1.25rem;
+                color: #333;
+                font-weight: 600;
+            }
+
+            /* Nút xóa tất cả */
+            .btn-outline-danger {
+                border-color: #dc3545;
+                color: #dc3545;
+                transition: all 0.3s ease;
+            }
+
+            .btn-outline-danger:hover {
+                background-color: #dc3545;
+                color: rgb(30, 28, 28);
+            }
+
+            /* Các nút hãng sản xuất */
+            .brand-filter {
+                margin-top: 0.5rem;
+            }
+
+            .brand-btn {
+                padding: 0.35rem 0.75rem;
+                border-radius: 20px;
+                font-size: 0.85rem;
+                transition: all 0.2s ease;
+                text-decoration: none;
+                display: inline-flex;
+                align-items: center;
+            }
+
+            .btn-outline-secondary {
+                border-color: #dee2e6;
+                color: #495057;
+            }
+
+            .btn-outline-secondary:hover {
+                background-color: #f8f9fa;
+                border-color: #adb5bd;
+            }
+
+            .btn-primary {
+                box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            }
+
+            .clear-filter {
+                padding: 0.35rem 0.5rem;
+                border-radius: 50%;
+                width: 30px;
+                height: 30px;
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+            }
+
+            /* Select box */
+            .form-select-sm {
+                padding: 0.5rem 1rem;
+                border-radius: 8px;
+                border: 1px solid #ced4da;
+                font-size: 0.9rem;
+                height: calc(1.5em + 1rem + 2px);
+                cursor: pointer;
+            }
+
+            .form-select-sm:focus {
+                border-color: #86b7fe;
+                box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+            }
+
+            /* Badge hiển thị bộ lọc đang áp dụng */
+            .badge {
+                padding: 0.5em 0.75em;
+                border-radius: 20px;
+                font-weight: 500;
+                font-size: 0.85rem;
+                display: inline-flex;
+                align-items: center;
+                gap: 0.25rem;
+            }
+
+            .badge a {
+                opacity: 0.7;
+                transition: opacity 0.2s ease;
+            }
+
+            .badge a:hover {
+                opacity: 1;
+                text-decoration: none;
+            }
+
+            /* Responsive */
+            @media (max-width: 768px) {
+                .brand-filter {
+                    gap: 0.5rem;
+                }
+
+                .col-md-4 {
+                    margin-bottom: 1rem;
+                }
+
+                .card-body {
+                    padding: 1rem;
+                }
+            }
+        </style>
         <section class="ftco-section ftco-no-pt ftco-no-pb">
             <div class="container">
                 <div class="row no-gutters ftco-services">
@@ -153,11 +284,12 @@
                         <h2 class="mb-4">Kết quả lọc sản phẩm</h2>
                     </div>
                 </div>
-                <!-- <div class="row">
+                <div class="row">
                     <div class="col-sm-12 col-md-6 col-lg-3 d-flex mb-4" th:each="sp : ${filteredProducts}">
                         <div class="product d-flex flex-column">
                             <a th:href="@{/Sneakers_Nice/chitietsanpham/{id}(id=${sp.id})}" class="img-prod">
-                                <img class="img-fluid" th:src="${sp.hinhAnh != null ? (sp.hinhAnh.split(',')[0].trim()) : '/images/default-product.png'}">
+                                <img class="img-fluid"
+                                    th:src="${sp.hinhAnh != null ? (sp.hinhAnh.split(',')[0].trim()) : '/images/default-product.png'}">
                             </a>
                             <div class="text py-3 pb-4 px-3">
                                 <div class="d-flex">
@@ -196,7 +328,7 @@
                             </div>
                         </div>
                     </div>
-                </div> -->
+                </div>
                 <!-- Phân trang cho kết quả lọc -->
                 <div class="pagination">
                     <nav aria-label="Page navigation">
@@ -233,7 +365,8 @@
                     <div class="col-sm-12 col-md-6 col-lg-3 d-flex mb-4" th:each="sp : ${listSanPham}">
                         <div class="product d-flex flex-column">
                             <a th:href="@{/Sneakers_Nice/chitietsanpham/{id}(id=${sp.id})}" class="img-prod">
-                                <img class="img-fluid" th:src="${sp.hinhAnh != null ? (sp.hinhAnh.split(',')[0].trim()) : '/images/default-product.png'}">
+                                <img class="img-fluid"
+                                    th:src="${sp.hinhAnh != null ? (sp.hinhAnh.split(',')[0].trim()) : '/images/default-product.png'}">
                                 <div class="overlay"></div>
                             </a>
                             <div class="text py-3 pb-4 px-3">
@@ -307,7 +440,8 @@
                     <div class="col-sm-12 col-md-6 col-lg-3 ftco-animate d-flex" th:each="sanPham : ${newestProducts}">
                         <div class="product d-flex flex-column">
                             <a th:href="@{/Sneakers_Nice/chitietsanpham/{id}(id=${sanPham.id})}" class="img-prod">
-                                <img class="img-fluid" th:src="${sanPham.hinhAnh != null ? (sanPham.hinhAnh.split(',')[0].trim()) : '/images/default-product.png'}">
+                                <img class="img-fluid"
+                                    th:src="${sanPham.hinhAnh != null ? (sanPham.hinhAnh.split(',')[0].trim()) : '/images/default-product.png'}">
                                 <div class="overlay"></div>
                             </a>
                             <div class="text py-3 pb-4 px-3">
@@ -380,8 +514,9 @@
                         th:each="sanPham : ${bestSellingProducts}">
                         <div class="product d-flex flex-column">
                             <a th:href="@{/Sneakers_Nice/chitietsanpham/{id}(id=${sanPham.id})}" class="img-prod">
-                                <img class="img-fluid" th:src="${sanPham.hinhAnh!=null?(sanPham.hinhAnh.split(',')[0].trim()):'/images/product-default.png'}" loading="lazy"
-                                    alt="Colorlib Template">
+                                <img class="img-fluid"
+                                    th:src="${sanPham.hinhAnh!=null?(sanPham.hinhAnh.split(',')[0].trim()):'/images/product-default.png'}"
+                                    loading="lazy" alt="Colorlib Template">
 
                                 <div class="overlay"></div>
                             </a>

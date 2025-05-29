@@ -852,7 +852,9 @@
                         success: function (response) {
                             // Hiển thị thông báo thành công
                             showToast('success', 'Cập nhật thành công', 'Thông tin đã được lưu thành công');
-
+                            if(!response.logout){
+                                window.location.href="/logout"
+                            }
                             // Cập nhật lại thông tin trên giao diện
                             setTimeout(() => {
                                 location.reload();

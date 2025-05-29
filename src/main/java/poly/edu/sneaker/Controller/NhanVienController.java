@@ -49,7 +49,6 @@ public class NhanVienController {
 
     private static final String EMAIL_PATTERN = "^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$";
     private static final String SDT_PATTERN = "^0\\d{9,10}$";
-
     @GetMapping("/hienthi")
     public String hienThiNhanVien(Model model,
                                   @RequestParam(defaultValue = "0") int page,
@@ -227,10 +226,12 @@ public class NhanVienController {
             boolean coAdmin = lstNhanVien.stream()
                     .anyMatch(item -> item.getIdChucVu() != null
                             && item.getIdChucVu().getMaChucVu() != null
-                            && item.getIdChucVu().getMaChucVu().equalsIgnoreCase("ADMIN"));
+                            && item.getIdChucVu().getMaChucVu().toUpperCase().endsWith("ADMIN"));
+            String maChucVu = chucVuService.findChucVuById(idcv).getMaChucVu();
+
+
 
             if (!trangThai) {
-                String maChucVu = chucVuService.findChucVuById(idcv).getMaChucVu();
                 boolean laAdmin = maChucVu != null && maChucVu.equalsIgnoreCase("ADMIN");
 
                 if (laAdmin && !coAdmin) {
@@ -301,14 +302,16 @@ public class NhanVienController {
                 return ResponseEntity.badRequest().body(Map.of("success",false,"message","Email không đúng định dạng"));
             }
 
-
             NhanVien nhanVien = nhanVienService.findNhanVienById(id);
+
             if (nhanVien == null) {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
                         Map.of("success", false, "message", "Không tìm thấy nhân viên")
                 );
             }
-
+            if(nhanVien.getIdChucVu().getMaChucVu().toUpperCase().endsWith("ADMIN")&&!maChucVu.toUpperCase().endsWith("ADMIN")){
+                return ResponseEntity.badRequest().body(Map.of("message","Không thể hạ phân quyền của bản thân"));
+            }
             ChucVu chucVu = chucVuService.findChucVuById(idcv);
             if (chucVu == null) {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body(

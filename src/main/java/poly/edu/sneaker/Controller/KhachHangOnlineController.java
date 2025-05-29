@@ -16,11 +16,14 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import poly.edu.sneaker.DAO.KhuyenMaiCustom;
 import poly.edu.sneaker.Model.KhachHang;
 import poly.edu.sneaker.Model.KhuyenMai;
+import poly.edu.sneaker.Model.NhanVien;
 import poly.edu.sneaker.Service.HoaDonService;
 import poly.edu.sneaker.Service.KhachHangOnlineService;
 import poly.edu.sneaker.Service.KhachHangService;
+import poly.edu.sneaker.Service.NhanVienService;
 
 import java.util.ArrayList;
+import java.util.List;
 
 @Controller
 @RequestMapping("/khachhangonline")
@@ -29,6 +32,8 @@ public class KhachHangOnlineController {
     KhachHangOnlineService khachHangOnlineService;
     @Autowired
     KhachHangService khachHangService;
+    @Autowired
+    NhanVienService nhanVienService;
     public String getCurrentUserEmail() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication != null && authentication.isAuthenticated()) {
@@ -69,6 +74,7 @@ public class KhachHangOnlineController {
             return "redirect:/khachhangonline/hienthi";
         }
 
+
         // Các bước xử lý tiếp theo...
         KhachHang khachHang = khachHangOnlineService.layKhachHangQuaid(khachHang1.getId());
         if (khachHang != null) {
@@ -81,6 +87,7 @@ public class KhachHangOnlineController {
             khachHang.setPhuongXa(phuongXa);
 
             khachHangOnlineService.saveKH(khachHang);
+
             redirectAttributes.addFlashAttribute("success", "Cập nhật thông tin thành công!");
         } else {
             redirectAttributes.addFlashAttribute("error", "Không tìm thấy khách hàng!");

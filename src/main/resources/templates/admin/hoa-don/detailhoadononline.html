@@ -554,7 +554,7 @@
                             <h5 class="mb-0">Thông tin vận chuyển</h5>
                             <button th:unless="${ hoaDon.trangThai !=3 && hoaDon.trangThai!=2}"
                                 class="btn btn-sm btn-warning" data-bs-toggle="modal" data-bs-target="#capnhatlichsu">
-                                <i class="fas fa-edit me-1"></i> Cập nhậts
+                                <i class="fas fa-edit me-1"></i> Cập nhật
                             </button>
                         </div>
 
@@ -740,7 +740,7 @@
                             </div>
                             <div class="summary-item">
                                 <span>Phí vận chuyển:</span>
-                                <span
+                                <span id="phiVanChuyen"
                                     th:text="${#numbers.formatDecimal(hoaDon.phiShip, 0, 'COMMA', 0, 'POINT')} + ' VNĐ'"></span>
                             </div>
                             <hr>
@@ -981,25 +981,41 @@
                                         <div class="invalid-feedback">Số điện thoại không đúng định dạng</div>
 
                                     </div>
+                                    <input type="hidden" id="pickProvince" value="Hà Nội">
+                                    <input type="hidden" id="pickDistrict" value="Mỹ Đình">
+                                    <input type="hidden" id="pickWard" value="Phú Đô">
+                                    <input type="hidden" id="totalWeight" value="1000"> <!-- gram -->
+
+                                    <input type="hidden" id="savedProvince" th:value="${hoaDon.tinhThanhPho}">
+                                    <input type="hidden" id="savedDistrict" th:value="${hoaDon.quanHuyen}">
+                                    <input type="hidden" id="savedWard" th:value="${hoaDon.phuongXa}">
+
                                     <div class="col mb-3">
-                                        <label for="tinhThanhPho" class="form-label">Tỉnh/Thành phố<span
+                                        <label for="tinhThanhPho">Tỉnh/Thành phố<span
                                                 class="text-danger">*</span></label>
-                                        <input type="text" class="form-control w-80" id="tinhThanhPho"
-                                            th:field="${hoaDon.tinhThanhPho}" required />
-                                    </div>
-                                    <div class="col mb-3">
-                                        <label for="quanHuyen" class="form-label">Quận/Huyện<span
-                                                class="text-danger">*</span></label>
-                                        <input type="text" class="form-control w-80" id="quanHuyen"
-                                            th:field="${hoaDon.quanHuyen}" required />
+                                        <select class="form-control" id="tinhThanhPho" onchange="loadDistricts()">
+                                            <option value="">Chọn tỉnh/thành phố</option>
+                                        </select>
+                                        <input type="hidden" id="tinhThanhPhoName" name="tinhThanhPho">
+                                        <!-- Quan trọng: thêm name -->
                                     </div>
 
+                                    <div class="col mb-3">
+                                        <label for="quanHuyen">Quận/Huyện<span class="text-danger">*</span></label>
+                                        <select class="form-control" id="quanHuyen" onchange="loadWards()">
+                                            <option value="">Chọn quận/huyện</option>
+                                        </select>
+                                        <input type="hidden" id="quanHuyenName" name="quanHuyen">
+                                        <!-- Quan trọng: thêm name -->
+                                    </div>
                                 </div>
                                 <div class="mb-3">
-                                    <label for="phuongXa" class="form-label">Phường/Xã<span
-                                            class="text-danger">*</span></label>
-                                    <input type="text" class="form-control w-80" id="phuongXa"
-                                        th:field="${hoaDon.phuongXa}" required />
+                                    <label for="phuongXa">Phường/Xã<span class="text-danger">*</span></label>
+                                    <select class="form-control" id="phuongXa">
+                                        <option value="">Chọn phường/xã</option>
+                                    </select>
+                                    <input type="hidden" id="phuongXaName" name="phuongXa">
+                                    <!-- Quan trọng: thêm name -->
                                 </div>
 
                             </div>
@@ -1081,6 +1097,7 @@
                             .then(data => {
                                 if (data.success) {
                                     notyf.success("Cập nhật thành công!");
+                                    tinhPhiShip();
                                     setTimeout(() => {
                                         window.location.reload()
                                     }, 2000)
@@ -1186,9 +1203,11 @@
 
                                     if (existingRow) {
                                         notyf.success("Thêm thành công");
+                                        tinhPhiShip();
                                         let input = existingRow.querySelector(".soLuongInput");
                                         input.value = parseInt(input.value) + 1;
                                     } else {
+                                        tinhPhiShip();
                                         notyf.success("Thêm thành công");
                                         setTimeout(() => {
                                             window.location.reload();
@@ -1240,10 +1259,30 @@
                                 trangThai: 6
                             })
                         });
+                        if (response.success) {
+                            notyf.success(response.message || "Hủy đơn thành công");
+                            $('#modalhuyhoadon').modal('hide');
+                            setTimeout(() => window.location.reload(), 2000);
+                            const response2 = await $.ajax({
+                                type: 'POST',
+                                url: '/hoadononline/guimail',
+                                contentType: 'application/json',
+                                data: JSON.stringify({
+                                    idHoaDon: idHD,
+                                    ghiChu: note,
+                                    trangThai: 6
+                                })
+                            });
+                            if (response.success) {
+                                notyf.success("Đã gửi thông báo tới người dùng")
+                            } else {
+                                notyf.error("Email bị spam liên tục!!!")
+                            }
+                        } else {
+                            notyf.error("Đổi trạng thái thất bại")
+                        }
 
-                        notyf.success(response.message || "Hủy đơn thành công");
-                        $('#modalhuyhoadon').modal('hide');
-                        setTimeout(() => window.location.reload(), 1000);
+
                     }
                 } catch (error) {
                     handleAjaxError(error);
@@ -1361,20 +1400,22 @@
                 var idHD = getIdHoaDonFromPath(); // Hàm lấy ID từ URL hoặc nguồn khác
                 let tenNguoiGiao = document.getElementById("tenNguoiGiao").value.trim();
                 let sdtNguoiGiao = document.getElementById("sdtNguoiGiao").value.trim();
-                let donViGiaoHang = document.getElementById("donViGiaoHang").value.trim();
+                let tinhThanhPho = document.getElementById("tinhThanhPhoName").value.trim();
+                let quanHuyen = document.getElementById("quanHuyenName").value.trim();
+                let phuongXa = document.getElementById("phuongXaName").value.trim();
 
                 let hoaDon = {
                     id: idHD,
                     tenKhachHang: $("#tenKhachHang").val(),
                     sdt: $("#sdtKhachHang").val(),
-                    tinhThanhPho: $("#tinhThanhPho").val(),
-                    quanHuyen: $("#quanHuyen").val(),
-                    phuongXa: $("#phuongXa").val(),
+                    tinhThanhPho: tinhThanhPho,
+                    quanHuyen: quanHuyen,
+                    phuongXa: phuongXa,
                     tenNguoiGiao: tenNguoiGiao,
                     sdtNguoiGiao: sdtNguoiGiao,
                     donViGiaoHang: donViGiaoHang
                 };
-
+                console.log(hoaDon)
                 fetch('/hoadononline/updatehoadon', {
                     method: "POST",
                     headers: {
@@ -1429,6 +1470,7 @@
                             .then(data => {
                                 if (data.success) {
                                     notyf.success("Xóa thành công")
+                                    tinhPhiShip();
                                     this.closest("tr").remove(); // Xóa dòng khỏi bảng
                                     setTimeout(() => {
                                         window.location.reload()
@@ -1604,6 +1646,7 @@
 
             });
             $(document).ready(function () {
+
                 $('#quayLaiTrangThaiTruoc').click(async function () {
                     var idHoaDon = $(this).val();
                     const result = await Swal.fire({
@@ -1643,6 +1686,211 @@
                     }
                 });
             });
+
+
+            const API_PROVINCE = "https://provinces.open-api.vn/api/";
+
+            // Load danh sách tỉnh/thành phố
+            async function loadProvinces() {
+                try {
+                    let response = await fetch(API_PROVINCE + "?depth=1");
+                    let data = await response.json();
+
+                    let provinceSelect = document.getElementById("tinhThanhPho");
+                    provinceSelect.innerHTML = '<option value="">Chọn tỉnh/thành phố</option>';
+
+                    let savedProvince = document.getElementById("savedProvince").value;
+                    let foundProvince = false;
+
+                    data.forEach(province => {
+                        let option = document.createElement("option");
+                        option.value = province.code;
+                        option.textContent = province.name;
+
+                        if (province.name === savedProvince) {
+                            option.selected = true;
+                            foundProvince = true;
+                            document.getElementById("tinhThanhPhoName").value = province.name;
+                        }
+
+                        provinceSelect.appendChild(option);
+                    });
+
+                    if (foundProvince) {
+                        await loadDistricts();
+                    }
+                } catch (error) {
+                    console.error("Lỗi khi tải danh sách tỉnh/thành phố:", error);
+                }
+            }
+
+            // Thêm sự kiện change để cập nhật hidden input
+            document.getElementById("tinhThanhPho").addEventListener("change", function () {
+                const selectedOption = this.options[this.selectedIndex];
+                document.getElementById("tinhThanhPhoName").value = selectedOption.textContent;
+                loadDistricts();
+            });
+
+            document.getElementById("quanHuyen").addEventListener("change", function () {
+                const selectedOption = this.options[this.selectedIndex];
+                document.getElementById("quanHuyenName").value = selectedOption.textContent;
+                loadWards();
+            });
+
+            document.getElementById("phuongXa").addEventListener("change", function () {
+                const selectedOption = this.options[this.selectedIndex];
+                document.getElementById("phuongXaName").value = selectedOption.textContent;
+            });
+
+           // Load danh sách quận/huyện khi chọn tỉnh/thành phố
+			async function loadDistricts() {
+				let provinceCode = document.getElementById("tinhThanhPho").value;
+				if (!provinceCode) return;
+
+				try {
+					let response = await fetch(API_PROVINCE + "p/" + provinceCode + "?depth=2");
+					let data = await response.json();
+
+					let districtSelect = document.getElementById("quanHuyen");
+					districtSelect.innerHTML = '<option value="">Chọn quận/huyện</option>';
+					let savedDistrict = document.getElementById("savedDistrict").value;
+					data.districts.forEach(district => {
+						let option = document.createElement("option");
+						option.value = district.code;
+						option.textContent = district.name;
+
+						// Chọn quận/huyện đã lưu
+						if (district.name === savedDistrict) {
+							option.selected = true;
+
+						}
+
+						districtSelect.appendChild(option);
+					});
+
+					// Nếu có quận/huyện được chọn thì tự động load phường/xã
+					if (districtSelect.value) {
+						await loadWards();
+						await tinhPhiShip();
+					}
+				} catch (error) {
+					console.error("Lỗi khi tải danh sách quận/huyện:", error);
+				}
+			}
+
+			// Load danh sách phường/xã khi chọn quận/huyện
+			async function loadWards() {
+				let districtCode = document.getElementById("quanHuyen").value;
+				if (!districtCode) return;
+
+				try {
+					let response = await fetch(API_PROVINCE + "d/" + districtCode + "?depth=2");
+					let data = await response.json();
+
+					let wardSelect = document.getElementById("phuongXa");
+					wardSelect.innerHTML = '<option value="">Chọn phường/xã</option>';
+
+					let savedWard = document.getElementById("savedWard").value;
+
+					data.wards.forEach(ward => {
+						let option = document.createElement("option");
+						option.value = ward.code;
+						option.textContent = ward.name;
+						// Chọn phường/xã đã lưu
+						if (ward.name === savedWard) {
+							option.selected = true;
+						}
+						wardSelect.appendChild(option);
+					});
+				} catch (error) {
+					console.error("Lỗi khi tải danh sách phường/xã:", error);
+				}
+			}
+
+            document.addEventListener("DOMContentLoaded", function () {
+                loadProvinces();
+
+
+            });
+            document.getElementById("quanHuyen").addEventListener("change", tinhPhiShip);
+
+            //tinh phi vận chuyển
+            async function tinhPhiShip() {
+                console.log("Đang tính phí ship...");
+                const provinceSelect = document.getElementById("tinhThanhPho");
+                const districtSelect = document.getElementById("quanHuyen");
+
+                // Kiểm tra đã chọn tỉnh/quận chưa
+                if (provinceSelect.selectedIndex <= 0 || districtSelect.selectedIndex <= 0) {
+                    notyf.error("Vui lòng chọn đầy đủ tỉnh/thành phố và quận/huyện");
+                    return;
+                }
+
+                const provinceText = provinceSelect.options[provinceSelect.selectedIndex].text;
+                const districtText = districtSelect.options[districtSelect.selectedIndex].text;
+
+                // Lấy thông tin nơi lấy hàng
+                const rawPickProvince = document.getElementById("pickProvince").value;
+                const rawPickDistrict = document.getElementById("pickDistrict").value;
+
+                // Chuẩn hóa tên
+                const pickProvince = normalizeProvinceName(rawPickProvince);
+                const pickDistrict = normalizeProvinceName(rawPickDistrict);
+                const toProvince = normalizeProvinceName(provinceText);
+                const toDistrict = normalizeProvinceName(districtText);
+
+                try {
+                    const idHoaDon = getIdHoaDonFromPath(); // Hàm này cần được định nghĩa
+                    if (!idHoaDon) {
+                        throw new Error("Không tìm thấy ID hóa đơn");
+                    }
+
+                    const formData = {
+                        pickProvince: pickProvince,
+                        pickDistrict: pickDistrict,
+                        toProvince: toProvince,
+                        toDistrict: toDistrict,
+                        idHoaDon: idHoaDon
+                    };
+
+                    const response = await fetch('/hoadononline/tinhPhiShip', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(formData)
+                    });
+
+                    if (!response.ok) {
+                        const error = await response.json();
+                        throw new Error(error.message || "Tính phí ship thất bại!");
+                    }
+
+                    const data = await response.json();
+                    const shippingFee = data.fee;
+
+                    document.getElementById("phiVanChuyen").textContent =
+                        shippingFee !== undefined ? formatCurrency(shippingFee) + "đ" : "Không tính được";
+
+                } catch (error) {
+                    console.error("Lỗi khi tính phí ship:", error);
+                    notyf.error(error.message || "Có lỗi xảy ra khi tính phí ship");
+                    document.getElementById("phiVanChuyen").textContent = "0";
+                }
+            }
+
+
+
+            function normalizeProvinceName(name) {
+                if (!name) return "";
+                return name.toLowerCase()
+                    .replace(/^(tỉnh|thành phố|quận|huyện)\s*/i, "")
+                    .normalize("NFD")
+                    .replace(/[\u0300-\u036f]/g, "")
+                    .replace(/\s+/g, "");
+            }
+
+            function formatCurrency(value) {
+                return new Intl.NumberFormat('vi-VN').format(value);
+            }
         </script>
 
     </div>

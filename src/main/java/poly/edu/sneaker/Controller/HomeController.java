@@ -76,7 +76,7 @@ public class HomeController {
                           @RequestParam(required = false) Integer idSize,
                           @RequestParam(required = false) String keyword) {
         int size = 12;
-        Page<ChiTietSanPham> lstCTSP = chiTietSanPhamService.findChiTietSanPhamJustOne(keyword,idHang,idDanhMuc,idChatLieu,idMauSac,idSize,PageRequest.of(page, size));
+        Page<ChiTietSanPham> lstCTSP = chiTietSanPhamService.findChiTietSanPhamJustOneTT(keyword,idHang,idDanhMuc,idChatLieu,idMauSac,idSize,PageRequest.of(page, size));
         List<Hang> hangs = hangService.getAllHangs();
         model.addAttribute("listHang", hangs);
         model.addAttribute("listSanPham", lstCTSP);

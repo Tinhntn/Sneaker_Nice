@@ -48,6 +48,11 @@ public class KhachHangImplement implements KhachHangService {
     }
 
     @Override
+    public List<KhachHang> findAll() {
+        return khachHangRepository.findAll();
+    }
+
+    @Override
     public void saveKhachHang(KhachHang khachHang) {
         khachHangRepository.save(khachHang);
     }
@@ -171,7 +176,7 @@ public class KhachHangImplement implements KhachHangService {
         // Lọc danh sách nhân viên có chức vụ là ADMIN
         List<NhanVien> lstNhanVien = nhanVienRepository.findAll();
         List<NhanVien> lstNhanVienAdmin = lstNhanVien.stream()
-                .filter(nv -> nv.getIdChucVu().getMaChucVu().equalsIgnoreCase("ADMIN"))
+                .filter(nv -> nv.getIdChucVu().getMaChucVu().toUpperCase().endsWith("ADMIN"))
                 .collect(Collectors.toList());
 
         String emailNoiDung = buildEmailContent(khachHang, hoaDon, chiTietList, ghiChu);
@@ -214,7 +219,54 @@ public class KhachHangImplement implements KhachHangService {
                     Transport.send(messageToAdmin);
                 }
             }
+            return true;
+        } catch (MessagingException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
 
+    @Override
+    public boolean ThongBao(HoaDon hoaDon, int trangThai, String ghiChu) {
+
+        List<HoaDonChiTiet> chiTietList = hoaDonChiTietRepository.findHoaDonChiTietByIdHoaDon_Id(hoaDon.getId());
+        if (chiTietList == null || chiTietList.isEmpty()) {
+            return false;
+        }
+
+        // Lọc danh sách nhân viên có chức vụ là ADMIN
+        List<NhanVien> lstNhanVien = nhanVienRepository.findAll();
+        List<NhanVien> lstNhanVienAdmin = lstNhanVien.stream()
+                .filter(nv -> nv.getIdChucVu().getMaChucVu().toUpperCase().endsWith("ADMIN"))
+                .collect(Collectors.toList());
+
+        String emailNoiDung = buildEmailContent(hoaDon.getIdKhachHang(), hoaDon, chiTietList, ghiChu);
+        String tieuDe = getTieuDe(hoaDon.getTrangThai());
+        final String senderEmail = "ntinh4939@gmail.com";
+        final String senderPassword = "rljh bqxc dufy aptz";
+
+        Properties props = new Properties();
+        props.put("mail.smtp.host", "smtp.gmail.com");
+        props.put("mail.smtp.port", "587");
+        props.put("mail.smtp.auth", "true");
+        props.put("mail.smtp.starttls.enable", "true");
+
+        Session session = Session.getInstance(props, new javax.mail.Authenticator() {
+            protected javax.mail.PasswordAuthentication getPasswordAuthentication() {
+                return new javax.mail.PasswordAuthentication(senderEmail, senderPassword);
+            }
+        });
+
+        try {
+            // Gửi mail cho khách hàng
+            if (hoaDon.getIdKhachHang().getEmail() != null && !hoaDon.getIdKhachHang().getEmail().isEmpty()) {
+                Message messageToCustomer = new MimeMessage(session);
+                messageToCustomer.setFrom(new InternetAddress(senderEmail));
+                messageToCustomer.setRecipients(Message.RecipientType.TO, InternetAddress.parse(hoaDon.getIdKhachHang().getEmail()));
+                messageToCustomer.setSubject(tieuDe);
+                messageToCustomer.setText(emailNoiDung);
+                Transport.send(messageToCustomer);
+            }
             return true;
         } catch (MessagingException e) {
             e.printStackTrace();
@@ -223,6 +275,17 @@ public class KhachHangImplement implements KhachHangService {
     }
 
 
+    private String getTieuDe(int trangThai){
+        switch (trangThai) {
+            case 2: return "ĐẶT HÀNG THÀNH CÔNG";
+            case 3: return "ĐƠN HÀNG ĐÃ ĐƯỢC XÁC NHẬN";
+            case 4: return "ĐƠN HÀNG ĐÃ ĐƯỢC VẬN CHUYỂN";
+            case 5: return "ĐƠN HÀNG CỦA BẠN ĐÃ ĐƯỢC GIAO";
+            case 6: return "ĐƠN HÀNG ĐÃ BỊ HỦY";
+            case 11: return "ĐƠN HÀNG GIAO THẤT BẠI";
+            default: return "TRẠNG THÁI ĐƠN HÀNG KHÔNG XÁC ĐỊNH";
+        }
+    }
     private String buildEmailContent(KhachHang khachHang, HoaDon hoaDon, List<HoaDonChiTiet> chiTietList, String ghiChu) {
         StringBuilder sb = new StringBuilder();
 

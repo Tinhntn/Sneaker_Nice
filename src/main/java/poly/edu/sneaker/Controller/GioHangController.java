@@ -30,6 +30,8 @@ import poly.edu.sneaker.Service.Implement.VnPay;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -130,8 +132,16 @@ public class GioHangController {
     public ResponseEntity<Map<String, Object>> timGiamGia(@RequestParam("maKhuyenMai") String maKhuyenMai) {
         Map<String, Object> response = new HashMap<>();
         KhuyenMai khuyenMai = khuyenMaiService.findByMaKhuyenMai(maKhuyenMai);
+
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(khuyenMai.getNgayKetThuc());
+        calendar.set(Calendar.HOUR_OF_DAY, 23);
+        calendar.set(Calendar.MINUTE, 59);
+        calendar.set(Calendar.SECOND, 59);
+        calendar.set(Calendar.MILLISECOND, 999);
+        Date ngayKetThuc = calendar.getTime();
         if (khuyenMai != null) {
-            if (khuyenMai.getNgayKetThuc().before(new Date())) {
+            if (new Date().after(ngayKetThuc)) {
                 khuyenMai.setTrangThai(false);
                 khuyenMaiService.updateKhuyenMai(khuyenMai, khuyenMai.getId());
                 response.put("message", "Mã khuyến mãi không còn hoạt động");
@@ -286,7 +296,6 @@ public class GioHangController {
                 khuyenMaiService.updateKhuyenMai(khuyenMai, khuyenMai.getId());
 
             }
-            System.out.println("Chạy đến aaya");
             //Cập nhật thông tin vao lich su don hang
             TrangThaiDonHang trangThaiDonHang = new TrangThaiDonHang();
             trangThaiDonHang.setTrangThai(hoaDon.getTrangThai());
@@ -308,6 +317,13 @@ public class GioHangController {
                 hoaDonChiTietService.saveHoaDonChiTiet(hoaDonChiTiet);
                 //Xóa giỏ hàng chi tiết khi thanh toán thành công
                 gioHangChiTietService.deleteGioHangChitiet(ghct.getId());
+            }
+            //gửi mail thông báo đặt hàng thành cống
+            try{
+                boolean guiMail = khachHangService.ThongBao(hoaDon,2,hoaDon.getGhiChu());
+                System.out.println(guiMail);
+            }catch (Exception e){
+                e.printStackTrace();
             }
             session.removeAttribute("phiVanChuyen");
             session.removeAttribute("thoiGianDuKien");
@@ -482,6 +498,12 @@ public class GioHangController {
             session.removeAttribute("phiVanChuyen");
             session.removeAttribute("thoiGianDuKien");
             httpSession.setAttribute("paymentStatus", "success");
+            try{
+                boolean guiMail = khachHangService.ThongBao(hoaDon,2,hoaDon.getGhiChu());
+                System.out.println(guiMail);
+            }catch (Exception e){
+                e.printStackTrace();
+            }
             return new RedirectView("/gio-hang/checkout-success");
         } else if (paymentStatus == 0) {
             //giao dich that bai

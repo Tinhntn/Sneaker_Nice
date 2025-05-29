@@ -447,19 +447,7 @@
 				totalPriceElement.textContent = totalPrice.toLocaleString("vi-VN") + "đ";
 			}
 
-			document.addEventListener("DOMContentLoaded", function () {
-				let checkboxes = document.querySelectorAll(".cart-checkbox");
 
-				checkboxes.forEach(checkbox => {
-					checkbox.addEventListener("change", updateTotalPrice);
-				});
-				updateTotalPrice();
-
-				// Load danh sách tỉnh/thành phố (nếu có)
-				if (typeof loadProvinces === "function") {
-					loadProvinces();
-				}
-			});
 
 
 			const API_PROVINCE = "https://provinces.open-api.vn/api/";
@@ -495,8 +483,6 @@
 					console.error("Lỗi khi tải danh sách tỉnh/thành phố:", error);
 				}
 			}
-
-			document.getElementById("district").addEventListener("change", tinhPhiShip);
 			// Load danh sách quận/huyện khi chọn tỉnh/thành phố
 			async function loadDistricts() {
 				let provinceCode = document.getElementById("province").value;
@@ -561,11 +547,26 @@
 					console.error("Lỗi khi tải danh sách phường/xã:", error);
 				}
 			}
+			document.addEventListener("DOMContentLoaded", loadProvinces());
+
+			document.getElementById("district").addEventListener("change", tinhPhiShip);
 
 
+			document.addEventListener("DOMContentLoaded", function () {
+				let checkboxes = document.querySelectorAll(".cart-checkbox");
+
+				checkboxes.forEach(checkbox => {
+					checkbox.addEventListener("change", updateTotalPrice);
+				});
+				updateTotalPrice();
+
+				// Load danh sách tỉnh/thành phố (nếu có)
+				if (typeof loadProvinces === "function") {
+					loadProvinces();
+				}
+			});
 
 			// Gọi API khi trang tải lần đầu
-			document.addEventListener("DOMContentLoaded", loadProvinces());
 			function getSelectedVoucherId() {
 				const selectedRadio = document.querySelector('input[name="voucher"]:checked');
 				if (selectedRadio) {
