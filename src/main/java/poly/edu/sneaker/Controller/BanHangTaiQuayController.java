@@ -282,13 +282,11 @@ public class BanHangTaiQuayController {
                              @RequestParam("idhd") Integer idhd,
                              RedirectAttributes redirectAttributes) {
         List<HoaDonChiTiet> listHDCT = banHangTaiQuayService.danhSachChiTietHoaDonByID(id);
-        System.out.println("Danh sách HDCT: " + listHDCT.size());
 
         for (HoaDonChiTiet ct : listHDCT) {
             ChiTietSanPham idctsp = ct.getIdChiTietSanPham();
             Integer slCTHD = ct.getSoLuong();
             ChiTietSanPham chiTietSanPham = banHangTaiQuayService.danhSachChiTietSPID(idctsp.getId());
-            System.out.println(chiTietSanPham.getSoLuong());
             if (chiTietSanPham != null) {
                 int soLuongBanDau = chiTietSanPham.getSoLuong();
                 int soLuongMoi = soLuongBanDau + slCTHD;
@@ -700,6 +698,8 @@ public class BanHangTaiQuayController {
         productsTable.setWidth(UnitValue.createPercentValue(100));
 
         productsTable.addHeaderCell(new Cell().add(new Paragraph("Sản phẩm").setFont(boldFont)));
+        productsTable.addHeaderCell(new Cell().add(new Paragraph("Màu sắc").setFont(boldFont)));
+        productsTable.addHeaderCell(new Cell().add(new Paragraph("Size").setFont(boldFont)));
         productsTable.addHeaderCell(new Cell().add(new Paragraph("SL").setFont(boldFont)).setTextAlignment(TextAlignment.CENTER));
         productsTable.addHeaderCell(new Cell().add(new Paragraph("Đơn giá").setFont(boldFont)).setTextAlignment(TextAlignment.RIGHT));
         productsTable.addHeaderCell(new Cell().add(new Paragraph("Thành tiền").setFont(boldFont)).setTextAlignment(TextAlignment.RIGHT));
@@ -710,13 +710,15 @@ public class BanHangTaiQuayController {
                     ct.getIdChiTietSanPham().getIdSanPham().getTenSanPham() != null
                     ? ct.getIdChiTietSanPham().getIdSanPham().getTenSanPham()
                     : "Không rõ";
-
+            String mauSac = ct.getIdChiTietSanPham().getIdMauSac().getTenMauSac();
+            String size = ct.getIdChiTietSanPham().getIdSize().getTenSize();
             int soLuong = ct.getSoLuong();
-            System.out.println(soLuong);
             Float donGia = ct.getDonGia() != 0 ? ct.getDonGia() : 0;
             Float thanhTien = soLuong * donGia;
 
             productsTable.addCell(new Cell().add(new Paragraph(tenSP)));
+            productsTable.addCell(new Cell().add(new Paragraph(mauSac)));
+            productsTable.addCell(new Cell().add(new Paragraph(size)));
             productsTable.addCell(new Cell().add(new Paragraph(String.valueOf(soLuong))).setTextAlignment(TextAlignment.CENTER));
             productsTable.addCell(new Cell().add(new Paragraph(currencyFormat.format(donGia) + " đ")).setTextAlignment(TextAlignment.RIGHT));
             productsTable.addCell(new Cell().add(new Paragraph(currencyFormat.format(thanhTien) + " đ")).setTextAlignment(TextAlignment.RIGHT));

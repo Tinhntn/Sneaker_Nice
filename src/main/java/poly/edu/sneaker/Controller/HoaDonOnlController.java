@@ -230,7 +230,7 @@ public class HoaDonOnlController {
     @GetMapping("/hienthi")
     public String hienthi(Model model, @RequestParam(defaultValue = "0") int page) {
         int size = 5;
-        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "ngayTao"));
+        Pageable pageable = PageRequest.of(page, size,Sort.by(Sort.Direction.DESC, "ngayTao"));
 
         Page<HoaDonOnlCustom> listHoaDonTatCa = hoaDonOnlService.getHoaDonCustomTatCa(pageable);
         Integer sizeTatCa = listHoaDonTatCa.getContent().size();
@@ -388,30 +388,6 @@ public class HoaDonOnlController {
         response.put("currentPage", sanPhamChiTiet.getNumber());
         response.put("totalPages", sanPhamChiTiet.getTotalPages());
         return ResponseEntity.ok(response);
-    }
-
-    @PostMapping("/huydh/{id}")
-    public String huydonhang(@PathVariable int id, @RequestParam(value = "ghichu", defaultValue = "trong") String ghichu,
-                             Model model, RedirectAttributes redirectAttributes) {
-        HoaDon hd = hoaDonOnlService.detailHD(id);
-        if (hd == null) {
-            redirectAttributes.addFlashAttribute("error", "Không tìm thấy hóa đơn.");
-            return "redirect:/hoadononline/hienthi";
-        }
-        hd.setGhiChu(ghichu);
-        hd.setTrangThai(6);  // Đặt trạng thái hủy
-        hoaDonOnlService.updateHoaDon(hd, id);
-
-        // Cập nhật lại số lượng sản phẩm
-        List<HoaDonChiTietOnlCustom> chiTietHoaDonList = hoaDonChiTietOnlService.findByHoaDonId(hd);
-        for (HoaDonChiTietOnlCustom ct : chiTietHoaDonList) {
-            ChiTietSanPham dt = chiTietSanPhamService.findById(ct.getId());
-            dt.setSoLuong(dt.getSoLuong() + ct.getSoLuong());
-            chiTietSanPhamService.update(dt);
-        }
-
-        redirectAttributes.addFlashAttribute("thanhcong", "Hủy thành công");
-        return "redirect:/hoadononline/hienthi";
     }
 
     @GetMapping("/detailkhachhang/{id}")

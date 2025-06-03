@@ -264,6 +264,7 @@ public class KhuyenMaiController {
         khuyenMai.setNgayBatDau(ngayBatDau);
         khuyenMai.setNgayKetThuc(ngayKetThuc);
         khuyenMai.setSoLuong(soLuong);
+        khuyenMai.setDaSuDung(old.getDaSuDung());
         khuyenMai.setMaKhuyenMai(old.getMaKhuyenMai()); // giữ nguyên mã
         khuyenMai.setNgayTao(old.getNgayTao());
         khuyenMai.setNgaySua(new Date());

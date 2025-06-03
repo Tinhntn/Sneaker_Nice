@@ -17,15 +17,18 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import poly.edu.sneaker.Model.GioHang;
 import poly.edu.sneaker.Model.KhachHang;
+import poly.edu.sneaker.Model.NhanVien;
 import poly.edu.sneaker.Service.GioHangService;
 import poly.edu.sneaker.Service.KhachHangService;
 import jakarta.validation.Valid;
+import poly.edu.sneaker.Service.NhanVienService;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.Date;
+import java.util.List;
 
 @Controller
 @RequestMapping("/khach_hang")
@@ -38,6 +41,8 @@ public class KhachHangController {
 
     @Autowired
     HttpSession session;
+    @Autowired
+    NhanVienService nhanVienService;
     private final PasswordEncoder passwordEncoder = new BCryptPasswordEncoder(10);
 
     @GetMapping("/hienthi")
@@ -122,6 +127,20 @@ public class KhachHangController {
         }
 
         try {
+            List<NhanVien> lstNhanVien = nhanVienService.findAllNhanVien();
+            for(NhanVien nv : lstNhanVien) {
+                if(khachHang.getEmail()!=null&&nv.getEmail().equalsIgnoreCase(khachHang.getEmail())) {
+                    bindingResult.rejectValue("email", "error.khachHang", "Email đã được sử dụng");
+                }
+            }
+            List<KhachHang> lstKhachHang = khachHangService.findAll();
+            for(KhachHang kh : lstKhachHang) {
+                if(kh.getEmail().equals(khachHang.getEmail())||kh.getSdt().equalsIgnoreCase(khachHang.getSdt())) {
+                    bindingResult.rejectValue("sdt", "error.khachHang", "Số điện thoại đã được sử dụng");
+                    bindingResult.rejectValue("email", "error.khachHang", "Email đã được sử dụng");
+
+                }
+            }
             // Tạo mã khách hàng tự động
             String maKhachHang = khachHangService.taoMaKhachHang();
             while (khachHangService.findByMaKhachHang(maKhachHang) != null) {
@@ -193,9 +212,24 @@ public class KhachHangController {
 
         // Logic cũ: Cập nhật khách hàng
         try {
+            List<NhanVien> lstNhanVien = nhanVienService.findAllNhanVien();
+            for(NhanVien nv : lstNhanVien) {
+                if(khachHang.getEmail()!=null&&nv.getEmail().equalsIgnoreCase(khachHang.getEmail())) {
+                    bindingResult.rejectValue("email", "error.khachHang", "Email đã được sử dụng");
+                }
+            }
+            List<KhachHang> lstKhachHang = khachHangService.findAll();
+
             // Lấy khách hàng hiện tại từ cơ sở dữ liệu
             KhachHang existingKhachHang = khachHangService.findKhachHangById(id);
             if (existingKhachHang != null) {
+                for(KhachHang kh : lstKhachHang) {
+                    if(kh.getEmail().equals(khachHang.getEmail())||kh.getSdt().equalsIgnoreCase(khachHang.getSdt())&&kh.getId()!=existingKhachHang.getId()) {
+                        bindingResult.rejectValue("sdt", "error.khachHang", "Số điện thoại đã được sử dụng");
+                        bindingResult.rejectValue("email", "error.khachHang", "Email đã được sử dụng");
+
+                    }
+                }
 
                 // Cập nhật thông tin khách hàng
                 khachHang.setId(id);

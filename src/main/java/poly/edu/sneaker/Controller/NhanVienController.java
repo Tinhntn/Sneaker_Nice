@@ -24,8 +24,10 @@ import poly.edu.sneaker.DAO.NhanVienCustom;
 import poly.edu.sneaker.DAO.NhanVienRequest;
 import poly.edu.sneaker.DAO.NhanVienUpdateRequest;
 import poly.edu.sneaker.Model.ChucVu;
+import poly.edu.sneaker.Model.KhachHang;
 import poly.edu.sneaker.Model.NhanVien;
 import poly.edu.sneaker.Service.ChucVuService;
+import poly.edu.sneaker.Service.KhachHangService;
 import poly.edu.sneaker.Service.NhanVienService;
 
 import java.io.File;
@@ -47,6 +49,8 @@ public class NhanVienController {
     @Autowired
     private ChucVuService chucVuService;
 
+    @Autowired
+    KhachHangService khachHangService;
     private static final String EMAIL_PATTERN = "^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$";
     private static final String SDT_PATTERN = "^0\\d{9,10}$";
     @GetMapping("/hienthi")
@@ -156,6 +160,16 @@ public class NhanVienController {
             for(NhanVien nhanVien1 : lstNhanVien) {
                 if(nhanVien1.getEmail().equalsIgnoreCase(email)){
                     return ResponseEntity.badRequest().body(Map.of("success",false,"message","email đã tồn tại"));
+                }
+            }
+            List<KhachHang> lstKhachHang = khachHangService.findAll();
+            for (KhachHang kh : lstKhachHang) {
+                if ((kh.getEmail() != null && kh.getEmail().equalsIgnoreCase(email)) ||
+                        (kh.getSdt() != null && kh.getSdt().equalsIgnoreCase(sdt))) {
+                    return ResponseEntity.badRequest().body(Map.of(
+                            "success", false,
+                            "message", "email hoặc số điện thoại đã tồn tại"
+                    ));
                 }
             }
 
@@ -309,6 +323,8 @@ public class NhanVienController {
                         Map.of("success", false, "message", "Không tìm thấy nhân viên")
                 );
             }
+
+
             if(nhanVien.getIdChucVu().getMaChucVu().toUpperCase().endsWith("ADMIN")&&!maChucVu.toUpperCase().endsWith("ADMIN")){
                 return ResponseEntity.badRequest().body(Map.of("message","Không thể hạ phân quyền của bản thân"));
             }
@@ -323,6 +339,17 @@ public class NhanVienController {
                     return ResponseEntity.badRequest().body(Map.of("success",false,"message","email đã tồn tại"));
                 }
             }
+            List<KhachHang> lstKhachHang = khachHangService.findAll();
+            for (KhachHang kh : lstKhachHang) {
+                if ((kh.getEmail() != null && kh.getEmail().equalsIgnoreCase(email)) ||
+                        (kh.getSdt() != null && kh.getSdt().equalsIgnoreCase(sdt))) {
+                    return ResponseEntity.badRequest().body(Map.of(
+                            "success", false,
+                            "message", "email hoặc số điện thoại đã tồn tại"
+                    ));
+                }
+            }
+
             // Update fields
             nhanVien.setHoVaTen(hoVaTen);
             nhanVien.setIdChucVu(chucVu);

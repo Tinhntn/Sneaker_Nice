@@ -16,6 +16,8 @@ import poly.edu.sneaker.Repository.HoaDonChiTietRepository;
 import poly.edu.sneaker.Repository.KhachHangRepository;
 import poly.edu.sneaker.Repository.NhanVienRepository;
 import poly.edu.sneaker.Service.KhachHangService;
+import poly.edu.sneaker.Service.MailService;
+
 import javax.mail.Message;
 import javax.mail.MessagingException;
 import javax.mail.Session;
@@ -32,11 +34,14 @@ import java.util.stream.Collectors;
 public class KhachHangImplement implements KhachHangService {
 
     @Autowired
+    private MailService mailService;
+    @Autowired
     private KhachHangRepository khachHangRepository;
     @Autowired
     private HoaDonChiTietRepository hoaDonChiTietRepository;
     @Autowired
     private NhanVienRepository nhanVienRepository;
+
     @Override
     public Page<KhachHang> getAll(Pageable pageable) {
         return khachHangRepository.findAll(pageable);
@@ -103,7 +108,7 @@ public class KhachHangImplement implements KhachHangService {
 
     @Override
     public Page<KhachHang> search(String keyword, Pageable pageable) {
-        return khachHangRepository.findByMaKhachHangContainingOrTenKhachHangContaining(keyword , keyword, pageable);
+        return khachHangRepository.findByMaKhachHangContainingOrTenKhachHangContaining(keyword, keyword, pageable);
     }
 
     @Override
@@ -127,7 +132,7 @@ public class KhachHangImplement implements KhachHangService {
         String maKhachHang = "KH" + 1000 + r.nextInt(9000);
         ArrayList<KhachHang> lstKhachHang = (ArrayList<KhachHang>) khachHangRepository.findAll();
         for (int i = 0; i < lstKhachHang.size(); i++) {
-            if(maKhachHang.equals(lstKhachHang.get(i).getMaKhachHang())){
+            if (maKhachHang.equals(lstKhachHang.get(i).getMaKhachHang())) {
                 maKhachHang = "KH" + 1000 + r.nextInt(9000);
             }
         }
@@ -142,13 +147,15 @@ public class KhachHangImplement implements KhachHangService {
         );
         khachHang.setMatKhau(passwordEncoder.encode(matKhau));
         khachHangRepository.save(khachHang);
-        boolean sendMail = sendEmail(khachHang.getEmail(),"Mật khẩu mới của bạn là: ",matKhau);
+        boolean sendMail = sendEmail(khachHang.getEmail(), "Mật khẩu mới của bạn là: ", matKhau);
         return sendMail;
     }
+
     @Override
     public KhachHang findByMaKhachHang(String maKhachHang) {
         return khachHangRepository.findByMaKhachHang(maKhachHang);
     }
+
     @Override
     public Page<KhachHang> filterAndSort(Boolean trangThai, String sortBy, String sortDir, Pageable pageable) {
         Sort sort;
@@ -233,59 +240,35 @@ public class KhachHangImplement implements KhachHangService {
         if (chiTietList == null || chiTietList.isEmpty()) {
             return false;
         }
-
-        // Lọc danh sách nhân viên có chức vụ là ADMIN
-        List<NhanVien> lstNhanVien = nhanVienRepository.findAll();
-        List<NhanVien> lstNhanVienAdmin = lstNhanVien.stream()
-                .filter(nv -> nv.getIdChucVu().getMaChucVu().toUpperCase().endsWith("ADMIN"))
-                .collect(Collectors.toList());
-
         String emailNoiDung = buildEmailContent(hoaDon.getIdKhachHang(), hoaDon, chiTietList, ghiChu);
         String tieuDe = getTieuDe(hoaDon.getTrangThai());
-        final String senderEmail = "ntinh4939@gmail.com";
-        final String senderPassword = "rljh bqxc dufy aptz";
-
-        Properties props = new Properties();
-        props.put("mail.smtp.host", "smtp.gmail.com");
-        props.put("mail.smtp.port", "587");
-        props.put("mail.smtp.auth", "true");
-        props.put("mail.smtp.starttls.enable", "true");
-
-        Session session = Session.getInstance(props, new javax.mail.Authenticator() {
-            protected javax.mail.PasswordAuthentication getPasswordAuthentication() {
-                return new javax.mail.PasswordAuthentication(senderEmail, senderPassword);
-            }
-        });
-
-        try {
-            // Gửi mail cho khách hàng
-            if (hoaDon.getIdKhachHang().getEmail() != null && !hoaDon.getIdKhachHang().getEmail().isEmpty()) {
-                Message messageToCustomer = new MimeMessage(session);
-                messageToCustomer.setFrom(new InternetAddress(senderEmail));
-                messageToCustomer.setRecipients(Message.RecipientType.TO, InternetAddress.parse(hoaDon.getIdKhachHang().getEmail()));
-                messageToCustomer.setSubject(tieuDe);
-                messageToCustomer.setText(emailNoiDung);
-                Transport.send(messageToCustomer);
-            }
-            return true;
-        } catch (MessagingException e) {
-            e.printStackTrace();
-            return false;
+        // Gửi mail cho khách hàng
+        if (hoaDon.getIdKhachHang().getEmail() != null && !hoaDon.getIdKhachHang().getEmail().isEmpty()) {
+            return mailService.sendMail(hoaDon.getIdKhachHang().getEmail(), tieuDe, emailNoiDung);
         }
+        return false;
     }
 
 
-    private String getTieuDe(int trangThai){
+    private String getTieuDe(int trangThai) {
         switch (trangThai) {
-            case 2: return "ĐẶT HÀNG THÀNH CÔNG";
-            case 3: return "ĐƠN HÀNG ĐÃ ĐƯỢC XÁC NHẬN";
-            case 4: return "ĐƠN HÀNG ĐÃ ĐƯỢC VẬN CHUYỂN";
-            case 5: return "ĐƠN HÀNG CỦA BẠN ĐÃ ĐƯỢC GIAO";
-            case 6: return "ĐƠN HÀNG ĐÃ BỊ HỦY";
-            case 11: return "ĐƠN HÀNG GIAO THẤT BẠI";
-            default: return "TRẠNG THÁI ĐƠN HÀNG KHÔNG XÁC ĐỊNH";
+            case 2:
+                return "ĐẶT HÀNG THÀNH CÔNG";
+            case 3:
+                return "ĐƠN HÀNG ĐÃ ĐƯỢC XÁC NHẬN";
+            case 4:
+                return "ĐƠN HÀNG ĐÃ ĐƯỢC VẬN CHUYỂN";
+            case 5:
+                return "ĐƠN HÀNG CỦA BẠN ĐÃ ĐƯỢC GIAO";
+            case 6:
+                return "ĐƠN HÀNG ĐÃ BỊ HỦY";
+            case 11:
+                return "ĐƠN HÀNG GIAO THẤT BẠI";
+            default:
+                return "TRẠNG THÁI ĐƠN HÀNG KHÔNG XÁC ĐỊNH";
         }
     }
+
     private String buildEmailContent(KhachHang khachHang, HoaDon hoaDon, List<HoaDonChiTiet> chiTietList, String ghiChu) {
         StringBuilder sb = new StringBuilder();
 
@@ -320,7 +303,6 @@ public class KhachHangImplement implements KhachHangService {
 
         return sb.toString();
     }
-
 
 
     public static boolean sendEmail(String emailNguoiNhan, String tieuDe, String body) {

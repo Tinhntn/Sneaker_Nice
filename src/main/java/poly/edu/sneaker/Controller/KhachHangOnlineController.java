@@ -17,6 +17,8 @@ import poly.edu.sneaker.DAO.KhuyenMaiCustom;
 import poly.edu.sneaker.Model.KhachHang;
 import poly.edu.sneaker.Model.KhuyenMai;
 import poly.edu.sneaker.Model.NhanVien;
+import poly.edu.sneaker.Repository.KhachHangRepository;
+import poly.edu.sneaker.Repository.NhanVienRepository;
 import poly.edu.sneaker.Service.HoaDonService;
 import poly.edu.sneaker.Service.KhachHangOnlineService;
 import poly.edu.sneaker.Service.KhachHangService;
@@ -34,6 +36,10 @@ public class KhachHangOnlineController {
     KhachHangService khachHangService;
     @Autowired
     NhanVienService nhanVienService;
+    @Autowired
+    NhanVienRepository nhanVienRepository;
+    @Autowired
+    KhachHangRepository khachHangRepository;
     public String getCurrentUserEmail() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication != null && authentication.isAuthenticated()) {
@@ -77,6 +83,33 @@ public class KhachHangOnlineController {
 
         // Các bước xử lý tiếp theo...
         KhachHang khachHang = khachHangOnlineService.layKhachHangQuaid(khachHang1.getId());
+        List<NhanVien> nhanVienList = nhanVienRepository.findAll();
+        List<KhachHang> danhSachKhachHang = khachHangRepository.findAll();
+
+// ⚠️ Kiểm tra trùng email hoặc sdt với các khách hàng khác
+        for (KhachHang kh : danhSachKhachHang) {
+            if (kh.getId() != khachHang.getId()) {
+                if (kh.getEmail()!=null&&kh.getEmail().equals(email)) {
+                    redirectAttributes.addFlashAttribute("error", "Email đã tồn tại!");
+                    return "redirect:/khachhangonline/hienthi";
+                }
+                if (kh.getSdt()!=null&&kh.getSdt().equals(sdt)) {
+                    redirectAttributes.addFlashAttribute("error", "Số điện thoại đã tồn tại!");
+                    return "redirect:/khachhangonline/hienthi";
+                }
+            }
+        }
+// ⚠️ Kiểm tra trùng email hoặc sdt với nhân viên
+        for (NhanVien nv : nhanVienList) {
+            if (nv.getEmail() != null && email.equals(nv.getEmail())) {
+                redirectAttributes.addFlashAttribute("error", "Email đã được sử dụng bởi nhân viên!");
+                return "redirect:/khachhangonline/hienthi";
+            }
+            if (nv.getEmail() != null && nv.getSdt().equals(sdt)) {
+                redirectAttributes.addFlashAttribute("error", "Số điện thoại đã được sử dụng bởi nhân viên!");
+                return "redirect:/khachhangonline/hienthi";
+            }
+        }
         if (khachHang != null) {
             khachHang.setTenKhachHang(tenKhachHang);
             khachHang.setEmail(email);
